@@ -5,16 +5,13 @@
 ///
 
 module cpu
+    // Import Constants
+    import consts::*;
     (
         input  clk,   // clock
         input  reset, // reset
         output halt   // halt
     );
-
-
-// Import Constants
-consts c ();
-
 
 
 ///
@@ -188,21 +185,21 @@ ctl ctl (
 
 always @(*) begin
     case (wb_src_sel)
-    c.WB_SRC_PC4:
+    WB_SRC_PC4:
         begin
             reg_write_data <= pc_plus_4;
         end
-    c.WB_SRC_MEM:
+    WB_SRC_MEM:
         begin
             case (wb_mode)
-            c.WB_MODE_B:  reg_write_data <= { {24{dram_read_data[7]}},  dram_read_data[ 7:0] };
-            c.WB_MODE_H:  reg_write_data <= { {16{dram_read_data[15]}}, dram_read_data[15:0] };
-            c.WB_MODE_BU: reg_write_data <= { 24'b0, dram_read_data[ 7:0] };
-            c.WB_MODE_HU: reg_write_data <= { 16'b0, dram_read_data[15:0] };
+            WB_MODE_B:  reg_write_data <= { {24{dram_read_data[7]}},  dram_read_data[ 7:0] };
+            WB_MODE_H:  reg_write_data <= { {16{dram_read_data[15]}}, dram_read_data[15:0] };
+            WB_MODE_BU: reg_write_data <= { 24'b0, dram_read_data[ 7:0] };
+            WB_MODE_HU: reg_write_data <= { 16'b0, dram_read_data[15:0] };
             default:      reg_write_data <= dram_read_data;
             endcase
         end
-    default: // c.WB_SRC_ALU:
+    default: // WB_SRC_ALU:
         begin
             reg_write_data <= alu_result;
         end
@@ -217,18 +214,18 @@ end
 // Operand 1
 always @(*) begin
     case (alu_op1_sel)
-    c.ALU_OP1_RS1:  alu_operand1 <= reg_read_data1;
-    c.ALU_OP1_IMMU: alu_operand1 <= imm_u;
+    ALU_OP1_RS1:  alu_operand1 <= reg_read_data1;
+    ALU_OP1_IMMU: alu_operand1 <= imm_u;
     endcase
 end
 
 // Operand 2
 always @(*) begin
     case (alu_op2_sel)
-    c.ALU_OP2_RS2:  alu_operand2 <= reg_read_data2;
-    c.ALU_OP2_IMMI: alu_operand2 <= imm_i;
-    c.ALU_OP2_IMMS: alu_operand2 <= imm_s;
-    c.ALU_OP2_PC:   alu_operand2 <= pc;
+    ALU_OP2_RS2:  alu_operand2 <= reg_read_data2;
+    ALU_OP2_IMMI: alu_operand2 <= imm_i;
+    ALU_OP2_IMMS: alu_operand2 <= imm_s;
+    ALU_OP2_PC:   alu_operand2 <= pc;
     endcase
 end
 
@@ -240,7 +237,7 @@ end
 // Write Data & Mask
 always @(*) begin
     case (wb_mode)
-    c.WB_MODE_B:
+    WB_MODE_B:
         begin
             case (alu_result[1:0])
             2'b00: dram_write_mask <= 4'b0001;
@@ -250,7 +247,7 @@ always @(*) begin
             endcase
             dram_write_data <= { 4{reg_read_data2[ 7:0]} };
         end
-    c.WB_MODE_H:
+    WB_MODE_H:
         begin
             case (alu_result[1:0])
             2'b00:   dram_write_mask <= 4'b0011;
@@ -259,7 +256,7 @@ always @(*) begin
             endcase
             dram_write_data <= { 2{reg_read_data2[15:0]} };
         end
-    default: // c.WB_MODE_W:
+    default: // WB_MODE_W:
         begin
             dram_write_mask <= 4'b1111;
             dram_write_data <= reg_read_data2;
@@ -290,19 +287,19 @@ always @* begin
     else
         begin
             case (pc_mode_sel)
-            c.PC_NEXT:
+            PC_NEXT:
                 begin
                     pc_next <= pc_plus_4;
                 end
-            c.PC_JUMP_REL:
+            PC_JUMP_REL:
                 begin
                     pc_next <= pc + imm_j;
                 end
-            c.PC_JUMP_ABS:
+            PC_JUMP_ABS:
                 begin
                     pc_next <= reg_read_data1 + imm_i;
                 end
-            c.PC_BRANCH:
+            PC_BRANCH:
                 begin
                     if (alu_zero == pc_branch_zero)
                         begin

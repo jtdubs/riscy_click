@@ -4,7 +4,10 @@
 /// Constants
 ///
 
-module consts ();
+`timescale 1ns/1ps
+
+package consts;
+
 
 ///
 /// Instruction Decoding
@@ -79,31 +82,35 @@ parameter ALU_OP2_IMMS = 2'b10;      // S-Type Immediate
 parameter ALU_OP2_PC   = 2'b11;      // Program Counter
 
 // ALU Mode
-parameter ALU_ADD      = 5'b00000;    // Addition
-parameter ALU_LSL      = 5'b00001;    // Logical Shift Left
-parameter ALU_SLT      = 5'b00010;    // Less-Than (Signed)
-parameter ALU_ULT      = 5'b00011;    // Less-Than (Unsigned)
-parameter ALU_XOR      = 5'b00100;    // Binary XOR
-parameter ALU_LSR      = 5'b00101;    // Logical Shift Right
-parameter ALU_OR       = 5'b00110;    // Binary OR
-parameter ALU_AND      = 5'b00111;    // Binary AND
-parameter ALU_SUB      = 5'b01000;    // Subtraction
-parameter ALU_ASR      = 5'b01101;    // Logical Shift Right
-parameter ALU_MUL      = 5'b10000;    // Multiply
-parameter ALU_MULH     = 5'b10001;    // Multiply (High)
-parameter ALU_MULHSU   = 5'b10010;    // Multiply (High, Signed x Unsigned)
-parameter ALU_MULHU    = 5'b10011;    // Multiple (High, Unsigned)
-parameter ALU_DIV      = 5'b10100;    // Divide
-parameter ALU_DIVU     = 5'b10101;    // Divide (Unsigned)
-parameter ALU_REM      = 5'b10110;    // Remainder
-parameter ALU_REMU     = 5'b10111;    // Remainder (Unsigned)
-parameter ALU_COPY1    = 5'b11001;    // Output Operand #1
-parameter ALU_X        = 5'b11111;    // Disabled
+typedef enum logic[4:0] {
+    ALU_ADD      = 5'b00000,    // Addition
+    ALU_LSL      = 5'b00001,    // Logical Shift Left
+    ALU_SLT      = 5'b00010,    // Less-Than (Signed)
+    ALU_ULT      = 5'b00011,    // Less-Than (Unsigned)
+    ALU_XOR      = 5'b00100,    // Binary XOR
+    ALU_LSR      = 5'b00101,    // Logical Shift Right
+    ALU_OR       = 5'b00110,    // Binary OR
+    ALU_AND      = 5'b00111,    // Binary AND
+    ALU_SUB      = 5'b01000,    // Subtraction
+    ALU_ASR      = 5'b01101,    // Logical Shift Right
+    ALU_MUL      = 5'b10000,    // Multiply
+    ALU_MULH     = 5'b10001,    // Multiply (High)
+    ALU_MULHSU   = 5'b10010,    // Multiply (High, Signed x Unsigned)
+    ALU_MULHU    = 5'b10011,    // Multiple (High, Unsigned)
+    ALU_DIV      = 5'b10100,    // Divide
+    ALU_DIVU     = 5'b10101,    // Divide (Unsigned)
+    ALU_REM      = 5'b10110,    // Remainder
+    ALU_REMU     = 5'b10111,    // Remainder (Unsigned)
+    ALU_COPY1    = 5'b11001,    // Output Operand #1
+    ALU_X        = 5'b11111     // Disabled
+} alu_mode;
 
 // PC Mode
 parameter PC_NEXT      = 2'b00;      // Next Instruction
 parameter PC_JUMP_REL  = 2'b01;      // Jump (Relative)
 parameter PC_JUMP_ABS  = 2'b10;      // Jump (Absolute)
-parameter PC_BRANCH    = 2'b11;      // Branch
+parameter PC_BRANCH    = 2'b11;      // ALU_ADD
 
-endmodule
+typedef logic [31:0] word;
+
+endpackage

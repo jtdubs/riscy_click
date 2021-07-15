@@ -7,6 +7,8 @@
 ///
 
 module ctl
+    // Import Constants
+    import consts::*;
     (
         input        clk,           // Clock
         input        reset,         // Reset
@@ -24,9 +26,6 @@ module ctl
         output       pc_branch_zero // PC Branch Mode
     );
 
-
-// Import Constants
-consts c ();
 
 // Control Signal Logic
 reg [17:0] cw;
@@ -46,25 +45,25 @@ wire [4:0] alu_mode3 = { 2'b0, funct3 };
 
 always @(*) begin
     casez ({reset, funct7, funct3, opcode})
-    {1'b1, 7'b???????, 3'b???,       7'b???????}:    cw <= { 1'b0, c.ALU_OP1_X,    c.ALU_OP2_X,    c.ALU_X,     c.WB_SRC_X,   c.WB_X,       c.PC_NEXT,     1'b0 };
-    {1'b?, 7'b0?00000, c.F3_SRL_SRA, c.OP_IMM}:      cw <= { 1'b0, c.ALU_OP1_RS1,  c.ALU_OP2_IMMI, alu_mode7,   c.WB_SRC_ALU, c.WB_DST_REG, c.PC_NEXT,     1'b0 };
-    {1'b?, 7'b???????, 3'b???,       c.OP_IMM}:      cw <= { 1'b0, c.ALU_OP1_RS1,  c.ALU_OP2_IMMI, alu_mode3,   c.WB_SRC_ALU, c.WB_DST_REG, c.PC_NEXT,     1'b0 };
-    {1'b?, 7'b???????, 3'b???,       c.OP_LUI}:      cw <= { 1'b0, c.ALU_OP1_IMMU, c.ALU_OP2_RS2,  c.ALU_COPY1, c.WB_SRC_ALU, c.WB_DST_REG, c.PC_NEXT,     1'b0 };
-    {1'b?, 7'b???????, 3'b???,       c.OP_AUIPC}:    cw <= { 1'b0, c.ALU_OP1_IMMU, c.ALU_OP2_PC,   c.ALU_ADD,   c.WB_SRC_ALU, c.WB_DST_REG, c.PC_NEXT,     1'b0 };
-    {1'b?, 7'b???????, 3'b???,       c.OP}:          cw <= { 1'b0, c.ALU_OP1_RS1,  c.ALU_OP2_RS2,  alu_mode7,   c.WB_SRC_ALU, c.WB_DST_REG, c.PC_NEXT,     1'b0 };
-    {1'b?, 7'b???????, 3'b???,       c.OP_JAL}:      cw <= { 1'b0, c.ALU_OP1_X,    c.ALU_OP2_X,    c.ALU_X,     c.WB_SRC_PC4, c.WB_DST_REG, c.PC_JUMP_REL, 1'b0 };
-    {1'b?, 7'b???????, 3'b???,       c.OP_JALR}:     cw <= { 1'b0, c.ALU_OP1_X,    c.ALU_OP2_X,    c.ALU_X,     c.WB_SRC_PC4, c.WB_DST_REG, c.PC_JUMP_ABS, 1'b0 };
-    {1'b?, 7'b???????, c.F3_BEQ,     c.OP_BRANCH}:   cw <= { 1'b0, c.ALU_OP1_RS1,  c.ALU_OP2_RS2,  c.ALU_SUB,   c.WB_SRC_X,   c.WB_X,       c.PC_BRANCH,   1'b0 };
-    {1'b?, 7'b???????, c.F3_BNE,     c.OP_BRANCH}:   cw <= { 1'b0, c.ALU_OP1_RS1,  c.ALU_OP2_RS2,  c.ALU_SUB,   c.WB_SRC_X,   c.WB_X,       c.PC_BRANCH,   1'b0 };
-    {1'b?, 7'b???????, c.F3_BLT,     c.OP_BRANCH}:   cw <= { 1'b0, c.ALU_OP1_RS1,  c.ALU_OP2_RS2,  c.ALU_SLT,   c.WB_SRC_X,   c.WB_X,       c.PC_BRANCH,   1'b0 };
-    {1'b?, 7'b???????, c.F3_BGE,     c.OP_BRANCH}:   cw <= { 1'b0, c.ALU_OP1_RS1,  c.ALU_OP2_RS2,  c.ALU_SLT,   c.WB_SRC_X,   c.WB_X,       c.PC_BRANCH,   1'b1 };
-    {1'b?, 7'b???????, c.F3_BLTU,    c.OP_BRANCH}:   cw <= { 1'b0, c.ALU_OP1_RS1,  c.ALU_OP2_RS2,  c.ALU_ULT,   c.WB_SRC_X,   c.WB_X,       c.PC_BRANCH,   1'b0 };
-    {1'b?, 7'b???????, c.F3_BGEU,    c.OP_BRANCH}:   cw <= { 1'b0, c.ALU_OP1_RS1,  c.ALU_OP2_RS2,  c.ALU_ULT,   c.WB_SRC_X,   c.WB_X,       c.PC_BRANCH,   1'b1 };
-    {1'b?, 7'b???????, 3'b???,       c.OP_LOAD}:     cw <= { 1'b0, c.ALU_OP1_RS1,  c.ALU_OP2_IMMI, c.ALU_ADD,   c.WB_SRC_MEM, c.WB_DST_REG, c.PC_NEXT,     1'b0 };
-    {1'b?, 7'b???????, 3'b???,       c.OP_STORE}:    cw <= { 1'b0, c.ALU_OP1_RS1,  c.ALU_OP2_IMMS, c.ALU_ADD,   c.WB_SRC_ALU, c.WB_DST_MEM, c.PC_NEXT,     1'b0 };
-    {1'b?, 7'b???????, 3'b???,       c.OP_MISC_MEM}: cw <= { 1'b0, c.ALU_OP1_X,    c.ALU_OP2_X,    c.ALU_X,     c.WB_SRC_X,   c.WB_X,       c.PC_NEXT,     1'b0 };
-    {1'b?, 7'b???????, 3'b???,       c.OP_SYSTEM}:   cw <= { 1'b0, c.ALU_OP1_X,    c.ALU_OP2_X,    c.ALU_X,     c.WB_SRC_X,   c.WB_X,       c.PC_NEXT,     1'b0 };
-    default:                                         cw <= { 1'b1, c.ALU_OP1_X,    c.ALU_OP2_X,    c.ALU_X,     c.WB_SRC_X,   c.WB_X,       c.PC_NEXT,     1'b0 };
+    {1'b1, 7'b???????, 3'b???,     7'b???????}:  cw <= { 1'b0, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     WB_SRC_X,   WB_X,       PC_NEXT,     1'b0 };
+    {1'b?, 7'b0?00000, F3_SRL_SRA, OP_IMM}:      cw <= { 1'b0, ALU_OP1_RS1,  ALU_OP2_IMMI, alu_mode7, WB_SRC_ALU, WB_DST_REG, PC_NEXT,     1'b0 };
+    {1'b?, 7'b???????, 3'b???,     OP_IMM}:      cw <= { 1'b0, ALU_OP1_RS1,  ALU_OP2_IMMI, alu_mode3, WB_SRC_ALU, WB_DST_REG, PC_NEXT,     1'b0 };
+    {1'b?, 7'b???????, 3'b???,     OP_LUI}:      cw <= { 1'b0, ALU_OP1_IMMU, ALU_OP2_RS2,  ALU_COPY1, WB_SRC_ALU, WB_DST_REG, PC_NEXT,     1'b0 };
+    {1'b?, 7'b???????, 3'b???,     OP_AUIPC}:    cw <= { 1'b0, ALU_OP1_IMMU, ALU_OP2_PC,   ALU_ADD,   WB_SRC_ALU, WB_DST_REG, PC_NEXT,     1'b0 };
+    {1'b?, 7'b???????, 3'b???,     OP}:          cw <= { 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  alu_mode7, WB_SRC_ALU, WB_DST_REG, PC_NEXT,     1'b0 };
+    {1'b?, 7'b???????, 3'b???,     OP_JAL}:      cw <= { 1'b0, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     WB_SRC_PC4, WB_DST_REG, PC_JUMP_REL, 1'b0 };
+    {1'b?, 7'b???????, 3'b???,     OP_JALR}:     cw <= { 1'b0, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     WB_SRC_PC4, WB_DST_REG, PC_JUMP_ABS, 1'b0 };
+    {1'b?, 7'b???????, F3_BEQ,     OP_BRANCH}:   cw <= { 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SUB,   WB_SRC_X,   WB_X,       PC_BRANCH,   1'b0 };
+    {1'b?, 7'b???????, F3_BNE,     OP_BRANCH}:   cw <= { 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SUB,   WB_SRC_X,   WB_X,       PC_BRANCH,   1'b0 };
+    {1'b?, 7'b???????, F3_BLT,     OP_BRANCH}:   cw <= { 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SLT,   WB_SRC_X,   WB_X,       PC_BRANCH,   1'b0 };
+    {1'b?, 7'b???????, F3_BGE,     OP_BRANCH}:   cw <= { 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SLT,   WB_SRC_X,   WB_X,       PC_BRANCH,   1'b1 };
+    {1'b?, 7'b???????, F3_BLTU,    OP_BRANCH}:   cw <= { 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_ULT,   WB_SRC_X,   WB_X,       PC_BRANCH,   1'b0 };
+    {1'b?, 7'b???????, F3_BGEU,    OP_BRANCH}:   cw <= { 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_ULT,   WB_SRC_X,   WB_X,       PC_BRANCH,   1'b1 };
+    {1'b?, 7'b???????, 3'b???,     OP_LOAD}:     cw <= { 1'b0, ALU_OP1_RS1,  ALU_OP2_IMMI, ALU_ADD,   WB_SRC_MEM, WB_DST_REG, PC_NEXT,     1'b0 };
+    {1'b?, 7'b???????, 3'b???,     OP_STORE}:    cw <= { 1'b0, ALU_OP1_RS1,  ALU_OP2_IMMS, ALU_ADD,   WB_SRC_ALU, WB_DST_MEM, PC_NEXT,     1'b0 };
+    {1'b?, 7'b???????, 3'b???,     OP_MISC_MEM}: cw <= { 1'b0, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     WB_SRC_X,   WB_X,       PC_NEXT,     1'b0 };
+    {1'b?, 7'b???????, 3'b???,     OP_SYSTEM}:   cw <= { 1'b0, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     WB_SRC_X,   WB_X,       PC_NEXT,     1'b0 };
+    default:                                     cw <= { 1'b1, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     WB_SRC_X,   WB_X,       PC_NEXT,     1'b0 };
     endcase
 end
 
