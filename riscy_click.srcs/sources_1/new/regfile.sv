@@ -9,25 +9,27 @@
 ///
 
 module regfile
+    // Import Constants
+    import consts::*;
     (
-        input         clk,          // Clock
+        input       logic       clk,          // Clock
 
         // read port 1
-        input  [ 4:0] read_addr1,   // Read Address #1
-        output [31:0] read_data1,   // Data Output #1
+        input       logic [4:0] read_addr1,   // Read Address #1
+        output wire word        read_data1,   // Data Output #1
 
         // read port 2
-        input  [ 4:0] read_addr2,   // Read Address #2
-        output [31:0] read_data2,   // Data Output #2
+        input       logic [4:0] read_addr2,   // Read Address #2
+        output wire word        read_data2,   // Data Output #2
 
         // write port
-        input         write_enable, // Write Enable
-        input  [ 4:0] write_addr,   // Write Address
-        input  [31:0] write_data    // Write Data
+        input       logic       write_enable, // Write Enable
+        input       logic [4:0] write_addr,   // Write Address
+        input       word        write_data    // Write Data
     );
 
 // Memory
-reg [31:0] mem [31:0];
+word mem [31:0];
 
 // Initialize with Zeroes
 integer i;
@@ -42,7 +44,7 @@ assign read_data1 = read_addr1 == 5'b0 ? 32'b0 : mem[read_addr1];
 assign read_data2 = read_addr2 == 5'b0 ? 32'b0 : mem[read_addr2];
 
 // Clocked Writing
-always @(posedge clk)
+always_ff @(posedge clk)
 begin
     if (write_enable && write_addr != 5'b0)
     begin

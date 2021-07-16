@@ -8,12 +8,21 @@
 
 package consts;
 
+//
+// CPU Architecture
+//
+
+// PC Word Sizes
+typedef logic [31:0] word;
+typedef logic [63:0] dword;
+
 
 ///
 /// Instruction Decoding
 ///
 
 // Opcodes
+typedef logic [6:0] op;
 parameter OP_LUI       = 7'b0110111; // Load Upper Immediate
 parameter OP_AUIPC     = 7'b0010111; // Add Upper Immediate To PC
 parameter OP_JAL       = 7'b1101111; // Jump And Link (use PC-ALU)
@@ -27,6 +36,7 @@ parameter OP_MISC_MEM  = 7'b0001111; // Miscellaneous Memory Operations
 parameter OP_SYSTEM    = 7'b1110011; // System Calls
 
 // Funct3
+typedef logic [2:0] funct3;
 parameter F3_ADD_SUB   = 3'b000;     // Addition or Subtraction
 parameter F3_SRL_SRA   = 3'b101;     // Shift Right Logical or Arithmetic
 parameter F3_BEQ       = 3'b000;     // Branch if EQ
@@ -51,38 +61,53 @@ parameter F3_SW        = 3'b010;     // Store Word
 ///
 
 // Write-Back Source
-parameter WB_SRC_X     = 2'b00;      // No write-back
-parameter WB_SRC_ALU   = 2'b00;      // Data from ALU
-parameter WB_SRC_PC4   = 2'b01;      // Data is Next PC
-parameter WB_SRC_MEM   = 2'b10;      // Data from Memory
+typedef enum logic [1:0] {
+    WB_SRC_ALU   = 2'b00,      // Data from ALU
+    WB_SRC_PC4   = 2'b01,      // Data is Next PC
+    WB_SRC_MEM   = 2'b10       // Data from Memory
+} wb_src;
 
-// Write-Back Dest
-parameter WB_X         = 2'b00;      // No write-back
-parameter WB_DST_REG   = 2'b01;      // Write-back to Register
-parameter WB_DST_MEM   = 2'b10;      // Write-back to Memory
+const wb_src WB_SRC_X = WB_SRC_ALU;
+
+// Write-Back Destination
+typedef enum logic [1:0] {
+    WB_X         = 2'b00,      // No write-back
+    WB_DST_REG   = 2'b01,      // Write-back to Register
+    WB_DST_MEM   = 2'b10       // Write-back to Memory
+} wb_dst;
 
 // Write-Back Mode
-parameter WB_MODE_B    = 3'b000;     // Byte (Signed)
-parameter WB_MODE_H    = 3'b001;     // Half-Word (Signed)
-parameter WB_MODE_W    = 3'b010;     // Word
-parameter WB_MODE_BU   = 3'b100;     // Byte (Unsigned)
-parameter WB_MODE_HU   = 3'b101;     // Half-Word (Unsigned)
-parameter WB_MODE_X    = 3'b010;     // Disabled (Same as Word)
+typedef enum logic [2:0] {
+    WB_MODE_B    = 3'b000,     // Byte (Signed)
+    WB_MODE_H    = 3'b001,     // Half-Word (Signed)
+    WB_MODE_W    = 3'b010,     // Word
+    WB_MODE_BU   = 3'b100,     // Byte (Unsigned)
+    WB_MODE_HU   = 3'b101      // Half-Word (Unsigned)
+} wb_mode;
+
+const wb_mode WB_MODE_X = WB_MODE_W;
 
 // ALU Operand #1
-parameter ALU_OP1_X    = 1'b0;       // Unused (Same as RS1)
-parameter ALU_OP1_RS1  = 1'b0;       // Register Source #1
-parameter ALU_OP1_IMMU = 1'b1;       // U-Type Immediate
+typedef enum logic {
+    ALU_OP1_RS1  = 1'b0,       // Register Source #1
+    ALU_OP1_IMMU = 1'b1        // U-Type Immediate
+} alu_op1;
+
+const alu_op1 ALU_OP1_X = ALU_OP1_RS1;
 
 // ALU Operand #2
-parameter ALU_OP2_X    = 2'b00;      // Unused (Same as RS2)
-parameter ALU_OP2_RS2  = 2'b00;      // Register Source #2
-parameter ALU_OP2_IMMI = 2'b01;      // I-Type Immediate
-parameter ALU_OP2_IMMS = 2'b10;      // S-Type Immediate
-parameter ALU_OP2_PC   = 2'b11;      // Program Counter
+typedef enum logic [1:0] {
+    ALU_OP2_RS2  = 2'b00,      // Register Source #2
+    ALU_OP2_IMMI = 2'b01,      // I-Type Immediate
+    ALU_OP2_IMMS = 2'b10,      // S-Type Immediate
+    ALU_OP2_PC   = 2'b11       // Program Counter
+} alu_op2;
+
+const alu_op2 ALU_OP2_X = ALU_OP2_RS2;
+
 
 // ALU Mode
-typedef enum logic[4:0] {
+typedef enum logic [4:0] {
     ALU_ADD      = 5'b00000,    // Addition
     ALU_LSL      = 5'b00001,    // Logical Shift Left
     ALU_SLT      = 5'b00010,    // Less-Than (Signed)
@@ -106,11 +131,23 @@ typedef enum logic[4:0] {
 } alu_mode;
 
 // PC Mode
-parameter PC_NEXT      = 2'b00;      // Next Instruction
-parameter PC_JUMP_REL  = 2'b01;      // Jump (Relative)
-parameter PC_JUMP_ABS  = 2'b10;      // Jump (Absolute)
-parameter PC_BRANCH    = 2'b11;      // ALU_ADD
+typedef enum logic [1:0] {
+    PC_NEXT      = 2'b00,       // Next Instruction
+    PC_JUMP_REL  = 2'b01,       // Jump (Relative)
+    PC_JUMP_ABS  = 2'b10,       // Jump (Absolute)
+    PC_BRANCH    = 2'b11        // ALU_ADD
+} pc_mode;
 
-typedef logic [31:0] word;
+typedef struct packed {
+    logic    halt;
+    alu_op1  alu_op1_sel;
+    alu_op2  alu_op2_sel;
+    alu_mode alu_mode_sel;
+    wb_src   wb_src_sel;
+    wb_dst   wb_dst_sel;
+    wb_mode  wb_mode_sel;
+    pc_mode  pc_mode_sel;
+    logic    pc_branch_zero;
+} control_word;
 
 endpackage

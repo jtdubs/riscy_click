@@ -8,9 +8,9 @@ module cpu
     // Import Constants
     import consts::*;
     (
-        input  clk,   // clock
-        input  reset, // reset
-        output halt   // halt
+        input       logic clk,   // clock
+        input       logic reset, // reset
+        output wire logic halt   // halt
     );
 
 
@@ -18,22 +18,22 @@ module cpu
 /// Registers
 ///
 
-wire [31:0] ir; // instruction register
+wire word ir; // instruction register
 assign ir = iram_read_data; // always read into the instruction register
 
 /// Instruction Decoding
-wire [6:0] opcode = ir[ 6: 0];
-wire [4:0] rd     = ir[11: 7];
-wire [2:0] funct3 = ir[14:12];
-wire [4:0] rs1    = ir[19:15];
-wire [4:0] rs2    = ir[24:20];
-wire [6:0] funct7 = ir[31:25];
+wire logic [6:0] opcode = ir[ 6: 0];
+wire logic [4:0] rd     = ir[11: 7];
+wire funct3      f3     = ir[14:12];
+wire logic [4:0] rs1    = ir[19:15];
+wire logic [4:0] rs2    = ir[24:20];
+wire logic [6:0] f7     = ir[31:25];
 
-wire [31:0] imm_i = { {21{ir[31]}}, ir[30:25], ir[24:21], ir[20] };
-wire [31:0] imm_s = { {21{ir[31]}}, ir[30:25], ir[11:8], ir[7] };
-wire [31:0] imm_b = { {20{ir[31]}}, ir[7], ir[30:25], ir[11:8], 1'b0 };
-wire [31:0] imm_u = { ir[31], ir[30:20], ir[19:12], 12'b0 };
-wire [31:0] imm_j = { {12{ir[31]}}, ir[19:12], ir[20], ir[30:25], ir[24:21], 1'b0 };
+wire word imm_i = { {21{ir[31]}}, ir[30:25], ir[24:21], ir[20] };
+wire word imm_s = { {21{ir[31]}}, ir[30:25], ir[11:8], ir[7] };
+wire word imm_b = { {20{ir[31]}}, ir[7], ir[30:25], ir[11:8], 1'b0 };
+wire word imm_u = { ir[31], ir[30:20], ir[19:12], 12'b0 };
+wire word imm_j = { {12{ir[31]}}, ir[19:12], ir[20], ir[30:25], ir[24:21], 1'b0 };
 
 
 
@@ -47,13 +47,13 @@ wire [31:0] imm_j = { {12{ir[31]}}, ir[19:12], ir[20], ir[30:25], ir[24:21], 1'b
 //
 
 // Signals
-wire [ 4:0] reg_read_addr1;
-wire [ 4:0] reg_read_addr2;
-wire [31:0] reg_read_data1;
-wire [31:0] reg_read_data2;
-wire [ 4:0] reg_write_addr;
-reg  [31:0] reg_write_data;
-reg         reg_write_enable;
+wire logic [4:0] reg_read_addr1;
+wire logic [4:0] reg_read_addr2;
+wire word        reg_read_data1;
+wire word        reg_read_data2;
+wire logic [4:0] reg_write_addr;
+word             reg_write_data;
+logic            reg_write_enable;
 
 // Component
 regfile regfile (
@@ -78,17 +78,16 @@ assign reg_write_addr = rd;  // always write to the decoded register selector
 //
 
 // Signals
-reg  [31:0] alu_operand1;
-reg  [31:0] alu_operand2;
-wire [ 4:0] alu_mode;
-wire [31:0] alu_result;
-wire        alu_zero;
+word          alu_operand1;
+word          alu_operand2;
+wire word     alu_result;
+wire logic    alu_zero;
 
 // Component
 alu alu (
     .operand1(alu_operand1),
     .operand2(alu_operand2),
-    .mode(alu_mode),
+    .mode(cw.alu_mode_sel),
     .result(alu_result),
     .zero(alu_zero)
 );
@@ -99,8 +98,8 @@ alu alu (
 //
 
 // Signals
-wire [31:0] iram_addr;
-wire [31:0] iram_read_data;
+wire word iram_addr;
+wire word iram_read_data;
 
 // Component
 ram #(.MEMORY_IMAGE_FILE("img/iram.mem")) iram (
@@ -121,11 +120,11 @@ assign iram_addr = pc; // always read from the location of the current instructi
 //
 
 // Signals
-wire [31:0] dram_addr;
-wire [31:0] dram_read_data;
-reg  [31:0] dram_write_data;
-reg  [ 3:0] dram_write_mask;
-reg         dram_write_enable;
+wire word   dram_addr;
+wire word   dram_read_data;
+word        dram_write_data;
+logic [3:0] dram_write_mask;
+logic       dram_write_enable;
 
 // Component
 ram #(.MEMORY_IMAGE_FILE("img/dram.mem")) dram (
@@ -146,30 +145,16 @@ assign dram_addr = alu_result; // always read/write from the ALU result
 //
 
 // Signals
-wire       alu_op1_sel;
-wire [1:0] alu_op2_sel;
-wire [1:0] wb_src_sel;
-wire [1:0] wb_dst_sel;
-wire [2:0] wb_mode;
-wire [1:0] pc_mode_sel;
-wire       pc_branch_zero;
+wire control_word cw;
 
 // Component
 ctl ctl (
     .clk(clk),
     .reset(reset),
-    .halt(halt),
     .opcode(opcode),
-    .funct3(funct3),
-    .funct7(funct7),
-    .alu_op1_sel(alu_op1_sel),
-    .alu_op2_sel(alu_op2_sel),
-    .alu_mode(alu_mode),
-    .wb_src_sel(wb_src_sel),
-    .wb_dst_sel(wb_dst_sel),
-    .wb_mode(wb_mode),
-    .pc_mode_sel(pc_mode_sel),
-    .pc_branch_zero(pc_branch_zero)
+    .f3(f3),
+    .f7(f7),
+    .cw(cw)
 );
 
 
@@ -183,15 +168,15 @@ ctl ctl (
 // Register Write-Back
 //
 
-always @(*) begin
-    case (wb_src_sel)
+always_comb begin
+    case (cw.wb_src_sel)
     WB_SRC_PC4:
         begin
             reg_write_data <= pc_plus_4;
         end
     WB_SRC_MEM:
         begin
-            case (wb_mode)
+            case (cw.wb_mode_sel)
             WB_MODE_B:  reg_write_data <= { {24{dram_read_data[7]}},  dram_read_data[ 7:0] };
             WB_MODE_H:  reg_write_data <= { {16{dram_read_data[15]}}, dram_read_data[15:0] };
             WB_MODE_BU: reg_write_data <= { 24'b0, dram_read_data[ 7:0] };
@@ -212,16 +197,16 @@ end
 //
 
 // Operand 1
-always @(*) begin
-    case (alu_op1_sel)
+always_comb begin
+    case (cw.alu_op1_sel)
     ALU_OP1_RS1:  alu_operand1 <= reg_read_data1;
     ALU_OP1_IMMU: alu_operand1 <= imm_u;
     endcase
 end
 
 // Operand 2
-always @(*) begin
-    case (alu_op2_sel)
+always_comb begin
+    case (cw.alu_op2_sel)
     ALU_OP2_RS2:  alu_operand2 <= reg_read_data2;
     ALU_OP2_IMMI: alu_operand2 <= imm_i;
     ALU_OP2_IMMS: alu_operand2 <= imm_s;
@@ -235,8 +220,8 @@ end
 //
 
 // Write Data & Mask
-always @(*) begin
-    case (wb_mode)
+always_comb begin
+    case (cw.wb_mode_sel)
     WB_MODE_B:
         begin
             case (alu_result[1:0])
@@ -270,23 +255,23 @@ end
 //
 
 // Registers and Signals
-reg  [31:0] pc;
-reg  [31:0] pc_next;
-wire [31:0] pc_plus_4 = pc + 4;
+word pc;
+word pc_next;
+wire word pc_plus_4 = pc + 4;
 
 // Next PC Logic
-always @* begin
+always_comb begin
     if (reset)
         begin
             pc_next <= 0;
         end
-    else if (halt)
+    else if (cw.halt)
         begin
             pc_next <= pc;
         end
     else
         begin
-            case (pc_mode_sel)
+            case (cw.pc_mode_sel)
             PC_NEXT:
                 begin
                     pc_next <= pc_plus_4;
@@ -301,7 +286,7 @@ always @* begin
                 end
             PC_BRANCH:
                 begin
-                    if (alu_zero == pc_branch_zero)
+                    if (alu_zero == cw.pc_branch_zero)
                         begin
                             pc_next <= pc + imm_b;
                         end
@@ -315,7 +300,7 @@ always @* begin
 end 
 
 // PC Clocked Assignment
-always @(posedge clk) begin
+always_ff @(posedge clk) begin
     pc <= pc_next;
 end
 
@@ -326,9 +311,9 @@ end
 //
 
 // Logic
-always @(*) begin
-    reg_write_enable  <= wb_dst_sel[0];
-    dram_write_enable <= wb_dst_sel[1];
+always_comb begin
+    reg_write_enable  <= cw.wb_dst_sel[0];
+    dram_write_enable <= cw.wb_dst_sel[1];
 end
 
 endmodule

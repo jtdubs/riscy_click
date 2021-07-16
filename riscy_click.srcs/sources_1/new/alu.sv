@@ -8,11 +8,11 @@ module alu
     // Import Constants
     import consts::*;
     (
-        input  alu_mode mode,
-        input  word     operand1,
-        input  word     operand2,
-        output word     result,
-        output logic    zero
+        input       alu_mode mode,
+        input       word     operand1,
+        input       word     operand2,
+        output      word     result,
+        output wire logic    zero
     );
 
 
@@ -23,7 +23,7 @@ wire [4:0] shamt = operand2[4:0];
 assign zero = result == 32'b0 ? 1'b1 : 1'b0;
 
 // Wide result for multiplication
-reg [63:0] wide_result;
+dword wide_result;
 
 // Result Logic
 always_comb begin
