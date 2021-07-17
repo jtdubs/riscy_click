@@ -99,7 +99,7 @@ wire word iram_addr;
 wire word iram_read_data;
 
 // Component
-ram #(.MEMORY_IMAGE_FILE("img/iram.mem")) iram (
+ram #(.MEMORY_IMAGE_FILE("iram.mem")) iram (
     .addr(iram_addr[31:2]),
     .read_data(iram_read_data),
     .write_data(32'b0),
@@ -121,7 +121,7 @@ logic [3:0] dram_write_mask;
 logic       dram_write_enable;
 
 // Component
-ram #(.MEMORY_IMAGE_FILE("img/dram.mem")) dram (
+ram #(.MEMORY_IMAGE_FILE("dram.mem")) dram (
     .addr(dram_addr[31:2]),
     .read_data(dram_read_data),
     .write_data(dram_write_data),
