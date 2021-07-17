@@ -18,8 +18,10 @@ module cpu
 /// Registers
 ///
 
-wire word ir; // instruction register
-assign ir = iram_read_data; // always read into the instruction register
+wire word ir;        // instruction register
+word pc;             // program counter
+word pc_next;        // next program counter
+wire word pc_plus_4; // incremented program counter
 
 /// Instruction Decoding
 wire logic [6:0] opcode = ir[ 6: 0];
@@ -67,11 +69,6 @@ regfile regfile (
     .clk(clk)
 );
 
-// Assignments
-assign reg_read_addr1 = rs1; // always read from the decoded register selector
-assign reg_read_addr2 = rs2; // always read from the decoded register selector
-assign reg_write_addr = rd;  // always write to the decoded register selector
-
 
 //
 // ALU
@@ -111,9 +108,6 @@ ram #(.MEMORY_IMAGE_FILE("img/iram.mem")) iram (
     .clk(clk)
 );
 
-// Assignments
-assign iram_addr = pc; // always read from the location of the current instruction
-
 
 //
 // Data RAM
@@ -136,9 +130,6 @@ ram #(.MEMORY_IMAGE_FILE("img/dram.mem")) dram (
     .clk(clk)
 );
 
-// Assignments
-assign dram_addr = alu_result; // always read/write from the ALU result 
-
 
 //
 // Controller
@@ -156,6 +147,25 @@ ctl ctl (
     .f7(f7),
     .cw(cw)
 );
+
+
+///
+/// Fixed Signal Routing
+///
+
+// Registers
+assign ir = iram_read_data; // always read into the instruction register
+
+// Register File
+assign reg_read_addr1 = rs1; // always read from the decoded register selector
+assign reg_read_addr2 = rs2; // always read from the decoded register selector
+assign reg_write_addr = rd;  // always write to the decoded register selector
+
+// Instruction Memory
+assign iram_addr = pc; // always read from the location of the current instruction
+
+// Data Memory
+assign dram_addr = alu_result; // always read/write from the ALU result 
 
 
 
@@ -255,9 +265,7 @@ end
 //
 
 // Registers and Signals
-word pc;
-word pc_next;
-wire word pc_plus_4 = pc + 4;
+assign pc_plus_4 = pc + 4;
 
 // Next PC Logic
 always_comb begin
