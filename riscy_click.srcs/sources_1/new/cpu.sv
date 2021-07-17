@@ -165,7 +165,10 @@ assign reg_write_addr = rd;  // always write to the decoded register selector
 assign iram_addr = pc; // always read from the location of the current instruction
 
 // Data Memory
-assign dram_addr = alu_result; // always read/write from the ALU result 
+assign dram_addr = alu_result; // always read/write from the ALU alu
+
+// Board
+assign halt = cw.halt;
 
 
 
@@ -191,7 +194,7 @@ always_comb begin
             WB_MODE_H:  reg_write_data <= { {16{dram_read_data[15]}}, dram_read_data[15:0] };
             WB_MODE_BU: reg_write_data <= { 24'b0, dram_read_data[ 7:0] };
             WB_MODE_HU: reg_write_data <= { 16'b0, dram_read_data[15:0] };
-            default:      reg_write_data <= dram_read_data;
+            default:    reg_write_data <= dram_read_data;
             endcase
         end
     default: // WB_SRC_ALU:
