@@ -34,14 +34,14 @@ localparam COUNTER_ROLLOVER = (CLK_DIVISOR / 2) - 1;
 (* mark_debug = "true" *) word value;
 (* mark_debug = "true" *) logic[3:0] nibble;
 (* mark_debug = "true" *) logic [15:0] counter;
-(* mark_debug = "true" *) logic [2:0] index;
+(* mark_debug = "true" *) logic [3:0] index;
 
 // Reading Logic
 assign read_data = value;
 
 always_comb
 begin
-    case (index)
+    case (index[3:1])
     0: nibble <= value[ 3: 0];
     1: nibble <= value[ 7: 4];
     2: nibble <= value[11: 8];
@@ -56,39 +56,53 @@ end
 logic [7:0] next_a;
 always_comb
 begin
-    case (index)
-    0: next_a <= 8'b11111110;
-    1: next_a <= 8'b11111101;
-    2: next_a <= 8'b11111011;
-    3: next_a <= 8'b11110111;
-    4: next_a <= 8'b11101111;
-    5: next_a <= 8'b11011111;
-    6: next_a <= 8'b10111111;
-    7: next_a <= 8'b01111111;
-    endcase
+    if (index[0])
+    begin
+        next_a <= 8'b11111111;
+    end
+    else
+    begin
+        case (index[3:1])
+        0: next_a <= 8'b11111110;
+        1: next_a <= 8'b11111101;
+        2: next_a <= 8'b11111011;
+        3: next_a <= 8'b11110111;
+        4: next_a <= 8'b11101111;
+        5: next_a <= 8'b11011111;
+        6: next_a <= 8'b10111111;
+        7: next_a <= 8'b01111111;
+        endcase
+    end
 end
 
 logic [7:0] next_c;
 always_comb
 begin
-    case (nibble)
-    0:  next_c <= 8'b11000000;
-    1:  next_c <= 8'b11111001;
-    2:  next_c <= 8'b10100100;
-    3:  next_c <= 8'b10110000;
-    4:  next_c <= 8'b10011001;
-    5:  next_c <= 8'b10010010;
-    6:  next_c <= 8'b10000010;
-    7:  next_c <= 8'b11111000;
-    8:  next_c <= 8'b10000000;
-    9:  next_c <= 8'b10011000;
-    10: next_c <= 8'b10001000;
-    11: next_c <= 8'b10000011;
-    12: next_c <= 8'b11000110;
-    13: next_c <= 8'b10100001;
-    14: next_c <= 8'b10000110;
-    15: next_c <= 8'b10001110;
-    endcase
+    if (index[0])
+    begin
+        next_c <= 8'b11111111;
+    end
+    else
+    begin
+        case (nibble)
+        0:  next_c <= 8'b11000000;
+        1:  next_c <= 8'b11111001;
+        2:  next_c <= 8'b10100100;
+        3:  next_c <= 8'b10110000;
+        4:  next_c <= 8'b10011001;
+        5:  next_c <= 8'b10010010;
+        6:  next_c <= 8'b10000010;
+        7:  next_c <= 8'b11111000;
+        8:  next_c <= 8'b10000000;
+        9:  next_c <= 8'b10011000;
+        10: next_c <= 8'b10001000;
+        11: next_c <= 8'b10000011;
+        12: next_c <= 8'b11000110;
+        13: next_c <= 8'b10100001;
+        14: next_c <= 8'b10000110;
+        15: next_c <= 8'b10001110;
+        endcase
+    end
 end
 
 // Clocked Writing
