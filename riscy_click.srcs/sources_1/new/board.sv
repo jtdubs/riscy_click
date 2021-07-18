@@ -34,7 +34,8 @@ ram #(.MEMORY_IMAGE_FILE("iram.mem")) bios (
     .write_data(32'b0),
     .write_mask(4'b1111),
     .write_enable(1'b0),
-    .clk(clk)
+    .clk(clk),
+    .reset(reset)
 );
 
 
@@ -60,7 +61,8 @@ ram #(.MEMORY_IMAGE_FILE("dram.mem")) dram (
     .write_data(dbus_write_data),
     .write_mask(dbus_write_mask),
     .write_enable(ram_write_enable),
-    .clk(clk)
+    .clk(clk),
+    .reset(reset)
 );
 
 segdisplay #(.CLK_DIVISOR(10000)) disp (

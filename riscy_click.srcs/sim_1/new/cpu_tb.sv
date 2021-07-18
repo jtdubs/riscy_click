@@ -27,7 +27,7 @@ end
 // reset pulse (4 cycles)
 initial begin
     reset = 1;
-    #40 reset = 0;
+    #200 reset = 0;
 end
 
 endmodule

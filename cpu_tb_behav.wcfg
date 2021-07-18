@@ -12,18 +12,19 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="99,900.000 ns"></ZoomStartTime>
-      <ZoomEndTime time="100,104.701 ns"></ZoomEndTime>
-      <Cursor1Time time="100,010.000 ns"></Cursor1Time>
+      <ZoomStartTime time="9.920 ns"></ZoomStartTime>
+      <ZoomEndTime time="375.521 ns"></ZoomEndTime>
+      <Cursor1Time time="1,000.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="404"></NameColumnWidth>
-      <ValueColumnWidth column_width="184"></ValueColumnWidth>
+      <ValueColumnWidth column_width="178"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="2" />
    <wvobject fp_name="group74" type="group">
       <obj_property name="label">Board</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/cpu_tb/clk" type="logic">
          <obj_property name="ElementShortName">clk</obj_property>
          <obj_property name="ObjectShortName">clk</obj_property>
@@ -31,18 +32,6 @@
       <wvobject fp_name="/cpu_tb/reset" type="logic">
          <obj_property name="ElementShortName">reset</obj_property>
          <obj_property name="ObjectShortName">reset</obj_property>
-      </wvobject>
-      <wvobject fp_name="/cpu_tb/board/dsp_clk" type="logic">
-         <obj_property name="ElementShortName">dsp_clk</obj_property>
-         <obj_property name="ObjectShortName">dsp_clk</obj_property>
-      </wvobject>
-      <wvobject fp_name="/cpu_tb/board/dsp_reset_stage" type="logic">
-         <obj_property name="ElementShortName">dsp_reset_stage</obj_property>
-         <obj_property name="ObjectShortName">dsp_reset_stage</obj_property>
-      </wvobject>
-      <wvobject fp_name="/cpu_tb/board/dsp_reset" type="logic">
-         <obj_property name="ElementShortName">dsp_reset</obj_property>
-         <obj_property name="ObjectShortName">dsp_reset</obj_property>
       </wvobject>
       <wvobject fp_name="/cpu_tb/board/halt" type="logic">
          <obj_property name="ElementShortName">halt</obj_property>
@@ -119,6 +108,11 @@
       <wvobject fp_name="group273" type="group">
          <obj_property name="label">BIOS</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/cpu_tb/board/bios/reset" type="logic">
+            <obj_property name="ElementShortName">reset</obj_property>
+            <obj_property name="ObjectShortName">reset</obj_property>
+         </wvobject>
          <wvobject fp_name="/cpu_tb/board/bios/addr" type="array">
             <obj_property name="ElementShortName">addr[31:2]</obj_property>
             <obj_property name="ObjectShortName">addr[31:2]</obj_property>
@@ -126,6 +120,18 @@
          <wvobject fp_name="/cpu_tb/board/bios/read_data" type="array">
             <obj_property name="ElementShortName">read_data[31:0]</obj_property>
             <obj_property name="ObjectShortName">read_data[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/cpu_tb/board/bios/write_enable" type="logic">
+            <obj_property name="ElementShortName">write_enable</obj_property>
+            <obj_property name="ObjectShortName">write_enable</obj_property>
+         </wvobject>
+         <wvobject fp_name="/cpu_tb/board/bios/write_mask" type="array">
+            <obj_property name="ElementShortName">write_mask[3:0]</obj_property>
+            <obj_property name="ObjectShortName">write_mask[3:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/cpu_tb/board/bios/write_data" type="array">
+            <obj_property name="ElementShortName">write_data[31:0]</obj_property>
+            <obj_property name="ObjectShortName">write_data[31:0]</obj_property>
          </wvobject>
       </wvobject>
       <wvobject fp_name="group274" type="group">
@@ -201,7 +207,6 @@
       <wvobject fp_name="group124" type="group">
          <obj_property name="label">ALU</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/cpu_tb/board/cpu/alu/mode" type="array">
             <obj_property name="ElementShortName">mode[4:0]</obj_property>
             <obj_property name="ObjectShortName">mode[4:0]</obj_property>
@@ -226,7 +231,6 @@
       <wvobject fp_name="group116" type="group">
          <obj_property name="label">Registers</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/cpu_tb/board/cpu/regfile/read_addr1" type="array">
             <obj_property name="ElementShortName">read_addr1[4:0]</obj_property>
             <obj_property name="ObjectShortName">read_addr1[4:0]</obj_property>
