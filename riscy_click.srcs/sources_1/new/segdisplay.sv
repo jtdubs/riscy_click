@@ -7,6 +7,9 @@
 module segdisplay
     // Import Constants
     import consts::*;
+    #(
+        parameter CLK_DIVISOR = 10000 // Clock ratio
+    )
     (
         // system clock domain
         input logic clk,
@@ -28,9 +31,13 @@ module segdisplay
         input logic [3:0] write_mask
     );
     
+// Counter rolls over at half the divisor so that a full cycle of the derived clock occurs at the divided frequency
+localparam COUNTER_ROLLOVER = (CLK_DIVISOR / 2) - 1;
+
 // Registers
 word value;
 logic[4:0] nibble;
+logic [15:0] counter;
 logic [2:0] index;
 
 // Reading Logic
@@ -92,28 +99,34 @@ begin
     if (reset)
     begin
         value <= 0;
-    end
-    else
-    if (write_enable)
-    begin
-        // Only write bytes where mask is set
-        if (write_mask[3]) value[31:24] <= write_data[31:24];
-        if (write_mask[2]) value[23:16] <= write_data[23:16];
-        if (write_mask[1]) value[15: 8] <= write_data[15: 8];
-        if (write_mask[0]) value[ 7: 0] <= write_data[ 7: 0];
-    end
-end
-
-// Clocked Display Updating
-always_ff @(posedge dsp_clk)
-begin
-    if (dsp_reset)
-    begin
+        counter <= 0;
         index <= 0;
-    end 
+    end
     else
     begin
-        index <= index + 1;
+        if (counter == COUNTER_ROLLOVER)
+        begin
+            counter <= 0;
+            index <= index + 1;
+        end
+        else
+        begin
+            counter <= counter + 1;
+            index <= index;
+        end
+        
+        if (write_enable)
+        begin
+            // Only write bytes where mask is set
+            if (write_mask[3]) value[31:24] <= write_data[31:24];
+            if (write_mask[2]) value[23:16] <= write_data[23:16];
+            if (write_mask[1]) value[15: 8] <= write_data[15: 8];
+            if (write_mask[0]) value[ 7: 0] <= write_data[ 7: 0];
+        end
+        else
+        begin
+            value <= value;
+        end
     end
 end
 
