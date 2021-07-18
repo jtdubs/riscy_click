@@ -8,8 +8,13 @@ module segdisplay
     // Import Constants
     import consts::*;
     (
+        // system clock domain
         input logic clk,
         input logic reset,
+        
+        // display clock domain
+        input logic dsp_clk,
+        input logic dsp_reset,
         
         // display interface
         output logic [7:0] a, // common anodes
@@ -22,18 +27,6 @@ module segdisplay
         input logic       write_enable,
         input logic [3:0] write_mask
     );
-
-
-//
-// Clock Divider to drive the display at 10kHz
-//
-wire logic disp_clk;
-
-clkdiv #(.DIVISOR(10000)) clkdiv (
-    .clk(clk),
-    .reset(reset),
-    .derived_clk(disp_clk)
-);
     
 // Registers
 word value;
@@ -112,9 +105,9 @@ begin
 end
 
 // Clocked Display Updating
-always_ff @(posedge disp_clk)
+always_ff @(posedge dsp_clk)
 begin
-    if (reset)
+    if (dsp_reset)
     begin
         index <= 0;
     end 

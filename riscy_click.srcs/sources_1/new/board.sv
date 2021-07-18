@@ -17,7 +17,28 @@ module board
         output wire logic [7:0] segment_c
         // input       logic [7:0] switches,
     );
-    
+
+
+//
+// Display Clock Domain (10kHz)
+//
+
+wire logic dsp_clk;
+logic dsp_reset_stage;
+logic dsp_reset;
+
+clkdiv #(.DIVISOR(10000)) clkdiv (
+    .clk(clk),
+    .reset(reset),
+    .derived_clk(dsp_clk)
+);
+
+always @(posedge dsp_clk or posedge reset)
+begin
+    dsp_reset_stage <= reset;
+    dsp_reset <= dsp_reset_stage;
+end
+
     
 //
 // Instruction Memory Bus (BIOS)
@@ -66,6 +87,8 @@ ram #(.MEMORY_IMAGE_FILE("dram.mem")) dram (
 segdisplay disp (
     .clk(clk),
     .reset(reset),
+    .dsp_clk(dsp_clk),
+    .dsp_reset(dsp_reset),
     .a(segment_a),
     .c(segment_c),
     .addr(dbus_addr),

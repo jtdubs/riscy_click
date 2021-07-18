@@ -16,48 +16,18 @@ board board (
     .segment_c(segment_c)
 );
 
-integer i;
-
+// clock generator
 initial begin
-    // reset
     clk = 0;
-    reset = 1;
-
-    // hold reset for 1ms
-    for (i = 0; i < 100000; i=i+1)
-    begin
-        clk = 1;
-        #10;
-        clk = 0;
-        #10;
+    forever begin
+        #10 clk <= ~clk;
     end
-
-    // unreset
-    clk = 1;
-    #10;
-    clk = 0;
-    reset = 0;
-    #10;
-
-    // run until halt
-    while (!halt)
-    begin
-        clk = 1;
-        #10;
-        clk = 0;
-        #10;
-    end
-
-    // run for 4 extra cycles
-    for (i = 0; i < 4; i=i+1)
-    begin
-        clk = 1;
-        #10;
-        clk = 0;
-        #10;
-    end
-
-    $finish;
 end
-    
+
+// reset pulse (4 cycles)
+initial begin
+    reset = 1;
+    #40 reset = 0;
+end
+
 endmodule
