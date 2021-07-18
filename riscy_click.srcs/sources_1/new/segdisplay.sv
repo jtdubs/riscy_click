@@ -15,10 +15,6 @@ module segdisplay
         input logic clk,
         input logic reset,
         
-        // display clock domain
-        input logic dsp_clk,
-        input logic dsp_reset,
-        
         // display interface
         output logic [7:0] a, // common anodes
         output logic [7:0] c, // cathodes
@@ -60,35 +56,35 @@ end
 always_comb
 begin
     case (index)
-    0: a <= 8'b00000001;
-    1: a <= 8'b00000010;
-    2: a <= 8'b00000100;
-    3: a <= 8'b00001000;
-    4: a <= 8'b00010000;
-    5: a <= 8'b00100000;
-    6: a <= 8'b01000000;
-    7: a <= 8'b10000000;
+    0: a <= 8'b11111110;
+    1: a <= 8'b11111101;
+    2: a <= 8'b11111011;
+    3: a <= 8'b11110111;
+    4: a <= 8'b11101111;
+    5: a <= 8'b11011111;
+    6: a <= 8'b10111111;
+    7: a <= 8'b01111111;
     endcase
 end
 
 always_comb
 begin
     case (nibble)
-    0:  c <= 8'b11111100;
-    1:  c <= 8'b01100000;
-    2:  c <= 8'b11011010;
-    3:  c <= 8'b11110010;
-    4:  c <= 8'b01100110;
-    5:  c <= 8'b10110110;
-    6:  c <= 8'b10111110;
-    7:  c <= 8'b11100000;
-    8:  c <= 8'b11111110;
-    9:  c <= 8'b11100110;
-    10: c <= 8'b11101110;
-    11: c <= 8'b00111110;
-    12: c <= 8'b10011100;
-    13: c <= 8'b01111010;
-    14: c <= 8'b10011110;
+    0:  c <= 8'b11000000;
+    1:  c <= 8'b11111001;
+    2:  c <= 8'b10100100;
+    3:  c <= 8'b10110000;
+    4:  c <= 8'b10011001;
+    5:  c <= 8'b10010010;
+    6:  c <= 8'b10000010;
+    7:  c <= 8'b11111000;
+    8:  c <= 8'b10000000;
+    9:  c <= 8'b10011000;
+    10: c <= 8'b10001000;
+    11: c <= 8'b10000011;
+    12: c <= 8'b11000110;
+    13: c <= 8'b10100001;
+    14: c <= 8'b10000110;
     15: c <= 8'b10001110;
     endcase
 end
@@ -98,7 +94,7 @@ always_ff @(posedge clk)
 begin
     if (reset)
     begin
-        value <= 0;
+        value <= 32'h12345678;
         counter <= 0;
         index <= 0;
     end
@@ -117,11 +113,12 @@ begin
         
         if (write_enable)
         begin
+            value <= write_data;
             // Only write bytes where mask is set
-            if (write_mask[3]) value[31:24] <= write_data[31:24];
-            if (write_mask[2]) value[23:16] <= write_data[23:16];
-            if (write_mask[1]) value[15: 8] <= write_data[15: 8];
-            if (write_mask[0]) value[ 7: 0] <= write_data[ 7: 0];
+//            if (write_mask[3]) value[31:24] <= write_data[31:24];
+//            if (write_mask[2]) value[23:16] <= write_data[23:16];
+//            if (write_mask[1]) value[15: 8] <= write_data[15: 8];
+//            if (write_mask[0]) value[ 7: 0] <= write_data[ 7: 0];
         end
         else
         begin
