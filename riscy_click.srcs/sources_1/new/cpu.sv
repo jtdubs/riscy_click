@@ -8,9 +8,21 @@ module cpu
     // Import Constants
     import consts::*;
     (
-        input       logic clk,   // clock
-        input       logic reset, // reset
-        output wire logic halt   // halt
+        // board signals
+        input       logic       clk,   // clock
+        input       logic       reset, // reset
+        output wire logic       halt,  // halt
+        
+        // instruction memory bus
+        output      word        ibus_addr,
+        input       word        ibus_read_data,
+        
+        // data memory bus
+        output wire word        dbus_addr,
+        input       word        dbus_read_data,
+        output      word        dbus_write_data,
+        output      logic       dbus_write_enable,
+        output      logic [3:0] dbus_write_mask
     );
 
 
@@ -91,47 +103,6 @@ alu alu (
 
 
 //
-// Instruction Memory
-//
-
-// Signals
-wire word iram_addr;
-wire word iram_read_data;
-
-// Component
-ram #(.MEMORY_IMAGE_FILE("iram.mem")) iram (
-    .addr(iram_addr[31:2]),
-    .read_data(iram_read_data),
-    .write_data(32'b0),
-    .write_mask(4'b1111),
-    .write_enable(1'b0),
-    .clk(clk)
-);
-
-
-//
-// Data RAM
-//
-
-// Signals
-wire word   dram_addr;
-wire word   dram_read_data;
-word        dram_write_data;
-logic [3:0] dram_write_mask;
-logic       dram_write_enable;
-
-// Component
-ram #(.MEMORY_IMAGE_FILE("dram.mem")) dram (
-    .addr(dram_addr[31:2]),
-    .read_data(dram_read_data),
-    .write_data(dram_write_data),
-    .write_mask(dram_write_mask),
-    .write_enable(dram_write_enable),
-    .clk(clk)
-);
-
-
-//
 // Controller
 //
 
@@ -154,7 +125,7 @@ ctl ctl (
 ///
 
 // Registers
-assign ir = iram_read_data; // always read into the instruction register
+assign ir = ibus_read_data; // always read into the instruction register
 
 // Register File
 assign reg_read_addr1 = rs1; // always read from the decoded register selector
@@ -162,10 +133,10 @@ assign reg_read_addr2 = rs2; // always read from the decoded register selector
 assign reg_write_addr = rd;  // always write to the decoded register selector
 
 // Instruction Memory
-assign iram_addr = pc; // always read from the location of the current instruction
+assign ibus_addr = pc; // always read from the location of the current instruction
 
 // Data Memory
-assign dram_addr = alu_result; // always read/write from the ALU alu
+assign dbus_addr = alu_result; // always read/write from the ALU alu
 
 // Board
 assign halt = cw.halt;
@@ -190,11 +161,11 @@ always_comb begin
     WB_SRC_MEM:
         begin
             case (cw.wb_mode_sel)
-            WB_MODE_B:  reg_write_data <= { {24{dram_read_data[7]}},  dram_read_data[ 7:0] };
-            WB_MODE_H:  reg_write_data <= { {16{dram_read_data[15]}}, dram_read_data[15:0] };
-            WB_MODE_BU: reg_write_data <= { 24'b0, dram_read_data[ 7:0] };
-            WB_MODE_HU: reg_write_data <= { 16'b0, dram_read_data[15:0] };
-            default:    reg_write_data <= dram_read_data;
+            WB_MODE_B:  reg_write_data <= { {24{dbus_read_data[7]}},  dbus_read_data[ 7:0] };
+            WB_MODE_H:  reg_write_data <= { {16{dbus_read_data[15]}}, dbus_read_data[15:0] };
+            WB_MODE_BU: reg_write_data <= { 24'b0, dbus_read_data[ 7:0] };
+            WB_MODE_HU: reg_write_data <= { 16'b0, dbus_read_data[15:0] };
+            default:    reg_write_data <= dbus_read_data;
             endcase
         end
     default: // WB_SRC_ALU:
@@ -238,26 +209,26 @@ always_comb begin
     WB_MODE_B:
         begin
             case (alu_result[1:0])
-            2'b00: dram_write_mask <= 4'b0001;
-            2'b01: dram_write_mask <= 4'b0010;
-            2'b10: dram_write_mask <= 4'b0100;
-            2'b11: dram_write_mask <= 4'b1000;
+            2'b00: dbus_write_mask <= 4'b0001;
+            2'b01: dbus_write_mask <= 4'b0010;
+            2'b10: dbus_write_mask <= 4'b0100;
+            2'b11: dbus_write_mask <= 4'b1000;
             endcase
-            dram_write_data <= { 4{reg_read_data2[ 7:0]} };
+            dbus_write_data <= { 4{reg_read_data2[ 7:0]} };
         end
     WB_MODE_H:
         begin
             case (alu_result[1:0])
-            2'b00:   dram_write_mask <= 4'b0011;
-            2'b10:   dram_write_mask <= 4'b1100;
-            default: dram_write_mask <= 4'b0000;
+            2'b00:   dbus_write_mask <= 4'b0011;
+            2'b10:   dbus_write_mask <= 4'b1100;
+            default: dbus_write_mask <= 4'b0000;
             endcase
-            dram_write_data <= { 2{reg_read_data2[15:0]} };
+            dbus_write_data <= { 2{reg_read_data2[15:0]} };
         end
     default: // WB_MODE_W:
         begin
-            dram_write_mask <= 4'b1111;
-            dram_write_data <= reg_read_data2;
+            dbus_write_mask <= 4'b1111;
+            dbus_write_data <= reg_read_data2;
         end
     endcase
 end
@@ -324,7 +295,7 @@ end
 // Logic
 always_comb begin
     reg_write_enable  <= cw.wb_dst_sel[0];
-    dram_write_enable <= cw.wb_dst_sel[1];
+    dbus_write_enable <= cw.wb_dst_sel[1];
 end
 
 endmodule

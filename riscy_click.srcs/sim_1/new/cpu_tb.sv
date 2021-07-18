@@ -5,11 +5,15 @@ module cpu_tb ();
 reg clk;
 reg reset;
 wire halt;
-
-cpu cpu (
+wire logic [7:0] segment_a;
+wire logic [7:0] segment_c;
+        
+board board (
     .clk(clk),
     .reset(reset),
-    .halt(halt)
+    .halt(halt),
+    .segment_a(segment_a),
+    .segment_c(segment_c)
 );
 
 integer i;
@@ -19,8 +23,8 @@ initial begin
     clk = 0;
     reset = 1;
 
-    // hold reset for 2 cycles
-    for (i = 0; i < 2; i=i+1)
+    // hold reset for 1ms
+    for (i = 0; i < 100000; i=i+1)
     begin
         clk = 1;
         #10;
