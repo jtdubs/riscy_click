@@ -9,8 +9,8 @@ module board
     import consts::*;
     (
         input       logic clk,   // clock
-        input       logic reset, // reset
-        output wire logic halt,  // halt
+        (* mark_debug = "true" *) input       logic reset, // reset
+        (* mark_debug = "true" *) output wire logic halt,  // halt
         
         // I/O
         output wire logic [7:0] segment_a,
@@ -29,7 +29,7 @@ wire word ibus_read_data;
 
 // Component
 bios_rom bios (
-    .a(ibus_addr[11:2]),
+    .a(ibus_addr[8:2]),
     .spo(ibus_read_data)
 );
 
@@ -39,11 +39,11 @@ bios_rom bios (
 //
 
 // Signals
-wire word   dbus_addr;
-word   dbus_read_data;
-word        dbus_write_data;
-logic [3:0] dbus_write_mask;
-logic       dbus_write_enable;
+(* mark_debug = "true" *) wire word   dbus_addr;
+(* mark_debug = "true" *) word        dbus_read_data;
+(* mark_debug = "true" *) word        dbus_write_data;
+(* mark_debug = "true" *) logic [3:0] dbus_write_mask;
+(* mark_debug = "true" *) logic       dbus_write_enable;
 logic ram_write_enable;
 logic dsp_write_enable;
 wire word ram_read_data;
@@ -52,14 +52,14 @@ wire word dsp_read_data;
 // Components
 data_ram dram (
     .clk(clk),
-    .a(dbus_addr[11:2]),
+    .a(dbus_addr[8:2]),
     .d(dbus_write_data),
     .we(ram_write_enable),
     .spo(ram_read_data)
 //    .write_mask(dbus_write_mask),
 );
 
-segdisplay #(.CLK_DIVISOR(10000)) disp (
+segdisplay #(.CLK_DIVISOR(1000)) disp (
     .clk(clk),
     .reset(reset),
     .a(segment_a),

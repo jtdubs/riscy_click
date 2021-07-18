@@ -9,9 +9,9 @@
       <spirit:instanceName>bios_rom</spirit:instanceName>
       <spirit:componentRef spirit:vendor="xilinx.com" spirit:library="ip" spirit:name="dist_mem_gen" spirit:version="8.0"/>
       <spirit:configurableElementValues>
-        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_ADDR_WIDTH">10</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_ADDR_WIDTH">7</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_DEFAULT_DATA">0</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_DEPTH">1024</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_DEPTH">128</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_ELABORATION_DIR">./</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_FAMILY">artix7</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="MODELPARAM_VALUE.C_HAS_CLK">0</spirit:configurableElementValue>
@@ -50,7 +50,7 @@
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.data_width">32</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.default_data">0</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.default_data_radix">16</spirit:configurableElementValue>
-        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.depth">1024</spirit:configurableElementValue>
+        <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.depth">128</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.dual_port_address">non_registered</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.dual_port_output_clock_enable">false</spirit:configurableElementValue>
         <spirit:configurableElementValue spirit:referenceId="PARAM_VALUE.input_clock_enable">false</spirit:configurableElementValue>
@@ -99,7 +99,7 @@
             <xilinx:configElementInfo xilinx:referenceId="PARAM_VALUE.memory_type" xilinx:valueSource="user"/>
           </xilinx:configElementInfos>
           <xilinx:boundaryDescriptionInfo>
-            <xilinx:boundaryDescription xilinx:boundaryDescriptionJSON="{&quot;ip_boundary&quot;:{&quot;ports&quot;:{&quot;a&quot;:[{&quot;direction&quot;:&quot;in&quot;,&quot;physical_left&quot;:&quot;9&quot;,&quot;physical_right&quot;:&quot;0&quot;,&quot;is_vector&quot;:&quot;true&quot;}],&quot;spo&quot;:[{&quot;direction&quot;:&quot;out&quot;,&quot;physical_left&quot;:&quot;31&quot;,&quot;physical_right&quot;:&quot;0&quot;,&quot;is_vector&quot;:&quot;true&quot;}]},&quot;interfaces&quot;:{}}}"/>
+            <xilinx:boundaryDescription xilinx:boundaryDescriptionJSON="{&quot;ip_boundary&quot;:{&quot;ports&quot;:{&quot;a&quot;:[{&quot;direction&quot;:&quot;in&quot;,&quot;physical_left&quot;:&quot;6&quot;,&quot;physical_right&quot;:&quot;0&quot;,&quot;is_vector&quot;:&quot;true&quot;}],&quot;spo&quot;:[{&quot;direction&quot;:&quot;out&quot;,&quot;physical_left&quot;:&quot;31&quot;,&quot;physical_right&quot;:&quot;0&quot;,&quot;is_vector&quot;:&quot;true&quot;}]},&quot;interfaces&quot;:{}}}"/>
           </xilinx:boundaryDescriptionInfo>
         </xilinx:componentInstanceExtensions>
       </spirit:vendorExtensions>

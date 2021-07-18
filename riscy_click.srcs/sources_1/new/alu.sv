@@ -41,14 +41,14 @@ always_comb begin
         ALU_SLT:    result = $signed(operand1) < $signed(operand2) ? 1 : 0;
         ALU_ULT:    result = operand1 < operand2 ? 1 : 0;
         ALU_COPY1:  result = operand1;
-        ALU_MUL:    result = $signed(operand1) * $signed(operand2);
-        ALU_MULH:   begin wide_result = $signed(operand1) * $signed(operand2); result = wide_result[63:32]; end
-        ALU_MULHSU: begin wide_result = $signed(operand1) * operand2;          result = wide_result[63:32]; end
-        ALU_MULHU:  begin wide_result = operand1 * operand2;                   result = wide_result[63:32]; end
-        ALU_DIV:    result = $signed(operand1) / $signed(operand2);
-        ALU_DIVU:   result = operand1 / operand2;
-        ALU_REM:    result = $signed(operand1) % $signed(operand2);
-        ALU_REMU:   result = operand1 % operand2;
+//        ALU_MUL:    result = $signed(operand1) * $signed(operand2);
+//        ALU_MULH:   begin wide_result = $signed(operand1) * $signed(operand2); result = wide_result[63:32]; end
+//        ALU_MULHSU: begin wide_result = $signed(operand1) * operand2;          result = wide_result[63:32]; end
+//        ALU_MULHU:  begin wide_result = operand1 * operand2;                   result = wide_result[63:32]; end
+//        ALU_DIV:    result = $signed(operand1) / $signed(operand2);
+//        ALU_DIVU:   result = operand1 / operand2;
+//        ALU_REM:    result = $signed(operand1) % $signed(operand2);
+//        ALU_REMU:   result = operand1 % operand2;
         default:    result = 32'b0;
     endcase;
 end

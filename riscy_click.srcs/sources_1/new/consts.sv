@@ -118,14 +118,14 @@ typedef enum logic [4:0] {
     ALU_AND      = 5'b00111,    // Binary AND
     ALU_SUB      = 5'b01000,    // Subtraction
     ALU_ASR      = 5'b01101,    // Logical Shift Right
-    ALU_MUL      = 5'b10000,    // Multiply
-    ALU_MULH     = 5'b10001,    // Multiply (High)
-    ALU_MULHSU   = 5'b10010,    // Multiply (High, Signed x Unsigned)
-    ALU_MULHU    = 5'b10011,    // Multiple (High, Unsigned)
-    ALU_DIV      = 5'b10100,    // Divide
-    ALU_DIVU     = 5'b10101,    // Divide (Unsigned)
-    ALU_REM      = 5'b10110,    // Remainder
-    ALU_REMU     = 5'b10111,    // Remainder (Unsigned)
+//    ALU_MUL      = 5'b10000,    // Multiply
+//    ALU_MULH     = 5'b10001,    // Multiply (High)
+//    ALU_MULHSU   = 5'b10010,    // Multiply (High, Signed x Unsigned)
+//    ALU_MULHU    = 5'b10011,    // Multiple (High, Unsigned)
+//    ALU_DIV      = 5'b10100,    // Divide
+//    ALU_DIVU     = 5'b10101,    // Divide (Unsigned)
+//    ALU_REM      = 5'b10110,    // Remainder
+//    ALU_REMU     = 5'b10111,    // Remainder (Unsigned)
     ALU_COPY1    = 5'b11001,    // Output Operand #1
     ALU_X        = 5'b11111     // Disabled
 } alu_mode;

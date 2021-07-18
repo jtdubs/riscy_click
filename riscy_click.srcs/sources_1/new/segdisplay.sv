@@ -31,10 +31,10 @@ module segdisplay
 localparam COUNTER_ROLLOVER = (CLK_DIVISOR / 2) - 1;
 
 // Registers
-word value;
-logic[4:0] nibble;
-logic [15:0] counter;
-logic [2:0] index;
+(* mark_debug = "true" *) word value;
+(* mark_debug = "true" *) logic[3:0] nibble;
+(* mark_debug = "true" *) logic [15:0] counter;
+(* mark_debug = "true" *) logic [2:0] index;
 
 // Reading Logic
 assign read_data = value;
@@ -53,45 +53,50 @@ begin
     endcase
 end
 
+logic [7:0] next_a;
 always_comb
 begin
     case (index)
-    0: a <= 8'b11111110;
-    1: a <= 8'b11111101;
-    2: a <= 8'b11111011;
-    3: a <= 8'b11110111;
-    4: a <= 8'b11101111;
-    5: a <= 8'b11011111;
-    6: a <= 8'b10111111;
-    7: a <= 8'b01111111;
+    0: next_a <= 8'b11111110;
+    1: next_a <= 8'b11111101;
+    2: next_a <= 8'b11111011;
+    3: next_a <= 8'b11110111;
+    4: next_a <= 8'b11101111;
+    5: next_a <= 8'b11011111;
+    6: next_a <= 8'b10111111;
+    7: next_a <= 8'b01111111;
     endcase
 end
 
+logic [7:0] next_c;
 always_comb
 begin
     case (nibble)
-    0:  c <= 8'b11000000;
-    1:  c <= 8'b11111001;
-    2:  c <= 8'b10100100;
-    3:  c <= 8'b10110000;
-    4:  c <= 8'b10011001;
-    5:  c <= 8'b10010010;
-    6:  c <= 8'b10000010;
-    7:  c <= 8'b11111000;
-    8:  c <= 8'b10000000;
-    9:  c <= 8'b10011000;
-    10: c <= 8'b10001000;
-    11: c <= 8'b10000011;
-    12: c <= 8'b11000110;
-    13: c <= 8'b10100001;
-    14: c <= 8'b10000110;
-    15: c <= 8'b10001110;
+    0:  next_c <= 8'b11000000;
+    1:  next_c <= 8'b11111001;
+    2:  next_c <= 8'b10100100;
+    3:  next_c <= 8'b10110000;
+    4:  next_c <= 8'b10011001;
+    5:  next_c <= 8'b10010010;
+    6:  next_c <= 8'b10000010;
+    7:  next_c <= 8'b11111000;
+    8:  next_c <= 8'b10000000;
+    9:  next_c <= 8'b10011000;
+    10: next_c <= 8'b10001000;
+    11: next_c <= 8'b10000011;
+    12: next_c <= 8'b11000110;
+    13: next_c <= 8'b10100001;
+    14: next_c <= 8'b10000110;
+    15: next_c <= 8'b10001110;
     endcase
 end
 
 // Clocked Writing
 always_ff @(posedge clk)
 begin
+    a <= next_a;
+    c <= next_c;
+    
     if (reset)
     begin
         value <= 32'h12345678;
