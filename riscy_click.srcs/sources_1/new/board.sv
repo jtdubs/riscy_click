@@ -28,14 +28,9 @@ wire word ibus_addr;
 wire word ibus_read_data;
 
 // Component
-ram #(.MEMORY_IMAGE_FILE("iram.mem")) bios (
-    .addr(ibus_addr[31:2]),
-    .read_data(ibus_read_data),
-    .write_data(32'b0),
-    .write_mask(4'b1111),
-    .write_enable(1'b0),
-    .clk(clk),
-    .reset(reset)
+bios_rom bios (
+    .a(ibus_addr[11:2]),
+    .spo(ibus_read_data)
 );
 
 
@@ -55,14 +50,13 @@ wire word ram_read_data;
 wire word dsp_read_data;
 
 // Components
-ram #(.MEMORY_IMAGE_FILE("dram.mem")) dram (
-    .addr(dbus_addr[31:2]),
-    .read_data(ram_read_data),
-    .write_data(dbus_write_data),
-    .write_mask(dbus_write_mask),
-    .write_enable(ram_write_enable),
+data_ram dram (
     .clk(clk),
-    .reset(reset)
+    .a(dbus_addr[11:2]),
+    .d(dbus_write_data),
+    .we(ram_write_enable),
+    .spo(ram_read_data)
+//    .write_mask(dbus_write_mask),
 );
 
 segdisplay #(.CLK_DIVISOR(10000)) disp (

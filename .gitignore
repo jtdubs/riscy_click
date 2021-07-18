@@ -1,3 +1,5 @@
 /*.runs/
 /*.cache/
 /*.sim/
+/*.gen/
+/*.ip_user_files/

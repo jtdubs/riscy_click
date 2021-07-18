@@ -1,7 +1,4 @@
-# - Need to pull out a "board" w/ a CPU, RAM, ROM, etc.  Memory bus.  That sort of thing.
-#     - BIOS ROM is "instruction memory"
-#     - Memory bus is "data memory" for loads and stores
-#         - Contains block RAM
-#         - Contains memory mapped IO devices (e.g., 7seg displays, buttons, UART, ...)
-- Get a RISCV compiler toolchain working so I can do BIOS development
-- Write a trivial BIOS that reads from switches and outputs to 7seg display?
+- Multi-stage execution due to fetch taking a cycle
+- Document seven segment display
+- Pull BIOS code over into this git repo
+- Write a trivial BIOS that reads from switches and writes to 7seg display
