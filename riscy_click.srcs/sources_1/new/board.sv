@@ -14,8 +14,8 @@ module board
 
         // I/O
         output wire logic [7:0] segment_a,
-        output wire logic [7:0] segment_c
-        // input       logic [7:0] switches,
+        output wire logic [7:0] segment_c,
+        input       logic [15:0] switch
     );
 
 
@@ -29,7 +29,7 @@ wire word ibus_read_data;
 
 // Component
 bios_rom bios (
-    .a(ibus_addr[8:2]),
+    .a(ibus_addr[9:2]),
     .spo(ibus_read_data)
 );
 
@@ -76,6 +76,7 @@ always_comb
 begin
     case (dbus_addr)
     32'hFF000000: begin ram_write_enable <= 1'b0;              dsp_write_enable <= dbus_write_enable; dbus_read_data <= dsp_read_data; end
+    32'hFF000004: begin ram_write_enable <= 1'b0;              dsp_write_enable <= 1'b0;              dbus_read_data <= { 16'h00, switch };        end
     default:      begin ram_write_enable <= dbus_write_enable; dsp_write_enable <= 1'b0;              dbus_read_data <= ram_read_data; end
     endcase
 end
