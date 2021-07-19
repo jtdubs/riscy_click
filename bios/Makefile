@@ -1,19 +1,18 @@
 .PHONY: all clean
 
-all: bios.mem bios.coe
+all: bios.coe
 
 clean:
-	rm -f bios.bin bios.hex bios.mem bios.coe
+	rm -f bios.o bios bios.img bios.coe
 
-bios.bin: bios.s
-	clang -O -c --target=riscv32 -march=rv32im bios.s -o bios.bin
+bios.o: bios.c
+	clang -O -c --target=riscv32 -march=rv32im bios.c -o bios.o
 
-bios.hex: bios.bin
-	readelf -x .text bios.bin | awk '/0x/ { print substr($$_, 14, 35); }' > bios.hex
+bios: bios.o
+	ld.lld bios.o -o bios --entry=_start --section-start=.text=0 --section-start=.sdata=300 --nostdlib
 
-bios.mem: bios.hex
-	srec_cat bios.hex --hex_dump --byte-swap 4 --output - -vmem 32 -data_only > bios.mem
+bios.img: bios
+	llvm-objcopy bios -O binary bios.img
 
-bios.coe: bios.hex
-	# srec_cat bios.hex --hex_dump --byte-swap 4 --output - -coe 32 -data_only | tr -d ',;' > bios.coe
-	srec_cat bios.hex --hex_dump --byte-swap 4 --output - -coe 32 > bios.coe
+bios.coe: bios.img
+	bin2coe -i bios.img -o bios.coe -w 32

@@ -1,4 +1,3 @@
-- Multi-stage execution due to fetch taking a cycle
 - Document seven segment display
-- Pull BIOS code over into this git repo
+- Probably re-write it for simplicity
 - Write a trivial BIOS that reads from switches and writes to 7seg display
