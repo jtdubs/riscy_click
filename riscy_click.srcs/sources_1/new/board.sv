@@ -55,15 +55,19 @@ wire word bios_read_data;
 wire word ram_read_data;
 
 
-// RAM
-data_ram dram (
-    .clk(clk),
-    .a(dbus_addr[8:2]),
-    .d(dbus_write_data),
-    .we(ram_write_enable),
-    .spo(ram_read_data)
-//    .write_mask(dbus_write_mask),
-);
+// Banked RAM
+genvar i;
+generate for (i=0; i<4; i++)
+    begin
+        data_ram_bank dram_bank (
+            .clk(clk),
+            .a(dbus_addr[8:2]),
+            .d(dbus_write_data[(8*i+7):(8*i)]),
+            .we(ram_write_enable & dbus_write_mask[i]),
+            .spo(ram_read_data[(8*i+7):(8*i)])
+        );
+    end
+endgenerate
 
 // seven segment display
 segdisplay #(.CLK_DIVISOR(1000)) disp (

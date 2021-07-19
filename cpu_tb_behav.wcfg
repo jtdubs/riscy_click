@@ -3,21 +3,22 @@
    <wave_state>
    </wave_state>
    <db_ref_list>
-      <db_ref path="cpu_tb_func_synth.wdb" id="1">
+      <db_ref path="cpu_tb_behav.wdb" id="1">
          <top_modules>
+            <top_module name="consts" />
             <top_module name="cpu_tb" />
             <top_module name="glbl" />
          </top_modules>
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0.000000 us"></ZoomStartTime>
-      <ZoomEndTime time="1,696.000001 us"></ZoomEndTime>
-      <Cursor1Time time="0.000000 us"></Cursor1Time>
+      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="9,830.001 ns"></ZoomEndTime>
+      <Cursor1Time time="450,000.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="404"></NameColumnWidth>
-      <ValueColumnWidth column_width="172"></ValueColumnWidth>
+      <ValueColumnWidth column_width="166"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="2" />
    <wvobject fp_name="group74" type="group">
@@ -36,6 +37,10 @@
          <obj_property name="ElementShortName">halt</obj_property>
          <obj_property name="ObjectShortName">halt</obj_property>
       </wvobject>
+      <wvobject fp_name="/cpu_tb/switch" type="array">
+         <obj_property name="ElementShortName">switch[15:0]</obj_property>
+         <obj_property name="ObjectShortName">switch[15:0]</obj_property>
+      </wvobject>
       <wvobject fp_name="/cpu_tb/board/segment_a" type="array">
          <obj_property name="ElementShortName">segment_a[7:0]</obj_property>
          <obj_property name="ObjectShortName">segment_a[7:0]</obj_property>
@@ -49,10 +54,9 @@
       <wvobject fp_name="group263" type="group">
          <obj_property name="label">Instruction Bus</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/cpu_tb/board/ibus_addr" type="array">
-            <obj_property name="ElementShortName">ibus_addr[11:2]</obj_property>
-            <obj_property name="ObjectShortName">ibus_addr[11:2]</obj_property>
+            <obj_property name="ElementShortName">ibus_addr[31:0]</obj_property>
+            <obj_property name="ObjectShortName">ibus_addr[31:0]</obj_property>
          </wvobject>
          <wvobject fp_name="/cpu_tb/board/ibus_read_data" type="array">
             <obj_property name="ElementShortName">ibus_read_data[31:0]</obj_property>
@@ -62,40 +66,45 @@
       <wvobject fp_name="group264" type="group">
          <obj_property name="label">Data Bus</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/cpu_tb/board/dbus_addr" type="array">
-            <obj_property name="ElementShortName">dbus_addr[11:2]</obj_property>
-            <obj_property name="ObjectShortName">dbus_addr[11:2]</obj_property>
+            <obj_property name="ElementShortName">dbus_addr[31:0]</obj_property>
+            <obj_property name="ObjectShortName">dbus_addr[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/cpu_tb/board/dbus_read_data" type="array">
+            <obj_property name="ElementShortName">dbus_read_data[31:0]</obj_property>
+            <obj_property name="ObjectShortName">dbus_read_data[31:0]</obj_property>
          </wvobject>
          <wvobject fp_name="/cpu_tb/board/dbus_write_data" type="array">
-            <obj_property name="ElementShortName">dbus_write_data[31:8]</obj_property>
-            <obj_property name="ObjectShortName">dbus_write_data[31:8]</obj_property>
+            <obj_property name="ElementShortName">dbus_write_data[31:0]</obj_property>
+            <obj_property name="ObjectShortName">dbus_write_data[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/cpu_tb/board/dbus_write_mask" type="array">
+            <obj_property name="ElementShortName">dbus_write_mask[3:0]</obj_property>
+            <obj_property name="ObjectShortName">dbus_write_mask[3:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/cpu_tb/board/dbus_write_enable" type="logic">
+            <obj_property name="ElementShortName">dbus_write_enable</obj_property>
+            <obj_property name="ObjectShortName">dbus_write_enable</obj_property>
          </wvobject>
       </wvobject>
       <wvobject fp_name="group272" type="group">
          <obj_property name="label">BIOS</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
-         <wvobject fp_name="/cpu_tb/board/dram/a" type="array">
-            <obj_property name="ElementShortName">a[9:0]</obj_property>
-            <obj_property name="ObjectShortName">a[9:0]</obj_property>
+         <wvobject fp_name="/cpu_tb/board/bios/a" type="array">
+            <obj_property name="ElementShortName">a[7:0]</obj_property>
+            <obj_property name="ObjectShortName">a[7:0]</obj_property>
          </wvobject>
-         <wvobject fp_name="/cpu_tb/board/dram/d" type="array">
-            <obj_property name="ElementShortName">d[31:0]</obj_property>
-            <obj_property name="ObjectShortName">d[31:0]</obj_property>
+         <wvobject fp_name="/cpu_tb/board/bios/spo" type="array">
+            <obj_property name="ElementShortName">spo[31:0]</obj_property>
+            <obj_property name="ObjectShortName">spo[31:0]</obj_property>
          </wvobject>
       </wvobject>
       <wvobject fp_name="group273" type="group">
          <obj_property name="label">RAM</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
-         <wvobject fp_name="/cpu_tb/board/bios/a" type="array">
-            <obj_property name="ElementShortName">a[9:0]</obj_property>
-            <obj_property name="ObjectShortName">a[9:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/cpu_tb/board/bios/spo" type="array">
-            <obj_property name="ElementShortName">spo[31:0]</obj_property>
-            <obj_property name="ObjectShortName">spo[31:0]</obj_property>
+         <wvobject fp_name="/cpu_tb/board/dram/a" type="array">
+            <obj_property name="ElementShortName">a[6:0]</obj_property>
+            <obj_property name="ObjectShortName">a[6:0]</obj_property>
          </wvobject>
          <wvobject fp_name="/cpu_tb/board/dram/d" type="array">
             <obj_property name="ElementShortName">d[31:0]</obj_property>
@@ -105,38 +114,26 @@
             <obj_property name="ElementShortName">we</obj_property>
             <obj_property name="ObjectShortName">we</obj_property>
          </wvobject>
+         <wvobject fp_name="/cpu_tb/board/dram/spo" type="array">
+            <obj_property name="ElementShortName">spo[31:0]</obj_property>
+            <obj_property name="ObjectShortName">spo[31:0]</obj_property>
+         </wvobject>
       </wvobject>
       <wvobject fp_name="group274" type="group">
          <obj_property name="label">Display</obj_property>
          <obj_property name="DisplayName">label</obj_property>
          <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/cpu_tb/board/disp/index" type="array">
-            <obj_property name="ElementShortName">index[2:0]</obj_property>
-            <obj_property name="ObjectShortName">index[2:0]</obj_property>
+            <obj_property name="ElementShortName">index[3:0]</obj_property>
+            <obj_property name="ObjectShortName">index[3:0]</obj_property>
          </wvobject>
          <wvobject fp_name="/cpu_tb/board/disp/counter" type="array">
             <obj_property name="ElementShortName">counter[15:0]</obj_property>
             <obj_property name="ObjectShortName">counter[15:0]</obj_property>
          </wvobject>
-         <wvobject fp_name="/cpu_tb/board/disp/counter_0" type="array">
-            <obj_property name="ElementShortName">counter_0[15:0]</obj_property>
-            <obj_property name="ObjectShortName">counter_0[15:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/cpu_tb/board/disp/D" type="array">
-            <obj_property name="ElementShortName">D[31:0]</obj_property>
-            <obj_property name="ObjectShortName">D[31:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/cpu_tb/board/disp/E" type="array">
-            <obj_property name="ElementShortName">E[2:0]</obj_property>
-            <obj_property name="ObjectShortName">E[2:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/cpu_tb/board/disp/Q" type="array">
-            <obj_property name="ElementShortName">Q[29:0]</obj_property>
-            <obj_property name="ObjectShortName">Q[29:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/cpu_tb/board/disp/\value_reg[31]_0 " type="array">
-            <obj_property name="ElementShortName">\value_reg[31]_0 [14:0]</obj_property>
-            <obj_property name="ObjectShortName">\value_reg[31]_0 [14:0]</obj_property>
+         <wvobject fp_name="/cpu_tb/board/disp/value" type="array">
+            <obj_property name="ElementShortName">value[31:0]</obj_property>
+            <obj_property name="ObjectShortName">value[31:0]</obj_property>
          </wvobject>
       </wvobject>
    </wvobject>
@@ -148,22 +145,88 @@
          <obj_property name="label">Controller</obj_property>
          <obj_property name="DisplayName">label</obj_property>
          <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/cpu_tb/board/cpu/ctl/opcode" type="array">
+            <obj_property name="ElementShortName">opcode[6:0]</obj_property>
+            <obj_property name="ObjectShortName">opcode[6:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/cpu_tb/board/cpu/ctl/f3" type="array">
+            <obj_property name="ElementShortName">f3[2:0]</obj_property>
+            <obj_property name="ObjectShortName">f3[2:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/cpu_tb/board/cpu/ctl/f7" type="array">
+            <obj_property name="ElementShortName">f7[6:0]</obj_property>
+            <obj_property name="ObjectShortName">f7[6:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/cpu_tb/board/cpu/ctl/cw" type="array">
+            <obj_property name="ElementShortName">cw</obj_property>
+            <obj_property name="ObjectShortName">cw</obj_property>
+         </wvobject>
       </wvobject>
       <wvobject fp_name="group124" type="group">
          <obj_property name="label">ALU</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/cpu_tb/board/cpu/alu/mode" type="array">
+            <obj_property name="ElementShortName">mode[4:0]</obj_property>
+            <obj_property name="ObjectShortName">mode[4:0]</obj_property>
+         </wvobject>
          <wvobject fp_name="/cpu_tb/board/cpu/alu/operand1" type="array">
-            <obj_property name="ElementShortName">operand1[12:0]</obj_property>
-            <obj_property name="ObjectShortName">operand1[12:0]</obj_property>
+            <obj_property name="ElementShortName">operand1[31:0]</obj_property>
+            <obj_property name="ObjectShortName">operand1[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/cpu_tb/board/cpu/alu/operand2" type="array">
+            <obj_property name="ElementShortName">operand2[31:0]</obj_property>
+            <obj_property name="ObjectShortName">operand2[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/cpu_tb/board/cpu/alu/result" type="array">
+            <obj_property name="ElementShortName">result[31:0]</obj_property>
+            <obj_property name="ObjectShortName">result[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/cpu_tb/board/cpu/alu/zero" type="logic">
+            <obj_property name="ElementShortName">zero</obj_property>
+            <obj_property name="ObjectShortName">zero</obj_property>
          </wvobject>
       </wvobject>
       <wvobject fp_name="group116" type="group">
          <obj_property name="label">Registers</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <wvobject fp_name="/cpu_tb/board/cpu/regfile/write_data" type="array">
-            <obj_property name="ElementShortName">write_data[31:2]</obj_property>
-            <obj_property name="ObjectShortName">write_data[31:2]</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/cpu_tb/board/cpu/regfile/read_addr1" type="array">
+            <obj_property name="ElementShortName">read_addr1[4:0]</obj_property>
+            <obj_property name="ObjectShortName">read_addr1[4:0]</obj_property>
          </wvobject>
+         <wvobject fp_name="/cpu_tb/board/cpu/regfile/read_data1" type="array">
+            <obj_property name="ElementShortName">read_data1[31:0]</obj_property>
+            <obj_property name="ObjectShortName">read_data1[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/cpu_tb/board/cpu/regfile/read_addr2" type="array">
+            <obj_property name="ElementShortName">read_addr2[4:0]</obj_property>
+            <obj_property name="ObjectShortName">read_addr2[4:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/cpu_tb/board/cpu/regfile/read_data2" type="array">
+            <obj_property name="ElementShortName">read_data2[31:0]</obj_property>
+            <obj_property name="ObjectShortName">read_data2[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/cpu_tb/board/cpu/regfile/write_enable" type="logic">
+            <obj_property name="ElementShortName">write_enable</obj_property>
+            <obj_property name="ObjectShortName">write_enable</obj_property>
+         </wvobject>
+         <wvobject fp_name="/cpu_tb/board/cpu/regfile/write_addr" type="array">
+            <obj_property name="ElementShortName">write_addr[4:0]</obj_property>
+            <obj_property name="ObjectShortName">write_addr[4:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/cpu_tb/board/cpu/regfile/write_data" type="array">
+            <obj_property name="ElementShortName">write_data[31:0]</obj_property>
+            <obj_property name="ObjectShortName">write_data[31:0]</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/cpu_tb/board/cpu/ir" type="array">
+         <obj_property name="ElementShortName">ir[31:0]</obj_property>
+         <obj_property name="ObjectShortName">ir[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_tb/board/cpu/pc" type="array">
+         <obj_property name="ElementShortName">pc[31:0]</obj_property>
+         <obj_property name="ObjectShortName">pc[31:0]</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>

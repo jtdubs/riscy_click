@@ -2,8 +2,6 @@ Seven Segment Display
 - Re-write it for simplicity
 - Document
 
-Fix dbus write-mask
-
 Video signals?
 Keyboard/mouse signals?
 USB signals?

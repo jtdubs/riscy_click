@@ -19,8 +19,7 @@ badd +1 riscy_click.srcs/constrs_1/new/Nexys-A7-100T.xdc
 badd +10 TODO
 badd +15 bios/bios.dis
 badd +8 bios/bios.c
-badd +1 bios/Makefile
-badd +130 bios/bios.coe
+badd +21 bios/Makefile
 argglobal
 %argdel
 $argadd riscy_click.srcs/sources_1/new/alu.sv
@@ -31,7 +30,7 @@ $argadd riscy_click.srcs/sources_1/new/ctl.sv
 $argadd riscy_click.srcs/sources_1/new/regfile.sv
 $argadd riscy_click.srcs/sources_1/new/segdisplay.sv
 $argadd riscy_click.srcs/sim_1/new/cpu_tb.sv
-edit riscy_click.srcs/sources_1/new/board.sv
+edit TODO
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
@@ -41,7 +40,7 @@ set winheight=1
 set winminwidth=0
 set winwidth=1
 argglobal
-if bufexists("riscy_click.srcs/sources_1/new/board.sv") | buffer riscy_click.srcs/sources_1/new/board.sv | else | edit riscy_click.srcs/sources_1/new/board.sv | endif
+if bufexists("TODO") | buffer TODO | else | edit TODO | endif
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -51,12 +50,13 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 85 - ((22 * winheight(0) + 32) / 64)
+let s:l = 1 - ((0 * winheight(0) + 31) / 62)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-85
-normal! 02|
+1
+normal! 0
+lcd /mnt/d/dev/riscy_click
 tabnext 1
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
