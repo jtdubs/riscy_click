@@ -14,11 +14,11 @@ module segdisplay
         // system clock domain
         input logic clk,
         input logic reset,
-        
+
         // display interface
         output logic [7:0] a, // common anodes
         output logic [7:0] c, // cathodes
-        
+
          // data bus interface
         input word        addr,
         output wire word  read_data,
@@ -26,7 +26,7 @@ module segdisplay
         input logic       write_enable,
         input logic [3:0] write_mask
     );
-    
+
 // Counter rolls over at half the divisor so that a full cycle of the derived clock occurs at the divided frequency
 localparam COUNTER_ROLLOVER = (CLK_DIVISOR / 2) - 1;
 
@@ -110,7 +110,7 @@ always_ff @(posedge clk)
 begin
     a <= next_a;
     c <= next_c;
-    
+
     if (reset)
     begin
         value <= 32'h12345678;
@@ -129,7 +129,7 @@ begin
             counter <= counter + 1;
             index <= index;
         end
-        
+
         if (write_enable)
         begin
             value <= write_data;

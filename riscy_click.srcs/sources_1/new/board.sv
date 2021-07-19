@@ -11,14 +11,14 @@ module board
         input       logic clk,   // clock
         (* mark_debug = "true" *) input       logic reset, // reset
         (* mark_debug = "true" *) output wire logic halt,  // halt
-        
+
         // I/O
         output wire logic [7:0] segment_a,
         output wire logic [7:0] segment_c
         // input       logic [7:0] switches,
     );
 
-    
+
 //
 // Instruction Memory Bus (BIOS)
 //

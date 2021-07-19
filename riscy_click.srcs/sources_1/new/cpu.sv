@@ -12,11 +12,11 @@ module cpu
         input       logic       clk,   // clock
         input       logic       reset, // reset
         output wire logic       halt,  // halt
-        
+
         // instruction memory bus
         output      word        ibus_addr,
         input       word        ibus_read_data,
-        
+
         // data memory bus
         output wire word        dbus_addr,
         input       word        dbus_read_data,

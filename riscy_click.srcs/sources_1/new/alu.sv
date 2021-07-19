@@ -23,11 +23,11 @@ wire [4:0] shamt = operand2[4:0];
 assign zero = result == 32'b0 ? 1'b1 : 1'b0;
 
 // Wide result for multiplication
-dword wide_result;
+// dword wide_result;
 
 // Result Logic
 always_comb begin
-    wide_result = 64'b0;
+//    wide_result = 64'b0;
 
     case (mode)
         ALU_ADD:    result = operand1 + operand2;

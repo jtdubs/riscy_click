@@ -1,13 +1,13 @@
 `timescale 1ns/1ps
 
 module cpu_tb ();
-    
+
 reg clk;
 reg reset;
 wire halt;
 wire logic [7:0] segment_a;
 wire logic [7:0] segment_c;
-        
+
 board board (
     .clk(clk),
     .reset(reset),
