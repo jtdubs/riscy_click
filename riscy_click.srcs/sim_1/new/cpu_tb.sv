@@ -37,7 +37,7 @@ integer i;
 initial begin
     switch = 16'h0000;
     for (i=0; i<16; i++)
-        #10000 switch[i] = 1;
+        #1000000 switch[i] = 1;
 end
 
 endmodule

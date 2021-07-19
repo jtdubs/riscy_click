@@ -22,6 +22,7 @@ module ctl
 wire alu_mode alu_mode7 = alu_mode'({ f7[0], f7[5], f3 });
 wire alu_mode alu_mode3 = alu_mode'({ 2'b0, f3 });
 
+// Control Word combinational logic
 always_comb begin
     casez ({reset, f7, f3, opcode})
     {1'b1, 7'b???????, 3'b???,     7'b???????}:  cw <= '{ 1'b0, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     WB_SRC_X,   WB_X,       WB_MODE_X,    PC_NEXT,     1'b0 };

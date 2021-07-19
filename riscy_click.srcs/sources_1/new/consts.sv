@@ -138,6 +138,11 @@ typedef enum logic [1:0] {
     PC_BRANCH    = 2'b11        // ALU_ADD
 } pc_mode;
 
+
+//
+// Control Word
+//
+
 typedef struct packed {
     logic    halt;
     alu_op1  alu_op1_sel;

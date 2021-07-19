@@ -2,7 +2,14 @@ Seven Segment Display
 - Re-write it for simplicity
 - Document
 
-BIOS
-# - Write a trivial BIOS that reads from switches and writes to 7seg display
-# - Memory map the switches
-- Need to memory-map BIOS itself to pull data from .sdata segment.  Try moving to a dual-port ROM??
+CPU
+- Clean-up and documentation
+
+Board
+- Clean-up and documentation
+
+Video signals?
+Keyboard/mouse signals?
+USB signals?
+Pipelining?
+Switch from distributed memory to BRAM or DDR?

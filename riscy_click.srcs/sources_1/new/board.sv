@@ -48,6 +48,7 @@ logic ram_write_enable;
 logic dsp_write_enable;
 wire word ram_read_data;
 wire word dsp_read_data;
+wire word bios_read_data;
 
 // Components
 data_ram dram (
@@ -71,13 +72,20 @@ segdisplay #(.CLK_DIVISOR(1000)) disp (
     .write_mask(dbus_write_mask)
 );
 
+bios_rom bios_copy (
+    .a(dbus_addr[9:2]),
+    .spo(bios_read_data)
+);
+
 // Chip Select (ish)
 always_comb
 begin
-    case (dbus_addr)
-    32'hFF000000: begin ram_write_enable <= 1'b0;              dsp_write_enable <= dbus_write_enable; dbus_read_data <= dsp_read_data; end
-    32'hFF000004: begin ram_write_enable <= 1'b0;              dsp_write_enable <= 1'b0;              dbus_read_data <= { 16'h00, switch };        end
-    default:      begin ram_write_enable <= dbus_write_enable; dsp_write_enable <= 1'b0;              dbus_read_data <= ram_read_data; end
+    casez (dbus_addr)
+    32'h0???????: begin ram_write_enable <= 1'b0;              dsp_write_enable <= 1'b0;              dbus_read_data <= bios_read_data;     end
+    32'h1???????: begin ram_write_enable <= dbus_write_enable; dsp_write_enable <= 1'b0;              dbus_read_data <= ram_read_data;      end
+    32'hFF000000: begin ram_write_enable <= 1'b0;              dsp_write_enable <= dbus_write_enable; dbus_read_data <= dsp_read_data;      end
+    32'hFF000004: begin ram_write_enable <= 1'b0;              dsp_write_enable <= 1'b0;              dbus_read_data <= { 16'h00, switch }; end
+    default:      begin ram_write_enable <= 1'b0;              dsp_write_enable <= 1'b0;              dbus_read_data <= 32'h00000000;       end
     endcase
 end
 
