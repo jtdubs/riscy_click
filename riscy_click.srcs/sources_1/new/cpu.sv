@@ -279,7 +279,7 @@ always_comb begin
                 end
             endcase
         end
-end 
+end
 
 // PC Clocked Assignment
 always_ff @(posedge clk) begin

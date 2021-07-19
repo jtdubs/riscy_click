@@ -132,12 +132,11 @@ begin
 
         if (write_enable)
         begin
-            value <= write_data;
             // Only write bytes where mask is set
-//            if (write_mask[3]) value[31:24] <= write_data[31:24];
-//            if (write_mask[2]) value[23:16] <= write_data[23:16];
-//            if (write_mask[1]) value[15: 8] <= write_data[15: 8];
-//            if (write_mask[0]) value[ 7: 0] <= write_data[ 7: 0];
+            if (write_mask[3]) value[31:24] <= write_data[31:24];
+            if (write_mask[2]) value[23:16] <= write_data[23:16];
+            if (write_mask[1]) value[15: 8] <= write_data[15: 8];
+            if (write_mask[0]) value[ 7: 0] <= write_data[ 7: 0];
         end
         else
         begin

@@ -7,20 +7,19 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +32 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/alu.sv
-badd +33 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/board.sv
-badd +1 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/consts.sv
-badd +1 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/cpu.sv
-badd +1 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/ctl.sv
-badd +4 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/regfile.sv
-badd +1 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/segdisplay.sv
+badd +25 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/alu.sv
+badd +85 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/board.sv
+badd +16 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/consts.sv
+badd +236 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/cpu.sv
+badd +5 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/ctl.sv
+badd +46 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/regfile.sv
+badd +137 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/segdisplay.sv
 badd +43 /mnt/d/dev/riscy_click/riscy_click.srcs/sim_1/new/cpu_tb.sv
 badd +1 /mnt/d/dev/riscy_click/riscy_click.srcs/constrs_1/new/Nexys-A7-100T.xdc
-badd +8 /mnt/d/dev/riscy_click/TODO
+badd +10 /mnt/d/dev/riscy_click/TODO
 badd +15 bios.dis
 badd +8 bios.c
-badd +1 Makefile
-badd +0 bios.coe
+badd +21 Makefile
 argglobal
 %argdel
 $argadd /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/alu.sv
@@ -31,7 +30,7 @@ $argadd /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/ctl.sv
 $argadd /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/regfile.sv
 $argadd /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/segdisplay.sv
 $argadd /mnt/d/dev/riscy_click/riscy_click.srcs/sim_1/new/cpu_tb.sv
-edit bios.coe
+edit Makefile
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
@@ -41,7 +40,7 @@ set winheight=1
 set winminwidth=0
 set winwidth=1
 argglobal
-if bufexists("bios.coe") | buffer bios.coe | else | edit bios.coe | endif
+if bufexists("Makefile") | buffer Makefile | else | edit Makefile | endif
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -51,11 +50,11 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 130 - ((49 * winheight(0) + 25) / 50)
+let s:l = 1 - ((0 * winheight(0) + 32) / 64)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-130
+1
 normal! 0
 tabnext 1
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'

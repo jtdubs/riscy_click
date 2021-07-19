@@ -2,11 +2,7 @@ Seven Segment Display
 - Re-write it for simplicity
 - Document
 
-CPU
-- Clean-up and documentation
-
-Board
-- Clean-up and documentation
+Fix dbus write-mask
 
 Video signals?
 Keyboard/mouse signals?

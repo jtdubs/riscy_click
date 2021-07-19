@@ -9,18 +9,18 @@ module board
     import consts::*;
     (
         input       logic clk,   // clock
-        (* mark_debug = "true" *) input       logic reset, // reset
-        (* mark_debug = "true" *) output wire logic halt,  // halt
+        input       logic reset, // reset
+        output wire logic halt,  // halt
 
         // I/O
-        output wire logic [7:0] segment_a,
-        output wire logic [7:0] segment_c,
-        input       logic [15:0] switch
+        output wire logic [ 7:0] segment_a, // seven segment display anodes
+        output wire logic [ 7:0] segment_c, // seven segment display cathodes
+        input       logic [15:0] switch     // hardware switch bank
     );
 
 
 //
-// Instruction Memory Bus (BIOS)
+// Instruction Memory Bus
 //
 
 // Signals
@@ -38,19 +38,24 @@ bios_rom bios (
 // Data Memory Bus
 //
 
-// Signals
-(* mark_debug = "true" *) wire word   dbus_addr;
-(* mark_debug = "true" *) word        dbus_read_data;
-(* mark_debug = "true" *) word        dbus_write_data;
-(* mark_debug = "true" *) logic [3:0] dbus_write_mask;
-(* mark_debug = "true" *) logic       dbus_write_enable;
-logic ram_write_enable;
+// Bus Signals
+wire word   dbus_addr;
+word        dbus_read_data;
+word        dbus_write_data;
+logic [3:0] dbus_write_mask;
+logic       dbus_write_enable;
+
+// Write enable signals
 logic dsp_write_enable;
-wire word ram_read_data;
+logic ram_write_enable;
+
+// Read data signals
 wire word dsp_read_data;
 wire word bios_read_data;
+wire word ram_read_data;
 
-// Components
+
+// RAM
 data_ram dram (
     .clk(clk),
     .a(dbus_addr[8:2]),
@@ -60,6 +65,7 @@ data_ram dram (
 //    .write_mask(dbus_write_mask),
 );
 
+// seven segment display
 segdisplay #(.CLK_DIVISOR(1000)) disp (
     .clk(clk),
     .reset(reset),
@@ -72,12 +78,22 @@ segdisplay #(.CLK_DIVISOR(1000)) disp (
     .write_mask(dbus_write_mask)
 );
 
+// read-only copy of BIOS
 bios_rom bios_copy (
     .a(dbus_addr[9:2]),
     .spo(bios_read_data)
 );
 
-// Chip Select (ish)
+//
+// Address decoding
+//
+// Memory map:
+// 00000000 - 0FFFFFFF: BIOS
+// 10000000 - 1FFFFFFF: RAM
+// 20000000 - FEFFFFFF: UNMAPPED
+// FF000000:            Seven Segment Display
+// FF000004:            Switch Bank
+//
 always_comb
 begin
     casez (dbus_addr)

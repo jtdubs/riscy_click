@@ -8,15 +8,15 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
 endif
 set shortmess=aoO
 badd +25 riscy_click.srcs/sources_1/new/alu.sv
-badd +1 riscy_click.srcs/sources_1/new/board.sv
+badd +99 riscy_click.srcs/sources_1/new/board.sv
 badd +16 riscy_click.srcs/sources_1/new/consts.sv
-badd +40 riscy_click.srcs/sources_1/new/cpu.sv
+badd +236 riscy_click.srcs/sources_1/new/cpu.sv
 badd +5 riscy_click.srcs/sources_1/new/ctl.sv
 badd +46 riscy_click.srcs/sources_1/new/regfile.sv
-badd +1 riscy_click.srcs/sources_1/new/segdisplay.sv
+badd +137 riscy_click.srcs/sources_1/new/segdisplay.sv
 badd +43 riscy_click.srcs/sim_1/new/cpu_tb.sv
 badd +1 riscy_click.srcs/constrs_1/new/Nexys-A7-100T.xdc
-badd +8 TODO
+badd +10 TODO
 badd +15 bios/bios.dis
 badd +8 bios/bios.c
 badd +1 bios/Makefile
@@ -31,7 +31,7 @@ $argadd riscy_click.srcs/sources_1/new/ctl.sv
 $argadd riscy_click.srcs/sources_1/new/regfile.sv
 $argadd riscy_click.srcs/sources_1/new/segdisplay.sv
 $argadd riscy_click.srcs/sim_1/new/cpu_tb.sv
-edit TODO
+edit riscy_click.srcs/sources_1/new/board.sv
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
@@ -41,7 +41,7 @@ set winheight=1
 set winminwidth=0
 set winwidth=1
 argglobal
-if bufexists("TODO") | buffer TODO | else | edit TODO | endif
+if bufexists("riscy_click.srcs/sources_1/new/board.sv") | buffer riscy_click.srcs/sources_1/new/board.sv | else | edit riscy_click.srcs/sources_1/new/board.sv | endif
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -51,13 +51,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 28) / 57)
+let s:l = 85 - ((22 * winheight(0) + 32) / 64)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
-normal! 0
-lcd /mnt/d/dev/riscy_click
+85
+normal! 02|
 tabnext 1
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
