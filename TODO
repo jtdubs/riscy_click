@@ -1,3 +1,7 @@
-- Document seven segment display
-- Probably re-write it for simplicity
-- Write a trivial BIOS that reads from switches and writes to 7seg display
+Seven Segment DIsplay
+- Re-write it for simplicity
+- Document
+
+BIOS
+# - Write a trivial BIOS that reads from switches and writes to 7seg display
+- Memory map the switches
