@@ -1,3 +1,33 @@
+1. Pipelineing and speed
+2. Allow for arbitrary-time memory access / stalls
+3. Switch to mix of BRAM & DDR
+
+Hazards:
+- Structural - Hardware resources used by multiple stages.  Avoid this by not sharing resources across stages.
+- Data       - Instruction needs reg or mem value being modified by later instruction
+- Control    - Earlier stages may need to be flushed if a branch occurs, as it is the wrong instruction in-flight
+
+Stages:
+- IF (Fetch instruction)
+- ID (Decode instruction and read registers)
+- EX (Execute instruction (ALU))
+- MA (Memory access)
+- WB (Register commit)
+
+Structural hazard avoidance:
+- Ensure all hardware used by only one stage.  Duplciate if necessary.
+
+Data hazard avoidance:
+- MA and WB advertise the pending register values; EX consumes them if needed.
+
+Control hazard avoidance:
+- EX advertises branch addresses; ID & IF notice and flush
+- Therefore, stages advertise if they are empty/stalled so subsequent stages can also stall
+
+Reference:
+https://passlab.github.io/CSE564/notes/lecture09_RISCV_Impl_pipeline.pdf
+
+
 Video signals?
 Keyboard/mouse signals?
 USB signals?

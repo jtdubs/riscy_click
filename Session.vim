@@ -10,10 +10,10 @@ set shortmess=aoO
 badd +31 riscy_click.srcs/sources_1/new/alu.sv
 badd +107 riscy_click.srcs/sources_1/new/board.sv
 badd +130 riscy_click.srcs/sources_1/new/consts.sv
-badd +301 riscy_click.srcs/sources_1/new/cpu.sv
+badd +39 riscy_click.srcs/sources_1/new/cpu.sv
 badd +47 riscy_click.srcs/sources_1/new/ctl.sv
 badd +50 riscy_click.srcs/sources_1/new/regfile.sv
-badd +146 riscy_click.srcs/sources_1/new/segdisplay.sv
+badd +121 riscy_click.srcs/sources_1/new/segdisplay.sv
 badd +26 riscy_click.srcs/sim_1/new/cpu_tb.sv
 badd +1 riscy_click.srcs/constrs_1/new/Nexys-A7-100T.xdc
 badd +5 TODO
@@ -30,8 +30,12 @@ $argadd riscy_click.srcs/sources_1/new/ctl.sv
 $argadd riscy_click.srcs/sources_1/new/regfile.sv
 $argadd riscy_click.srcs/sources_1/new/segdisplay.sv
 $argadd riscy_click.srcs/sim_1/new/cpu_tb.sv
-edit riscy_click.srcs/sources_1/new/segdisplay.sv
+edit TODO
 set splitbelow splitright
+wincmd _ | wincmd |
+split
+1wincmd k
+wincmd w
 set nosplitbelow
 set nosplitright
 wincmd t
@@ -39,8 +43,10 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
+exe '1resize ' . ((&lines * 51 + 27) / 55)
+exe '2resize ' . ((&lines * 1 + 27) / 55)
 argglobal
-if bufexists("riscy_click.srcs/sources_1/new/segdisplay.sv") | buffer riscy_click.srcs/sources_1/new/segdisplay.sv | else | edit riscy_click.srcs/sources_1/new/segdisplay.sv | endif
+if bufexists("TODO") | buffer TODO | else | edit TODO | endif
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -50,13 +56,27 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 28) / 57)
+let s:l = 25 - ((23 * winheight(0) + 25) / 51)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
-normal! 0
-lcd /mnt/d/dev/riscy_click
+25
+normal! 012|
+wincmd w
+argglobal
+enew
+file list:///diagnostics
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal nofen
+wincmd w
+exe '1resize ' . ((&lines * 51 + 27) / 55)
+exe '2resize ' . ((&lines * 1 + 27) / 55)
 tabnext 1
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
