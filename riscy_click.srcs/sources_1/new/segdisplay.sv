@@ -20,25 +20,26 @@ module segdisplay
         output logic [7:0] c, // cathodes
 
          // data bus interface
-        input word        addr,
-        output wire word  read_data,
-        input word        write_data,
-        input logic       write_enable,
-        input logic [3:0] write_mask
+        input       word        addr,
+        output wire word        read_data,
+        input       word        write_data,
+        input       logic       write_enable,
+        input       logic [3:0] write_mask
     );
 
 // Counter rolls over at half the divisor so that a full cycle of the derived clock occurs at the divided frequency
 localparam COUNTER_ROLLOVER = (CLK_DIVISOR / 2) - 1;
 
 // Registers
-(* mark_debug = "true" *) word value;
-(* mark_debug = "true" *) logic[3:0] nibble;
-(* mark_debug = "true" *) logic [15:0] counter;
-(* mark_debug = "true" *) logic [3:0] index;
+word         value;
+logic [15:0] counter;
+logic [ 8:0] nibble;
+logic [ 3:0] index;
 
 // Reading Logic
 assign read_data = value;
 
+// Combination logic for current nibble
 always_comb
 begin
     case (index[3:1])
@@ -53,67 +54,83 @@ begin
     endcase
 end
 
-logic [7:0] next_a;
-always_comb
+// Clocked annode update
+always_ff @(posedge clk)
 begin
     if (index[0])
     begin
-        next_a <= 8'b11111111;
+        a <= 8'b11111111;
     end
     else
     begin
         case (index[3:1])
-        0: next_a <= 8'b11111110;
-        1: next_a <= 8'b11111101;
-        2: next_a <= 8'b11111011;
-        3: next_a <= 8'b11110111;
-        4: next_a <= 8'b11101111;
-        5: next_a <= 8'b11011111;
-        6: next_a <= 8'b10111111;
-        7: next_a <= 8'b01111111;
+        0: a <= 8'b11111110;
+        1: a <= 8'b11111101;
+        2: a <= 8'b11111011;
+        3: a <= 8'b11110111;
+        4: a <= 8'b11101111;
+        5: a <= 8'b11011111;
+        6: a <= 8'b10111111;
+        7: a <= 8'b01111111;
         endcase
     end
 end
 
-logic [7:0] next_c;
-always_comb
+// Clocked cathode update
+always_ff @(posedge clk)
 begin
     if (index[0])
     begin
-        next_c <= 8'b11111111;
+        c <= 8'b11111111;
     end
     else
     begin
         case (nibble)
-        0:  next_c <= 8'b11000000;
-        1:  next_c <= 8'b11111001;
-        2:  next_c <= 8'b10100100;
-        3:  next_c <= 8'b10110000;
-        4:  next_c <= 8'b10011001;
-        5:  next_c <= 8'b10010010;
-        6:  next_c <= 8'b10000010;
-        7:  next_c <= 8'b11111000;
-        8:  next_c <= 8'b10000000;
-        9:  next_c <= 8'b10011000;
-        10: next_c <= 8'b10001000;
-        11: next_c <= 8'b10000011;
-        12: next_c <= 8'b11000110;
-        13: next_c <= 8'b10100001;
-        14: next_c <= 8'b10000110;
-        15: next_c <= 8'b10001110;
+        0:  c <= 8'b11000000;
+        1:  c <= 8'b11111001;
+        2:  c <= 8'b10100100;
+        3:  c <= 8'b10110000;
+        4:  c <= 8'b10011001;
+        5:  c <= 8'b10010010;
+        6:  c <= 8'b10000010;
+        7:  c <= 8'b11111000;
+        8:  c <= 8'b10000000;
+        9:  c <= 8'b10011000;
+        10: c <= 8'b10001000;
+        11: c <= 8'b10000011;
+        12: c <= 8'b11000110;
+        13: c <= 8'b10100001;
+        14: c <= 8'b10000110;
+        15: c <= 8'b10001110;
         endcase
     end
 end
 
-// Clocked Writing
+// Clocked value updates
 always_ff @(posedge clk)
 begin
-    a <= next_a;
-    c <= next_c;
-
     if (reset)
     begin
-        value <= 32'h12345678;
+        value <= 32'h00000000;
+    end
+    else
+    begin
+        if (write_enable)
+        begin
+            // Only write bytes where mask is set
+            if (write_mask[3]) value[31:24] <= write_data[31:24];
+            if (write_mask[2]) value[23:16] <= write_data[23:16];
+            if (write_mask[1]) value[15: 8] <= write_data[15: 8];
+            if (write_mask[0]) value[ 7: 0] <= write_data[ 7: 0];
+        end
+    end
+end
+
+// Clocked counter
+always_ff @(posedge clk)
+begin
+    if (reset)
+    begin
         counter <= 0;
         index <= 0;
     end
@@ -128,19 +145,6 @@ begin
         begin
             counter <= counter + 1;
             index <= index;
-        end
-
-        if (write_enable)
-        begin
-            // Only write bytes where mask is set
-            if (write_mask[3]) value[31:24] <= write_data[31:24];
-            if (write_mask[2]) value[23:16] <= write_data[23:16];
-            if (write_mask[1]) value[15: 8] <= write_data[15: 8];
-            if (write_mask[0]) value[ 7: 0] <= write_data[ 7: 0];
-        end
-        else
-        begin
-            value <= value;
         end
     end
 end

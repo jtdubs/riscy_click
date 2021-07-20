@@ -12,13 +12,13 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
-      <ZoomEndTime time="9,830.001 ns"></ZoomEndTime>
-      <Cursor1Time time="450,000.000 ns"></Cursor1Time>
+      <ZoomStartTime time="0.000000 us"></ZoomStartTime>
+      <ZoomEndTime time="9,860.000001 us"></ZoomEndTime>
+      <Cursor1Time time="8,001.000000 us"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="404"></NameColumnWidth>
-      <ValueColumnWidth column_width="166"></ValueColumnWidth>
+      <ValueColumnWidth column_width="160"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="2" />
    <wvobject fp_name="group74" type="group">
@@ -102,45 +102,112 @@
       <wvobject fp_name="group273" type="group">
          <obj_property name="label">RAM</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <wvobject fp_name="/cpu_tb/board/dram/a" type="array">
-            <obj_property name="ElementShortName">a[6:0]</obj_property>
-            <obj_property name="ObjectShortName">a[6:0]</obj_property>
+         <wvobject fp_name="group56" type="group">
+            <obj_property name="label">B0</obj_property>
+            <obj_property name="DisplayName">label</obj_property>
+            <wvobject fp_name="/cpu_tb/board/\genblk1[0].dram_bank /a" type="array">
+               <obj_property name="ElementShortName">a[6:0]</obj_property>
+               <obj_property name="ObjectShortName">a[6:0]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/cpu_tb/board/\genblk1[0].dram_bank /d" type="array">
+               <obj_property name="ElementShortName">d[7:0]</obj_property>
+               <obj_property name="ObjectShortName">d[7:0]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/cpu_tb/board/\genblk1[0].dram_bank /we" type="logic">
+               <obj_property name="ElementShortName">we</obj_property>
+               <obj_property name="ObjectShortName">we</obj_property>
+            </wvobject>
+            <wvobject fp_name="/cpu_tb/board/\genblk1[0].dram_bank /spo" type="array">
+               <obj_property name="ElementShortName">spo[7:0]</obj_property>
+               <obj_property name="ObjectShortName">spo[7:0]</obj_property>
+            </wvobject>
          </wvobject>
-         <wvobject fp_name="/cpu_tb/board/dram/d" type="array">
-            <obj_property name="ElementShortName">d[31:0]</obj_property>
-            <obj_property name="ObjectShortName">d[31:0]</obj_property>
+         <wvobject fp_name="group56" type="group">
+            <obj_property name="label">B1</obj_property>
+            <obj_property name="DisplayName">label</obj_property>
+            <wvobject fp_name="/cpu_tb/board/\genblk1[1].dram_bank /a" type="array">
+               <obj_property name="ElementShortName">a[6:0]</obj_property>
+               <obj_property name="ObjectShortName">a[6:0]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/cpu_tb/board/\genblk1[1].dram_bank /d" type="array">
+               <obj_property name="ElementShortName">d[7:0]</obj_property>
+               <obj_property name="ObjectShortName">d[7:0]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/cpu_tb/board/\genblk1[1].dram_bank /we" type="logic">
+               <obj_property name="ElementShortName">we</obj_property>
+               <obj_property name="ObjectShortName">we</obj_property>
+            </wvobject>
+            <wvobject fp_name="/cpu_tb/board/\genblk1[1].dram_bank /spo" type="array">
+               <obj_property name="ElementShortName">spo[7:0]</obj_property>
+               <obj_property name="ObjectShortName">spo[7:0]</obj_property>
+            </wvobject>
          </wvobject>
-         <wvobject fp_name="/cpu_tb/board/dram/we" type="logic">
-            <obj_property name="ElementShortName">we</obj_property>
-            <obj_property name="ObjectShortName">we</obj_property>
+         <wvobject fp_name="group56" type="group">
+            <obj_property name="label">B2</obj_property>
+            <obj_property name="DisplayName">label</obj_property>
+            <wvobject fp_name="/cpu_tb/board/\genblk1[2].dram_bank /a" type="array">
+               <obj_property name="ElementShortName">a[6:0]</obj_property>
+               <obj_property name="ObjectShortName">a[6:0]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/cpu_tb/board/\genblk1[2].dram_bank /d" type="array">
+               <obj_property name="ElementShortName">d[7:0]</obj_property>
+               <obj_property name="ObjectShortName">d[7:0]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/cpu_tb/board/\genblk1[2].dram_bank /we" type="logic">
+               <obj_property name="ElementShortName">we</obj_property>
+               <obj_property name="ObjectShortName">we</obj_property>
+            </wvobject>
+            <wvobject fp_name="/cpu_tb/board/\genblk1[2].dram_bank /spo" type="array">
+               <obj_property name="ElementShortName">spo[7:0]</obj_property>
+               <obj_property name="ObjectShortName">spo[7:0]</obj_property>
+            </wvobject>
          </wvobject>
-         <wvobject fp_name="/cpu_tb/board/dram/spo" type="array">
-            <obj_property name="ElementShortName">spo[31:0]</obj_property>
-            <obj_property name="ObjectShortName">spo[31:0]</obj_property>
+         <wvobject fp_name="group56" type="group">
+            <obj_property name="label">B3</obj_property>
+            <obj_property name="DisplayName">label</obj_property>
+            <wvobject fp_name="/cpu_tb/board/\genblk1[3].dram_bank /a" type="array">
+               <obj_property name="ElementShortName">a[6:0]</obj_property>
+               <obj_property name="ObjectShortName">a[6:0]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/cpu_tb/board/\genblk1[3].dram_bank /d" type="array">
+               <obj_property name="ElementShortName">d[7:0]</obj_property>
+               <obj_property name="ObjectShortName">d[7:0]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/cpu_tb/board/\genblk1[3].dram_bank /we" type="logic">
+               <obj_property name="ElementShortName">we</obj_property>
+               <obj_property name="ObjectShortName">we</obj_property>
+            </wvobject>
+            <wvobject fp_name="/cpu_tb/board/\genblk1[3].dram_bank /spo" type="array">
+               <obj_property name="ElementShortName">spo[7:0]</obj_property>
+               <obj_property name="ObjectShortName">spo[7:0]</obj_property>
+            </wvobject>
          </wvobject>
       </wvobject>
       <wvobject fp_name="group274" type="group">
          <obj_property name="label">Display</obj_property>
          <obj_property name="DisplayName">label</obj_property>
          <obj_property name="isExpanded"></obj_property>
-         <wvobject fp_name="/cpu_tb/board/disp/index" type="array">
-            <obj_property name="ElementShortName">index[3:0]</obj_property>
-            <obj_property name="ObjectShortName">index[3:0]</obj_property>
+         <wvobject fp_name="/cpu_tb/board/disp/value" type="array">
+            <obj_property name="ElementShortName">value[31:0]</obj_property>
+            <obj_property name="ObjectShortName">value[31:0]</obj_property>
          </wvobject>
          <wvobject fp_name="/cpu_tb/board/disp/counter" type="array">
             <obj_property name="ElementShortName">counter[15:0]</obj_property>
             <obj_property name="ObjectShortName">counter[15:0]</obj_property>
          </wvobject>
-         <wvobject fp_name="/cpu_tb/board/disp/value" type="array">
-            <obj_property name="ElementShortName">value[31:0]</obj_property>
-            <obj_property name="ObjectShortName">value[31:0]</obj_property>
+         <wvobject fp_name="/cpu_tb/board/disp/nibble" type="array">
+            <obj_property name="ElementShortName">nibble[8:0]</obj_property>
+            <obj_property name="ObjectShortName">nibble[8:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/cpu_tb/board/disp/index" type="array">
+            <obj_property name="ElementShortName">index[3:0]</obj_property>
+            <obj_property name="ObjectShortName">index[3:0]</obj_property>
          </wvobject>
       </wvobject>
    </wvobject>
    <wvobject fp_name="group112" type="group">
       <obj_property name="label">CPU</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="group130" type="group">
          <obj_property name="label">Controller</obj_property>
          <obj_property name="DisplayName">label</obj_property>
