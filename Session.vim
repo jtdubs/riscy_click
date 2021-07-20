@@ -12,8 +12,8 @@ badd +99 riscy_click.srcs/sources_1/new/board.sv
 badd +16 riscy_click.srcs/sources_1/new/consts.sv
 badd +236 riscy_click.srcs/sources_1/new/cpu.sv
 badd +5 riscy_click.srcs/sources_1/new/ctl.sv
-badd +46 riscy_click.srcs/sources_1/new/regfile.sv
-badd +34 riscy_click.srcs/sources_1/new/segdisplay.sv
+badd +41 riscy_click.srcs/sources_1/new/regfile.sv
+badd +159 riscy_click.srcs/sources_1/new/segdisplay.sv
 badd +22 riscy_click.srcs/sim_1/new/cpu_tb.sv
 badd +1 riscy_click.srcs/constrs_1/new/Nexys-A7-100T.xdc
 badd +9 TODO
@@ -30,7 +30,7 @@ $argadd riscy_click.srcs/sources_1/new/ctl.sv
 $argadd riscy_click.srcs/sources_1/new/regfile.sv
 $argadd riscy_click.srcs/sources_1/new/segdisplay.sv
 $argadd riscy_click.srcs/sim_1/new/cpu_tb.sv
-edit riscy_click.srcs/sources_1/new/segdisplay.sv
+edit TODO
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
@@ -40,7 +40,7 @@ set winheight=1
 set winminwidth=0
 set winwidth=1
 argglobal
-if bufexists("riscy_click.srcs/sources_1/new/segdisplay.sv") | buffer riscy_click.srcs/sources_1/new/segdisplay.sv | else | edit riscy_click.srcs/sources_1/new/segdisplay.sv | endif
+if bufexists("TODO") | buffer TODO | else | edit TODO | endif
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -50,7 +50,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 30) / 60)
+let s:l = 1 - ((0 * winheight(0) + 28) / 56)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
