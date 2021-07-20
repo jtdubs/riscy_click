@@ -34,15 +34,14 @@ localparam COUNTER_ROLLOVER = (CLK_DIVISOR / 2) - 1;
 word         value;
 word         display_value;
 logic [15:0] counter;
-logic [ 8:0] nibble;
+logic [ 3:0] nibble;
 logic [ 3:0] index;
 
 // Reading Logic
 assign read_data = value;
 
 // Combination logic for current nibble
-always_comb
-begin
+always_comb begin
     case (index[3:1])
     0: nibble <= display_value[ 3: 0];
     1: nibble <= display_value[ 7: 4];
@@ -51,19 +50,15 @@ begin
     4: nibble <= display_value[19:16];
     5: nibble <= display_value[23:20];
     6: nibble <= display_value[27:24];
-    7: nibble <= display_value[31:28];
+    default: /* 7 */ nibble <= display_value[31:28];
     endcase
 end
 
 // Clocked annode update
-always_ff @(posedge clk)
-begin
-    if (index[0])
-    begin
+always_ff @(posedge clk) begin
+    if (index[0]) begin
         a <= 8'b11111111;
-    end
-    else
-    begin
+    end else begin
         case (index[3:1])
         0: a <= 8'b11111110;
         1: a <= 8'b11111101;
@@ -72,20 +67,16 @@ begin
         4: a <= 8'b11101111;
         5: a <= 8'b11011111;
         6: a <= 8'b10111111;
-        7: a <= 8'b01111111;
+        default: /* 7 */ a <= 8'b01111111;
         endcase
     end
 end
 
 // Clocked cathode update
-always_ff @(posedge clk)
-begin
-    if (index[0])
-    begin
+always_ff @(posedge clk) begin
+    if (index[0]) begin
         c <= 8'b11111111;
-    end
-    else
-    begin
+    end else begin
         case (nibble)
         0:  c <= 8'b11000000;
         1:  c <= 8'b11111001;
@@ -102,20 +93,16 @@ begin
         12: c <= 8'b11000110;
         13: c <= 8'b10100001;
         14: c <= 8'b10000110;
-        15: c <= 8'b10001110;
+        default: /* 15 */ c <= 8'b10001110;
         endcase
     end
 end
 
 // Clocked value updates
-always_ff @(posedge clk)
-begin
-    if (reset)
-    begin
+always_ff @(posedge clk) begin
+    if (reset) begin
         value <= 32'h00000000;
-    end
-    else
-    begin
+    end else begin
         if (write_enable)
         begin
             // Only write bytes where mask is set
@@ -128,20 +115,13 @@ begin
 end
 
 // Clicked update of display value on digit transitions
-always_ff @(posedge clk)
-begin
-    if (reset)
-    begin
+always_ff @(posedge clk) begin
+    if (reset) begin
         display_value <= value;
-    end
-    else
-    begin
-        if (counter == COUNTER_ROLLOVER)
-        begin
+    end else begin
+        if (counter == COUNTER_ROLLOVER) begin
             display_value <= value;
-        end
-        else
-        begin
+        end else begin
             display_value <= display_value;
         end
     end
@@ -151,20 +131,14 @@ end
 // Clocked counter
 always_ff @(posedge clk)
 begin
-    if (reset)
-    begin
+    if (reset) begin
         counter <= 0;
         index <= 0;
-    end
-    else
-    begin
-        if (counter == COUNTER_ROLLOVER)
-        begin
+    end else begin
+        if (counter == COUNTER_ROLLOVER) begin
             counter <= 0;
             index <= index + 1;
-        end
-        else
-        begin
+        end else begin
             counter <= counter + 1;
             index <= index;
         end

@@ -44,10 +44,8 @@ assign read_data1 = read_addr1 == 5'b0 ? 32'b0 : mem[read_addr1];
 assign read_data2 = read_addr2 == 5'b0 ? 32'b0 : mem[read_addr2];
 
 // Clocked Writing
-always_ff @(posedge clk)
-begin
-    if (write_enable && write_addr != 5'b0)
-    begin
+always_ff @(posedge clk) begin
+    if (write_enable && write_addr != 5'b0) begin
         mem[write_addr] <= write_data;
     end
 end

@@ -168,7 +168,7 @@ always_comb begin
             default:    reg_write_data <= dbus_read_data;
             endcase
         end
-    default: // WB_SRC_ALU:
+    default: // WB_SRC_ALU
         begin
             reg_write_data <= alu_result;
         end
@@ -183,8 +183,8 @@ end
 // Operand 1
 always_comb begin
     case (cw.alu_op1_sel)
-    ALU_OP1_RS1:  alu_operand1 <= reg_read_data1;
-    ALU_OP1_IMMU: alu_operand1 <= imm_u;
+    ALU_OP1_RS1: alu_operand1 <= reg_read_data1;
+    default: /* ALU_OP1_IMMU */ alu_operand1 <= imm_u;
     endcase
 end
 
@@ -194,7 +194,7 @@ always_comb begin
     ALU_OP2_RS2:  alu_operand2 <= reg_read_data2;
     ALU_OP2_IMMI: alu_operand2 <= imm_i;
     ALU_OP2_IMMS: alu_operand2 <= imm_s;
-    ALU_OP2_PC:   alu_operand2 <= pc;
+    default: /* ALU_OP2_PC */ alu_operand2 <= pc;
     endcase
 end
 
@@ -212,7 +212,7 @@ always_comb begin
             2'b00: dbus_write_mask <= 4'b0001;
             2'b01: dbus_write_mask <= 4'b0010;
             2'b10: dbus_write_mask <= 4'b0100;
-            2'b11: dbus_write_mask <= 4'b1000;
+            default: /* 2'b11 */ dbus_write_mask <= 4'b1000;
             endcase
             dbus_write_data <= { 4{reg_read_data2[ 7:0]} };
         end
@@ -266,7 +266,7 @@ always_comb begin
                 begin
                     pc_next <= reg_read_data1 + imm_i;
                 end
-            PC_BRANCH:
+            default: /* PC_BRANCH */
                 begin
                     if (alu_zero == cw.pc_branch_zero)
                         begin

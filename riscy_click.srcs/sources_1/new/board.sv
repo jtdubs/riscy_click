@@ -57,17 +57,15 @@ wire word ram_read_data;
 
 // Banked RAM
 genvar i;
-generate for (i=0; i<4; i++)
-    begin
-        data_ram_bank dram_bank (
-            .clk(clk),
-            .a(dbus_addr[8:2]),
-            .d(dbus_write_data[(8*i+7):(8*i)]),
-            .we(ram_write_enable & dbus_write_mask[i]),
-            .spo(ram_read_data[(8*i+7):(8*i)])
-        );
-    end
-endgenerate
+generate for (i=0; i<4; i++) begin
+    data_ram_bank dram_bank (
+        .clk(clk),
+        .a(dbus_addr[8:2]),
+        .d(dbus_write_data[(8*i+7):(8*i)]),
+        .we(ram_write_enable & dbus_write_mask[i]),
+        .spo(ram_read_data[(8*i+7):(8*i)])
+    );
+end endgenerate
 
 // seven segment display
 segdisplay #(.CLK_DIVISOR(10000)) disp (
@@ -98,8 +96,7 @@ bios_rom bios_copy (
 // FF000000:            Seven Segment Display
 // FF000004:            Switch Bank
 //
-always_comb
-begin
+always_comb begin
     casez (dbus_addr)
     32'h0???????: begin ram_write_enable <= 1'b0;              dsp_write_enable <= 1'b0;              dbus_read_data <= bios_read_data;     end
     32'h1???????: begin ram_write_enable <= dbus_write_enable; dsp_write_enable <= 1'b0;              dbus_read_data <= ram_read_data;      end
