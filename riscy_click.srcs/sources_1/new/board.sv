@@ -70,7 +70,7 @@ generate for (i=0; i<4; i++)
 endgenerate
 
 // seven segment display
-segdisplay #(.CLK_DIVISOR(1000)) disp (
+segdisplay #(.CLK_DIVISOR(10000)) disp (
     .clk(clk),
     .reset(reset),
     .a(segment_a),
