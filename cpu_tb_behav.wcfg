@@ -12,9 +12,9 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0.000000 us"></ZoomStartTime>
-      <ZoomEndTime time="9,860.000001 us"></ZoomEndTime>
-      <Cursor1Time time="8,001.000000 us"></Cursor1Time>
+      <ZoomStartTime time="51.201000000 ms"></ZoomStartTime>
+      <ZoomEndTime time="70.921000001 ms"></ZoomEndTime>
+      <Cursor1Time time="64.001000000 ms"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="404"></NameColumnWidth>
@@ -190,6 +190,10 @@
          <wvobject fp_name="/cpu_tb/board/disp/value" type="array">
             <obj_property name="ElementShortName">value[31:0]</obj_property>
             <obj_property name="ObjectShortName">value[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/cpu_tb/board/disp/display_value" type="array">
+            <obj_property name="ElementShortName">display_value[31:0]</obj_property>
+            <obj_property name="ObjectShortName">display_value[31:0]</obj_property>
          </wvobject>
          <wvobject fp_name="/cpu_tb/board/disp/counter" type="array">
             <obj_property name="ElementShortName">counter[15:0]</obj_property>

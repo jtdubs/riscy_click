@@ -32,6 +32,7 @@ localparam COUNTER_ROLLOVER = (CLK_DIVISOR / 2) - 1;
 
 // Registers
 word         value;
+word         display_value;
 logic [15:0] counter;
 logic [ 8:0] nibble;
 logic [ 3:0] index;
@@ -43,14 +44,14 @@ assign read_data = value;
 always_comb
 begin
     case (index[3:1])
-    0: nibble <= value[ 3: 0];
-    1: nibble <= value[ 7: 4];
-    2: nibble <= value[11: 8];
-    3: nibble <= value[15:12];
-    4: nibble <= value[19:16];
-    5: nibble <= value[23:20];
-    6: nibble <= value[27:24];
-    7: nibble <= value[31:28];
+    0: nibble <= display_value[ 3: 0];
+    1: nibble <= display_value[ 7: 4];
+    2: nibble <= display_value[11: 8];
+    3: nibble <= display_value[15:12];
+    4: nibble <= display_value[19:16];
+    5: nibble <= display_value[23:20];
+    6: nibble <= display_value[27:24];
+    7: nibble <= display_value[31:28];
     endcase
 end
 
@@ -125,6 +126,27 @@ begin
         end
     end
 end
+
+// Clicked update of display value on digit transitions
+always_ff @(posedge clk)
+begin
+    if (reset)
+    begin
+        display_value <= value;
+    end
+    else
+    begin
+        if (counter == COUNTER_ROLLOVER)
+        begin
+            display_value <= value;
+        end
+        else
+        begin
+            display_value <= display_value;
+        end
+    end
+end
+
 
 // Clocked counter
 always_ff @(posedge clk)

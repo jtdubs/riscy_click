@@ -13,8 +13,8 @@ badd +16 riscy_click.srcs/sources_1/new/consts.sv
 badd +236 riscy_click.srcs/sources_1/new/cpu.sv
 badd +5 riscy_click.srcs/sources_1/new/ctl.sv
 badd +46 riscy_click.srcs/sources_1/new/regfile.sv
-badd +137 riscy_click.srcs/sources_1/new/segdisplay.sv
-badd +43 riscy_click.srcs/sim_1/new/cpu_tb.sv
+badd +34 riscy_click.srcs/sources_1/new/segdisplay.sv
+badd +22 riscy_click.srcs/sim_1/new/cpu_tb.sv
 badd +1 riscy_click.srcs/constrs_1/new/Nexys-A7-100T.xdc
 badd +9 TODO
 badd +15 bios/bios.dis
@@ -50,12 +50,13 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 19) / 39)
+let s:l = 1 - ((0 * winheight(0) + 30) / 60)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 1
 normal! 0
+lcd /mnt/d/dev/riscy_click
 tabnext 1
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
