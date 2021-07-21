@@ -12,6 +12,7 @@ logic halt;
 
 // bus
 word ibus_addr;
+// word ibus_addr_next;
 word ibus_data;
 word ibus_data_next;
 
@@ -22,7 +23,7 @@ logic ex_jmp_valid;
 // out
 word pc;
 word ir;
-logic stage_valid;
+logic stall;
 
 cpu_if cpu_if (
     .clk(clk),
@@ -34,7 +35,7 @@ cpu_if cpu_if (
     .ex_jmp_valid(ex_jmp_valid),
     .pc(pc),
     .ir(ir),
-    .stage_valid(stage_valid)
+    .stall(stall)
 );
 
 // clock generator
@@ -85,12 +86,13 @@ end
 
 // bus behavior
 always @(ibus_addr) begin
-    // bus takes a while to access data
+    // bus takes a while to access data 
     ibus_data_next <= #70 { 8'hFF, ibus_addr[23:0] };
 end
 always_ff @(posedge clk) begin
     // bus has registered output
     ibus_data <= ibus_data_next;
+    // ibus_addr <= ibus_addr_next;
 end
 
 // in

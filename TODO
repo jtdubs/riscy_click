@@ -7,7 +7,6 @@ Steps:
 
 Stages:
 - IF (Fetch instruction)
-    - Finish cleaning up stage_valid vs. stall
     - Does it still work if memory inputs are latched?
     - Test with a simulated BRAM w/ latched input and outputs
 - ID (Decode instruction and read registers)

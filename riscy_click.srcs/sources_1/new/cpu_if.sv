@@ -27,7 +27,7 @@ module cpu_if
         // stage outputs
         output      word        pc,             // program counter
         output      word        ir,             // instruction register
-        output      logic       stage_valid     // whether or not stage outputs are valid (false if stalled)
+        output      logic       stall           // stall indicator
     );
 
 
@@ -35,30 +35,21 @@ module cpu_if
 /// Variables
 ///
 
-logic stall;
-logic reg_stall;        // track if we are in the first cycle after a reset
-word  pc_next;          // next cycle's pc value, and therefore this cycle's memory address 
-
-
-///
-/// Registers
-///
-assign stall = reset | halt | ex_jmp_valid;
-
-always_ff @(posedge clk) begin
-    reg_stall <= stall; // stall if reset or jumping
-end
+logic stall_next; // is the next cycle a stall
+word  pc_next;    // what's the next cycle's program counter 
 
 
 ///
 /// Latch outputs
 ///
+
 always_ff @(posedge clk) begin
-    pc          <= pc_next;
-    stage_valid <= ~stall;
+    pc    <= pc_next;
+    stall <= stall_next;
 end
 
-assign ir = ibus_data; // ram output is already registered, so pass it through
+// ibus data is already registered, so pass it through
+assign ir = ibus_data;
 
 
 ///
@@ -68,13 +59,16 @@ assign ir = ibus_data; // ram output is already registered, so pass it through
 // Always read from the location of the next instruction
 assign ibus_addr = pc_next;
 
-// PC logic
+// Next cycle will stall if reset, halt or jump
+assign stall_next = reset | halt | ex_jmp_valid;
+
+// Determine next program counter
 always_comb begin
     if (reset) begin
         // zero if reset
         pc_next <= 0;
-    end else if (reg_stall) begin
-        // no change if stall
+    end else if (stall) begin
+        // no change if in stall cycle
         pc_next <= pc_next;
     end else if (ex_jmp_valid) begin
         // respect jumps from execute stage
