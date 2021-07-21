@@ -48,13 +48,13 @@ end
 // reset pulse (1 cycle)
 initial begin
     reset = 1;
-    #100 reset = 0;
+    #150 reset = 0;
 end
 
 // halt eventually
 initial begin
     halt = 0;
-    #3950 halt = 1;
+    #2250 halt = 1;
 end
 
 // do some jumps
@@ -62,7 +62,7 @@ initial begin
     ex_jmp = 32'hXXXX;
     ex_jmp_valid = 1'b0;
     
-    #950 begin
+    #750 begin
         ex_jmp = 32'h0100;
         ex_jmp_valid = 1'b1;
     end
@@ -72,7 +72,7 @@ initial begin
         ex_jmp_valid = 1'b0;
     end
     
-    #1000 begin
+    #600 begin
         ex_jmp = 32'h0080;
         ex_jmp_valid = 1'b1;
     end
