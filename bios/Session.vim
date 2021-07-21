@@ -7,19 +7,25 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +25 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/alu.sv
-badd +99 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/board.sv
-badd +16 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/consts.sv
-badd +236 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/cpu.sv
-badd +5 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/ctl.sv
-badd +46 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/regfile.sv
-badd +137 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/segdisplay.sv
-badd +43 /mnt/d/dev/riscy_click/riscy_click.srcs/sim_1/new/cpu_tb.sv
+badd +31 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/alu.sv
+badd +107 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/board.sv
+badd +130 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/consts.sv
+badd +39 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/cpu.sv
+badd +47 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/ctl.sv
+badd +50 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/regfile.sv
+badd +121 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/segdisplay.sv
+badd +26 /mnt/d/dev/riscy_click/riscy_click.srcs/sim_1/new/cpu_tb.sv
 badd +1 /mnt/d/dev/riscy_click/riscy_click.srcs/constrs_1/new/Nexys-A7-100T.xdc
-badd +9 /mnt/d/dev/riscy_click/TODO
+badd +31 /mnt/d/dev/riscy_click/TODO
 badd +15 bios.dis
 badd +8 bios.c
 badd +21 Makefile
+badd +71 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/cpu_if.sv
+badd +12 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/cpu_id.sv
+badd +9 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/cpu_ex.sv
+badd +13 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/cpu_ma.sv
+badd +13 /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/cpu_wb.sv
+badd +0 bios.coe
 argglobal
 %argdel
 $argadd /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/alu.sv
@@ -30,7 +36,7 @@ $argadd /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/ctl.sv
 $argadd /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/regfile.sv
 $argadd /mnt/d/dev/riscy_click/riscy_click.srcs/sources_1/new/segdisplay.sv
 $argadd /mnt/d/dev/riscy_click/riscy_click.srcs/sim_1/new/cpu_tb.sv
-edit bios.dis
+edit bios.coe
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
@@ -40,7 +46,7 @@ set winheight=1
 set winminwidth=0
 set winwidth=1
 argglobal
-if bufexists("bios.dis") | buffer bios.dis | else | edit bios.dis | endif
+if bufexists("bios.coe") | buffer bios.coe | else | edit bios.coe | endif
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -50,11 +56,11 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 15 - ((14 * winheight(0) + 19) / 39)
+let s:l = 1 - ((0 * winheight(0) + 23) / 47)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-15
+1
 normal! 0
 tabnext 1
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'

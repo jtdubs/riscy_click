@@ -12,9 +12,7 @@ logic halt;
 
 // bus
 word mem_addr;
-word mem_addr_next;
 word mem_data;
-word mem_data_next;
 
 // in
 word ex_jmp;
@@ -23,13 +21,18 @@ logic ex_jmp_valid;
 // out
 word pc;
 word ir;
-logic stall;
 
-cpu_if #(.STALL_CYCLES(1)) cpu_if (
+bios_block_rom bios (
+    .clka(clk),
+    .addra(mem_addr[11:2]),
+    .douta(mem_data)
+);
+
+cpu_if #(.MEM_ACCESS_CYCLES(2)) cpu_if (
     .clk(clk),
     .reset(reset),
     .halt(halt),
-    .mem_addr(mem_addr_next),
+    .mem_addr(mem_addr),
     .mem_data(mem_data),
     .ex_jmp(ex_jmp),
     .ex_jmp_valid(ex_jmp_valid),
@@ -82,19 +85,5 @@ initial begin
         ex_jmp_valid = 1'b0;
     end
 end
-
-// bus behavior
-always @(mem_addr) begin
-    // bus takes a while to access data 
-    mem_data_next <= #70 { 8'hFF, mem_addr[23:0] };
-end
-always_ff @(posedge clk) begin
-    // bus has registered output
-    mem_data <= mem_data_next;
-    mem_addr <= mem_addr_next;
-end
-
-// in
-
 
 endmodule

@@ -22,7 +22,7 @@ module cpu_if
     import consts::*;
     #(
         // The number of cycles required for memory access
-        parameter MEM_ACCESS_CYCLES = 1
+        parameter MEM_ACCESS_CYCLES = 2
     )
     (
         // cpu signals
@@ -48,8 +48,10 @@ module cpu_if
 /// Program Counter FIFO
 ///
 
-word [MEM_ACCESS_CYCLES:0] pc_fifo; // FIFO of PC values
-word                       pc_next; // Next PC to be added to FIFO
+localparam FIFO_TOP = MEM_ACCESS_CYCLES - 1;
+
+word [FIFO_TOP:0] pc_fifo; // FIFO of PC values
+word              pc_next; // Next PC to be added to FIFO
 
 
 //
@@ -67,12 +69,12 @@ assign mem_addr = pc_next; // Always start accessing the next PC ALU_ADD
 
 // Push pc_next to FIFO each clock
 always_ff @(posedge clk) begin
-    pc_fifo[MEM_ACCESS_CYCLES] <= pc_next;
+    pc_fifo[FIFO_TOP] <= pc_next;
 end
 
 // Pop from FIFO each clock
 genvar i;
-generate for (i=0; i<MEM_ACCESS_CYCLES; i++)
+generate for (i=0; i<FIFO_TOP; i++)
     always_ff @(posedge clk) begin
         // Carry values down through the FIFO
         pc_fifo[i] <= pc_fifo[i+1];
@@ -89,13 +91,13 @@ always_comb begin
         // zero if reset
         pc_next <= 0;
     end else if (halt) begin
-        pc_next <= pc_fifo[MEM_ACCESS_CYCLES];    
+        pc_next <= pc_fifo[FIFO_TOP];    
     end else if (ex_jmp_valid) begin
         // respect jumps from execute stage
         pc_next <= ex_jmp;
     end else begin
         // otherwise keep advancing
-        pc_next <= pc_fifo[MEM_ACCESS_CYCLES] + 4;
+        pc_next <= pc_fifo[FIFO_TOP] + 4;
     end
 end
 
