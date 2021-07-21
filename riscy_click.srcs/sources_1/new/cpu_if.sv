@@ -1,17 +1,28 @@
 `timescale 1ns/1ps
 
 ///
-/// Risc-V CPU Instruction Fetch stage
+/// Risc-V CPU Instruction Fetch Stage
 ///
 /// Assumes:
-/// - memory bus takes 1 cycle and has registered output
+/// - Memory has fixed latency of `MEM_ACCESS_CYCLES`
+/// - Jumps will be asserted during a single positive clock edge
+/// - Reset signal duration is greater than memory access latency
+///
+/// Design:
+/// - Fetches an address every clock cycle, placing the address into a FIFO whose depth is MEM_ACCESS_CYCLES
+/// - The FIFO is popped every clock cycle, and the value is asserted as the stage's PC output
+/// - As the memory latency and FIFO depth are equal, a PC will come out of the FIFO during the same cycle it's corresponding IR comes out of memory
+///
+/// Limitations:
+/// - Will continue running for `MEM_ACCESS_CYCLES` cycles after halt is asserted
 ///
 
 module cpu_if
     // Import Constants
     import consts::*;
     #(
-        parameter STALL_CYCLES = 1
+        // The number of cycles required for memory access
+        parameter MEM_ACCESS_CYCLES = 1
     )
     (
         // cpu signals
@@ -19,9 +30,9 @@ module cpu_if
         input       logic       reset,          // reset
         input       logic       halt,           // halt
 
-        // instruction memory bus
-        output      word        ibus_addr,      // address
-        input       word        ibus_data,      // data
+        // instruction memory access
+        output      word        mem_addr,       // address
+        input       word        mem_data,       // data
 
         // stage inputs
         input       word        ex_jmp,         // jump address from execute stage
@@ -29,80 +40,62 @@ module cpu_if
 
         // stage outputs
         output      word        pc,             // program counter
-        output      word        ir,             // instruction register
-        output      logic       stall           // stall indicator
+        output      word        ir              // instruction register
     );
 
 
 ///
-/// Variables
+/// Program Counter FIFO
 ///
 
-localparam integer COUNTER_SIZE = $clog2(STALL_CYCLES);
-
-logic [COUNTER_SIZE:0] stall_ctr;
-logic [COUNTER_SIZE:0] stall_ctr_next;
-logic stall_condition;
-
-word  [STALL_CYCLES:0] pc_fifo;
-word pc_next;
+word [MEM_ACCESS_CYCLES:0] pc_fifo; // FIFO of PC values
+word                       pc_next; // Next PC to be added to FIFO
 
 
-///
-/// Latch outputs
-///
+//
+// Outputs
+//
 
-assign pc = pc_fifo[0];
+assign pc = pc_fifo[0];     // PC is taken from bottom of FIFO
+assign ir = mem_data;      // IR is corresponding result from mem access
+assign mem_addr = pc_next; // Always start accessing the next PC ALU_ADD
 
+
+//
+// FIFO Behavior
+//
+
+// Push pc_next to FIFO each clock
 always_ff @(posedge clk) begin
-    stall_ctr <= stall_ctr_next;
-    stall     <= (stall_ctr_next > 0);
-    pc_fifo[STALL_CYCLES] <= pc_next;
+    pc_fifo[MEM_ACCESS_CYCLES] <= pc_next;
 end
 
-always_comb begin
-    if (stall_condition) begin
-        stall_ctr_next <= STALL_CYCLES;
-    end else if (stall_ctr_next > 0) begin
-        stall_ctr_next <= stall_ctr - 1;
-    end else begin
-        stall_ctr_next <= 0;
-    end
-end
-
-// ibus data is already registered, so pass it through
-assign ir = ibus_data;
-
+// Pop from FIFO each clock
 genvar i;
-generate for (i=0; i<STALL_CYCLES; i++)
+generate for (i=0; i<MEM_ACCESS_CYCLES; i++)
     always_ff @(posedge clk) begin
+        // Carry values down through the FIFO
         pc_fifo[i] <= pc_fifo[i+1];
     end 
 endgenerate
 
 
+//
+// Program Counter Advancement
+//
 
-///
-/// Combinational Logic
-///
-
-// Always read from the location of the next instruction
-assign ibus_addr = pc_next;
-
-// Next cycle will stall if reset, halt or jump
-assign stall_condition = reset | halt | ex_jmp_valid;
-
-// Determine next program counter
 always_comb begin
     if (reset) begin
         // zero if reset
         pc_next <= 0;
+    end else if (halt) begin
+        pc_next <= pc_fifo[MEM_ACCESS_CYCLES];    
     end else if (ex_jmp_valid) begin
         // respect jumps from execute stage
         pc_next <= ex_jmp;
     end else begin
         // otherwise keep advancing
-        pc_next <= pc_fifo[STALL_CYCLES] + 4;
+        pc_next <= pc_fifo[MEM_ACCESS_CYCLES] + 4;
     end
 end
 

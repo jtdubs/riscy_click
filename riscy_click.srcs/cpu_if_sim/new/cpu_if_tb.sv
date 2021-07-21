@@ -11,10 +11,10 @@ logic reset;
 logic halt;
 
 // bus
-word ibus_addr;
-// word ibus_addr_next;
-word ibus_data;
-word ibus_data_next;
+word mem_addr;
+word mem_addr_next;
+word mem_data;
+word mem_data_next;
 
 // in
 word ex_jmp;
@@ -25,17 +25,16 @@ word pc;
 word ir;
 logic stall;
 
-cpu_if cpu_if (
+cpu_if #(.STALL_CYCLES(1)) cpu_if (
     .clk(clk),
     .reset(reset),
     .halt(halt),
-    .ibus_addr(ibus_addr),
-    .ibus_data(ibus_data),
+    .mem_addr(mem_addr_next),
+    .mem_data(mem_data),
     .ex_jmp(ex_jmp),
     .ex_jmp_valid(ex_jmp_valid),
     .pc(pc),
-    .ir(ir),
-    .stall(stall)
+    .ir(ir)
 );
 
 // clock generator
@@ -85,14 +84,14 @@ initial begin
 end
 
 // bus behavior
-always @(ibus_addr) begin
+always @(mem_addr) begin
     // bus takes a while to access data 
-    ibus_data_next <= #70 { 8'hFF, ibus_addr[23:0] };
+    mem_data_next <= #70 { 8'hFF, mem_addr[23:0] };
 end
 always_ff @(posedge clk) begin
     // bus has registered output
-    ibus_data <= ibus_data_next;
-    // ibus_addr <= ibus_addr_next;
+    mem_data <= mem_data_next;
+    mem_addr <= mem_addr_next;
 end
 
 // in
