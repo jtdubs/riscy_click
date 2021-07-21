@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-module cpu_tb ();
+module board_tb ();
 
 reg clk;
 reg reset;

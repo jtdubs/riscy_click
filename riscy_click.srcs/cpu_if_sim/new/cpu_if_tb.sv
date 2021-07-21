@@ -1,0 +1,89 @@
+`timescale 1ns/1ps
+
+module cpu_if_tb 
+    // Import Constants
+    import consts::*;
+    ();
+
+// board
+logic clk;
+logic reset;
+logic halt;
+
+// bus
+word ibus_addr;
+word ibus_data;
+word ibus_data_next;
+
+// in
+word ex_jmp;
+logic ex_jmp_valid;
+
+// out
+word pc;
+word ir;
+logic stage_valid;
+
+cpu_if cpu_if (
+    .clk(clk),
+    .reset(reset),
+    .halt(halt),
+    .ibus_addr(ibus_addr),
+    .ibus_data(ibus_data),
+    .ex_jmp(ex_jmp),
+    .ex_jmp_valid(ex_jmp_valid),
+    .pc(pc),
+    .ir(ir),
+    .stage_valid(stage_valid)
+);
+
+// clock generator
+initial begin
+    clk = 1;
+    forever begin
+        #50 clk <= ~clk;
+    end
+end
+
+// reset pulse (1 cycle)
+initial begin
+    reset = 1;
+    #100 reset = 0;
+end
+
+// halt eventually
+initial begin
+    halt = 0;
+    #4000 halt = 1;
+end
+
+// do some jumps
+initial begin
+    ex_jmp = 32'hXXXX;
+    ex_jmp_valid = 1'b0;
+    
+    #1000 begin
+        ex_jmp = 32'h0100;
+        ex_jmp_valid = 1'b1;
+    end
+    
+    #100 begin
+        ex_jmp = 32'hXXXX;
+        ex_jmp_valid = 1'b0;
+    end
+end
+
+// bus behavior
+always @(ibus_addr) begin
+    // bus takes 10 ticks to access data
+    ibus_data_next <= #10 { 8'hFF, ibus_addr[23:0] };
+end
+always_ff @(posedge clk) begin
+    // bus has registered output
+    ibus_data <= ibus_data_next;
+end
+
+// in
+
+
+endmodule

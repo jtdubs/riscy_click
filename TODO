@@ -1,11 +1,10 @@
-1. Pipelineing and speed
+Steps:
+-1. Force reset to occur and clock edges...
+0. Debug cycle counter?  Could put on board.
+1. Pipelining
 2. Allow for arbitrary-time memory access / stalls
 3. Switch to mix of BRAM & DDR
-
-Hazards:
-- Structural - Hardware resources used by multiple stages.  Avoid this by not sharing resources across stages.
-- Data       - Instruction needs reg or mem value being modified by later instruction
-- Control    - Earlier stages may need to be flushed if a branch occurs, as it is the wrong instruction in-flight
+4. Move to design with unified memory, instruction/data caches, memory controller
 
 Stages:
 - IF (Fetch instruction)
@@ -13,6 +12,11 @@ Stages:
 - EX (Execute instruction (ALU))
 - MA (Memory access)
 - WB (Register commit)
+
+Hazards:
+- Structural - Hardware resources used by multiple stages.  Avoid this by not sharing resources across stages.
+- Data       - Instruction needs reg or mem value being modified by later instruction
+- Control    - Earlier stages may need to be flushed if a branch occurs, as it is the wrong instruction in-flight
 
 Structural hazard avoidance:
 - Ensure all hardware used by only one stage.  Duplciate if necessary.
@@ -26,7 +30,8 @@ Control hazard avoidance:
 
 Reference:
 https://passlab.github.io/CSE564/notes/lecture09_RISCV_Impl_pipeline.pdf
-
+https://github.com/ultraembedded/riscv/
+https://github.com/combinatorylogic/soc/blob/master/backends/c2/hw/rtl/core.v
 
 Video signals?
 Keyboard/mouse signals?
