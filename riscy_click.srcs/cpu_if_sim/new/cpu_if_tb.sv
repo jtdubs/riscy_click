@@ -54,7 +54,7 @@ end
 // halt eventually
 initial begin
     halt = 0;
-    #4000 halt = 1;
+    #3950 halt = 1;
 end
 
 // do some jumps
@@ -62,8 +62,18 @@ initial begin
     ex_jmp = 32'hXXXX;
     ex_jmp_valid = 1'b0;
     
-    #1000 begin
+    #950 begin
         ex_jmp = 32'h0100;
+        ex_jmp_valid = 1'b1;
+    end
+    
+    #100 begin
+        ex_jmp = 32'hXXXX;
+        ex_jmp_valid = 1'b0;
+    end
+    
+    #1000 begin
+        ex_jmp = 32'h0080;
         ex_jmp_valid = 1'b1;
     end
     
@@ -75,8 +85,8 @@ end
 
 // bus behavior
 always @(ibus_addr) begin
-    // bus takes 10 ticks to access data
-    ibus_data_next <= #10 { 8'hFF, ibus_addr[23:0] };
+    // bus takes a while to access data
+    ibus_data_next <= #70 { 8'hFF, ibus_addr[23:0] };
 end
 always_ff @(posedge clk) begin
     // bus has registered output

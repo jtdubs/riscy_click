@@ -35,7 +35,7 @@ module cpu_if
 /// Variables
 ///
 logic reg_reset;        // registered reset input 
-logic reg_first_cycle;  // track if we are in the first cycle after a reset
+logic reg_stall;        // track if we are in the first cycle after a reset
 word  reg_ex_jmp;       // registered jmp input
 logic reg_ex_jmp_valid; // registered jmp valid input
 word  pc_next;          // next cycle's pc value, and therefore this cycle's memory address 
@@ -47,7 +47,7 @@ logic stage_valid_next; // next cycle's validity
 ///
 always_ff @(posedge clk) begin
     reg_reset        <= reset;
-    reg_first_cycle  <= reg_reset;   // we are first cycle if last cycle was still reset
+    reg_stall        <= reg_reset | ex_jmp_valid;   // we are first cycle if last cycle was still reset
     reg_ex_jmp       <= ex_jmp;
     reg_ex_jmp_valid <= ex_jmp_valid;
 end
@@ -73,12 +73,12 @@ assign ibus_addr = pc_next;
 
 // PC logic
 always_comb begin
-    if (reg_reset | reg_first_cycle) begin
-        // zero if reset or first cycle
+    if (reg_reset) begin
+        // zero if reset
         pc_next <= 0;
-    end else if (halt) begin
-        // unchanging if halted
-        pc_next <= pc;
+    end else if (reg_stall | halt) begin
+        // no change if stall or halt
+        pc_next <= pc_next;
     end else if (ex_jmp_valid) begin
         // respect jumps from execute stage
         pc_next <= ex_jmp;
@@ -91,7 +91,7 @@ end
 // Stage Valid logic
 always_comb begin
     // next cycle won't be valid if we are resetting or jumping
-    if (ex_jmp | reg_reset) begin
+    if (ex_jmp | reg_reset | halt) begin
         stage_valid_next <= 0;
     end else begin
         stage_valid_next <= 1;
