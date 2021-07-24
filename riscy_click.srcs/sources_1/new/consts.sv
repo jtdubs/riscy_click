@@ -16,6 +16,9 @@ package consts;
 typedef logic [31:0] word;
 typedef logic [63:0] dword;
 
+// Register Address
+typedef logic [4:0] regaddr;
+
 
 ///
 /// Instruction Decoding

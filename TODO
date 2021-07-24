@@ -7,8 +7,6 @@ Steps:
 
 Stages:
 - IF (Fetch instruction)
-    - Does it still work if memory inputs are latched?
-    - Test with a simulated BRAM w/ latched input and outputs
 - ID (Decode instruction and read registers)
 - EX (Execute instruction (ALU))
 - MA (Memory access)
@@ -23,10 +21,10 @@ Structural hazard avoidance:
 - Ensure all hardware used by only one stage.  Duplciate if necessary.
 
 Data hazard avoidance:
-- MA and WB advertise the pending register values; EX consumes them if needed.
+- EX, MA & WB advertise the pending register values; ID consumes them if needed.
 
 Control hazard avoidance:
-- EX advertises branch addresses; ID & IF notice and flush
+- ID advertises branch addresses; IF notice and flush
 - Therefore, stages advertise if they are empty/stalled so subsequent stages can also stall
 
 Reference:

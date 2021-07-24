@@ -12,15 +12,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="980.000 ns"></ZoomStartTime>
-      <ZoomEndTime time="3,404.001 ns"></ZoomEndTime>
-      <Cursor1Time time="2,402.000 ns"></Cursor1Time>
+      <ZoomStartTime time="600.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="3,467.001 ns"></ZoomEndTime>
+      <Cursor1Time time="500.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="305"></NameColumnWidth>
       <ValueColumnWidth column_width="213"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="7" />
+   <WVObjectSize size="6" />
    <wvobject fp_name="/cpu_if_tb/cpu_if/clk" type="logic">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
@@ -28,10 +28,6 @@
    <wvobject fp_name="/cpu_if_tb/cpu_if/reset" type="logic">
       <obj_property name="ElementShortName">reset</obj_property>
       <obj_property name="ObjectShortName">reset</obj_property>
-   </wvobject>
-   <wvobject fp_name="/cpu_if_tb/cpu_if/halt" type="logic">
-      <obj_property name="ElementShortName">halt</obj_property>
-      <obj_property name="ObjectShortName">halt</obj_property>
    </wvobject>
    <wvobject fp_name="group118" type="group">
       <obj_property name="label">Bus</obj_property>
@@ -50,13 +46,21 @@
       <obj_property name="label">Input</obj_property>
       <obj_property name="DisplayName">label</obj_property>
       <obj_property name="isExpanded"></obj_property>
-      <wvobject fp_name="/cpu_if_tb/cpu_if/ex_jmp" type="array">
-         <obj_property name="ElementShortName">ex_jmp[31:0]</obj_property>
-         <obj_property name="ObjectShortName">ex_jmp[31:0]</obj_property>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/id_jmp" type="array">
+         <obj_property name="ElementShortName">id_jmp[31:0]</obj_property>
+         <obj_property name="ObjectShortName">id_jmp[31:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/cpu_if_tb/cpu_if/ex_jmp_valid" type="logic">
-         <obj_property name="ElementShortName">ex_jmp_valid</obj_property>
-         <obj_property name="ObjectShortName">ex_jmp_valid</obj_property>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/id_jmp_valid" type="logic">
+         <obj_property name="ElementShortName">id_jmp_valid</obj_property>
+         <obj_property name="ObjectShortName">id_jmp_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/id_stall" type="logic">
+         <obj_property name="ElementShortName">id_stall</obj_property>
+         <obj_property name="ObjectShortName">id_stall</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/id_halt" type="logic">
+         <obj_property name="ElementShortName">id_halt</obj_property>
+         <obj_property name="ObjectShortName">id_halt</obj_property>
       </wvobject>
    </wvobject>
    <wvobject fp_name="group120" type="group">
@@ -67,23 +71,22 @@
          <obj_property name="ElementShortName">pc_next[31:0]</obj_property>
          <obj_property name="ObjectShortName">pc_next[31:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/cpu_if_tb/cpu_if/pc_fifo" type="array">
-         <obj_property name="ElementShortName">pc_fifo[1:0][31:0]</obj_property>
-         <obj_property name="ObjectShortName">pc_fifo[1:0][31:0]</obj_property>
-         <obj_property name="isExpanded"></obj_property>
-      </wvobject>
    </wvobject>
    <wvobject fp_name="group119" type="group">
       <obj_property name="label">Output</obj_property>
       <obj_property name="DisplayName">label</obj_property>
       <obj_property name="isExpanded"></obj_property>
-      <wvobject fp_name="/cpu_if_tb/cpu_if/pc" type="array">
-         <obj_property name="ElementShortName">pc[31:0]</obj_property>
-         <obj_property name="ObjectShortName">pc[31:0]</obj_property>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/if_pc" type="array">
+         <obj_property name="ElementShortName">if_pc[31:0]</obj_property>
+         <obj_property name="ObjectShortName">if_pc[31:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/cpu_if_tb/cpu_if/ir" type="array">
-         <obj_property name="ElementShortName">ir[31:0]</obj_property>
-         <obj_property name="ObjectShortName">ir[31:0]</obj_property>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/if_ir" type="array">
+         <obj_property name="ElementShortName">if_ir[31:0]</obj_property>
+         <obj_property name="ObjectShortName">if_ir[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/if_stall" type="array">
+         <obj_property name="ElementShortName">if_stall[31:0]</obj_property>
+         <obj_property name="ObjectShortName">if_stall[31:0]</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>
