@@ -22,9 +22,9 @@ module skid_buffer
 //
 
 typedef enum {
-    EMPTY       = 2'b00, // Buffer empty; output blocked
-    TRANSPARENT = 2'b01, // Buffer transparent; input becomes output
-    FULL        = 2'b10  // Buffer full; input blocked
+    EMPTY = 2'b00,
+    BUSY  = 2'b01,
+    FULL  = 2'b10 
 } sb_state;
 
 // current and next state
@@ -37,16 +37,16 @@ assign remove = output_valid & output_ready; // output will occur if data is bei
 
 // which operation is occuring
 logic load, flow, fill, flush, unload;
-assign load    = (state == EMPTY)       && (insert == 1'b1) && (remove == 1'b0); // Empty datapath inserts data into output register.
-assign flow    = (state == TRANSPARENT) && (insert == 1'b1) && (remove == 1'b1); // New inserted data into output register as the old data is removed.
-assign fill    = (state == TRANSPARENT) && (insert == 1'b1) && (remove == 1'b0); // New inserted data into buffer register. Data not removed from output register.
-assign flush   = (state == FULL)        && (insert == 1'b0) && (remove == 1'b1); // Move data from buffer register into output register. Remove old data. No new data inserted.
-assign unload  = (state == TRANSPARENT) && (insert == 1'b0) && (remove == 1'b1); // Remove data from output register, leaving the datapath empty.
+assign load    = (state == EMPTY) &  insert && ~remove; // Empty datapath inserts data into output register.
+assign flow    = (state == BUSY)  &  insert &&  remove; // New inserted data into output register as the old data is removed.
+assign fill    = (state == BUSY)  &  insert && ~remove; // New inserted data into buffer register. Data not removed from output register.
+assign flush   = (state == FULL)  & ~insert &&  remove; // Move data from buffer register into output register. Remove old data. No new data inserted.
+assign unload  = (state == BUSY)  & ~insert &   remove; // Remove data from output register, leaving the datapath empty.
 
 // what will the next state be
 always_comb begin
     if (load | flow | flush) begin
-        state_next <= TRANSPARENT;
+        state_next <= BUSY;
     end else if (fill) begin
         state_next <= FULL;
     end else if (unload) begin
@@ -78,7 +78,6 @@ always_ff @(posedge clk) begin
         output_valid <= (state_next != EMPTY); // Can output if not empty
        
         if (load | flow) begin
-            // If loading an empty buffer, or already in "transparent" mode
             output_data <= input_data;
         end else if (flush) begin     
             // Output the buffered value, and we are now "transparent"
