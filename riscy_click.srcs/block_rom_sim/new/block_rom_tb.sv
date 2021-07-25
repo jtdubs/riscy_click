@@ -3,13 +3,15 @@
 module block_rom_tb ();
 
 logic clk, reset;
-logic [31:0] addr, data;
+logic [31:0] addr_a, addr_b, data_a, data_b;
 
 block_rom #(.CONTENTS("d:/dev/riscy_click/bios/tb_bios.coe")) rom (
     .clk(clk),
     .reset(reset),
-    .addr(addr),
-    .data(data)
+    .addr_a(addr_a),
+    .data_a(data_a),
+    .addr_b(addr_b),
+    .data_b(data_b)
 );
 
 // clock generator
@@ -27,11 +29,14 @@ initial begin
 end
 
 // input side
-logic [31:0] next_addr;
-assign next_addr = reset ? 0 : addr + 4;
+logic [31:0] next_addr_a, next_addr_b;
+assign next_addr_a = reset ? 0 : addr_a + 4;
+assign next_addr_b = reset ? 32 : addr_b + 8;
+
 
 always_ff @(negedge clk) begin
-    addr <= next_addr;
+    addr_a <= next_addr_a;
+    addr_b <= next_addr_b;
 end
 
 endmodule

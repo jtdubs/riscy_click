@@ -10,8 +10,13 @@ module block_rom
         input       logic clk,
         input       logic reset,
         
-        input       word  addr,
-        output wire word  data
+        // port a
+        input       word  addr_a,
+        output wire word  data_a,
+        
+        // port b
+        input       word  addr_b,
+        output wire word  data_b
     );
 
 // RAMB36E1: 36K-bit Configurable Synchronous Block RAM
@@ -213,10 +218,10 @@ bios_rom (
     .RDADDRECC(),         // 9-bit output: ECC read address
     .SBITERR(),             // 1-bit output: Single bit error status
     // Port A Data: 32-bit (each) output: Port A data
-    .DOADO(data),                 // 32-bit output: A port data/LSB data
+    .DOADO(data_a),                 // 32-bit output: A port data/LSB data
     .DOPADOP(),             // 4-bit output: A port parity/LSB parity
     // Port B Data: 32-bit (each) output: Port B data
-    .DOBDO(),                 // 32-bit output: B port data/MSB data
+    .DOBDO(data_b),                 // 32-bit output: B port data/MSB data
     .DOPBDOP(),             // 4-bit output: B port parity/MSB parity
     // Cascade Signals: 1-bit (each) input: BRAM cascade ports (to create 64kx1)
     .CASCADEINA(1'b1),       // 1-bit input: A port cascade
@@ -226,7 +231,7 @@ bios_rom (
     .INJECTSBITERR(1'b0), // 1-bit input: Inject a single bit error
     // Port A Address/Control Signals: 16-bit (each) input: Port A address and control signals (read port
     // when RAM_MODE="SDP")
-    .ADDRARDADDR({ addr[12:2], 5'b00000 }),     // 16-bit input: A port address/Read address
+    .ADDRARDADDR({ addr_a[12:2], 5'b00000 }),     // 16-bit input: A port address/Read address
     .CLKARDCLK(clk),         // 1-bit input: A port clock/Read clock
     .ENARDEN(1'b1),             // 1-bit input: A port enable/Read enable
     .REGCEAREGCE(1'b1),     // 1-bit input: A port register enable/Register enable
@@ -238,10 +243,10 @@ bios_rom (
     .DIPADIP(4'h0),             // 4-bit input: A port parity/LSB parity
     // Port B Address/Control Signals: 16-bit (each) input: Port B address and control signals (write port
     // when RAM_MODE="SDP")
-    .ADDRBWRADDR(16'h0000),     // 16-bit input: B port address/Write address
+    .ADDRBWRADDR({ addr_b[12:2], 5'b00000 }),     // 16-bit input: B port address/Write address
     .CLKBWRCLK(clk),         // 1-bit input: B port clock/Write clock
-    .ENBWREN(1'b0),             // 1-bit input: B port enable/Write enable
-    .REGCEB(1'b0),               // 1-bit input: B port register enable
+    .ENBWREN(1'b1),             // 1-bit input: B port enable/Write enable
+    .REGCEB(1'b1),               // 1-bit input: B port register enable
     .RSTRAMB(1'b0),             // 1-bit input: B port set/reset
     .RSTREGB(1'b0),             // 1-bit input: B port register set/reset
     .WEBWE(8'h00),                 // 8-bit input: B port write enable/Write enable

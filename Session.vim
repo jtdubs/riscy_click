@@ -29,7 +29,7 @@ badd +8 bios/bios.coe
 badd +32 riscy_click.srcs/sources_1/new/icache.sv
 badd +268 riscy_click.srcs/cpu_if_sim/new/cpu_if_tb.sv
 badd +85 riscy_click.srcs/sources_1/new/skid_buffer.sv
-badd +17 riscy_click.srcs/sources_1/new/register.sv
+badd +34 riscy_click.srcs/sources_1/new/register.sv
 badd +45 riscy_click.srcs/skid_buffer_sim/new/skid_buffer_tb.sv
 argglobal
 %argdel
@@ -41,7 +41,7 @@ $argadd riscy_click.srcs/sources_1/new/ctl.sv
 $argadd riscy_click.srcs/sources_1/new/regfile.sv
 $argadd riscy_click.srcs/sources_1/new/segdisplay.sv
 $argadd riscy_click.srcs/sim_1/new/cpu_tb.sv
-edit riscy_click.srcs/sources_1/new/register.sv
+edit TODO
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
@@ -51,7 +51,7 @@ set winheight=1
 set winminwidth=0
 set winwidth=1
 argglobal
-if bufexists("riscy_click.srcs/sources_1/new/register.sv") | buffer riscy_click.srcs/sources_1/new/register.sv | else | edit riscy_click.srcs/sources_1/new/register.sv | endif
+if bufexists("TODO") | buffer TODO | else | edit TODO | endif
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -61,7 +61,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 34) / 69)
+let s:l = 1 - ((0 * winheight(0) + 23) / 47)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
