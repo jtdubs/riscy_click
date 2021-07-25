@@ -8,7 +8,7 @@ module cpu_if_tb
 // cpu_if signals
 logic clk, reset, halt;         // board
 word mem_addr, mem_data;        // bus
-word id_jmp;                    // in
+word id_jmp_addr;                // in
 logic id_jmp_valid, id_ready;   // in
 word if_pc, if_ir;              // out
 logic if_valid;                 // out
@@ -20,7 +20,7 @@ cpu_if #(.MEM_ACCESS_CYCLES(1)) cpu_if (
     .halt(halt),
     .mem_addr(mem_addr),
     .mem_data(mem_data),
-    .id_jmp(id_jmp),
+    .id_jmp_addr(id_jmp_addr),
     .id_jmp_valid(id_jmp_valid),
     .id_ready(id_ready),
     .if_pc(if_pc),
@@ -70,26 +70,26 @@ end
 
 // do some jumps
 initial begin
-    id_jmp = 32'hXXXX;
+    id_jmp_addr = 32'hXXXX;
     id_jmp_valid = 1'b0;
 
     #700
     @(posedge clk) begin
-        id_jmp = 32'h0100;
+        id_jmp_addr = 32'h0100;
         id_jmp_valid = 1'b1;
     end
     @(posedge clk) begin
-        id_jmp = 32'hXXXX;
+        id_jmp_addr = 32'hXXXX;
         id_jmp_valid = 1'b0;
     end
     
     #600
     @(posedge clk) begin
-        id_jmp = 32'h0080;
+        id_jmp_addr = 32'h0080;
         id_jmp_valid = 1'b1;
     end
     @(posedge clk) begin
-        id_jmp = 32'hXXXX;
+        id_jmp_addr = 32'hXXXX;
         id_jmp_valid = 1'b0;
     end
 end

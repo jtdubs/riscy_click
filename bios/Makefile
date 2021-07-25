@@ -18,4 +18,4 @@ bios.img: bios
 	llvm-objcopy bios -O binary bios.img
 
 bios.coe: bios.img
-	bin2coe -i bios.img -o bios.coe -w 32
+	hexdump -v -e '/4 "%08X" "\n"' bios.img > bios.coe

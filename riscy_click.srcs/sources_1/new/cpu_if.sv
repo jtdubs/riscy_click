@@ -18,7 +18,7 @@ module cpu_if
         input       word        mem_data,       // data
 
         // stage inputs
-        input       word        id_jmp,         // jump address from execute stage
+        input       word        id_jmp_addr,    // jump address from execute stage
         input       logic       id_jmp_valid,   // whether or not jump address is valid
         input       logic       id_ready,       // is the ID stage ready to accept input
 
@@ -68,7 +68,7 @@ always_comb begin
         skid_pc_next <= skid_pc;
     end else if (id_jmp_valid) begin
         // respect jumps from execute stage
-        skid_pc_next <= id_jmp;
+        skid_pc_next <= id_jmp_addr;
     end else begin
         // otherwise keep advancing
         skid_pc_next <= skid_pc + 4;

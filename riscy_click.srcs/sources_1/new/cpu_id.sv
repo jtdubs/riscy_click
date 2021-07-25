@@ -12,11 +12,16 @@ module cpu_id
         input       logic       clk,            // clock
         input       logic       reset,          // reset
 
-        // stage inputs (direct)
+        // stage inputs
+        input       word        if_pc,          // program counter
+        input       word        if_ir,          // instruction register
+        input       logic       if_valid,       // fetch stage data is valid
+        
+        // stage inputs (data hazards)
         input       regaddr     ex_wb_addr,     // write-back register address
         input       word        ex_wb_data,     // write-back register value
         input       logic       ex_wb_enable,   // write-back enable
-        input       logic       ex_wb_avail,    // write-back data available
+        input       logic       ex_wb_valid,    // write-back data valid
         input       regaddr     ma_wb_addr,     // write-back register address
         input       word        ma_wb_data,     // write-back register value
         input       logic       ma_wb_enable,   // write-back enable
@@ -24,25 +29,23 @@ module cpu_id
         input       word        wb_data,        // write-back register value
         input       logic       wb_enable,      // write-back enable
 
-        // stage inputs (latched)
-        input       word        if_pc,          // program counter
-        input       word        if_ir,          // instruction register
-
-        // stage outputs (direct)
+        // stage outputs
         output      logic       id_halt,        // halt
-        output      logic       if_stall,       // stall
+                
+        // stage outputs (to IF)
+        output      logic       id_ready,       // stage ready for new inputs
         output      word        id_jmp_addr,    // jump address
         output      logic       id_jmp_valid,   // jump address valid
 
-        // stage outputs (latched)
+        // stage outputs (to EX)
         output      word        id_pc,          // program counter
         output      word        id_ir,          // instruction register
         output      word        id_alu_op1,     // ALU operand 1
         output      word        id_alu_op2,     // ALU operand 2
         output      alu_mode    id_alu_mode,    // ALU mode
         output      regaddr     id_wb_rd,       // write-back register address
-        output      wb_src_sel  id_wb_src_sel,  // write-back register address
-        output      wb_dst_sel  id_wb_dst_sel,  // write-back register address
+        output      wb_src      id_wb_src_sel,  // write-back register address
+        output      wb_dst      id_wb_dst_sel,  // write-back register address
         output      wb_mode     id_wb_mode      // write-back enable
     );
 
@@ -60,11 +63,11 @@ wire logic [4:0] rs2    = if_ir[24:20];
 wire logic [6:0] f7     = if_ir[31:25];
 
 // Immediate
-wire word imm_i = { {21{ir[31]}}, ir[30:25], ir[24:21], ir[20] };
-wire word imm_s = { {21{ir[31]}}, ir[30:25], ir[11:8], ir[7] };
-wire word imm_b = { {20{ir[31]}}, ir[7], ir[30:25], ir[11:8], 1'b0 };
-wire word imm_u = { ir[31], ir[30:20], ir[19:12], 12'b0 };
-wire word imm_j = { {12{ir[31]}}, ir[19:12], ir[20], ir[30:25], ir[24:21], 1'b0 };
+wire word imm_i = { {21{if_ir[31]}}, if_ir[30:25], if_ir[24:21], if_ir[20] };
+wire word imm_s = { {21{if_ir[31]}}, if_ir[30:25], if_ir[11:8], if_ir[7] };
+wire word imm_b = { {20{if_ir[31]}}, if_ir[7], if_ir[30:25], if_ir[11:8], 1'b0 };
+wire word imm_u = { if_ir[31], if_ir[30:20], if_ir[19:12], 12'b0 };
+wire word imm_j = { {12{if_ir[31]}}, if_ir[19:12], if_ir[20], if_ir[30:25], if_ir[24:21], 1'b0 };
 
 // ALU Mode
 wire alu_mode alu_mode7 = alu_mode'({ f7[0], f7[5], f3 });
@@ -96,8 +99,7 @@ regfile regfile (
 //
 // DATA HAZARD: Register File
 //
-// Bypass:    If writeback pending for register from EX, MA or WB stage, need to respect that value here.
-// Interlock: If writeback pending from EX stage, but value not available yet (ex. load instruction), introduce a bubble.
+// Bypass: If writeback pending for register from EX, MA or WB stage, need to respect that value here.
 //
 
 // Resolved register values (when possible)
@@ -165,12 +167,12 @@ end
 // ALU Operand #1
 //
 
-word alu_op1;
+word next_alu_op1;
 
 always_comb begin
     case (cw.alu_op1_sel)
-    ALU_OP1_RS1:                alu_op1 <= ra_resolved;
-    default: /* ALU_OP1_IMMU */ alu_op1 <= imm_u;
+    ALU_OP1_RS1:                next_alu_op1 <= ra_resolved;
+    default: /* ALU_OP1_IMMU */ next_alu_op1 <= imm_u;
     endcase
 end
 
@@ -179,14 +181,14 @@ end
 // ALU Operand #2
 //
 
-word alu_op2_next;
+word next_alu_op2;
 
 always_comb begin
     case (cw.alu_op2_sel)
-    ALU_OP2_RS2:              alu_op2 <= rb_resolved;
-    ALU_OP2_IMMI:             alu_op2 <= imm_i;
-    ALU_OP2_IMMS:             alu_op2 <= imm_s;
-    default: /* ALU_OP2_PC */ alu_op2 <= pc;
+    ALU_OP2_RS2:              next_alu_op2 <= rb_resolved;
+    ALU_OP2_IMMI:             next_alu_op2 <= imm_i;
+    ALU_OP2_IMMS:             next_alu_op2 <= imm_s;
+    default: /* ALU_OP2_PC */ next_alu_op2 <= if_pc;
     endcase
 end
 
@@ -208,7 +210,7 @@ always_comb begin
     PC_JUMP_REL:
         begin
             jmp_valid <= 1'b1;
-            jmp_addr <= pc + imm_j;
+            jmp_addr <= if_pc + imm_j;
         end
     PC_JUMP_ABS:
         begin
@@ -225,58 +227,33 @@ always_comb begin
                 F3_BLTU:               if (        ra_resolved  <          rb_resolved)  begin jmp_valid <= 1'b1; end else begin jmp_valid <= 1'b0; end
                 default: /* F3_BGEU */ if (        ra_resolved  <          rb_resolved)  begin jmp_valid <= 1'b0; end else begin jmp_valid <= 1'b1; end
             endcase
-            jmp_addr <= pc + imm_b;
+            jmp_addr <= if_pc + imm_b;
         end
     endcase
 end
 
 
 //
-// Internal State
+// Outputs
 //
 
-word expected_pc;
-word expected_pc_next;
+// Data Hazard: EX stage has a colliding writeback and the data isn't available yet (ex. JALR or LW)
+logic data_hazard_condition;
+assign data_hazard_condition = ex_wb_enable & ~ex_wb_valid & (ex_wb_addr == rs1 | ex_wb_addr == rs2);
 
-always_comb begin
-    if (jmp_valid) begin
-        expected_pc_next <= jmp_addr;
-    end else begin
-        expected_pc_next <= pc + 4;
-    end
-end
+// a bubble needs to be output if we are in a data hazard condition, or if there was no valid instruction to decode
+logic bubble_needed;
+assign bubble_needed = data_hazard_condition | ~if_valid | id_jmp_valid;
 
 always_ff @(posedge clk) begin
-    expected_pc <= expected_pc_next;
-end
-
-
-//
-// Direct Outputs
-//
-
-// Basic assignments
-assign id_halt      = cw.halt;   // halt based on instruction decoding
-assign id_jmp_valid = jmp_valid; //
-assign id_jmp_addr  = jmp_addr;
-
-// Stall is needed if instruction can't be decoded:
-// - EX stage will perform a writeback, the value isn't available yet (i.e., a load instruction), but is needed by this instruction
-assign if_stall = ex_wb_enable & !ex_wb_avail & (ex_wb_addr == rs1 | ex_wb_addr == rs2);
-
-
-//
-// Latched Outputs
-//
-
-// Bubble is needed if:
-// - Stall condition is met
-// - Incoming PC doesn't match expected PC (this will happen after a jump until memory catches up)
-logic bubble_needed = (expected_pc != pc) | if_stall;
-
-always_ff @(posedge clk) begin
-    if (bubble_needed) begin
-        // NOP: addi x0, x0, 0
+    if (reset) begin
+        // set initial signal values
+        id_halt       <= 1'b0;
+        id_jmp_addr   <= 32'h00000000;
+        id_jmp_valid  <= 1'b0;
+        id_ready      <= 1'b1;
+        
+        // output a NOP to EX stage (addi x0, x0, 0)
         id_pc         <= 32'h00000000;
         id_ir         <= 32'h00000013;
         id_alu_op1    <= 32'h00000000;
@@ -286,16 +263,50 @@ always_ff @(posedge clk) begin
         id_wb_src_sel <= WB_SRC_ALU;
         id_wb_dst_sel <= WB_DST_REG;
         id_wb_mode    <= WB_MODE_W;
+    
     end else begin
-        id_pc         <= if_pc;
-        id_ir         <= if_ir;
-        id_alu_op1    <= alu_op1_next;
-        id_alu_op2    <= alu_op2_next;
-        id_alu_mode   <= cw.alu_mode_sel;
-        id_wb_rd      <= rd;
-        id_wb_src_sel <= cw.wb_src_sel;
-        id_wb_dst_sel <= cw.wb_dst_sel;
-        id_wb_mode    <= cw.wb_mode_sel;
+        // if fetch data was valid, and not being overruled by a jmp
+        if (if_valid) begin
+            // if we should ignore this instruction
+            if (id_jmp_valid) begin
+                // then indicate we can accept a new one
+                id_jmp_valid <= 1'b0;
+                id_jmp_addr  <= 32'h00000000;
+                id_ready     <= 1'b1;
+                id_halt      <= 1'b0;
+            end else begin
+                // otherwise, update based on instruction
+                id_jmp_valid <= jmp_valid;
+                id_jmp_addr  <= jmp_addr;
+                id_ready     <= ~data_hazard_condition;
+                id_halt      <= cw.halt;
+            end
+        end
+    
+        // if a bubble is needed
+        if (bubble_needed) begin
+            // output a NOP to EX stage (addi x0, x0, 0)
+            id_pc         <= 32'h00000000;
+            id_ir         <= 32'h00000013;
+            id_alu_op1    <= 32'h00000000;
+            id_alu_op2    <= 32'h00000000;
+            id_alu_mode   <= ALU_ADD;
+            id_wb_rd      <= 5'b00000;
+            id_wb_src_sel <= WB_SRC_ALU;
+            id_wb_dst_sel <= WB_DST_REG;
+            id_wb_mode    <= WB_MODE_W;
+        end else begin
+            // otherwise, output decoded control signals
+            id_pc         <= if_pc;
+            id_ir         <= if_ir;
+            id_alu_op1    <= next_alu_op1;
+            id_alu_op2    <= next_alu_op2;
+            id_alu_mode   <= cw.alu_mode_sel;
+            id_wb_rd      <= rd;
+            id_wb_src_sel <= cw.wb_src_sel;
+            id_wb_dst_sel <= cw.wb_dst_sel;
+            id_wb_mode    <= cw.wb_mode_sel;
+        end
     end
 end
 

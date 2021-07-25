@@ -155,7 +155,7 @@ typedef struct packed {
     wb_dst   wb_dst_sel;
     wb_mode  wb_mode_sel;
     pc_mode  pc_mode_sel;
-    logic    pc_branch_zero;
+    // logic    pc_branch_zero;
 } control_word;
 
 endpackage
