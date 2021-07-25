@@ -10,14 +10,7 @@ wire logic [7:0] segment_a;
 wire logic [7:0] segment_c;
 logic [15:0] switch;
 
-board board (
-    .clk(clk),
-    .reset(reset),
-    .halt(halt),
-    .segment_a(segment_a),
-    .segment_c(segment_c),
-    .switch(switch)
-);
+board board (.*);
 
 // clock generator
 initial begin

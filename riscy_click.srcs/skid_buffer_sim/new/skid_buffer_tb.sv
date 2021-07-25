@@ -8,16 +8,7 @@ logic input_ready, output_ready;
 logic input_valid, output_valid;
 logic [7:0] input_data, output_data;
 
-skid_buffer #(.WORD_WIDTH(8)) sb (
-    .clk(clk),
-    .reset(reset),
-    .input_ready(input_ready),
-    .input_data(input_data),
-    .input_valid(input_valid),
-    .output_ready(output_ready),
-    .output_data(output_data),
-    .output_valid(output_valid)
-);
+skid_buffer #(.WORD_WIDTH(8)) sb (.*);
 
 // clock generator
 initial begin

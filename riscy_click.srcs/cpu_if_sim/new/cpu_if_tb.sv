@@ -15,19 +15,7 @@ word if_pc, if_ir;              // out
 logic if_valid;                 // out
 
 // cpu_if under test
-cpu_if #(.MEM_ACCESS_CYCLES(1)) cpu_if (
-    .clk(clk),
-    .reset(reset),
-    .halt(halt),
-    .mem_addr(mem_addr),
-    .mem_data(mem_data),
-    .id_jmp_addr(id_jmp_addr),
-    .id_jmp_valid(id_jmp_valid),
-    .id_ready(id_ready),
-    .if_pc(if_pc),
-    .if_ir(if_ir),
-    .if_valid(if_valid)
-);
+cpu_if #(.MEM_ACCESS_CYCLES(1)) cpu_if (.*);
 
 // block rom to test against
 block_rom #(.CONTENTS("d:/dev/riscy_click/bios/tb_bios.coe")) rom (

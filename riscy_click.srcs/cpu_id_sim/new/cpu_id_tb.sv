@@ -9,6 +9,7 @@ module cpu_id_tb
 // cpu signals
 logic       clk;            // clock
 logic       reset;          // reset
+logic       halt;           // halt
 
 // IF memory access
 word        mem_addr;       // address
@@ -32,9 +33,6 @@ regaddr     wb_addr;        // write-back register address
 word        wb_data;        // write-back register value
 logic       wb_enable;      // write-back enable
 
-// ID stage outputs
-logic       halt;           // halt
-        
 // ID stage outputs (to IF)
 logic       id_ready;       // stage ready for new inputs
 word        id_jmp_addr;    // jump address
@@ -63,51 +61,10 @@ block_rom #(.CONTENTS("d:/dev/riscy_click/bios/bios.coe")) rom (
 );
 
 // Fetch Stage
-cpu_if cpu_if (
-    .clk(clk),
-    .reset(reset),
-    .halt(halt),
-    .mem_addr(mem_addr),
-    .mem_data(mem_data),
-    .id_jmp_addr(id_jmp_addr),
-    .id_jmp_valid(id_jmp_valid),
-    .id_ready(id_ready),
-    .if_pc(if_pc),
-    .if_ir(if_ir),
-    .if_valid(if_valid)
-);
+cpu_if cpu_if (.*);
 
 // Decode Stage
-cpu_id cpu_id (
-    .clk(clk),
-    .reset(reset),
-    .if_pc(if_pc),
-    .if_ir(if_ir),
-    .if_valid(if_valid),
-    .ex_wb_addr(ex_wb_addr),
-    .ex_wb_data(ex_wb_data),
-    .ex_wb_enable(ex_wb_enable),
-    .ex_wb_valid(ex_wb_valid),
-    .ma_wb_addr(ma_wb_addr),
-    .ma_wb_data(ma_wb_data),
-    .ma_wb_enable(ma_wb_enable),
-    .wb_addr(wb_addr),
-    .wb_data(wb_data),
-    .wb_enable(wb_enable),
-    .id_halt(halt),
-    .id_ready(id_ready),
-    .id_jmp_addr(id_jmp_addr),
-    .id_jmp_valid(id_jmp_valid),
-    .id_pc(id_pc),
-    .id_ir(id_ir),
-    .id_alu_op1(id_alu_op1),
-    .id_alu_op2(id_alu_op2),
-    .id_alu_mode(id_alu_mode),
-    .id_wb_rd(id_wb_rd),
-    .id_wb_src_sel(id_wb_src_sel),
-    .id_wb_dst_sel(id_wb_dst_sel),
-    .id_wb_mode(id_wb_mode)
-);
+cpu_id cpu_id (.id_halt(halt), .*);
 
 // clock generator
 initial begin

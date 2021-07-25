@@ -6,14 +6,7 @@ module block_rom_tb ();
 logic clk, reset;
 logic [31:0] addr_a, addr_b, data_a, data_b;
 
-block_rom #(.CONTENTS("d:/dev/riscy_click/bios/tb_bios.coe")) rom (
-    .clk(clk),
-    .reset(reset),
-    .addr_a(addr_a),
-    .data_a(data_a),
-    .addr_b(addr_b),
-    .data_b(data_b)
-);
+block_rom #(.CONTENTS("d:/dev/riscy_click/bios/tb_bios.coe")) rom (.*);
 
 // clock generator
 initial begin
