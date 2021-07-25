@@ -25,14 +25,13 @@ end
 // reset pulse (2 cycle)
 initial begin
     reset = 1;
-    #150 reset = 0;
+    #200 @(negedge clk) reset = 0;
 end
 
 // input side
 logic [31:0] next_addr_a, next_addr_b;
 assign next_addr_a = reset ? 0 : addr_a + 4;
 assign next_addr_b = reset ? 32 : addr_b + 8;
-
 
 always_ff @(negedge clk) begin
     addr_a <= next_addr_a;

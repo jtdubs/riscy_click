@@ -12,81 +12,172 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="600.000 ns"></ZoomStartTime>
-      <ZoomEndTime time="3,467.001 ns"></ZoomEndTime>
-      <Cursor1Time time="500.000 ns"></Cursor1Time>
+      <ZoomStartTime time="257.600 ns"></ZoomStartTime>
+      <ZoomEndTime time="1,258.601 ns"></ZoomEndTime>
+      <Cursor1Time time="4,000.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="305"></NameColumnWidth>
       <ValueColumnWidth column_width="213"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="6" />
-   <wvobject fp_name="/cpu_if_tb/cpu_if/clk" type="logic">
+   <wvobject fp_name="/cpu_if_tb/clk" type="logic">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
+      <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
    </wvobject>
-   <wvobject fp_name="/cpu_if_tb/cpu_if/reset" type="logic">
+   <wvobject fp_name="/cpu_if_tb/reset" type="logic">
       <obj_property name="ElementShortName">reset</obj_property>
       <obj_property name="ObjectShortName">reset</obj_property>
+      <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
    </wvobject>
-   <wvobject fp_name="group118" type="group">
-      <obj_property name="label">Bus</obj_property>
+   <wvobject fp_name="/cpu_if_tb/halt" type="logic">
+      <obj_property name="ElementShortName">halt</obj_property>
+      <obj_property name="ObjectShortName">halt</obj_property>
+      <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="group586" type="group">
+      <obj_property name="label">IF Stage</obj_property>
       <obj_property name="DisplayName">label</obj_property>
       <obj_property name="isExpanded"></obj_property>
-      <wvobject fp_name="/cpu_if_tb/cpu_if/mem_addr" type="array">
-         <obj_property name="ElementShortName">mem_addr[31:0]</obj_property>
-         <obj_property name="ObjectShortName">mem_addr[31:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/cpu_if_tb/cpu_if/mem_data" type="array">
-         <obj_property name="ElementShortName">mem_data[31:0]</obj_property>
-         <obj_property name="ObjectShortName">mem_data[31:0]</obj_property>
-      </wvobject>
-   </wvobject>
-   <wvobject fp_name="group117" type="group">
-      <obj_property name="label">Input</obj_property>
-      <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
-      <wvobject fp_name="/cpu_if_tb/cpu_if/id_jmp" type="array">
+      <wvobject fp_name="/cpu_if_tb/id_jmp" type="array">
          <obj_property name="ElementShortName">id_jmp[31:0]</obj_property>
          <obj_property name="ObjectShortName">id_jmp[31:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/cpu_if_tb/cpu_if/id_jmp_valid" type="logic">
+      <wvobject fp_name="/cpu_if_tb/id_jmp_valid" type="logic">
          <obj_property name="ElementShortName">id_jmp_valid</obj_property>
          <obj_property name="ObjectShortName">id_jmp_valid</obj_property>
       </wvobject>
-      <wvobject fp_name="/cpu_if_tb/cpu_if/id_stall" type="logic">
-         <obj_property name="ElementShortName">id_stall</obj_property>
-         <obj_property name="ObjectShortName">id_stall</obj_property>
+      <wvobject fp_name="/cpu_if_tb/id_ready" type="logic">
+         <obj_property name="ElementShortName">id_ready</obj_property>
+         <obj_property name="ObjectShortName">id_ready</obj_property>
       </wvobject>
-      <wvobject fp_name="/cpu_if_tb/cpu_if/id_halt" type="logic">
-         <obj_property name="ElementShortName">id_halt</obj_property>
-         <obj_property name="ObjectShortName">id_halt</obj_property>
-      </wvobject>
-   </wvobject>
-   <wvobject fp_name="group120" type="group">
-      <obj_property name="label">Internal</obj_property>
-      <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
-      <wvobject fp_name="/cpu_if_tb/cpu_if/pc_next" type="array">
-         <obj_property name="ElementShortName">pc_next[31:0]</obj_property>
-         <obj_property name="ObjectShortName">pc_next[31:0]</obj_property>
-      </wvobject>
-   </wvobject>
-   <wvobject fp_name="group119" type="group">
-      <obj_property name="label">Output</obj_property>
-      <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
-      <wvobject fp_name="/cpu_if_tb/cpu_if/if_pc" type="array">
+      <wvobject fp_name="/cpu_if_tb/if_pc" type="array">
          <obj_property name="ElementShortName">if_pc[31:0]</obj_property>
          <obj_property name="ObjectShortName">if_pc[31:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/cpu_if_tb/cpu_if/if_ir" type="array">
+      <wvobject fp_name="/cpu_if_tb/if_ir" type="array">
          <obj_property name="ElementShortName">if_ir[31:0]</obj_property>
          <obj_property name="ObjectShortName">if_ir[31:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/cpu_if_tb/cpu_if/if_stall" type="array">
-         <obj_property name="ElementShortName">if_stall[31:0]</obj_property>
-         <obj_property name="ObjectShortName">if_stall[31:0]</obj_property>
+      <wvobject fp_name="/cpu_if_tb/if_valid" type="logic">
+         <obj_property name="ElementShortName">if_valid</obj_property>
+         <obj_property name="ObjectShortName">if_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/skid_valid" type="logic">
+         <obj_property name="ElementShortName">skid_valid</obj_property>
+         <obj_property name="ObjectShortName">skid_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/skid_ready" type="logic">
+         <obj_property name="ElementShortName">skid_ready</obj_property>
+         <obj_property name="ObjectShortName">skid_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/skid_pc" type="array">
+         <obj_property name="ElementShortName">skid_pc[31:0]</obj_property>
+         <obj_property name="ObjectShortName">skid_pc[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/skid_ir" type="array">
+         <obj_property name="ElementShortName">skid_ir[31:0]</obj_property>
+         <obj_property name="ObjectShortName">skid_ir[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/skid_pc_next" type="array">
+         <obj_property name="ElementShortName">skid_pc_next[31:0]</obj_property>
+         <obj_property name="ObjectShortName">skid_pc_next[31:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group587" type="group">
+      <obj_property name="label">Skid Buffer</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/output_buffer/input_valid" type="logic">
+         <obj_property name="ElementShortName">input_valid</obj_property>
+         <obj_property name="ObjectShortName">input_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/output_buffer/input_ready" type="logic">
+         <obj_property name="ElementShortName">input_ready</obj_property>
+         <obj_property name="ObjectShortName">input_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/output_buffer/input_data" type="array">
+         <obj_property name="ElementShortName">input_data[63:0]</obj_property>
+         <obj_property name="ObjectShortName">input_data[63:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/output_buffer/output_valid" type="logic">
+         <obj_property name="ElementShortName">output_valid</obj_property>
+         <obj_property name="ObjectShortName">output_valid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/output_buffer/output_ready" type="logic">
+         <obj_property name="ElementShortName">output_ready</obj_property>
+         <obj_property name="ObjectShortName">output_ready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/output_buffer/output_data" type="array">
+         <obj_property name="ElementShortName">output_data[63:0]</obj_property>
+         <obj_property name="ObjectShortName">output_data[63:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/output_buffer/state" type="array">
+         <obj_property name="ElementShortName">state[31:0]</obj_property>
+         <obj_property name="ObjectShortName">state[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/output_buffer/next_state" type="array">
+         <obj_property name="ElementShortName">next_state[31:0]</obj_property>
+         <obj_property name="ObjectShortName">next_state[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/output_buffer/insert" type="logic">
+         <obj_property name="ElementShortName">insert</obj_property>
+         <obj_property name="ObjectShortName">insert</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/output_buffer/remove" type="logic">
+         <obj_property name="ElementShortName">remove</obj_property>
+         <obj_property name="ObjectShortName">remove</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/output_buffer/load" type="logic">
+         <obj_property name="ElementShortName">load</obj_property>
+         <obj_property name="ObjectShortName">load</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/output_buffer/unload" type="logic">
+         <obj_property name="ElementShortName">unload</obj_property>
+         <obj_property name="ObjectShortName">unload</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/output_buffer/buffer" type="logic">
+         <obj_property name="ElementShortName">buffer</obj_property>
+         <obj_property name="ObjectShortName">buffer</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/output_buffer/unbuffer" type="logic">
+         <obj_property name="ElementShortName">unbuffer</obj_property>
+         <obj_property name="ObjectShortName">unbuffer</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/output_buffer/run" type="logic">
+         <obj_property name="ElementShortName">run</obj_property>
+         <obj_property name="ObjectShortName">run</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/output_buffer/data_buffer" type="array">
+         <obj_property name="ElementShortName">data_buffer[63:0]</obj_property>
+         <obj_property name="ObjectShortName">data_buffer[63:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/cpu_if/output_buffer/WORD_WIDTH" type="array">
+         <obj_property name="ElementShortName">WORD_WIDTH[31:0]</obj_property>
+         <obj_property name="ObjectShortName">WORD_WIDTH[31:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group607" type="group">
+      <obj_property name="label">ROM</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/cpu_if_tb/rom/addr_a" type="array">
+         <obj_property name="ElementShortName">addr_a[31:0]</obj_property>
+         <obj_property name="ObjectShortName">addr_a[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/rom/data_a" type="array">
+         <obj_property name="ElementShortName">data_a[31:0]</obj_property>
+         <obj_property name="ObjectShortName">data_a[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/rom/addr_b" type="array">
+         <obj_property name="ElementShortName">addr_b[31:0]</obj_property>
+         <obj_property name="ObjectShortName">addr_b[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/cpu_if_tb/rom/data_b" type="array">
+         <obj_property name="ElementShortName">data_b[31:0]</obj_property>
+         <obj_property name="ObjectShortName">data_b[31:0]</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>

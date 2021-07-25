@@ -51,9 +51,8 @@ end
 // walk through states
 initial begin
     state <= 0;
-    #50;
     forever begin
-        #600 state <= state + 1;
+        #600 @(negedge clk) state <= state + 1;
     end
 end
 
