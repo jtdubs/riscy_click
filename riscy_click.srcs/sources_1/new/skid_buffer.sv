@@ -21,6 +21,12 @@ module skid_buffer
 // Finite State Machine
 //
 
+//                      |--run--|
+//                      |       v
+// [EMPTY]  ---load---> [RUNNING]  ---buffer---> [FULL]
+// [EMPTY] <--unload--  [RUNNING] <--unbuffer--  [FULL]
+   
+
 // state definitions
 typedef enum {
     EMPTY   = 2'b00, // buffer empty; no output available
@@ -37,12 +43,12 @@ assign insert = input_valid  & input_ready;  // insert will occur if data is bei
 assign remove = output_valid & output_ready; // output will occur if data is being requested, and can be provided
 
 // which state transition is occuring
-logic load, unload, buffer, unbuffer, flow;
+logic load, unload, buffer, unbuffer, run;
 assign load     = (state == EMPTY)   &  insert;           // inserting into an empty output register
 assign unload   = (state == RUNNING) & ~insert &  remove; // output register consumed; now empty
 assign buffer   = (state == RUNNING) &  insert & ~remove; // inserting but output register full; new data stored in buffer
 assign unbuffer = (state == FULL)              &  remove; // output register consumed; reload from buffer
-assign flow     = (state == RUNNING) &  insert &  remove; // inserting into an just emptied output register
+assign run      = (state == RUNNING) &  insert &  remove; // inserting into an just emptied output register
 
 // what will the next state be
 always_comb begin
@@ -78,7 +84,7 @@ always_ff @(posedge clk) begin
         input_ready  <= (next_state != FULL);  // can input if not full
         output_valid <= (next_state != EMPTY); // can output if not empty
         
-        if (load | flow) begin
+        if (load | run) begin
             // make input available in output register
             output_data <= input_data;
         end else if (unload) begin
