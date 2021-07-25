@@ -63,16 +63,16 @@ word skid_pc_next;
 always_comb begin
     if (reset) begin
         // zero if reset
-        skid_pc_next <= 0;
+        skid_pc_next = 0;
     end else if (halt | ~skid_ready) begin
         // no change on halt or backpressure
-        skid_pc_next <= skid_pc;
+        skid_pc_next = skid_pc;
     end else if (id_jmp_valid) begin
         // respect jumps from execute stage
-        skid_pc_next <= id_jmp_addr;
+        skid_pc_next = id_jmp_addr;
     end else begin
         // otherwise keep advancing
-        skid_pc_next <= skid_pc + 4;
+        skid_pc_next = skid_pc + 4;
     end
 end
 

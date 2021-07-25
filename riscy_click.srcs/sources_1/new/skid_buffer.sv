@@ -54,13 +54,13 @@ assign run      = (state == RUNNING) &  insert &  remove; // inserting into an j
 // what will the next state be
 always_comb begin
     if (load | unbuffer) begin
-        next_state <= RUNNING;
+        next_state = RUNNING;
     end else if (buffer) begin
-        next_state <= FULL;
+        next_state = FULL;
     end else if (unload) begin
-        next_state <= EMPTY;
+        next_state = EMPTY;
     end else begin
-        next_state <= state;
+        next_state = state;
     end
 end
 

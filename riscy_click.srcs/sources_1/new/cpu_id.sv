@@ -109,26 +109,26 @@ word ra_resolved, rb_resolved;
 // Determine true value for first register access
 always_comb begin
     if (wb_enable & rs1 == wb_addr) begin
-        ra_resolved <= wb_data;
+        ra_resolved = wb_data;
     end else if (ma_wb_enable & rs1 == ma_wb_addr) begin
-        ra_resolved <= ma_wb_data;
+        ra_resolved = ma_wb_data;
     end else if (ex_wb_enable & rs1 == ex_wb_addr) begin
-        ra_resolved <= ex_wb_data;
+        ra_resolved = ex_wb_data;
     end else begin
-        ra_resolved <= ra;
+        ra_resolved = ra;
     end
 end
 
 // Determine true value for second register access
 always_comb begin
     if (wb_enable & rs2 == wb_addr) begin
-        rb_resolved <= wb_data;
+        rb_resolved = wb_data;
     end else if (ma_wb_enable & rs2 == ma_wb_addr) begin
-        rb_resolved <= ma_wb_data;
+        rb_resolved = ma_wb_data;
     end else if (ex_wb_enable & rs2 == ex_wb_addr) begin
-        rb_resolved <= ex_wb_data;
+        rb_resolved = ex_wb_data;
     end else begin
-        rb_resolved <= rb;
+        rb_resolved = rb;
     end
 end
 
@@ -141,25 +141,25 @@ control_word cw;
 
 always_comb begin
     casez ({reset, f7, f3, opcode})
-    { 1'b1, 7'b???????, 3'b???,     7'b??????? }:  cw <= '{ 1'b0, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     WB_SRC_X,   WB_X,       WB_MODE_X,    PC_NEXT     };
-    { 1'b?, 7'b0?00000, F3_SRL_SRA, OP_IMM }:      cw <= '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_IMMI, alu_mode7, WB_SRC_ALU, WB_DST_REG, WB_MODE_W,    PC_NEXT     };
-    { 1'b?, 7'b???????, 3'b???,     OP_IMM }:      cw <= '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_IMMI, alu_mode3, WB_SRC_ALU, WB_DST_REG, WB_MODE_W,    PC_NEXT     };
-    { 1'b?, 7'b???????, 3'b???,     OP_LUI }:      cw <= '{ 1'b0, ALU_OP1_IMMU, ALU_OP2_RS2,  ALU_COPY1, WB_SRC_ALU, WB_DST_REG, WB_MODE_W,    PC_NEXT     };
-    { 1'b?, 7'b???????, 3'b???,     OP_AUIPC }:    cw <= '{ 1'b0, ALU_OP1_IMMU, ALU_OP2_PC,   ALU_ADD,   WB_SRC_ALU, WB_DST_REG, WB_MODE_W,    PC_NEXT     };
-    { 1'b?, 7'b???????, 3'b???,     OP }:          cw <= '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  alu_mode7, WB_SRC_ALU, WB_DST_REG, WB_MODE_W,    PC_NEXT     };
-    { 1'b?, 7'b???????, 3'b???,     OP_JAL }:      cw <= '{ 1'b0, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     WB_SRC_PC4, WB_DST_REG, WB_MODE_W,    PC_JUMP_REL };
-    { 1'b?, 7'b???????, 3'b???,     OP_JALR }:     cw <= '{ 1'b0, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     WB_SRC_PC4, WB_DST_REG, WB_MODE_W,    PC_JUMP_ABS };
-    { 1'b?, 7'b???????, F3_BEQ,     OP_BRANCH }:   cw <= '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SUB,   WB_SRC_X,   WB_X,       WB_MODE_X,    PC_BRANCH   };
-    { 1'b?, 7'b???????, F3_BNE,     OP_BRANCH }:   cw <= '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SUB,   WB_SRC_X,   WB_X,       WB_MODE_X,    PC_BRANCH   };
-    { 1'b?, 7'b???????, F3_BLT,     OP_BRANCH }:   cw <= '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SLT,   WB_SRC_X,   WB_X,       WB_MODE_X,    PC_BRANCH   };
-    { 1'b?, 7'b???????, F3_BGE,     OP_BRANCH }:   cw <= '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SLT,   WB_SRC_X,   WB_X,       WB_MODE_X,    PC_BRANCH   };
-    { 1'b?, 7'b???????, F3_BLTU,    OP_BRANCH }:   cw <= '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_ULT,   WB_SRC_X,   WB_X,       WB_MODE_X,    PC_BRANCH   };
-    { 1'b?, 7'b???????, F3_BGEU,    OP_BRANCH }:   cw <= '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_ULT,   WB_SRC_X,   WB_X,       WB_MODE_X,    PC_BRANCH   };
-    { 1'b?, 7'b???????, 3'b???,     OP_LOAD }:     cw <= '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_IMMI, ALU_ADD,   WB_SRC_MEM, WB_DST_REG, WB_MODE_W,    PC_NEXT     };
-    { 1'b?, 7'b???????, 3'b???,     OP_STORE }:    cw <= '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_IMMS, ALU_ADD,   WB_SRC_ALU, WB_DST_MEM, wb_mode'(f3), PC_NEXT     };
-    { 1'b?, 7'b???????, 3'b???,     OP_MISC_MEM }: cw <= '{ 1'b0, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     WB_SRC_X,   WB_X,       WB_MODE_X,    PC_NEXT     };
-    { 1'b?, 7'b???????, 3'b???,     OP_SYSTEM }:   cw <= '{ 1'b0, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     WB_SRC_X,   WB_X,       WB_MODE_X,    PC_NEXT     };
-    default:                                       cw <= '{ 1'b1, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     WB_SRC_X,   WB_X,       WB_MODE_X,    PC_NEXT     };
+    { 1'b1, 7'b???????, 3'b???,     7'b??????? }:  cw = '{ 1'b0, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     WB_SRC_X,   WB_X,       WB_MODE_X,    PC_NEXT     };
+    { 1'b?, 7'b0?00000, F3_SRL_SRA, OP_IMM }:      cw = '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_IMMI, alu_mode7, WB_SRC_ALU, WB_DST_REG, WB_MODE_W,    PC_NEXT     };
+    { 1'b?, 7'b???????, 3'b???,     OP_IMM }:      cw = '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_IMMI, alu_mode3, WB_SRC_ALU, WB_DST_REG, WB_MODE_W,    PC_NEXT     };
+    { 1'b?, 7'b???????, 3'b???,     OP_LUI }:      cw = '{ 1'b0, ALU_OP1_IMMU, ALU_OP2_RS2,  ALU_COPY1, WB_SRC_ALU, WB_DST_REG, WB_MODE_W,    PC_NEXT     };
+    { 1'b?, 7'b???????, 3'b???,     OP_AUIPC }:    cw = '{ 1'b0, ALU_OP1_IMMU, ALU_OP2_PC,   ALU_ADD,   WB_SRC_ALU, WB_DST_REG, WB_MODE_W,    PC_NEXT     };
+    { 1'b?, 7'b???????, 3'b???,     OP }:          cw = '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  alu_mode7, WB_SRC_ALU, WB_DST_REG, WB_MODE_W,    PC_NEXT     };
+    { 1'b?, 7'b???????, 3'b???,     OP_JAL }:      cw = '{ 1'b0, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     WB_SRC_PC4, WB_DST_REG, WB_MODE_W,    PC_JUMP_REL };
+    { 1'b?, 7'b???????, 3'b???,     OP_JALR }:     cw = '{ 1'b0, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     WB_SRC_PC4, WB_DST_REG, WB_MODE_W,    PC_JUMP_ABS };
+    { 1'b?, 7'b???????, F3_BEQ,     OP_BRANCH }:   cw = '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SUB,   WB_SRC_X,   WB_X,       WB_MODE_X,    PC_BRANCH   };
+    { 1'b?, 7'b???????, F3_BNE,     OP_BRANCH }:   cw = '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SUB,   WB_SRC_X,   WB_X,       WB_MODE_X,    PC_BRANCH   };
+    { 1'b?, 7'b???????, F3_BLT,     OP_BRANCH }:   cw = '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SLT,   WB_SRC_X,   WB_X,       WB_MODE_X,    PC_BRANCH   };
+    { 1'b?, 7'b???????, F3_BGE,     OP_BRANCH }:   cw = '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SLT,   WB_SRC_X,   WB_X,       WB_MODE_X,    PC_BRANCH   };
+    { 1'b?, 7'b???????, F3_BLTU,    OP_BRANCH }:   cw = '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_ULT,   WB_SRC_X,   WB_X,       WB_MODE_X,    PC_BRANCH   };
+    { 1'b?, 7'b???????, F3_BGEU,    OP_BRANCH }:   cw = '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_ULT,   WB_SRC_X,   WB_X,       WB_MODE_X,    PC_BRANCH   };
+    { 1'b?, 7'b???????, 3'b???,     OP_LOAD }:     cw = '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_IMMI, ALU_ADD,   WB_SRC_MEM, WB_DST_REG, WB_MODE_W,    PC_NEXT     };
+    { 1'b?, 7'b???????, 3'b???,     OP_STORE }:    cw = '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_IMMS, ALU_ADD,   WB_SRC_ALU, WB_DST_MEM, wb_mode'(f3), PC_NEXT     };
+    { 1'b?, 7'b???????, 3'b???,     OP_MISC_MEM }: cw = '{ 1'b0, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     WB_SRC_X,   WB_X,       WB_MODE_X,    PC_NEXT     };
+    { 1'b?, 7'b???????, 3'b???,     OP_SYSTEM }:   cw = '{ 1'b0, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     WB_SRC_X,   WB_X,       WB_MODE_X,    PC_NEXT     };
+    default:                                       cw = '{ 1'b1, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     WB_SRC_X,   WB_X,       WB_MODE_X,    PC_NEXT     };
     endcase
 end
 
@@ -172,8 +172,8 @@ word next_alu_op1;
 
 always_comb begin
     case (cw.alu_op1_sel)
-    ALU_OP1_RS1:                next_alu_op1 <= ra_resolved;
-    default: /* ALU_OP1_IMMU */ next_alu_op1 <= imm_u;
+    ALU_OP1_RS1:                next_alu_op1 = ra_resolved;
+    default: /* ALU_OP1_IMMU */ next_alu_op1 = imm_u;
     endcase
 end
 
@@ -186,10 +186,10 @@ word next_alu_op2;
 
 always_comb begin
     case (cw.alu_op2_sel)
-    ALU_OP2_RS2:              next_alu_op2 <= rb_resolved;
-    ALU_OP2_IMMI:             next_alu_op2 <= imm_i;
-    ALU_OP2_IMMS:             next_alu_op2 <= imm_s;
-    default: /* ALU_OP2_PC */ next_alu_op2 <= if_pc;
+    ALU_OP2_RS2:              next_alu_op2 = rb_resolved;
+    ALU_OP2_IMMI:             next_alu_op2 = imm_i;
+    ALU_OP2_IMMS:             next_alu_op2 = imm_s;
+    default: /* ALU_OP2_PC */ next_alu_op2 = if_pc;
     endcase
 end
 
@@ -205,30 +205,30 @@ always_comb begin
     case (cw.pc_mode_sel)
     PC_NEXT:
         begin
-            next_id_jmp_valid <= 1'b0;
-            next_id_jmp_addr  <= 32'h00000000;
+            next_id_jmp_valid = 1'b0;
+            next_id_jmp_addr  = 32'h00000000;
         end
     PC_JUMP_REL:
         begin
-            next_id_jmp_valid <= 1'b1;
-            next_id_jmp_addr  <= if_pc + imm_j;
+            next_id_jmp_valid = 1'b1;
+            next_id_jmp_addr  = if_pc + imm_j;
         end
     PC_JUMP_ABS:
         begin
-            next_id_jmp_valid <= 1'b1;
-            next_id_jmp_addr  <= ra_resolved + imm_i;
+            next_id_jmp_valid = 1'b1;
+            next_id_jmp_addr  = ra_resolved + imm_i;
         end
     default: /* PC_BRANCH */
         begin
             case (f3)
-                F3_BEQ:                next_id_jmp_valid <= (        ra_resolved  ==         rb_resolved)  ? 1'b1 : 1'b0;
-                F3_BNE:                next_id_jmp_valid <= (        ra_resolved  ==         rb_resolved)  ? 1'b0 : 1'b1;
-                F3_BLT:                next_id_jmp_valid <= ($signed(ra_resolved) <  $signed(rb_resolved)) ? 1'b1 : 1'b0;
-                F3_BGE:                next_id_jmp_valid <= ($signed(ra_resolved) <  $signed(rb_resolved)) ? 1'b0 : 1'b1;
-                F3_BLTU:               next_id_jmp_valid <= (        ra_resolved  <          rb_resolved)  ? 1'b1 : 1'b0;
-                default: /* F3_BGEU */ next_id_jmp_valid <= (        ra_resolved  <          rb_resolved)  ? 1'b0 : 1'b1;
+                F3_BEQ:                next_id_jmp_valid = (        ra_resolved  ==         rb_resolved)  ? 1'b1 : 1'b0;
+                F3_BNE:                next_id_jmp_valid = (        ra_resolved  ==         rb_resolved)  ? 1'b0 : 1'b1;
+                F3_BLT:                next_id_jmp_valid = ($signed(ra_resolved) <  $signed(rb_resolved)) ? 1'b1 : 1'b0;
+                F3_BGE:                next_id_jmp_valid = ($signed(ra_resolved) <  $signed(rb_resolved)) ? 1'b0 : 1'b1;
+                F3_BLTU:               next_id_jmp_valid = (        ra_resolved  <          rb_resolved)  ? 1'b1 : 1'b0;
+                default: /* F3_BGEU */ next_id_jmp_valid = (        ra_resolved  <          rb_resolved)  ? 1'b0 : 1'b1;
             endcase
-            next_id_jmp_addr <= if_pc + imm_b;
+            next_id_jmp_addr = if_pc + imm_b;
         end
     endcase
 end

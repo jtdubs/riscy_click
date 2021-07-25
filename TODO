@@ -1,3 +1,9 @@
+# - Use blocking assignment in combinational blocks???
+- Don't use assign??  But why?  What's the alternative?  I guess always_comb?
+- Prefer ternary over if-else where possible
+- Consider last-assignment-wins idiom for reset handling...
+- Don't need begin/end for single statements...
+
 Steps:
 0. Debug cycle counter?  Could put on board.
 1. Pipelining
@@ -28,6 +34,7 @@ Control hazard avoidance:
 - Therefore, stages advertise if they are empty/stalled so subsequent stages can also stall
 
 Reference:
+http://fpgacpu.ca/fpga/index.html
 https://passlab.github.io/CSE564/notes/lecture09_RISCV_Impl_pipeline.pdf
 https://github.com/ultraembedded/riscv/
 https://github.com/combinatorylogic/soc/blob/master/backends/c2/hw/rtl/core.v
