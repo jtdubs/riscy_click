@@ -28,7 +28,7 @@ module skid_buffer
    
 
 // state definitions
-typedef enum {
+typedef enum logic [1:0] {
     EMPTY   = 2'b00, // buffer empty; no output available
     RUNNING = 2'b01, // buffer input and output both possible
     FULL    = 2'b10  // buffer full; no input available

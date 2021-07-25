@@ -17,7 +17,7 @@ word        mem_data;       // data
 // ID stage inputs
 word        if_pc;          // program counter
 word        if_ir;          // instruction register
-word        if_valid;       // fetch stage data is valid
+logic       if_valid;       // fetch stage data is valid
 
 // ID stage inputs (data hazards)
 regaddr     ex_wb_addr;     // write-back register address

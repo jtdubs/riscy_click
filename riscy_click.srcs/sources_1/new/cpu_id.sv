@@ -197,37 +197,37 @@ end
 // Jumps and Branches
 //
 
-logic jmp_valid;
-word  jmp_addr;
+logic next_id_jmp_valid;
+word  next_id_jmp_addr;
 
 always_comb begin
     case (cw.pc_mode_sel)
     PC_NEXT:
         begin
-            jmp_valid <= 1'b0;
-            jmp_addr <= 32'h00000000;
+            next_id_jmp_valid <= 1'b0;
+            next_id_jmp_addr  <= 32'h00000000;
         end
     PC_JUMP_REL:
         begin
-            jmp_valid <= 1'b1;
-            jmp_addr <= if_pc + imm_j;
+            next_id_jmp_valid <= 1'b1;
+            next_id_jmp_addr  <= if_pc + imm_j;
         end
     PC_JUMP_ABS:
         begin
-            jmp_valid <= 1'b1;
-            jmp_addr <= ra_resolved + imm_i;
+            next_id_jmp_valid <= 1'b1;
+            next_id_jmp_addr  <= ra_resolved + imm_i;
         end
     default: /* PC_BRANCH */
         begin
             case (f3)
-                F3_BEQ:                if (        ra_resolved  ==         rb_resolved)  begin jmp_valid <= 1'b1; end else begin jmp_valid <= 1'b0; end
-                F3_BNE:                if (        ra_resolved  ==         rb_resolved)  begin jmp_valid <= 1'b0; end else begin jmp_valid <= 1'b1; end
-                F3_BLT:                if ($signed(ra_resolved) <  $signed(rb_resolved)) begin jmp_valid <= 1'b1; end else begin jmp_valid <= 1'b0; end
-                F3_BGE:                if ($signed(ra_resolved) <  $signed(rb_resolved)) begin jmp_valid <= 1'b0; end else begin jmp_valid <= 1'b1; end
-                F3_BLTU:               if (        ra_resolved  <          rb_resolved)  begin jmp_valid <= 1'b1; end else begin jmp_valid <= 1'b0; end
-                default: /* F3_BGEU */ if (        ra_resolved  <          rb_resolved)  begin jmp_valid <= 1'b0; end else begin jmp_valid <= 1'b1; end
+                F3_BEQ:                next_id_jmp_valid <= (        ra_resolved  ==         rb_resolved)  ? 1'b1 : 1'b0;
+                F3_BNE:                next_id_jmp_valid <= (        ra_resolved  ==         rb_resolved)  ? 1'b0 : 1'b1;
+                F3_BLT:                next_id_jmp_valid <= ($signed(ra_resolved) <  $signed(rb_resolved)) ? 1'b1 : 1'b0;
+                F3_BGE:                next_id_jmp_valid <= ($signed(ra_resolved) <  $signed(rb_resolved)) ? 1'b0 : 1'b1;
+                F3_BLTU:               next_id_jmp_valid <= (        ra_resolved  <          rb_resolved)  ? 1'b1 : 1'b0;
+                default: /* F3_BGEU */ next_id_jmp_valid <= (        ra_resolved  <          rb_resolved)  ? 1'b0 : 1'b1;
             endcase
-            jmp_addr <= if_pc + imm_b;
+            next_id_jmp_addr <= if_pc + imm_b;
         end
     endcase
 end
@@ -276,8 +276,8 @@ always_ff @(posedge clk) begin
                 id_halt      <= 1'b0;
             end else begin
                 // otherwise, update based on instruction
-                id_jmp_valid <= jmp_valid;
-                id_jmp_addr  <= jmp_addr;
+                id_jmp_valid <= next_id_jmp_valid;
+                id_jmp_addr  <= next_id_jmp_addr;
                 id_ready     <= ~data_hazard_condition;
                 id_halt      <= cw.halt;
             end
