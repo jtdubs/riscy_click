@@ -13,17 +13,13 @@
    <zoom_setting>
       <ZoomStartTime time="0.000 ns"></ZoomStartTime>
       <ZoomEndTime time="5,106.001 ns"></ZoomEndTime>
-      <Cursor1Time time="3,700.000 ns"></Cursor1Time>
+      <Cursor1Time time="4,000.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="305"></NameColumnWidth>
       <ValueColumnWidth column_width="213"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="28" />
-   <wave_markers>
-      <marker time="2650000" label="" />
-      <marker time="3700000" label="" />
-   </wave_markers>
+   <WVObjectSize size="18" />
    <wvobject fp_name="/skid_buffer_tb/sb/clk" type="logic">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
@@ -56,33 +52,13 @@
       <obj_property name="ElementShortName">output_data[7:0]</obj_property>
       <obj_property name="ObjectShortName">output_data[7:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/skid_buffer_tb/sb/data_buffer_wren" type="logic">
-      <obj_property name="ElementShortName">data_buffer_wren</obj_property>
-      <obj_property name="ObjectShortName">data_buffer_wren</obj_property>
-   </wvobject>
-   <wvobject fp_name="/skid_buffer_tb/sb/data_buffer_out" type="array">
-      <obj_property name="ElementShortName">data_buffer_out[7:0]</obj_property>
-      <obj_property name="ObjectShortName">data_buffer_out[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/skid_buffer_tb/sb/data_out_wren" type="logic">
-      <obj_property name="ElementShortName">data_out_wren</obj_property>
-      <obj_property name="ObjectShortName">data_out_wren</obj_property>
-   </wvobject>
-   <wvobject fp_name="/skid_buffer_tb/sb/use_buffered_data" type="logic">
-      <obj_property name="ElementShortName">use_buffered_data</obj_property>
-      <obj_property name="ObjectShortName">use_buffered_data</obj_property>
-   </wvobject>
-   <wvobject fp_name="/skid_buffer_tb/sb/selected_data" type="array">
-      <obj_property name="ElementShortName">selected_data[7:0]</obj_property>
-      <obj_property name="ObjectShortName">selected_data[7:0]</obj_property>
-   </wvobject>
    <wvobject fp_name="/skid_buffer_tb/sb/state" type="array">
-      <obj_property name="ElementShortName">state[1:0]</obj_property>
-      <obj_property name="ObjectShortName">state[1:0]</obj_property>
+      <obj_property name="ElementShortName">state[31:0]</obj_property>
+      <obj_property name="ObjectShortName">state[31:0]</obj_property>
    </wvobject>
    <wvobject fp_name="/skid_buffer_tb/sb/state_next" type="array">
-      <obj_property name="ElementShortName">state_next[1:0]</obj_property>
-      <obj_property name="ObjectShortName">state_next[1:0]</obj_property>
+      <obj_property name="ElementShortName">state_next[31:0]</obj_property>
+      <obj_property name="ObjectShortName">state_next[31:0]</obj_property>
    </wvobject>
    <wvobject fp_name="/skid_buffer_tb/sb/insert" type="logic">
       <obj_property name="ElementShortName">insert</obj_property>
@@ -115,25 +91,5 @@
    <wvobject fp_name="/skid_buffer_tb/sb/WORD_WIDTH" type="array">
       <obj_property name="ElementShortName">WORD_WIDTH[31:0]</obj_property>
       <obj_property name="ObjectShortName">WORD_WIDTH[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/skid_buffer_tb/sb/WORD_ZERO" type="array">
-      <obj_property name="ElementShortName">WORD_ZERO[7:0]</obj_property>
-      <obj_property name="ObjectShortName">WORD_ZERO[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/skid_buffer_tb/sb/STATE_BITS" type="array">
-      <obj_property name="ElementShortName">STATE_BITS[31:0]</obj_property>
-      <obj_property name="ObjectShortName">STATE_BITS[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/skid_buffer_tb/sb/EMPTY" type="array">
-      <obj_property name="ElementShortName">EMPTY[1:0]</obj_property>
-      <obj_property name="ObjectShortName">EMPTY[1:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/skid_buffer_tb/sb/BUSY" type="array">
-      <obj_property name="ElementShortName">BUSY[1:0]</obj_property>
-      <obj_property name="ObjectShortName">BUSY[1:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/skid_buffer_tb/sb/FULL" type="array">
-      <obj_property name="ElementShortName">FULL[1:0]</obj_property>
-      <obj_property name="ObjectShortName">FULL[1:0]</obj_property>
    </wvobject>
 </wave_config>

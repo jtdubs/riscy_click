@@ -18,41 +18,42 @@ module skid_buffer
     );
 
 //
-// State Transition Logic
+// Finite State Machine
 //
 
+// state definitions
 typedef enum {
-    EMPTY = 2'b00,
-    BUSY  = 2'b01,
-    FULL  = 2'b10 
+    EMPTY   = 2'b00, // buffer empty; no output available
+    RUNNING = 2'b01, // buffer input and output both possible
+    FULL    = 2'b10  // buffer full; no input available
 } sb_state;
 
 // current and next state
-sb_state state, state_next; 
+sb_state state, next_state; 
 
-// whether or not an insert or remove will occur
+// which buffer operations are requested
 logic insert, remove;
 assign insert = input_valid  & input_ready;  // insert will occur if data is being provided, and can be accepted
 assign remove = output_valid & output_ready; // output will occur if data is being requested, and can be provided
 
-// which operation is occuring
-logic load, flow, fill, flush, unload;
-assign load    = (state == EMPTY) &  insert && ~remove; // Empty datapath inserts data into output register.
-assign flow    = (state == BUSY)  &  insert &&  remove; // New inserted data into output register as the old data is removed.
-assign fill    = (state == BUSY)  &  insert && ~remove; // New inserted data into buffer register. Data not removed from output register.
-assign flush   = (state == FULL)  & ~insert &&  remove; // Move data from buffer register into output register. Remove old data. No new data inserted.
-assign unload  = (state == BUSY)  & ~insert &   remove; // Remove data from output register, leaving the datapath empty.
+// which state transition is occuring
+logic load, unload, buffer, unbuffer, flow;
+assign load     = (state == EMPTY)   &  insert;           // inserting into an empty output register
+assign unload   = (state == RUNNING) & ~insert &  remove; // output register consumed; now empty
+assign buffer   = (state == RUNNING) &  insert & ~remove; // inserting but output register full; new data stored in buffer
+assign unbuffer = (state == FULL)              &  remove; // output register consumed; reload from buffer
+assign flow     = (state == RUNNING) &  insert &  remove; // inserting into an just emptied output register
 
 // what will the next state be
 always_comb begin
-    if (load | flow | flush) begin
-        state_next <= BUSY;
-    end else if (fill) begin
-        state_next <= FULL;
+    if (load | unbuffer) begin
+        next_state <= RUNNING;
+    end else if (buffer) begin
+        next_state <= FULL;
     end else if (unload) begin
-        state_next <= EMPTY;
+        next_state <= EMPTY;
     end else begin
-        state_next <= state;
+        next_state <= state;
     end
 end
 
@@ -65,25 +66,26 @@ logic [WORD_WIDTH-1:0] data_buffer;
 
 always_ff @(posedge clk) begin
     if (reset) begin
-        // Reset to EMPTY state
-        output_data  <= 'd0;
-        data_buffer  <= 'd0;
-        state        <= EMPTY;
-        input_ready  <= 1'b1;
-        output_valid <= 1'b0;
+        // reset to EMPTY state
+        state             <= EMPTY;
+        input_ready       <= 1'b1;
+        output_valid      <= 1'b0;
+        output_data       <= 'd0;
+        data_buffer       <= 'd0;
     end else begin
-        state <= state_next; // Advance to next state
+        state <= next_state; // advance to next state
         
-        input_ready  <= (state_next != FULL);  // Can input if not full
-        output_valid <= (state_next != EMPTY); // Can output if not empty
-       
+        input_ready  <= (next_state != FULL);  // can input if not full
+        output_valid <= (next_state != EMPTY); // can output if not empty
+        
         if (load | flow) begin
+            // make input available in output register
             output_data <= input_data;
-        end else if (flush) begin     
-            // Output the buffered value, and we are now "transparent"
+        end else if (unbuffer) begin     
+            // make buffer available in output register
             output_data <= data_buffer;
-        end else if (fill) begin
-            // Buffer the input, we are are now full
+        end else if (buffer) begin
+            // buffer the input, because output register already populated
             data_buffer <= input_data;
         end
     end
