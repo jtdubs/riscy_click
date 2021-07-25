@@ -81,13 +81,17 @@ always_ff @(posedge clk) begin
         if (load | flow) begin
             // make input available in output register
             output_data <= input_data;
-        end else if (unbuffer) begin     
-            // make buffer available in output register
-            output_data <= data_buffer;
+        end else if (unload) begin
+            // clear output buffer
+            output_data <= 'd0;
         end else if (buffer) begin
-            // buffer the input, because output register already populated
+            // buffer the input, because output register is already full
             data_buffer <= input_data;
-        end
+        end else if (unbuffer) begin     
+            // transfer buffer to output register
+            output_data <= data_buffer;
+            data_buffer <= 'd0;
+        end 
     end
 end
 
