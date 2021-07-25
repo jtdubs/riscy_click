@@ -1,4 +1,5 @@
-`timescale 1ns/1ps
+`timescale 1ns / 1ps
+`default_nettype none
 
 ///
 /// Register File (32 x 32-bit)
@@ -12,20 +13,20 @@ module regfile
     // Import Constants
     import consts::*;
     (
-        input       logic       clk,          // Clock
+        input  wire logic       clk,          // Clock
 
         // read port 1
-        input       logic [4:0] read_addr1,   // Read Address #1
+        input  wire logic [4:0] read_addr1,   // Read Address #1
         output wire word        read_data1,   // Data Output #1
 
         // read port 2
-        input       logic [4:0] read_addr2,   // Read Address #2
+        input  wire logic [4:0] read_addr2,   // Read Address #2
         output wire word        read_data2,   // Data Output #2
 
         // write port
-        input       logic       write_enable, // Write Enable
-        input       logic [4:0] write_addr,   // Write Address
-        input       word        write_data    // Write Data
+        input  wire logic       write_enable, // Write Enable
+        input  wire logic [4:0] write_addr,   // Write Address
+        input  wire word        write_data    // Write Data
     );
 
 // Memory

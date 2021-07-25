@@ -1,4 +1,5 @@
-`timescale 1ns/1ps
+`timescale 1ns / 1ps
+`default_nettype none
 
 ///
 /// Risc-V CPU Instruction Decode Stage
@@ -9,25 +10,25 @@ module cpu_id
     import consts::*;
     (
         // cpu signals
-        input       logic       clk,            // clock
-        input       logic       reset,          // reset
+        input  wire logic       clk,            // clock
+        input  wire logic       reset,          // reset
 
         // stage inputs
-        input       word        if_pc,          // program counter
-        input       word        if_ir,          // instruction register
-        input       logic       if_valid,       // fetch stage data is valid
+        input  wire word        if_pc,          // program counter
+        input  wire word        if_ir,          // instruction register
+        input  wire logic       if_valid,       // fetch stage data is valid
         
         // stage inputs (data hazards)
-        input       regaddr     ex_wb_addr,     // write-back register address
-        input       word        ex_wb_data,     // write-back register value
-        input       logic       ex_wb_enable,   // write-back enable
-        input       logic       ex_wb_valid,    // write-back data valid
-        input       regaddr     ma_wb_addr,     // write-back register address
-        input       word        ma_wb_data,     // write-back register value
-        input       logic       ma_wb_enable,   // write-back enable
-        input       regaddr     wb_addr,        // write-back register address
-        input       word        wb_data,        // write-back register value
-        input       logic       wb_enable,      // write-back enable
+        input  wire regaddr     ex_wb_addr,     // write-back register address
+        input  wire word        ex_wb_data,     // write-back register value
+        input  wire logic       ex_wb_enable,   // write-back enable
+        input  wire logic       ex_wb_valid,    // write-back data valid
+        input  wire regaddr     ma_wb_addr,     // write-back register address
+        input  wire word        ma_wb_data,     // write-back register value
+        input  wire logic       ma_wb_enable,   // write-back enable
+        input  wire regaddr     wb_addr,        // write-back register address
+        input  wire word        wb_data,        // write-back register value
+        input  wire logic       wb_enable,      // write-back enable
 
         // stage outputs
         output      logic       id_halt,        // halt

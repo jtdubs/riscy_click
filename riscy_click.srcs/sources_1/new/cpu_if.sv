@@ -1,4 +1,5 @@
-`timescale 1ns/1ps
+`timescale 1ns / 1ps
+`default_nettype none
 
 ///
 /// Risc-V CPU Instruction Fetch Stage
@@ -9,23 +10,23 @@ module cpu_if
     import consts::*;
     (
         // cpu signals
-        input       logic       clk,            // clock
-        input       logic       reset,          // reset
-        input       logic       halt,           // halt
+        input  wire logic       clk,            // clock
+        input  wire logic       reset,          // reset
+        input  wire logic       halt,           // halt
 
         // instruction memory
-        output      word        mem_addr,       // address
-        input       word        mem_data,       // data
+        output wire word        mem_addr,       // address
+        input  wire word        mem_data,       // data
 
         // stage inputs
-        input       word        id_jmp_addr,    // jump address from execute stage
-        input       logic       id_jmp_valid,   // whether or not jump address is valid
-        input       logic       id_ready,       // is the ID stage ready to accept input
+        input  wire word        id_jmp_addr,    // jump address from execute stage
+        input  wire logic       id_jmp_valid,   // whether or not jump address is valid
+        input  wire logic       id_ready,       // is the ID stage ready to accept input
 
         // stage outputs
-        output      word        if_pc,          // program counter
-        output      word        if_ir,          // instruction register
-        output      logic       if_valid        // is the stage output valid
+        output wire word        if_pc,          // program counter
+        output wire word        if_ir,          // instruction register
+        output wire logic       if_valid        // is the stage output valid
     );
    
 

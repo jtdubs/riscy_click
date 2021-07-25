@@ -1,4 +1,5 @@
-`timescale 1ns/1ps
+`timescale 1ns / 1ps
+`default_nettype none
 
 module cpu_id_tb
     // Import Constants
@@ -32,7 +33,7 @@ word        wb_data;        // write-back register value
 logic       wb_enable;      // write-back enable
 
 // ID stage outputs
-logic       id_halt;        // halt
+logic       halt;           // halt
         
 // ID stage outputs (to IF)
 logic       id_ready;       // stage ready for new inputs

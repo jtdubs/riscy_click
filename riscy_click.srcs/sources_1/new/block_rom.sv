@@ -1,4 +1,5 @@
-`timescale 1ns/1ps
+`timescale 1ns / 1ps
+`default_nettype none
 
 module block_rom
     // Import Constants
@@ -7,15 +8,15 @@ module block_rom
         CONTENTS = ""
     )
     (
-        input       logic clk,
-        input       logic reset,
+        input  wire logic clk,
+        input  wire logic reset,
         
         // port a
-        input       word  addr_a,
+        input  wire word  addr_a,
         output wire word  data_a,
         
         // port b
-        input       word  addr_b,
+        input  wire word  addr_b,
         output wire word  data_b
     );
 
