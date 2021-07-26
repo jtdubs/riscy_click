@@ -27,6 +27,11 @@ logic [31:0] next_addr_a, next_addr_b;
 assign next_addr_a = reset ? 0 : addr_a + 4;
 assign next_addr_b = reset ? 32 : addr_b + 8;
 
+initial begin
+    addr_a = 'd0;
+    addr_b = 'd0;
+end
+
 always_ff @(negedge clk) begin
     addr_a <= next_addr_a;
     addr_b <= next_addr_b;

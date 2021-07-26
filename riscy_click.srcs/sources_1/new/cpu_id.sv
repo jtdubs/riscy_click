@@ -56,23 +56,31 @@ module cpu_id
 //
 
 // Instruction
-wire logic [6:0] opcode = if_ir[ 6: 0];
-wire logic [4:0] rd     = if_ir[11: 7];
-wire funct3      f3     = if_ir[14:12];
-wire logic [4:0] rs1    = if_ir[19:15];
-wire logic [4:0] rs2    = if_ir[24:20];
-wire logic [6:0] f7     = if_ir[31:25];
+logic [6:0] opcode;
+logic [4:0] rs1, rs2, rd;
+funct3      f3;
+logic [6:0] f7;
 
-// Immediate
-wire word imm_i = { {21{if_ir[31]}}, if_ir[30:25], if_ir[24:21], if_ir[20] };
-wire word imm_s = { {21{if_ir[31]}}, if_ir[30:25], if_ir[11:8], if_ir[7] };
-wire word imm_b = { {20{if_ir[31]}}, if_ir[7], if_ir[30:25], if_ir[11:8], 1'b0 };
-wire word imm_u = { if_ir[31], if_ir[30:20], if_ir[19:12], 12'b0 };
-wire word imm_j = { {12{if_ir[31]}}, if_ir[19:12], if_ir[20], if_ir[30:25], if_ir[24:21], 1'b0 };
+always_comb { f7, rs2, rs1, f3, rd, opcode } = if_ir;
 
-// ALU Mode
-wire alu_mode alu_mode7 = alu_mode'({ f7[0], f7[5], f3 });
-wire alu_mode alu_mode3 = alu_mode'({ 2'b0, f3 });
+// Immediates
+word imm_i, imm_s, imm_b, imm_u, imm_j;
+
+always_comb begin
+    imm_i = { {21{if_ir[31]}}, if_ir[30:25], if_ir[24:21], if_ir[20] };
+    imm_s = { {21{if_ir[31]}}, if_ir[30:25], if_ir[11:8], if_ir[7] };
+    imm_b = { {20{if_ir[31]}}, if_ir[7], if_ir[30:25], if_ir[11:8], 1'b0 };
+    imm_u = { if_ir[31], if_ir[30:20], if_ir[19:12], 12'b0 };
+    imm_j = { {12{if_ir[31]}}, if_ir[19:12], if_ir[20], if_ir[30:25], if_ir[24:21], 1'b0 };
+end
+
+// ALU Modes
+alu_mode alu_mode3, alu_mode7;
+
+always_comb begin
+    alu_mode7 = alu_mode'({ f7[0], f7[5], f3 });
+    alu_mode3 = alu_mode'({ 2'b0, f3 });
+end
 
 
 //
@@ -108,28 +116,26 @@ word ra_resolved, rb_resolved;
 
 // Determine true value for first register access
 always_comb begin
-    if (wb_enable & rs1 == wb_addr) begin
+    if (wb_enable & rs1 == wb_addr)
         ra_resolved = wb_data;
-    end else if (ma_wb_enable & rs1 == ma_wb_addr) begin
+    else if (ma_wb_enable & rs1 == ma_wb_addr)
         ra_resolved = ma_wb_data;
-    end else if (ex_wb_enable & rs1 == ex_wb_addr) begin
+    else if (ex_wb_enable & rs1 == ex_wb_addr)
         ra_resolved = ex_wb_data;
-    end else begin
+    else
         ra_resolved = ra;
-    end
 end
 
 // Determine true value for second register access
 always_comb begin
-    if (wb_enable & rs2 == wb_addr) begin
+    if (wb_enable & rs2 == wb_addr)
         rb_resolved = wb_data;
-    end else if (ma_wb_enable & rs2 == ma_wb_addr) begin
+    else if (ma_wb_enable & rs2 == ma_wb_addr)
         rb_resolved = ma_wb_data;
-    end else if (ex_wb_enable & rs2 == ex_wb_addr) begin
+    else if (ex_wb_enable & rs2 == ex_wb_addr)
         rb_resolved = ex_wb_data;
-    end else begin
+    else
         rb_resolved = rb;
-    end
 end
 
 
@@ -240,13 +246,56 @@ end
 
 // Data Hazard: EX stage has a colliding writeback and the data isn't available yet (ex. JALR or LW)
 logic data_hazard_condition;
-assign data_hazard_condition = ex_wb_enable & ~ex_wb_valid & (ex_wb_addr == rs1 | ex_wb_addr == rs2);
+always_comb data_hazard_condition = ex_wb_enable & ~ex_wb_valid & (ex_wb_addr == rs1 | ex_wb_addr == rs2);
 
 // a bubble needs to be output if we are in a data hazard condition, or if there was no valid instruction to decode
 logic bubble_needed;
-assign bubble_needed = data_hazard_condition | ~if_valid | id_jmp_valid;
+always_comb bubble_needed = data_hazard_condition | ~if_valid | id_jmp_valid;
 
 always_ff @(posedge clk) begin
+    // if fetch data was valid, and not being overruled by a jmp
+    if (if_valid) begin
+        // if we should ignore this instruction
+        if (id_jmp_valid) begin
+            // then indicate we can accept a new one
+            id_jmp_valid <= 1'b0;
+            id_jmp_addr  <= 32'h00000000;
+            id_ready     <= 1'b1;
+            id_halt      <= 1'b0;
+        end else begin
+            // otherwise, update based on instruction
+            id_jmp_valid <= next_id_jmp_valid;
+            id_jmp_addr  <= next_id_jmp_addr;
+            id_ready     <= ~data_hazard_condition;
+            id_halt      <= cw.halt;
+        end
+    end
+
+    // if a bubble is needed
+    if (bubble_needed) begin
+        // output a NOP to EX stage (addi x0, x0, 0)
+        id_pc         <= 32'h00000000;
+        id_ir         <= 32'h00000013;
+        id_alu_op1    <= 32'h00000000;
+        id_alu_op2    <= 32'h00000000;
+        id_alu_mode   <= ALU_ADD;
+        id_wb_rd      <= 5'b00000;
+        id_wb_src_sel <= WB_SRC_ALU;
+        id_wb_dst_sel <= WB_DST_REG;
+        id_wb_mode    <= WB_MODE_W;
+    end else begin
+        // otherwise, output decoded control signals
+        id_pc         <= if_pc;
+        id_ir         <= if_ir;
+        id_alu_op1    <= next_alu_op1;
+        id_alu_op2    <= next_alu_op2;
+        id_alu_mode   <= cw.alu_mode_sel;
+        id_wb_rd      <= rd;
+        id_wb_src_sel <= cw.wb_src_sel;
+        id_wb_dst_sel <= cw.wb_dst_sel;
+        id_wb_mode    <= cw.wb_mode_sel;
+    end
+        
     if (reset) begin
         // set initial signal values
         id_halt       <= 1'b0;
@@ -264,50 +313,6 @@ always_ff @(posedge clk) begin
         id_wb_src_sel <= WB_SRC_ALU;
         id_wb_dst_sel <= WB_DST_REG;
         id_wb_mode    <= WB_MODE_W;
-    
-    end else begin
-        // if fetch data was valid, and not being overruled by a jmp
-        if (if_valid) begin
-            // if we should ignore this instruction
-            if (id_jmp_valid) begin
-                // then indicate we can accept a new one
-                id_jmp_valid <= 1'b0;
-                id_jmp_addr  <= 32'h00000000;
-                id_ready     <= 1'b1;
-                id_halt      <= 1'b0;
-            end else begin
-                // otherwise, update based on instruction
-                id_jmp_valid <= next_id_jmp_valid;
-                id_jmp_addr  <= next_id_jmp_addr;
-                id_ready     <= ~data_hazard_condition;
-                id_halt      <= cw.halt;
-            end
-        end
-    
-        // if a bubble is needed
-        if (bubble_needed) begin
-            // output a NOP to EX stage (addi x0, x0, 0)
-            id_pc         <= 32'h00000000;
-            id_ir         <= 32'h00000013;
-            id_alu_op1    <= 32'h00000000;
-            id_alu_op2    <= 32'h00000000;
-            id_alu_mode   <= ALU_ADD;
-            id_wb_rd      <= 5'b00000;
-            id_wb_src_sel <= WB_SRC_ALU;
-            id_wb_dst_sel <= WB_DST_REG;
-            id_wb_mode    <= WB_MODE_W;
-        end else begin
-            // otherwise, output decoded control signals
-            id_pc         <= if_pc;
-            id_ir         <= if_ir;
-            id_alu_op1    <= next_alu_op1;
-            id_alu_op2    <= next_alu_op2;
-            id_alu_mode   <= cw.alu_mode_sel;
-            id_wb_rd      <= rd;
-            id_wb_src_sel <= cw.wb_src_sel;
-            id_wb_dst_sel <= cw.wb_dst_sel;
-            id_wb_mode    <= cw.wb_mode_sel;
-        end
     end
 end
 

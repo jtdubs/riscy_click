@@ -25,7 +25,7 @@ initial begin
 end
 
 // input side
-logic [7:0] counter = 8'h00;
+logic [7:0] counter;
 logic [7:0] next_counter;
 logic [1:0] state;
 
@@ -33,6 +33,8 @@ assign next_counter = counter + 1;
 assign input_data = counter;
 assign input_valid = state[0];
 assign output_ready = state[1];
+
+initial counter = 8'h00;
 
 always_ff @(negedge clk) begin
     if (input_ready & input_valid) begin

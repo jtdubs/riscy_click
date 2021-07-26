@@ -17,6 +17,8 @@ module skid_buffer
         input  wire logic                  output_ready,
         output      logic [WORD_WIDTH-1:0] output_data
     );
+    
+localparam WORD_ZERO = {WORD_WIDTH{1'b0}};
 
 //
 // Finite State Machine
@@ -40,66 +42,72 @@ sb_state state, next_state;
 
 // which buffer operations are requested
 logic insert, remove;
-assign insert = input_valid  & input_ready;  // insert will occur if data is being provided, and can be accepted
-assign remove = output_valid & output_ready; // output will occur if data is being requested, and can be provided
+always_comb begin
+    insert = input_valid  & input_ready;  // insert will occur if data is being provided, and can be accepted
+    remove = output_valid & output_ready; // output will occur if data is being requested, and can be provided
+end
 
 // which state transition is occuring
 logic load, unload, buffer, unbuffer, run;
-assign load     = (state == EMPTY)   &  insert;           // inserting into an empty output register
-assign unload   = (state == RUNNING) & ~insert &  remove; // output register consumed; now empty
-assign buffer   = (state == RUNNING) &  insert & ~remove; // inserting but output register full; new data stored in buffer
-assign unbuffer = (state == FULL)              &  remove; // output register consumed; reload from buffer
-assign run      = (state == RUNNING) &  insert &  remove; // inserting into an just emptied output register
+always_comb begin
+    load     = (state == EMPTY)   &  insert;           // inserting into an empty output register
+    unload   = (state == RUNNING) & ~insert &  remove; // output register consumed; now empty
+    buffer   = (state == RUNNING) &  insert & ~remove; // inserting but output register full; new data stored in buffer
+    unbuffer = (state == FULL)              &  remove; // output register consumed; reload from buffer
+    run      = (state == RUNNING) &  insert &  remove; // inserting into an just emptied output register
+end
 
 // what will the next state be
 always_comb begin
-    if (load | unbuffer) begin
+    if (load | unbuffer)
         next_state = RUNNING;
-    end else if (buffer) begin
+    else if (buffer)
         next_state = FULL;
-    end else if (unload) begin
+    else if (unload)
         next_state = EMPTY;
-    end else begin
+    else
         next_state = state;
-    end
 end
 
 
 //
-// Latched Updates
+// Register Updates
 //
 
 logic [WORD_WIDTH-1:0] data_buffer;
 
 always_ff @(posedge clk) begin
+    // advance to next state
+    state <= next_state; 
+    
+    // can input if not full
+    input_ready  <= (next_state != FULL);
+    
+    // can output if not empty
+    output_valid <= (next_state != EMPTY);
+    
+    // set output register
+    if (load | run)
+        output_data <= input_data;  // make input available in output register
+    else if (unload)
+        output_data <= 'd0;         // clear output buffer
+    else if (unbuffer)     
+        output_data <= data_buffer; // transfer buffer to output register
+        
+    // set buffer register
+    if (buffer)
+        data_buffer <= input_data;  // buffer the input
+    else if (unbuffer)
+        data_buffer <= 'd0;         // clear the buffer
+    
     if (reset) begin
         // reset to EMPTY state
-        state             <= EMPTY;
-        input_ready       <= 1'b1;
-        output_valid      <= 1'b0;
-        output_data       <= 'd0;
-        data_buffer       <= 'd0;
-    end else begin
-        state <= next_state; // advance to next state
-        
-        input_ready  <= (next_state != FULL);  // can input if not full
-        output_valid <= (next_state != EMPTY); // can output if not empty
-        
-        if (load | run) begin
-            // make input available in output register
-            output_data <= input_data;
-        end else if (unload) begin
-            // clear output buffer
-            output_data <= 'd0;
-        end else if (buffer) begin
-            // buffer the input, because output register is already full
-            data_buffer <= input_data;
-        end else if (unbuffer) begin     
-            // transfer buffer to output register
-            output_data <= data_buffer;
-            data_buffer <= 'd0;
-        end 
-    end
+        state        <= EMPTY;
+        input_ready  <= 1'b1;
+        output_valid <= 1'b0;
+        output_data  <= WORD_ZERO;
+        data_buffer  <= WORD_ZERO;
+    end 
 end
 
 endmodule

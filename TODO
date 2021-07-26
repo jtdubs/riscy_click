@@ -1,9 +1,3 @@
-# - Use blocking assignment in combinational blocks???
-- Don't use assign??  But why?  What's the alternative?  I guess always_comb?
-- Prefer ternary over if-else where possible
-- Consider last-assignment-wins idiom for reset handling...
-- Don't need begin/end for single statements...
-
 Steps:
 0. Debug cycle counter?  Could put on board.
 1. Pipelining

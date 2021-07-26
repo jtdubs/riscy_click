@@ -17,11 +17,11 @@ module regfile
 
         // read port 1
         input  wire logic [4:0] read_addr1,   // Read Address #1
-        output wire word        read_data1,   // Data Output #1
+        output      word        read_data1,   // Data Output #1
 
         // read port 2
         input  wire logic [4:0] read_addr2,   // Read Address #2
-        output wire word        read_data2,   // Data Output #2
+        output      word        read_data2,   // Data Output #2
 
         // write port
         input  wire logic       write_enable, // Write Enable
@@ -36,13 +36,15 @@ word mem [31:0];
 integer i;
 initial begin
     for (i=0; i<32; i=i+1) begin
-        mem[i] <= 32'b0;
+        mem[i] = 32'b0;
     end
 end
 
 // Reading Logic
-assign read_data1 = read_addr1 == 5'b0 ? 32'b0 : mem[read_addr1];
-assign read_data2 = read_addr2 == 5'b0 ? 32'b0 : mem[read_addr2];
+always_comb begin
+    read_data1 = read_addr1 == 5'b0 ? 32'b0 : mem[read_addr1];
+    read_data2 = read_addr2 == 5'b0 ? 32'b0 : mem[read_addr2];
+end
 
 // Clocked Writing
 always_ff @(posedge clk) begin
