@@ -109,7 +109,6 @@ typedef enum logic [1:0] {
 
 const alu_op2 ALU_OP2_X = ALU_OP2_RS2;
 
-
 // ALU Mode
 typedef enum logic [4:0] {
     ALU_ADD      = 5'b00000,    // Addition
