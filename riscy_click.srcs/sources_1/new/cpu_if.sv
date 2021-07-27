@@ -15,8 +15,8 @@ module cpu_if
         input  wire logic halt,         // halt
 
         // instruction memory
-        output      word  mem_addr,     // address
-        input  wire word  mem_data,     // data
+        output      word  imem_addr,    // address
+        input  wire word  imem_data,    // data
         
         // stage inputs
         input  wire word  id_jmp_addr,  // jump address from execute stage
@@ -82,8 +82,8 @@ end
 //
 
 always_comb begin
-    skid_ir  = mem_data;       // Data from memory is IR
-    mem_addr = skid_pc_next;   // Address to request for next cycle is next PC value
+    skid_ir   = imem_data;    // Data from memory is IR
+    imem_addr = skid_pc_next; // Address to request for next cycle is next PC value
 end
 
 endmodule

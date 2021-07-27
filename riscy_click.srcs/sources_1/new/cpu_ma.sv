@@ -15,10 +15,10 @@ module cpu_ma
         input  wire logic    halt,             // halt
 
         // data memory
-        output      word     mem_addr,         // address
-        input  wire word     mem_read_data,    // read data
-        output      word     mem_write_data,   // write data
-        output      logic    mem_write_enable, // write enable
+        output      word        dmem_addr,       // address
+        input  wire word        dmem_read_data,  // read data
+        output      word        dmem_write_data, // write data
+        output      logic [3:0] dmem_write_mask, // write enable
         
         // stage inputs
         input  wire word     ex_pc,            // program counter
@@ -49,9 +49,9 @@ module cpu_ma
 //
 
 always_comb begin
-    mem_addr         = ex_alu_result;
-    mem_write_data   = ex_ma_data;
-    mem_write_enable = (ex_ma_mode == MA_STORE) ? 1'b1 : 1'b0;
+    dmem_addr       = ex_alu_result;
+    dmem_write_data = ex_ma_data;
+    dmem_write_mask = (ex_ma_mode == MA_STORE) ? 4'b1111 : 4'b0000;
 end 
 
 
@@ -82,10 +82,10 @@ end
 //
 
 always_ff @(posedge clk) begin
-    ma_pc         <= ex_pc;
-    ma_ir         <= ex_ir;
-    ma_wb_addr    <= ex_wb_addr;
-    ma_wb_data    <= (ex_ma_mode == MA_LOAD) ? mem_read_data : ex_wb_data;
+    ma_pc      <= ex_pc;
+    ma_ir      <= ex_ir;
+    ma_wb_addr <= ex_wb_addr;
+    ma_wb_data <= (ex_ma_mode == MA_LOAD) ? dmem_read_data : ex_wb_data;
 end
 
 endmodule

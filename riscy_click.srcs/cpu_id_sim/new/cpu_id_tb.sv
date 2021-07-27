@@ -12,9 +12,8 @@ logic       reset;          // reset
 logic       halt;           // halt
 
 // IF memory access
-word        mem_addr;       // address
-word        mem_data;       // data
-
+word        imem_addr;      // address
+word        imem_data;      // data
 
 // ID stage inputs
 word        if_pc;          // program counter
@@ -52,8 +51,8 @@ regaddr     id_wb_addr;     // write-back register address
 block_rom #(.CONTENTS("d:/dev/riscy_click/bios/bios.coe")) rom (
     .clk(clk),
     .reset(reset),
-    .addr_a(mem_addr),
-    .data_a(mem_data),
+    .addr_a(imem_addr),
+    .data_a(imem_data),
     .addr_b(32'h00000000),
     .data_b()
 );

@@ -12,8 +12,8 @@ logic       reset;          // reset
 logic       halt;           // halt
 
 // IF memory access
-word        mem_addr;       // address
-word        mem_data;       // data
+word        imem_addr;      // address
+word        imem_data;      // data
 
 // ID stage inputs
 word        if_pc;          // program counter
@@ -65,22 +65,30 @@ regaddr     ma_wb_addr;     // write-back register address
 word        ma_wb_data;     // write-back register value
 
 // MA memory access
-word        ma_mem_addr;         // address
-word        ma_mem_read_data;    // data
-word        ma_mem_write_data;   // data
-logic       ma_mem_write_enable; // data
+word        dmem_addr;       // address
+word        dmem_read_data;  // data
+word        dmem_write_data; // data
+logic [3:0] dmem_write_mask; // write mask
 
 // Instruction Memory
 block_rom #(.CONTENTS("d:/dev/riscy_click/bios/bios.coe")) rom (
     .clk(clk),
     .reset(reset),
-    .addr_a(mem_addr),
-    .data_a(mem_data),
+    .addr_a(imem_addr),
+    .data_a(imem_data),
     .addr_b(32'h00000000),
     .data_b()
 );
 
-// TODO: Data Memory
+// Data Memory
+block_ram ram (
+    .clk(clk),
+    .reset(reset),
+    .addr(dmem_addr),
+    .read_data(dmem_read_data),
+    .write_data(dmem_write_data),
+    .write_mask(dmem_write_mask)
+);
 
 // Fetch Stage
 cpu_if cpu_if (.*);
@@ -92,7 +100,7 @@ cpu_id cpu_id (.id_halt(halt), .*);
 cpu_ex cpu_ex (.*);
 
 // Memory Access Stage
-cpu_ma cpu_ma (.*); // TODO: memory signal disambiguation between imem and dmem...
+cpu_ma cpu_ma (.*);
 
 // clock generator
 initial begin
