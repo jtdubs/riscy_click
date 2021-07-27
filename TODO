@@ -1,4 +1,9 @@
+TODO:
 - Naming convention for signals that handles the bypass / hazard signals better
+- Sanity check need for signals passing through stages
+- Do I have pc+4 and crap in too many places?
+- Does it elaborate / synthesize to something sane?
+- What is the timing like?
 
 Steps:
 0. Debug cycle counter?  Could put on board.
@@ -18,9 +23,6 @@ Hazards:
 - Structural - Hardware resources used by multiple stages.  Avoid this by not sharing resources across stages.
 - Data       - Instruction needs reg or mem value being modified by later instruction
 - Control    - Earlier stages may need to be flushed if a branch occurs, as it is the wrong instruction in-flight
-
-Structural hazard avoidance:
-- Ensure all hardware used by only one stage.  Duplciate if necessary.
 
 Data hazard avoidance:
 - EX, MA & WB advertise the pending register values; ID consumes them if needed.

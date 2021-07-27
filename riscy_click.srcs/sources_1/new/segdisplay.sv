@@ -1,4 +1,5 @@
-`timescale 1ns/1ps
+`timescale 1ns / 1ps
+`default_nettype none
 
 ///
 /// Seven Segment Display
@@ -12,19 +13,18 @@ module segdisplay
     )
     (
         // system clock domain
-        input logic clk,
-        input logic reset,
+        input  wire logic clk,
+        input  wire logic reset,
 
         // display interface
-        output logic [7:0] a, // common anodes
-        output logic [7:0] c, // cathodes
+        output      logic [7:0] a, // common anodes
+        output      logic [7:0] c, // cathodes
 
          // data bus interface
-        input       word        addr,
+        input  wire word        addr,
         output wire word        read_data,
-        input       word        write_data,
-        input       logic       write_enable,
-        input       logic [3:0] write_mask
+        input  wire word        write_data,
+        input  wire logic [3:0] write_mask
     );
 
 // Counter rolls over at half the divisor so that a full cycle of the derived clock occurs at the divided frequency
@@ -103,14 +103,11 @@ always_ff @(posedge clk) begin
     if (reset) begin
         value <= 32'h00000000;
     end else begin
-        if (write_enable)
-        begin
-            // Only write bytes where mask is set
-            if (write_mask[3]) value[31:24] <= write_data[31:24];
-            if (write_mask[2]) value[23:16] <= write_data[23:16];
-            if (write_mask[1]) value[15: 8] <= write_data[15: 8];
-            if (write_mask[0]) value[ 7: 0] <= write_data[ 7: 0];
-        end
+        // Only write bytes where mask is set
+        if (write_mask[3]) value[31:24] <= write_data[31:24];
+        if (write_mask[2]) value[23:16] <= write_data[23:16];
+        if (write_mask[1]) value[15: 8] <= write_data[15: 8];
+        if (write_mask[0]) value[ 7: 0] <= write_data[ 7: 0];
     end
 end
 

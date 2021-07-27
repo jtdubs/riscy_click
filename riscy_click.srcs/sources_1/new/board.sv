@@ -1,4 +1,5 @@
-`timescale 1ns/1ps
+`timescale 1ns / 1ps
+`default_nettype none
 
 ///
 /// Board
@@ -8,83 +9,77 @@ module board
     // Import Constants
     import consts::*;
     (
-        input       logic clk,   // clock
-        input       logic reset, // reset
+        input  wire logic clk,   // clock
+        input  wire logic reset, // reset
         output wire logic halt,  // halt
 
         // I/O
         output wire logic [ 7:0] segment_a, // seven segment display anodes
         output wire logic [ 7:0] segment_c, // seven segment display cathodes
-        input       logic [15:0] switch     // hardware switch bank
+        input  wire logic [15:0] switch     // hardware switch bank
     );
 
 
 //
-// Instruction Memory Bus
+// Memory Signals
 //
 
-// Signals
-wire word ibus_addr;
-wire word ibus_read_data;
+// Instruction Memory
+wire word imem_addr;
+wire word imem_data;
 
-// Component
-bios_rom bios (
-    .a(ibus_addr[9:2]),
-    .spo(ibus_read_data)
-);
+// Data Memory
+wire word        dmem_addr;
+     word        dmem_read_data;
+wire word        dmem_write_data;
+wire logic [3:0] dmem_write_mask;
 
+// Write Masks
+logic [3:0] dsp_write_mask;
+logic [3:0] ram_write_mask;
 
-//
-// Data Memory Bus
-//
-
-// Bus Signals
-wire word   dbus_addr;
-word        dbus_read_data;
-word        dbus_write_data;
-logic [3:0] dbus_write_mask;
-logic       dbus_write_enable;
-
-// Write enable signals
-logic dsp_write_enable;
-logic ram_write_enable;
-
-// Read data signals
+// Device
 wire word dsp_read_data;
 wire word bios_read_data;
 wire word ram_read_data;
 
 
-// Banked RAM
-genvar i;
-generate for (i=0; i<4; i++) begin
-    data_ram_bank dram_bank (
-        .clk(clk),
-        .a(dbus_addr[8:2]),
-        .d(dbus_write_data[(8*i+7):(8*i)]),
-        .we(ram_write_enable & dbus_write_mask[i]),
-        .spo(ram_read_data[(8*i+7):(8*i)])
-    );
-end endgenerate
+//
+// Devices
+//
 
-// seven segment display
+// BIOS
+block_rom #(.CONTENTS("d:/dev/riscy_click/bios/bios.coe")) rom (
+    .clk(clk),
+    .reset(reset),
+    .addr_a(imem_addr),
+    .data_a(imem_data),
+    .addr_b(dmem_addr),
+    .data_b(bios_read_data)
+);
+
+// RAM
+block_ram ram (
+    .clk(clk),
+    .reset(reset),
+    .addr(dmem_addr),
+    .read_data(ram_read_data),
+    .write_data(dmem_write_data),
+    .write_mask(ram_write_mask)
+);
+
+// Display
 segdisplay #(.CLK_DIVISOR(10000)) disp (
     .clk(clk),
     .reset(reset),
     .a(segment_a),
     .c(segment_c),
-    .addr(dbus_addr),
+    .addr(dmem_addr),
     .read_data(dsp_read_data),
-    .write_data(dbus_write_data),
-    .write_enable(dsp_write_enable),
-    .write_mask(dbus_write_mask)
+    .write_data(dmem_write_data),
+    .write_mask(dsp_write_mask)
 );
 
-// read-only copy of BIOS
-bios_rom bios_copy (
-    .a(dbus_addr[9:2]),
-    .spo(bios_read_data)
-);
 
 //
 // Address decoding
@@ -97,12 +92,12 @@ bios_rom bios_copy (
 // FF000004:            Switch Bank
 //
 always_comb begin
-    casez (dbus_addr)
-    32'h0???????: begin ram_write_enable <= 1'b0;              dsp_write_enable <= 1'b0;              dbus_read_data <= bios_read_data;     end
-    32'h1???????: begin ram_write_enable <= dbus_write_enable; dsp_write_enable <= 1'b0;              dbus_read_data <= ram_read_data;      end
-    32'hFF000000: begin ram_write_enable <= 1'b0;              dsp_write_enable <= dbus_write_enable; dbus_read_data <= dsp_read_data;      end
-    32'hFF000004: begin ram_write_enable <= 1'b0;              dsp_write_enable <= 1'b0;              dbus_read_data <= { 16'h00, switch }; end
-    default:      begin ram_write_enable <= 1'b0;              dsp_write_enable <= 1'b0;              dbus_read_data <= 32'h00000000;       end
+    casez (dmem_addr)
+    32'h0???????: begin ram_write_mask <= 4'b0000;         dsp_write_mask <= 4'b0000;         dmem_read_data <= bios_read_data;     end
+    32'h1???????: begin ram_write_mask <= dmem_write_mask; dsp_write_mask <= 4'b0000;         dmem_read_data <= ram_read_data;      end
+    32'hFF000000: begin ram_write_mask <= 4'b0000;         dsp_write_mask <= dmem_write_mask; dmem_read_data <= dsp_read_data;      end
+    32'hFF000004: begin ram_write_mask <= 4'b0000;         dsp_write_mask <= 4'b0000;         dmem_read_data <= { 16'h00, switch }; end
+    default:      begin ram_write_mask <= 4'b0000;         dsp_write_mask <= 4'b0000;         dmem_read_data <= 32'h00000000;       end
     endcase
 end
 
@@ -111,17 +106,6 @@ end
 // CPU
 //
 
-cpu cpu (
-    .clk(clk),
-    .reset(reset),
-    .halt(halt),
-    .ibus_addr(ibus_addr),
-    .ibus_read_data(ibus_read_data),
-    .dbus_addr(dbus_addr),
-    .dbus_read_data(dbus_read_data),
-    .dbus_write_data(dbus_write_data),
-    .dbus_write_mask(dbus_write_mask),
-    .dbus_write_enable(dbus_write_enable)
-);
+cpu cpu (.*);
 
 endmodule
