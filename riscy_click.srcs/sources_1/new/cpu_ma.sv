@@ -16,7 +16,6 @@ module cpu_ma
 
         // data memory
         output      word        dmem_addr,       // address
-        input  wire word        dmem_read_data,  // read data
         output      word        dmem_write_data, // write data
         output      logic [3:0] dmem_write_mask, // write enable
         
@@ -39,6 +38,7 @@ module cpu_ma
         // stage outputs (to WB)
         output      word     ma_pc,            // program counter
         output      word     ma_ir,            // instruction register
+        output      logic    ma_is_load,       // is this a loan instruction?
         output      regaddr  ma_wb_addr,       // write-back register address
         output      word     ma_wb_data        // write-back register value
     );
@@ -84,8 +84,17 @@ end
 always_ff @(posedge clk) begin
     ma_pc      <= ex_pc;
     ma_ir      <= ex_ir;
+    ma_is_load <= (ex_ma_mode == MA_LOAD) ? 1'b1 : 1'b0;
     ma_wb_addr <= ex_wb_addr;
-    ma_wb_data <= (ex_ma_mode == MA_LOAD) ? dmem_read_data : ex_wb_data;
+    ma_wb_data <= ex_wb_data;
+    
+    if (reset) begin
+        ma_pc      <= NOP_PC;
+        ma_ir      <= NOP_IR;
+        ma_is_load <= 1'b0;
+        ma_wb_addr <= NOP_WB_ADDR;
+        ma_wb_data <= 32'h00000000;
+    end
 end
 
 endmodule

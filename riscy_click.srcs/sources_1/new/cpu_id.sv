@@ -310,16 +310,16 @@ always_ff @(posedge clk) begin
         
     if (reset) begin
         // output a NOP to EX stage (addi x0, x0, 0)
-        id_pc       <= 32'h00000000;
-        id_ir       <= 32'h00000013;
-        id_alu_op1  <= 32'h00000000;
-        id_alu_op2  <= 32'h00000000;
-        id_alu_mode <= ALU_ADD;
-        id_ma_mode  <= MA_X;
-        id_ma_size  <= MA_SIZE_X;
-        id_ma_data  <= 32'h00000000;
-        id_wb_addr  <= 5'b00000;
-        id_wb_src   <= WB_SRC_ALU;
+        id_pc         <= NOP_PC;
+        id_ir         <= NOP_IR;
+        id_alu_op1    <= 32'h00000000;
+        id_alu_op2    <= 32'h00000000;
+        id_alu_mode   <= NOP_ALU_MODE;
+        id_ma_mode    <= NOP_MA_MODE;
+        id_ma_size    <= NOP_MA_SIZE;
+        id_ma_data    <= 32'h00000000;
+        id_wb_src     <= NOP_WB_SRC;
+        id_wb_addr    <= NOP_WB_ADDR;
     end
 end
 

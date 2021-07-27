@@ -64,22 +64,21 @@ alu alu (
 //
 
 always_comb begin
+    hz_ex_wb_addr   = id_wb_addr;
+
     case (id_wb_src)
     WB_SRC_ALU:
         begin
-            hz_ex_wb_addr   = id_wb_addr;
             hz_ex_wb_data   = alu_result;
             hz_ex_wb_valid  = 1'b1;
         end  
     WB_SRC_PC4:
         begin
-            hz_ex_wb_addr   = id_wb_addr;
             hz_ex_wb_data   = id_pc + 4; // NOTE: could have come from ID directly
             hz_ex_wb_valid  = 1'b1;
         end
-    WB_SRC_MEM:
+    default: /* WB_SRC_MEM */
         begin
-            hz_ex_wb_addr   = id_wb_addr;
             hz_ex_wb_data   = 32'b0;
             hz_ex_wb_valid  = 1'b0; // will come from MA stage
         end
@@ -101,6 +100,18 @@ always_ff @(posedge clk) begin
     ex_wb_src     <= id_wb_src;
     ex_wb_addr    <= id_wb_addr;
     ex_wb_data    <= hz_ex_wb_data;
+    
+    if (reset) begin
+        ex_pc         <= NOP_PC;
+        ex_ir         <= NOP_IR;
+        ex_alu_result <= 32'h00000000;
+        ex_ma_mode    <= NOP_MA_MODE;
+        ex_ma_size    <= NOP_MA_SIZE;
+        ex_ma_data    <= 32'h00000000;
+        ex_wb_src     <= NOP_WB_SRC;
+        ex_wb_addr    <= NOP_WB_ADDR;
+        ex_wb_data    <= 32'h00000000;
+    end
 end
 
 endmodule

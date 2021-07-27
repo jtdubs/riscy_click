@@ -91,13 +91,27 @@ segdisplay #(.CLK_DIVISOR(10000)) disp (
 // FF000000:            Seven Segment Display
 // FF000004:            Switch Bank
 //
+word dmem_return_addr;
+
+always_ff @(posedge clk) begin
+    dmem_return_addr <= reset ? 32'h00000000 : dmem_addr;
+end
+
 always_comb begin
     casez (dmem_addr)
-    32'h0???????: begin ram_write_mask <= 4'b0000;         dsp_write_mask <= 4'b0000;         dmem_read_data <= bios_read_data;     end
-    32'h1???????: begin ram_write_mask <= dmem_write_mask; dsp_write_mask <= 4'b0000;         dmem_read_data <= ram_read_data;      end
-    32'hFF000000: begin ram_write_mask <= 4'b0000;         dsp_write_mask <= dmem_write_mask; dmem_read_data <= dsp_read_data;      end
-    32'hFF000004: begin ram_write_mask <= 4'b0000;         dsp_write_mask <= 4'b0000;         dmem_read_data <= { 16'h00, switch }; end
-    default:      begin ram_write_mask <= 4'b0000;         dsp_write_mask <= 4'b0000;         dmem_read_data <= 32'h00000000;       end
+    32'h0???????: begin ram_write_mask <= 4'b0000;         dsp_write_mask <= 4'b0000;         end
+    32'h1???????: begin ram_write_mask <= dmem_write_mask; dsp_write_mask <= 4'b0000;         end
+    32'hFF000000: begin ram_write_mask <= 4'b0000;         dsp_write_mask <= dmem_write_mask; end
+    32'hFF000004: begin ram_write_mask <= 4'b0000;         dsp_write_mask <= 4'b0000;         end
+    default:      begin ram_write_mask <= 4'b0000;         dsp_write_mask <= 4'b0000;         end
+    endcase
+    
+    casez (dmem_return_addr)
+    32'h0???????: begin dmem_read_data <= bios_read_data;     end
+    32'h1???????: begin dmem_read_data <= ram_read_data;      end
+    32'hFF000000: begin dmem_read_data <= dsp_read_data;      end
+    32'hFF000004: begin dmem_read_data <= { 16'h00, switch }; end
+    default:      begin dmem_read_data <= 32'h00000000;       end
     endcase
 end
 

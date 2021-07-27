@@ -13,10 +13,14 @@ module cpu_wb
         input  wire logic    clk,        // clock
         input  wire logic    reset,      // reset
         input  wire logic    halt,       // halt
+        
+        // data memory
+        input       word     dmem_read_data,  // memory data
 
         // stage inputs
         input  wire word     ma_pc,      // program counter
         input  wire word     ma_ir,      // instruction register
+        input  wire logic    ma_is_load, // is this a load instruction?
         input  wire regaddr  ma_wb_addr, // write-back register address
         input  wire word     ma_wb_data, // write-back register value
         
@@ -32,7 +36,7 @@ module cpu_wb
 
 always_comb begin
     hz_wb_addr = ma_wb_addr;
-    hz_wb_data = ma_wb_data;
+    hz_wb_data = ma_is_load ? dmem_read_data : ma_wb_data;
 end 
 
 endmodule

@@ -62,18 +62,20 @@ word skid_pc_next;
 // combiantional logic for next PC value
 always_comb begin
     if (halt)
-        skid_pc_next = skid_pc;     // no change on halt
+        skid_pc_next = skid_pc;         // no change on halt  
+    else if (reset)
+        skid_pc_next = 32'h00000000;    // zero on reset
     else if (id_jmp_valid)
-        skid_pc_next = id_jmp_addr; // respect jumps
+        skid_pc_next = id_jmp_addr;     // respect jumps
     else if (~skid_ready)
-        skid_pc_next = skid_pc;     // no change backpressure
+        skid_pc_next = skid_pc;         // no change backpressure
     else
-        skid_pc_next = skid_pc + 4; // otherwise keep advancing
+        skid_pc_next = skid_pc + 4;     // otherwise keep advancing
 end
 
 // advance every clock cycle
 always_ff @(posedge clk) begin
-    skid_pc <= reset ? 32'b0 : skid_pc_next;
+    skid_pc <= skid_pc_next;
 end
 
 

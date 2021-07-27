@@ -76,6 +76,7 @@ wire word        ex_wb_data;     // write-back register value
 // MA stage outputs (to WB)
 wire word        ma_pc;          // program counter
 wire word        ma_ir;          // instruction register
+wire logic       ma_is_load;     // is a load instruction?
 wire regaddr     ma_wb_addr;     // write-back register address
 wire word        ma_wb_data;     // write-back register value
 

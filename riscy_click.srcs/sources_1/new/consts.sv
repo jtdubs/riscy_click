@@ -149,4 +149,19 @@ typedef struct packed {
     wb_src   wb_src_sel;
 } control_word;
 
+
+//
+// NOP
+//
+
+parameter NOP_PC       = 32'h00000000;
+parameter NOP_IR       = 32'h00000013;
+parameter NOP_ALU_OP   = 32'h00000000;
+parameter NOP_ALU_MODE = ALU_ADD;
+parameter NOP_MA_MODE  = MA_X;
+parameter NOP_MA_SIZE  = MA_SIZE_X;
+parameter NOP_MA_DATA  = 32'h00000000;
+parameter NOP_WB_ADDR  = 5'b00000;
+parameter NOP_WB_SRC   = WB_SRC_ALU;
+
 endpackage
