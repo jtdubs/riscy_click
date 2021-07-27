@@ -64,32 +64,14 @@ parameter F3_SW        = 3'b010;     // Store Word
 /// Control Signals
 ///
 
-// Write-Back Source
+// PC Mode
 typedef enum logic [1:0] {
-    WB_SRC_ALU   = 2'b00,      // Data from ALU
-    WB_SRC_PC4   = 2'b01,      // Data is Next PC
-    WB_SRC_MEM   = 2'b10       // Data from Memory
-} wb_src;
+    PC_NEXT      = 2'b00,       // Next Instruction
+    PC_JUMP_REL  = 2'b01,       // Jump (Relative)
+    PC_JUMP_ABS  = 2'b10,       // Jump (Absolute)
+    PC_BRANCH    = 2'b11        // ALU_ADD
+} pc_mode;
 
-const wb_src WB_SRC_X = WB_SRC_ALU;
-
-// Write-Back Destination
-typedef enum logic [1:0] {
-    WB_X         = 2'b00,      // No write-back
-    WB_DST_REG   = 2'b01,      // Write-back to Register
-    WB_DST_MEM   = 2'b10       // Write-back to Memory
-} wb_dst;
-
-// Write-Back Mode
-typedef enum logic [2:0] {
-    WB_MODE_B    = 3'b000,     // Byte (Signed)
-    WB_MODE_H    = 3'b001,     // Half-Word (Signed)
-    WB_MODE_W    = 3'b010,     // Word
-    WB_MODE_BU   = 3'b100,     // Byte (Unsigned)
-    WB_MODE_HU   = 3'b101      // Half-Word (Unsigned)
-} wb_mode;
-
-const wb_mode WB_MODE_X = WB_MODE_W;
 
 // ALU Operand #1
 typedef enum logic {
@@ -121,25 +103,35 @@ typedef enum logic [4:0] {
     ALU_AND      = 5'b00111,    // Binary AND
     ALU_SUB      = 5'b01000,    // Subtraction
     ALU_ASR      = 5'b01101,    // Logical Shift Right
-//    ALU_MUL      = 5'b10000,    // Multiply
-//    ALU_MULH     = 5'b10001,    // Multiply (High)
-//    ALU_MULHSU   = 5'b10010,    // Multiply (High, Signed x Unsigned)
-//    ALU_MULHU    = 5'b10011,    // Multiple (High, Unsigned)
-//    ALU_DIV      = 5'b10100,    // Divide
-//    ALU_DIVU     = 5'b10101,    // Divide (Unsigned)
-//    ALU_REM      = 5'b10110,    // Remainder
-//    ALU_REMU     = 5'b10111,    // Remainder (Unsigned)
     ALU_COPY1    = 5'b11001,    // Output Operand #1
     ALU_X        = 5'b11111     // Disabled
 } alu_mode;
 
-// PC Mode
+// Memory Access Mode
 typedef enum logic [1:0] {
-    PC_NEXT      = 2'b00,       // Next Instruction
-    PC_JUMP_REL  = 2'b01,       // Jump (Relative)
-    PC_JUMP_ABS  = 2'b10,       // Jump (Absolute)
-    PC_BRANCH    = 2'b11        // ALU_ADD
-} pc_mode;
+    MA_X         = 2'b00,       // No memory access
+    MA_LOAD      = 2'b01,       // Load memory to register
+    MA_STORE     = 2'b10        // Store ALU in memory
+} ma_mode;
+
+// Write-Back Source
+typedef enum logic [1:0] {
+    WB_SRC_ALU   = 2'b00,      // Data from ALU
+    WB_SRC_PC4   = 2'b01,      // Data is Next PC
+    WB_SRC_MEM   = 2'b10       // Data from Memory
+} wb_src;
+
+const wb_src WB_SRC_X = WB_SRC_ALU;
+
+// Write-Back Mode
+typedef enum logic [2:0] {
+    WB_MODE_X    = 3'b000,     // No writeback
+    WB_MODE_B    = 3'b001,     // Byte (Signed)
+    WB_MODE_H    = 3'b010,     // Half-Word (Signed)
+    WB_MODE_W    = 3'b100,     // Word
+    WB_MODE_BU   = 3'b101,     // Byte (Unsigned)
+    WB_MODE_HU   = 3'b110      // Half-Word (Unsigned)
+} wb_mode;
 
 
 //
@@ -148,13 +140,13 @@ typedef enum logic [1:0] {
 
 typedef struct packed {
     logic    halt;
+    pc_mode  pc_mode_sel;
     alu_op1  alu_op1_sel;
     alu_op2  alu_op2_sel;
     alu_mode alu_mode_sel;
+    ma_mode  ma_mode_sel;
     wb_src   wb_src_sel;
-    wb_dst   wb_dst_sel;
     wb_mode  wb_mode_sel;
-    pc_mode  pc_mode_sel;
 } control_word;
 
 endpackage

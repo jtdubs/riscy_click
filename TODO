@@ -1,3 +1,6 @@
+- Naming convention for signals that handles the bypass / hazard signals better
+- EX stage testbench
+
 Steps:
 0. Debug cycle counter?  Could put on board.
 1. Pipelining

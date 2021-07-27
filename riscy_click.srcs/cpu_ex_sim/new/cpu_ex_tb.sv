@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-module cpu_id_tb
+module cpu_ex_tb
     // Import Constants
     import consts::*;
     ();
@@ -14,7 +14,6 @@ logic       halt;           // halt
 // IF memory access
 word        mem_addr;       // address
 word        mem_data;       // data
-
 
 // ID stage inputs
 word        if_pc;          // program counter
@@ -49,6 +48,16 @@ wb_src      id_wb_src;      // write-back register address
 regaddr     id_wb_addr;     // write-back register address
 wb_mode     id_wb_mode;     // write-back enable
 
+// EX stage outputs (to MA)
+word        ex_pc;          // program counter
+word        ex_ir;          // instruction register
+word        ex_alu_result;  // alu result
+ma_mode     ex_ma_mode;     // memory access mode
+wb_src      ex_wb_src;      // write-back source
+regaddr     ex_wb_addr;     // write-back register address
+word        ex_wb_data;     // write-back register value
+wb_mode     ex_wb_mode;     // write-back mode
+
 
 // BIOS
 block_rom #(.CONTENTS("d:/dev/riscy_click/bios/bios.coe")) rom (
@@ -66,6 +75,9 @@ cpu_if cpu_if (.*);
 // Decode Stage
 cpu_id cpu_id (.id_halt(halt), .*);
 
+// Execute Stage
+cpu_ex cpu_ex (.*);
+
 // clock generator
 initial begin
     clk = 1;
@@ -82,11 +94,6 @@ end
 
 // write-back logic
 initial begin
-    hz_ex_wb_addr = 'dX;
-    hz_ex_wb_data = 'dX;
-    hz_ex_wb_enable = 1'b0;
-    hz_ex_wb_valid = 1'bX;
-    
     hz_ma_wb_addr = 'dX;
     hz_ma_wb_data = 'dX;
     hz_ma_wb_enable = 1'b0;

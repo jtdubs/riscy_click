@@ -19,16 +19,16 @@ module cpu_id
         input  wire logic       if_valid,       // fetch stage data is valid
         
         // stage inputs (data hazards)
-        input  wire regaddr     ex_wb_addr,     // write-back register address
-        input  wire word        ex_wb_data,     // write-back register value
-        input  wire logic       ex_wb_enable,   // write-back enable
-        input  wire logic       ex_wb_valid,    // write-back data valid
-        input  wire regaddr     ma_wb_addr,     // write-back register address
-        input  wire word        ma_wb_data,     // write-back register value
-        input  wire logic       ma_wb_enable,   // write-back enable
-        input  wire regaddr     wb_addr,        // write-back register address
-        input  wire word        wb_data,        // write-back register value
-        input  wire logic       wb_enable,      // write-back enable
+        input  wire logic       hz_ex_wb_enable,   // write-back enable
+        input  wire regaddr     hz_ex_wb_addr,     // write-back register address
+        input  wire word        hz_ex_wb_data,     // write-back register data
+        input  wire logic       hz_ex_wb_valid,    // write-back data valid
+        input  wire regaddr     hz_ma_wb_addr,     // write-back register address
+        input  wire word        hz_ma_wb_data,     // write-back register data
+        input  wire logic       hz_ma_wb_enable,   // write-back enable
+        input  wire regaddr     hz_wb_addr,        // write-back register address
+        input  wire word        hz_wb_data,        // write-back register data
+        input  wire logic       hz_wb_enable,      // write-back enable
 
         // stage outputs
         output      logic       id_halt,        // halt
@@ -44,10 +44,10 @@ module cpu_id
         output      word        id_alu_op1,     // ALU operand 1
         output      word        id_alu_op2,     // ALU operand 2
         output      alu_mode    id_alu_mode,    // ALU mode
-        output      regaddr     id_wb_rd,       // write-back register address
-        output      wb_src      id_wb_src_sel,  // write-back register address
-        output      wb_dst      id_wb_dst_sel,  // write-back register address
-        output      wb_mode     id_wb_mode      // write-back enable
+        output      ma_mode     id_ma_mode,     // memory access mode
+        output      wb_src      id_wb_src,      // write-back source
+        output      regaddr     id_wb_addr,     // write-back address
+        output      wb_mode     id_wb_mode      // write-back mode
     );
 
 
@@ -99,9 +99,9 @@ regfile regfile (
     .read_addr2(rs2),
     .read_data2(rb),
     // let the write-back stage drive the write signals
-    .write_addr(wb_addr),
-    .write_data(wb_data),
-    .write_enable(wb_enable)
+    .write_addr(hz_wb_addr),
+    .write_data(hz_wb_data),
+    .write_enable(hz_wb_enable)
 );
 
 
@@ -116,24 +116,24 @@ word ra_resolved, rb_resolved;
 
 // Determine true value for first register access
 always_comb begin
-    if (wb_enable & rs1 == wb_addr)
-        ra_resolved = wb_data;
-    else if (ma_wb_enable & rs1 == ma_wb_addr)
-        ra_resolved = ma_wb_data;
-    else if (ex_wb_enable & rs1 == ex_wb_addr)
-        ra_resolved = ex_wb_data;
+    if (hz_wb_enable & rs1 == hz_wb_addr)
+        ra_resolved = hz_wb_data;
+    else if (hz_ma_wb_enable & rs1 == hz_ma_wb_addr)
+        ra_resolved = hz_ma_wb_data;
+    else if (hz_ex_wb_enable & rs1 == hz_ex_wb_addr)
+        ra_resolved = hz_ex_wb_data;
     else
         ra_resolved = ra;
 end
 
 // Determine true value for second register access
 always_comb begin
-    if (wb_enable & rs2 == wb_addr)
-        rb_resolved = wb_data;
-    else if (ma_wb_enable & rs2 == ma_wb_addr)
-        rb_resolved = ma_wb_data;
-    else if (ex_wb_enable & rs2 == ex_wb_addr)
-        rb_resolved = ex_wb_data;
+    if (hz_wb_enable & rs2 == hz_wb_addr)
+        rb_resolved = hz_wb_data;
+    else if (hz_ma_wb_enable & rs2 == hz_ma_wb_addr)
+        rb_resolved = hz_ma_wb_data;
+    else if (hz_ex_wb_enable & rs2 == hz_ex_wb_addr)
+        rb_resolved = hz_ex_wb_data;
     else
         rb_resolved = rb;
 end
@@ -147,25 +147,25 @@ control_word cw;
 
 always_comb begin
     casez ({reset, f7, f3, opcode})
-    { 1'b1, 7'b???????, 3'b???,     7'b??????? }:  cw = '{ 1'b0, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     WB_SRC_X,   WB_X,       WB_MODE_X,    PC_NEXT     };
-    { 1'b?, 7'b0?00000, F3_SRL_SRA, OP_IMM }:      cw = '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_IMMI, alu_mode7, WB_SRC_ALU, WB_DST_REG, WB_MODE_W,    PC_NEXT     };
-    { 1'b?, 7'b???????, 3'b???,     OP_IMM }:      cw = '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_IMMI, alu_mode3, WB_SRC_ALU, WB_DST_REG, WB_MODE_W,    PC_NEXT     };
-    { 1'b?, 7'b???????, 3'b???,     OP_LUI }:      cw = '{ 1'b0, ALU_OP1_IMMU, ALU_OP2_RS2,  ALU_COPY1, WB_SRC_ALU, WB_DST_REG, WB_MODE_W,    PC_NEXT     };
-    { 1'b?, 7'b???????, 3'b???,     OP_AUIPC }:    cw = '{ 1'b0, ALU_OP1_IMMU, ALU_OP2_PC,   ALU_ADD,   WB_SRC_ALU, WB_DST_REG, WB_MODE_W,    PC_NEXT     };
-    { 1'b?, 7'b???????, 3'b???,     OP }:          cw = '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  alu_mode7, WB_SRC_ALU, WB_DST_REG, WB_MODE_W,    PC_NEXT     };
-    { 1'b?, 7'b???????, 3'b???,     OP_JAL }:      cw = '{ 1'b0, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     WB_SRC_PC4, WB_DST_REG, WB_MODE_W,    PC_JUMP_REL };
-    { 1'b?, 7'b???????, 3'b???,     OP_JALR }:     cw = '{ 1'b0, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     WB_SRC_PC4, WB_DST_REG, WB_MODE_W,    PC_JUMP_ABS };
-    { 1'b?, 7'b???????, F3_BEQ,     OP_BRANCH }:   cw = '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SUB,   WB_SRC_X,   WB_X,       WB_MODE_X,    PC_BRANCH   };
-    { 1'b?, 7'b???????, F3_BNE,     OP_BRANCH }:   cw = '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SUB,   WB_SRC_X,   WB_X,       WB_MODE_X,    PC_BRANCH   };
-    { 1'b?, 7'b???????, F3_BLT,     OP_BRANCH }:   cw = '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SLT,   WB_SRC_X,   WB_X,       WB_MODE_X,    PC_BRANCH   };
-    { 1'b?, 7'b???????, F3_BGE,     OP_BRANCH }:   cw = '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SLT,   WB_SRC_X,   WB_X,       WB_MODE_X,    PC_BRANCH   };
-    { 1'b?, 7'b???????, F3_BLTU,    OP_BRANCH }:   cw = '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_ULT,   WB_SRC_X,   WB_X,       WB_MODE_X,    PC_BRANCH   };
-    { 1'b?, 7'b???????, F3_BGEU,    OP_BRANCH }:   cw = '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_ULT,   WB_SRC_X,   WB_X,       WB_MODE_X,    PC_BRANCH   };
-    { 1'b?, 7'b???????, 3'b???,     OP_LOAD }:     cw = '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_IMMI, ALU_ADD,   WB_SRC_MEM, WB_DST_REG, WB_MODE_W,    PC_NEXT     };
-    { 1'b?, 7'b???????, 3'b???,     OP_STORE }:    cw = '{ 1'b0, ALU_OP1_RS1,  ALU_OP2_IMMS, ALU_ADD,   WB_SRC_ALU, WB_DST_MEM, wb_mode'(f3), PC_NEXT     };
-    { 1'b?, 7'b???????, 3'b???,     OP_MISC_MEM }: cw = '{ 1'b0, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     WB_SRC_X,   WB_X,       WB_MODE_X,    PC_NEXT     };
-    { 1'b?, 7'b???????, 3'b???,     OP_SYSTEM }:   cw = '{ 1'b0, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     WB_SRC_X,   WB_X,       WB_MODE_X,    PC_NEXT     };
-    default:                                       cw = '{ 1'b1, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     WB_SRC_X,   WB_X,       WB_MODE_X,    PC_NEXT     };
+    { 1'b1, 7'b???????, 3'b???,     7'b??????? }:  cw = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,     MA_X,     WB_SRC_X,   WB_MODE_X    };
+    { 1'b?, 7'b0?00000, F3_SRL_SRA, OP_IMM }:      cw = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, alu_mode7, MA_X,     WB_SRC_ALU, WB_MODE_W    };
+    { 1'b?, 7'b???????, 3'b???,     OP_IMM }:      cw = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, alu_mode3, MA_X,     WB_SRC_ALU, WB_MODE_W    };
+    { 1'b?, 7'b???????, 3'b???,     OP_LUI }:      cw = '{ 1'b0, PC_NEXT,     ALU_OP1_IMMU, ALU_OP2_RS2,  ALU_COPY1, MA_X,     WB_SRC_ALU, WB_MODE_W    };
+    { 1'b?, 7'b???????, 3'b???,     OP_AUIPC }:    cw = '{ 1'b0, PC_NEXT,     ALU_OP1_IMMU, ALU_OP2_PC,   ALU_ADD,   MA_X,     WB_SRC_ALU, WB_MODE_W    };
+    { 1'b?, 7'b???????, 3'b???,     OP }:          cw = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_RS2,  alu_mode7, MA_X,     WB_SRC_ALU, WB_MODE_W    };
+    { 1'b?, 7'b???????, 3'b???,     OP_JAL }:      cw = '{ 1'b0, PC_JUMP_REL, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     MA_X,     WB_SRC_PC4, WB_MODE_W    };
+    { 1'b?, 7'b???????, 3'b???,     OP_JALR }:     cw = '{ 1'b0, PC_JUMP_ABS, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     MA_X,     WB_SRC_PC4, WB_MODE_W    };
+    { 1'b?, 7'b???????, F3_BEQ,     OP_BRANCH }:   cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SUB,   MA_X,     WB_SRC_X,   WB_MODE_X    };
+    { 1'b?, 7'b???????, F3_BNE,     OP_BRANCH }:   cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SUB,   MA_X,     WB_SRC_X,   WB_MODE_X    };
+    { 1'b?, 7'b???????, F3_BLT,     OP_BRANCH }:   cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SLT,   MA_X,     WB_SRC_X,   WB_MODE_X    };
+    { 1'b?, 7'b???????, F3_BGE,     OP_BRANCH }:   cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SLT,   MA_X,     WB_SRC_X,   WB_MODE_X    };
+    { 1'b?, 7'b???????, F3_BLTU,    OP_BRANCH }:   cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_ULT,   MA_X,     WB_SRC_X,   WB_MODE_X    };
+    { 1'b?, 7'b???????, F3_BGEU,    OP_BRANCH }:   cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_ULT,   MA_X,     WB_SRC_X,   WB_MODE_X    };
+    { 1'b?, 7'b???????, 3'b???,     OP_LOAD }:     cw = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, ALU_ADD,   MA_LOAD,  WB_SRC_MEM, WB_MODE_W    };
+    { 1'b?, 7'b???????, 3'b???,     OP_STORE }:    cw = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMS, ALU_ADD,   MA_STORE, WB_SRC_ALU, wb_mode'(f3) };
+    { 1'b?, 7'b???????, 3'b???,     OP_MISC_MEM }: cw = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,     MA_X,     WB_SRC_X,   WB_MODE_X    };
+    { 1'b?, 7'b???????, 3'b???,     OP_SYSTEM }:   cw = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,     MA_X,     WB_SRC_X,   WB_MODE_X    };
+    default:                                       cw = '{ 1'b1, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,     MA_X,     WB_SRC_X,   WB_MODE_X    };
     endcase
 end
 
@@ -246,7 +246,7 @@ end
 
 // Data Hazard: EX stage has a colliding writeback and the data isn't available yet (ex. JALR or LW)
 logic data_hazard_condition;
-always_comb data_hazard_condition = ex_wb_enable & ~ex_wb_valid & (ex_wb_addr == rs1 | ex_wb_addr == rs2);
+always_comb data_hazard_condition = hz_ex_wb_enable & ~hz_ex_wb_valid & (hz_ex_wb_addr == rs1 | hz_ex_wb_addr == rs2);
 
 // a bubble needs to be output if we are in a data hazard condition, or if there was no valid instruction to decode
 logic bubble_needed;
@@ -274,45 +274,45 @@ always_ff @(posedge clk) begin
     // if a bubble is needed
     if (bubble_needed) begin
         // output a NOP to EX stage (addi x0, x0, 0)
-        id_pc         <= 32'h00000000;
-        id_ir         <= 32'h00000013;
-        id_alu_op1    <= 32'h00000000;
-        id_alu_op2    <= 32'h00000000;
-        id_alu_mode   <= ALU_ADD;
-        id_wb_rd      <= 5'b00000;
-        id_wb_src_sel <= WB_SRC_ALU;
-        id_wb_dst_sel <= WB_DST_REG;
-        id_wb_mode    <= WB_MODE_W;
+        id_pc       <= 32'h00000000;
+        id_ir       <= 32'h00000013;
+        id_alu_op1  <= 32'h00000000;
+        id_alu_op2  <= 32'h00000000;
+        id_alu_mode <= ALU_ADD;
+        id_ma_mode  <= MA_X;
+        id_wb_addr  <= 5'b00000;
+        id_wb_src   <= WB_SRC_ALU;
+        id_wb_mode  <= WB_MODE_W;
     end else begin
         // otherwise, output decoded control signals
-        id_pc         <= if_pc;
-        id_ir         <= if_ir;
-        id_alu_op1    <= next_alu_op1;
-        id_alu_op2    <= next_alu_op2;
-        id_alu_mode   <= cw.alu_mode_sel;
-        id_wb_rd      <= rd;
-        id_wb_src_sel <= cw.wb_src_sel;
-        id_wb_dst_sel <= cw.wb_dst_sel;
-        id_wb_mode    <= cw.wb_mode_sel;
+        id_pc       <= if_pc;
+        id_ir       <= if_ir;
+        id_alu_op1  <= next_alu_op1;
+        id_alu_op2  <= next_alu_op2;
+        id_alu_mode <= cw.alu_mode_sel;
+        id_ma_mode  <= cw.ma_mode_sel;
+        id_wb_addr  <= rd;
+        id_wb_src   <= cw.wb_src_sel;
+        id_wb_mode  <= cw.wb_mode_sel;
     end
         
     if (reset) begin
         // set initial signal values
-        id_halt       <= 1'b0;
-        id_jmp_addr   <= 32'h00000000;
-        id_jmp_valid  <= 1'b0;
-        id_ready      <= 1'b1;
+        id_halt      <= 1'b0;
+        id_jmp_addr  <= 32'h00000000;
+        id_jmp_valid <= 1'b0;
+        id_ready     <= 1'b1;
         
         // output a NOP to EX stage (addi x0, x0, 0)
-        id_pc         <= 32'h00000000;
-        id_ir         <= 32'h00000013;
-        id_alu_op1    <= 32'h00000000;
-        id_alu_op2    <= 32'h00000000;
-        id_alu_mode   <= ALU_ADD;
-        id_wb_rd      <= 5'b00000;
-        id_wb_src_sel <= WB_SRC_ALU;
-        id_wb_dst_sel <= WB_DST_REG;
-        id_wb_mode    <= WB_MODE_W;
+        id_pc       <= 32'h00000000;
+        id_ir       <= 32'h00000013;
+        id_alu_op1  <= 32'h00000000;
+        id_alu_op2  <= 32'h00000000;
+        id_alu_mode <= ALU_ADD;
+        id_ma_mode  <= MA_X;
+        id_wb_addr  <= 5'b00000;
+        id_wb_src   <= WB_SRC_ALU;
+        id_wb_mode  <= WB_MODE_W;
     end
 end
 

@@ -20,24 +20,26 @@ module cpu_ex
         input  wire word        id_alu_op1,     // ALU operand 1
         input  wire word        id_alu_op2,     // ALU operand 2
         input  wire alu_mode    id_alu_mode,    // ALU mode
-        input  wire regaddr     id_wb_rd,       // write-back register address
-        input  wire wb_src      id_wb_src_sel,  // write-back register address
-        input  wire wb_dst      id_wb_dst_sel,  // write-back register address
+        input  wire ma_mode     id_ma_mode,     // memory access mode
+        input  wire wb_src      id_wb_src,      // write-back source
+        input  wire regaddr     id_wb_addr,     // write-back address
         input  wire wb_mode     id_wb_mode,     // write-back enable
         
         // stage outputs (data hazards)
-        output      regaddr     ex_wb_addr,     // write-back register address
-        output      word        ex_wb_data,     // write-back register value
-        output      logic       ex_wb_enable,   // write-back enable
-        output      logic       ex_wb_valid,    // write-back data valid
+        output      logic       hz_ex_wb_enable,   // write-back enabled
+        output      regaddr     hz_ex_wb_addr,     // write-back address
+        output      word        hz_ex_wb_data,     // write-back value
+        output      logic       hz_ex_wb_valid,    // write-back value valid
 
         // stage outputs (to MA)
         output      word        ex_pc,          // program counter
         output      word        ex_ir,          // instruction register
-        output      regaddr     ex_wb_rd,       // write-back register address
-        output      wb_src      ex_wb_src_sel,  // write-back register address
-        output      wb_dst      ex_wb_dst_sel,  // write-back register address
-        output      wb_mode     ex_wb_mode      // write-back enable
+        output      word        ex_alu_result,  // alu result
+        output      ma_mode     ex_ma_mode,     // memory access mode
+        output      wb_src      ex_wb_src,      // write-back source
+        output      regaddr     ex_wb_addr,     // write-back register address
+        output      word        ex_wb_data,     // write-back register value
+        output      wb_mode     ex_wb_mode      // write-back mode
     );
 
 //
@@ -56,24 +58,35 @@ alu alu (
 );
 
 
-word wb_data;
+//
+// Hazard Signals
+//
+
 always_comb begin
-    case (id_wb_src_sel)
-    WB_SRC_ALU: wb_data = alu_result;
-    WB_SRC_PC4: wb_data = id_pc + 4; // could have come from ID directly
-    WB_SRC_MEM: wb_data = 32'b0;     // will come from MA stage
+    hz_ex_wb_enable = (id_wb_mode == WB_MODE_X) ? 1'b0 : 1'b1;
+    
+    case (id_wb_src)
+    WB_SRC_ALU:
+        begin
+            hz_ex_wb_addr   = id_wb_addr;
+            hz_ex_wb_data   = alu_result;
+            hz_ex_wb_valid  = 1'b1;
+        end  
+    WB_SRC_PC4:
+        begin
+            hz_ex_wb_addr   = id_wb_addr;
+            hz_ex_wb_data   = id_pc + 4; // NOTE: could have come from ID directly
+            hz_ex_wb_valid  = 1'b1;
+        end
+    WB_SRC_MEM:
+        begin
+            hz_ex_wb_addr   = id_wb_addr;
+            hz_ex_wb_data   = 32'b0;
+            hz_ex_wb_valid  = 1'b0; // will come from MA stage
+        end
     endcase
 end  
 
-// TODO: pass alu result to next stage
-// TODO: ex_wb_addr should be ex_wb_rd
-// TODO: figure out right design for computable hazard signals
-
-// TODO: should hazard signals NOT be clocked?  seems like current design will cost a cycle, or fail to detect hazards.
-//       construct a test case and  try it out with the EX stage planning to write a register that ID is reading
-//         addi x1, x0, 10
-//         addi x2, x1, 10
-//       further reading seems to confirm.  do NOT register hazard signals!
 
 //
 // Pass-through Signals to MA stage
@@ -82,10 +95,12 @@ end
 always_ff @(posedge clk) begin
     ex_pc         <= id_pc;
     ex_ir         <= id_ir;
-    ex_wb_rd      <= id_wb_rd;
-    ex_wb_src_sel <= id_wb_src_sel;
-    ex_wb_dst_sel <= id_wb_dst_sel;
+    ex_alu_result <= alu_result;
+    ex_ma_mode    <= id_ma_mode;
+    ex_wb_src     <= id_wb_src;
+    ex_wb_addr    <= id_wb_addr;
+    ex_wb_data    <= hz_ex_wb_data;
     ex_wb_mode    <= id_wb_mode;
 end
- 
+
 endmodule
