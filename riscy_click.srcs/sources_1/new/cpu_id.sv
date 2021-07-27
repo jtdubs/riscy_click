@@ -254,27 +254,33 @@ always_comb data_hazard_condition = ((rs1 != 5'b00000) & ((hz_ex_wb_addr == rs1 
 
 // a bubble needs to be output if we are in a data hazard condition, or if there was no valid instruction to decode
 logic bubble_needed;
-always_comb bubble_needed = data_hazard_condition | ~if_valid | id_jmp_valid;
+always_comb bubble_needed = data_hazard_condition | ~if_valid;
+
+always_comb begin
+    if (if_valid) begin
+        // otherwise, update based on instruction
+        id_jmp_valid = next_id_jmp_valid;
+        id_jmp_addr  = next_id_jmp_addr;
+        id_ready     = ~data_hazard_condition;
+        id_halt      = cw.halt;
+    end else begin
+        // then indicate we can accept a new one
+        id_jmp_valid = 1'b0;
+        id_jmp_addr  = 32'h00000000;
+        id_ready     = 1'b1;
+        id_halt      = 1'b0;
+    end
+       
+    if (reset) begin
+        // set initial signal values
+        id_jmp_valid = 1'b0;
+        id_jmp_addr  = 32'h00000000;
+        id_ready     = 1'b1;
+        id_halt      = 1'b0;
+    end    
+end
 
 always_ff @(posedge clk) begin
-    // if fetch data was valid, and not being overruled by a jmp
-    if (if_valid) begin
-        // if we should ignore this instruction
-        if (id_jmp_valid) begin
-            // then indicate we can accept a new one
-            id_jmp_valid <= 1'b0;
-            id_jmp_addr  <= 32'h00000000;
-            id_ready     <= 1'b1;
-            id_halt      <= 1'b0;
-        end else begin
-            // otherwise, update based on instruction
-            id_jmp_valid <= next_id_jmp_valid;
-            id_jmp_addr  <= next_id_jmp_addr;
-            id_ready     <= ~data_hazard_condition;
-            id_halt      <= cw.halt;
-        end
-    end
-
     // if a bubble is needed
     if (bubble_needed) begin
         // output a NOP to EX stage (addi x0, x0, 0)
@@ -303,12 +309,6 @@ always_ff @(posedge clk) begin
     end
         
     if (reset) begin
-        // set initial signal values
-        id_halt      <= 1'b0;
-        id_jmp_addr  <= 32'h00000000;
-        id_jmp_valid <= 1'b0;
-        id_ready     <= 1'b1;
-        
         // output a NOP to EX stage (addi x0, x0, 0)
         id_pc       <= 32'h00000000;
         id_ir       <= 32'h00000013;
