@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-module cpu_id_tb
+module cpu_ma_tb
     // Import Constants
     import consts::*;
     ();
@@ -14,7 +14,6 @@ logic       halt;           // halt
 // IF memory access
 word        mem_addr;       // address
 word        mem_data;       // data
-
 
 // ID stage inputs
 word        if_pc;          // program counter
@@ -44,9 +43,32 @@ word        id_alu_op2;     // ALU operand 2
 alu_mode    id_alu_mode;    // ALU mode
 ma_mode     id_ma_mode;     // memory access mode
 ma_size     id_ma_size;     // memory access size
+word        id_ma_data;     // memory access data
 wb_src      id_wb_src;      // write-back register address
 regaddr     id_wb_addr;     // write-back register address
 
+// EX stage outputs (to MA)
+word        ex_pc;          // program counter
+word        ex_ir;          // instruction register
+word        ex_alu_result;  // alu result
+ma_mode     ex_ma_mode;     // memory access mode
+ma_size     ex_ma_size;     // memory access size
+word        ex_ma_data;     // memory access data
+wb_src      ex_wb_src;      // write-back source
+regaddr     ex_wb_addr;     // write-back register address
+word        ex_wb_data;     // write-back register value
+
+// MA stage outputs (to WB)
+word        ma_pc;          // program counter
+word        ma_ir;          // instruction register
+regaddr     ma_wb_addr;     // write-back register address
+word        ma_wb_data;     // write-back register value
+
+// MA memory access
+word        ma_mem_addr;         // address
+word        ma_mem_read_data;    // data
+word        ma_mem_write_data;   // data
+logic       ma_mem_write_enable; // data
 
 // Instruction Memory
 block_rom #(.CONTENTS("d:/dev/riscy_click/bios/bios.coe")) rom (
@@ -58,11 +80,19 @@ block_rom #(.CONTENTS("d:/dev/riscy_click/bios/bios.coe")) rom (
     .data_b()
 );
 
+// TODO: Data Memory
+
 // Fetch Stage
 cpu_if cpu_if (.*);
 
 // Decode Stage
 cpu_id cpu_id (.id_halt(halt), .*);
+
+// Execute Stage
+cpu_ex cpu_ex (.*);
+
+// Memory Access Stage
+cpu_ma cpu_ma (.*); // TODO: memory signal disambiguation between imem and dmem...
 
 // clock generator
 initial begin
@@ -80,14 +110,6 @@ end
 
 // write-back logic
 initial begin
-    hz_ex_wb_addr = 5'b00000;
-    hz_ex_wb_data = 32'h00000000;
-    hz_ex_wb_valid = 1'b1;
-    
-    hz_ma_wb_addr = 5'b00000;
-    hz_ma_wb_data = 32'h00000000;
-    hz_ma_wb_valid = 1'b1;
-    
     hz_wb_addr = 5'b00000;
     hz_wb_data = 32'h00000000;
 end

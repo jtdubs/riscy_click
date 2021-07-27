@@ -6,18 +6,27 @@ module cpu_if_tb
     import consts::*;
     ();
 
-// cpu_if signals
-logic clk, reset, halt;         // board
-word mem_addr, mem_data;        // bus
-word id_jmp_addr;                // in
-logic id_jmp_valid, id_ready;   // in
-word if_pc, if_ir;              // out
-logic if_valid;                 // out
+// cpu signals
+logic       clk;            // clock
+logic       reset;          // reset
+logic       halt;           // halt
 
-// cpu_if under test
-cpu_if #(.MEM_ACCESS_CYCLES(1)) cpu_if (.*);
+// IF memory access
+word        mem_addr;       // address
+word        mem_data;       // data
 
-// block rom to test against
+
+// ID stage inputs
+word        if_pc;          // program counter
+word        if_ir;          // instruction register
+logic       if_valid;       // fetch stage data is valid
+
+// ID stage outputs (to IF)
+logic       id_ready;       // stage ready for new inputs
+word        id_jmp_addr;    // jump address
+logic       id_jmp_valid;   // jump address valid
+
+// Instruction Memory
 block_rom #(.CONTENTS("d:/dev/riscy_click/bios/tb_bios.coe")) rom (
     .clk(clk),
     .reset(reset),
@@ -26,6 +35,10 @@ block_rom #(.CONTENTS("d:/dev/riscy_click/bios/tb_bios.coe")) rom (
     .addr_b(32'h00000000),
     .data_b()
 );
+
+// Fetch Stage
+cpu_if #(.MEM_ACCESS_CYCLES(1)) cpu_if (.*);
+
 
 // clock generator
 initial begin

@@ -2,7 +2,7 @@
 `default_nettype none
 
 ///
-/// Risc-V CPU Execution phase
+/// Risc-V CPU Execution Stage
 ///
 
 module cpu_ex
@@ -10,36 +10,37 @@ module cpu_ex
     import consts::*;
     (
         // cpu signals
-        input  wire logic       clk,            // clock
-        input  wire logic       reset,          // reset
-        input  wire logic       halt,           // halt
+        input  wire logic    clk,            // clock
+        input  wire logic    reset,          // reset
+        input  wire logic    halt,           // halt
 
         // stage inputs
-        input  wire word        id_pc,          // program counter
-        input  wire word        id_ir,          // instruction register
-        input  wire word        id_alu_op1,     // ALU operand 1
-        input  wire word        id_alu_op2,     // ALU operand 2
-        input  wire alu_mode    id_alu_mode,    // ALU mode
-        input  wire ma_mode     id_ma_mode,     // memory access mode
-        input  wire wb_src      id_wb_src,      // write-back source
-        input  wire regaddr     id_wb_addr,     // write-back address
-        input  wire wb_mode     id_wb_mode,     // write-back enable
+        input  wire word     id_pc,          // program counter
+        input  wire word     id_ir,          // instruction register
+        input  wire word     id_alu_op1,     // ALU operand 1
+        input  wire word     id_alu_op2,     // ALU operand 2
+        input  wire alu_mode id_alu_mode,    // ALU mode
+        input  wire ma_mode  id_ma_mode,     // memory access mode
+        input  wire ma_size  id_ma_size,     // memory access size
+        input  wire word     id_ma_data,     // memory access data
+        input  wire wb_src   id_wb_src,      // write-back source
+        input  wire regaddr  id_wb_addr,     // write-back address
         
         // stage outputs (data hazards)
-        output      logic       hz_ex_wb_enable,   // write-back enabled
-        output      regaddr     hz_ex_wb_addr,     // write-back address
-        output      word        hz_ex_wb_data,     // write-back value
-        output      logic       hz_ex_wb_valid,    // write-back value valid
+        output      regaddr  hz_ex_wb_addr,     // write-back address
+        output      word     hz_ex_wb_data,     // write-back value
+        output      logic    hz_ex_wb_valid,    // write-back value valid
 
         // stage outputs (to MA)
-        output      word        ex_pc,          // program counter
-        output      word        ex_ir,          // instruction register
-        output      word        ex_alu_result,  // alu result
-        output      ma_mode     ex_ma_mode,     // memory access mode
-        output      wb_src      ex_wb_src,      // write-back source
-        output      regaddr     ex_wb_addr,     // write-back register address
-        output      word        ex_wb_data,     // write-back register value
-        output      wb_mode     ex_wb_mode      // write-back mode
+        output      word     ex_pc,          // program counter
+        output      word     ex_ir,          // instruction register
+        output      word     ex_alu_result,  // alu result
+        output      ma_mode  ex_ma_mode,     // memory access mode
+        output      ma_size  ex_ma_size,     // memory access size
+        output      word     ex_ma_data,     // memory access data
+        output      wb_src   ex_wb_src,      // write-back source
+        output      regaddr  ex_wb_addr,     // write-back register address
+        output      word     ex_wb_data      // write-back register value
     );
 
 //
@@ -63,8 +64,6 @@ alu alu (
 //
 
 always_comb begin
-    hz_ex_wb_enable = (id_wb_mode == WB_MODE_X) ? 1'b0 : 1'b1;
-    
     case (id_wb_src)
     WB_SRC_ALU:
         begin
@@ -97,10 +96,11 @@ always_ff @(posedge clk) begin
     ex_ir         <= id_ir;
     ex_alu_result <= alu_result;
     ex_ma_mode    <= id_ma_mode;
+    ex_ma_size    <= id_ma_size;
+    ex_ma_data    <= id_ma_data;
     ex_wb_src     <= id_wb_src;
     ex_wb_addr    <= id_wb_addr;
     ex_wb_data    <= hz_ex_wb_data;
-    ex_wb_mode    <= id_wb_mode;
 end
 
 endmodule

@@ -114,6 +114,16 @@ typedef enum logic [1:0] {
     MA_STORE     = 2'b10        // Store ALU in memory
 } ma_mode;
 
+// Memory Access Size
+typedef enum logic [2:0] {
+    MA_SIZE_X    = 3'b000,     // No writeback
+    MA_SIZE_B    = 3'b001,     // Byte (Signed)
+    MA_SIZE_H    = 3'b010,     // Half-Word (Signed)
+    MA_SIZE_W    = 3'b100,     // Word
+    MA_SIZE_BU   = 3'b101,     // Byte (Unsigned)
+    MA_SIZE_HU   = 3'b110      // Half-Word (Unsigned)
+} ma_size;
+
 // Write-Back Source
 typedef enum logic [1:0] {
     WB_SRC_ALU   = 2'b00,      // Data from ALU
@@ -122,16 +132,6 @@ typedef enum logic [1:0] {
 } wb_src;
 
 const wb_src WB_SRC_X = WB_SRC_ALU;
-
-// Write-Back Mode
-typedef enum logic [2:0] {
-    WB_MODE_X    = 3'b000,     // No writeback
-    WB_MODE_B    = 3'b001,     // Byte (Signed)
-    WB_MODE_H    = 3'b010,     // Half-Word (Signed)
-    WB_MODE_W    = 3'b100,     // Word
-    WB_MODE_BU   = 3'b101,     // Byte (Unsigned)
-    WB_MODE_HU   = 3'b110      // Half-Word (Unsigned)
-} wb_mode;
 
 
 //
@@ -145,8 +145,8 @@ typedef struct packed {
     alu_op2  alu_op2_sel;
     alu_mode alu_mode_sel;
     ma_mode  ma_mode_sel;
+    ma_size  ma_size_sel;
     wb_src   wb_src_sel;
-    wb_mode  wb_mode_sel;
 } control_word;
 
 endpackage

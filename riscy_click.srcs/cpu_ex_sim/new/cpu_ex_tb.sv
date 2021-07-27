@@ -44,22 +44,22 @@ word        id_alu_op1;     // ALU operand 1
 word        id_alu_op2;     // ALU operand 2
 alu_mode    id_alu_mode;    // ALU mode
 ma_mode     id_ma_mode;     // memory access mode
+ma_size     id_ma_size;     // memory access size
 wb_src      id_wb_src;      // write-back register address
 regaddr     id_wb_addr;     // write-back register address
-wb_mode     id_wb_mode;     // write-back enable
 
 // EX stage outputs (to MA)
 word        ex_pc;          // program counter
 word        ex_ir;          // instruction register
 word        ex_alu_result;  // alu result
 ma_mode     ex_ma_mode;     // memory access mode
+ma_size     ex_ma_size;     // memory access size
 wb_src      ex_wb_src;      // write-back source
 regaddr     ex_wb_addr;     // write-back register address
 word        ex_wb_data;     // write-back register value
-wb_mode     ex_wb_mode;     // write-back mode
 
 
-// BIOS
+// Instruction Memory
 block_rom #(.CONTENTS("d:/dev/riscy_click/bios/bios.coe")) rom (
     .clk(clk),
     .reset(reset),
@@ -94,13 +94,12 @@ end
 
 // write-back logic
 initial begin
-    hz_ma_wb_addr = 'dX;
-    hz_ma_wb_data = 'dX;
-    hz_ma_wb_enable = 1'b0;
+    hz_ma_wb_addr = 5'b00000;
+    hz_ma_wb_data = 32'h00000000;
+    hz_ma_wb_valid = 1'b1;
     
-    hz_wb_addr = 'dX;
-    hz_wb_data = 'dX;
-    hz_wb_enable = 1'b0;
+    hz_wb_addr = 5'b00000;
+    hz_wb_data = 32'h00000000;
 end
 
 endmodule
