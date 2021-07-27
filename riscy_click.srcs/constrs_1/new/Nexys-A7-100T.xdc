@@ -17,11 +17,11 @@ set_property -dict {PACKAGE_PIN R17 IOSTANDARD LVCMOS33} [get_ports {switch[4]}]
 set_property -dict {PACKAGE_PIN T18 IOSTANDARD LVCMOS33} [get_ports {switch[5]}]
 set_property -dict {PACKAGE_PIN U18 IOSTANDARD LVCMOS33} [get_ports {switch[6]}]
 set_property -dict {PACKAGE_PIN R13 IOSTANDARD LVCMOS33} [get_ports {switch[7]}]
-set_property -dict {PACKAGE_PIN T8 IOSTANDARD LVCMOS18} [get_ports {switch[8]}]
-set_property -dict {PACKAGE_PIN U8 IOSTANDARD LVCMOS18} [get_ports {switch[9]}]
+set_property -dict {PACKAGE_PIN T8  IOSTANDARD LVCMOS18} [get_ports {switch[8]}]
+set_property -dict {PACKAGE_PIN U8  IOSTANDARD LVCMOS18} [get_ports {switch[9]}]
 set_property -dict {PACKAGE_PIN R16 IOSTANDARD LVCMOS33} [get_ports {switch[10]}]
 set_property -dict {PACKAGE_PIN T13 IOSTANDARD LVCMOS33} [get_ports {switch[11]}]
-set_property -dict {PACKAGE_PIN H6 IOSTANDARD LVCMOS33} [get_ports {switch[12]}]
+set_property -dict {PACKAGE_PIN H6  IOSTANDARD LVCMOS33} [get_ports {switch[12]}]
 set_property -dict {PACKAGE_PIN U12 IOSTANDARD LVCMOS33} [get_ports {switch[13]}]
 set_property -dict {PACKAGE_PIN U11 IOSTANDARD LVCMOS33} [get_ports {switch[14]}]
 set_property -dict {PACKAGE_PIN V10 IOSTANDARD LVCMOS33} [get_ports {switch[15]}]
@@ -63,11 +63,11 @@ set_property -dict {PACKAGE_PIN L18 IOSTANDARD LVCMOS33} [get_ports {segment_c[6
 set_property -dict {PACKAGE_PIN H15 IOSTANDARD LVCMOS33} [get_ports {segment_c[7]}]
 set_property -dict {PACKAGE_PIN J17 IOSTANDARD LVCMOS33} [get_ports {segment_a[0]}]
 set_property -dict {PACKAGE_PIN J18 IOSTANDARD LVCMOS33} [get_ports {segment_a[1]}]
-set_property -dict {PACKAGE_PIN T9 IOSTANDARD LVCMOS33} [get_ports {segment_a[2]}]
+set_property -dict {PACKAGE_PIN T9  IOSTANDARD LVCMOS33} [get_ports {segment_a[2]}]
 set_property -dict {PACKAGE_PIN J14 IOSTANDARD LVCMOS33} [get_ports {segment_a[3]}]
 set_property -dict {PACKAGE_PIN P14 IOSTANDARD LVCMOS33} [get_ports {segment_a[4]}]
 set_property -dict {PACKAGE_PIN T14 IOSTANDARD LVCMOS33} [get_ports {segment_a[5]}]
-set_property -dict {PACKAGE_PIN K2 IOSTANDARD LVCMOS33} [get_ports {segment_a[6]}]
+set_property -dict {PACKAGE_PIN K2  IOSTANDARD LVCMOS33} [get_ports {segment_a[6]}]
 set_property -dict {PACKAGE_PIN U13 IOSTANDARD LVCMOS33} [get_ports {segment_a[7]}]
 
 ##Buttons
@@ -209,8 +209,3 @@ set_property -dict {PACKAGE_PIN N17 IOSTANDARD LVCMOS33} [get_ports reset]
 #set_property -dict { PACKAGE_PIN L14   IOSTANDARD LVCMOS33 } [get_ports { QSPI_DQ[2] }]; #IO_L2P_T0_D02_14 Sch=qspi_dq[2]
 #set_property -dict { PACKAGE_PIN M14   IOSTANDARD LVCMOS33 } [get_ports { QSPI_DQ[3] }]; #IO_L2N_T0_D03_14 Sch=qspi_dq[3]
 #set_property -dict { PACKAGE_PIN L13   IOSTANDARD LVCMOS33 } [get_ports { QSPI_CSN }]; #IO_L6P_T0_FCS_B_14 Sch=qspi_csn
-
-
-
-
-

@@ -15,7 +15,7 @@ module cpu_wb
         input  wire logic    halt,       // halt
         
         // data memory
-        input       word     dmem_read_data,  // memory data
+        input  wire word     dmem_read_data,  // memory data
 
         // stage inputs
         input  wire word     ma_pc,      // program counter

@@ -27,36 +27,36 @@ typedef logic [4:0] regaddr;
 
 // Opcodes
 typedef logic [6:0] op;
-parameter OP_LUI       = 7'b0110111; // Load Upper Immediate
-parameter OP_AUIPC     = 7'b0010111; // Add Upper Immediate To PC
-parameter OP_JAL       = 7'b1101111; // Jump And Link (use PC-ALU)
-parameter OP_JALR      = 7'b1100111; // Jump and Link Register
-parameter OP_BRANCH    = 7'b1100011; // Branch
-parameter OP_LOAD      = 7'b0000011; // Load
-parameter OP_STORE     = 7'b0100011; // Store
-parameter OP_IMM       = 7'b0010011; // Integer Register-Immediate Instructions
-parameter OP           = 7'b0110011; // Integer Register-Register Operations
-parameter OP_MISC_MEM  = 7'b0001111; // Miscellaneous Memory Operations
-parameter OP_SYSTEM    = 7'b1110011; // System Calls
+const op OP_LUI       = 7'b0110111; // Load Upper Immediate
+const op OP_AUIPC     = 7'b0010111; // Add Upper Immediate To PC
+const op OP_JAL       = 7'b1101111; // Jump And Link (use PC-ALU)
+const op OP_JALR      = 7'b1100111; // Jump and Link Register
+const op OP_BRANCH    = 7'b1100011; // Branch
+const op OP_LOAD      = 7'b0000011; // Load
+const op OP_STORE     = 7'b0100011; // Store
+const op OP_IMM       = 7'b0010011; // Integer Register-Immediate Instructions
+const op OP           = 7'b0110011; // Integer Register-Register Operations
+const op OP_MISC_MEM  = 7'b0001111; // Miscellaneous Memory Operations
+const op OP_SYSTEM    = 7'b1110011; // System Calls
 
 // Funct3
 typedef logic [2:0] funct3;
-parameter F3_ADD_SUB   = 3'b000;     // Addition or Subtraction
-parameter F3_SRL_SRA   = 3'b101;     // Shift Right Logical or Arithmetic
-parameter F3_BEQ       = 3'b000;     // Branch if EQ
-parameter F3_BNE       = 3'b001;     // Branch if NE
-parameter F3_BLT       = 3'b100;     // Branch if LT (Signed)
-parameter F3_BGE       = 3'b101;     // Branch if GE (Signed)
-parameter F3_BLTU      = 3'b110;     // Branch if LT (Unsigned)
-parameter F3_BGEU      = 3'b111;     // Branch if GE (Unsigned)
-parameter F3_LB        = 3'b000;     // Load Byte (Signed Extended)
-parameter F3_LH        = 3'b001;     // Load Half-Word (Signed Extended)
-parameter F3_LW        = 3'b010;     // Load Word
-parameter F3_LBU       = 3'b100;     // Load Byte (Unsigned)
-parameter F3_LHU       = 3'b101;     // Load Half-Word (Unsigned)
-parameter F3_SB        = 3'b000;     // Store Byte
-parameter F3_SH        = 3'b001;     // Store Half-Word
-parameter F3_SW        = 3'b010;     // Store Word
+const funct3 F3_ADD_SUB   = 3'b000;     // Addition or Subtraction
+const funct3 F3_SRL_SRA   = 3'b101;     // Shift Right Logical or Arithmetic
+const funct3 F3_BEQ       = 3'b000;     // Branch if EQ
+const funct3 F3_BNE       = 3'b001;     // Branch if NE
+const funct3 F3_BLT       = 3'b100;     // Branch if LT (Signed)
+const funct3 F3_BGE       = 3'b101;     // Branch if GE (Signed)
+const funct3 F3_BLTU      = 3'b110;     // Branch if LT (Unsigned)
+const funct3 F3_BGEU      = 3'b111;     // Branch if GE (Unsigned)
+const funct3 F3_LB        = 3'b000;     // Load Byte (Signed Extended)
+const funct3 F3_LH        = 3'b001;     // Load Half-Word (Signed Extended)
+const funct3 F3_LW        = 3'b010;     // Load Word
+const funct3 F3_LBU       = 3'b100;     // Load Byte (Unsigned)
+const funct3 F3_LHU       = 3'b101;     // Load Half-Word (Unsigned)
+const funct3 F3_SB        = 3'b000;     // Store Byte
+const funct3 F3_SH        = 3'b001;     // Store Half-Word
+const funct3 F3_SW        = 3'b010;     // Store Word
 
 
 
@@ -154,14 +154,14 @@ typedef struct packed {
 // NOP
 //
 
-parameter NOP_PC       = 32'h00000000;
-parameter NOP_IR       = 32'h00000013;
-parameter NOP_ALU_OP   = 32'h00000000;
-parameter NOP_ALU_MODE = ALU_ADD;
-parameter NOP_MA_MODE  = MA_X;
-parameter NOP_MA_SIZE  = MA_SIZE_X;
-parameter NOP_MA_DATA  = 32'h00000000;
-parameter NOP_WB_ADDR  = 5'b00000;
-parameter NOP_WB_SRC   = WB_SRC_ALU;
+const word     NOP_PC       = 32'h00000000;
+const word     NOP_IR       = 32'h00000013;
+const word     NOP_ALU_OP   = 32'h00000000;
+const alu_mode NOP_ALU_MODE = ALU_ADD;
+const ma_mode  NOP_MA_MODE  = MA_X;
+const ma_size  NOP_MA_SIZE  = MA_SIZE_X;
+const word     NOP_MA_DATA  = 32'h00000000;
+const regaddr  NOP_WB_ADDR  = 5'b00000;
+const wb_src   NOP_WB_SRC   = WB_SRC_ALU;
 
 endpackage
