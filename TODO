@@ -1,14 +1,17 @@
 TODO:
+- rename consts module to common
 - custom types should be _t ??
-- Does it work?  Currently, maybe??
+- Debug cycle counter on board
+- Does it work?  Simulation, I think so.  Implementation, no.
+
 - Naming convention for signals that handles the bypass / hazard signals better.  consider _i / _o...
-- Check out the timing a bit harder
+- Floorplanning?
+- Analyze timing more?
 
 Steps:
-1. Debug cycle counter?  Could put on board.
-2. Allow for arbitrary-time memory access / stalls
-3. Switch to mix of BRAM & DDR
-4. Move to design with unified memory, instruction/data caches, memory controller
+1. Allow for arbitrary-time memory access / stalls
+2. Switch to mix of BRAM & DDR
+3. Move to design with unified memory, instruction/data caches, memory controller
 
 Reference:
 http://fpgacpu.ca/fpga/index.html

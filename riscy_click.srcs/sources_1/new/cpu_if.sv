@@ -7,26 +7,26 @@
 
 module cpu_if
     // Import Constants
-    import consts::*;
+    import common::*;
     (
         // cpu signals
-        input  wire logic clk,          // clock
-        input  wire logic reset,        // reset
-        input  wire logic halt,         // halt
+        input  wire logic  clk,          // clock
+        input  wire logic  reset,        // reset
+        input  wire logic  halt,         // halt
 
         // instruction memory
-        output      word  imem_addr,    // address
-        input  wire word  imem_data,    // data
+        output      word_t imem_addr,    // address
+        input  wire word_t imem_data,    // data
         
         // stage inputs
-        input  wire word  id_jmp_addr,  // jump address from execute stage
-        input  wire logic id_jmp_valid, // whether or not jump address is valid
-        input  wire logic id_ready,     // is the ID stage ready to accept input
+        input  wire word_t id_jmp_addr,  // jump address from execute stage
+        input  wire logic  id_jmp_valid, // whether or not jump address is valid
+        input  wire logic  id_ready,     // is the ID stage ready to accept input
 
         // stage outputs
-        output wire word  if_pc,        // program counter
-        output wire word  if_ir,        // instruction register
-        output wire logic if_valid      // is the stage output valid
+        output wire word_t if_pc,        // program counter
+        output wire word_t if_ir,        // instruction register
+        output wire logic  if_valid      // is the stage output valid
     );
    
 
@@ -34,10 +34,10 @@ module cpu_if
 // Skid Buffer
 //
 
-wire logic skid_ready;       // can skid accept data?
-     logic skid_valid;       // is skip input valid?
-     logic skid_reset;       // reset signal
-     word  skid_pc, skid_ir; // IR and PC to input
+wire logic  skid_ready;       // can skid accept data?
+     logic  skid_valid;       // is skip input valid?
+     logic  skid_reset;       // reset signal
+     word_t skid_pc, skid_ir; // IR and PC to input
 
 // flush the skid buffer on jump, as those instructions aren't valid     
 always_comb skid_reset = reset || id_jmp_valid;
@@ -61,7 +61,7 @@ always_comb skid_valid = ~id_jmp_valid;
 // Program Counter Advancement
 //
 
-word skid_pc_next;
+word_t skid_pc_next;
 
 // combiantional logic for next PC value
 always_comb begin

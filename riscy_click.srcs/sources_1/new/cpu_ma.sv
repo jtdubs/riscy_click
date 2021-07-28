@@ -7,36 +7,35 @@
 
 module cpu_ma
     // Import Constants
-    import consts::*;
+    import common::*;
     (
         // cpu signals
-        input  wire logic    clk,              // clock
-        input  wire logic    reset,            // reset
-        input  wire logic    halt,             // halt
+        input  wire logic       clk,             // clock
+        input  wire logic       reset,           // reset
 
         // data memory
-        output      word        dmem_addr,       // address
-        output      word        dmem_write_data, // write data
+        output      word_t      dmem_addr,       // address
+        output      word_t      dmem_write_data, // write data
         output      logic [3:0] dmem_write_mask, // write enable
         
-        // stage inputs
-        input  wire word     ex_ir,            // instruction register
-        input  wire word     ex_ma_addr,       // memory access address
-        input  wire ma_mode  ex_ma_mode,       // memory access mode
-        input  wire ma_size  ex_ma_size,       // memory access size
-        input  wire word     ex_ma_data,       // memory access data
-        input  wire wb_src   ex_wb_src,        // write-back source
-        input  wire word     ex_wb_data,       // write-back register value
+        // stage inputs 
+        input  wire word_t      ex_ir,           // instruction register
+        input  wire word_t      ex_ma_addr,      // memory access address
+        input  wire ma_mode_t   ex_ma_mode,      // memory access mode
+        input  wire ma_size_t   ex_ma_size,      // memory access size
+        input  wire word_t      ex_ma_data,      // memory access data
+        input  wire wb_src_t    ex_wb_src,       // write-back source
+        input  wire word_t      ex_wb_data,      // write-back register value
         
         // stage outputs (data hazards)
-        output      regaddr  hz_ma_wb_addr,    // write-back address
-        output      word     hz_ma_wb_data,    // write-back value
-        output      logic    hz_ma_wb_valid,   // write-back value valid
+        output      regaddr_t  hz_ma_wb_addr,    // write-back address
+        output      word_t     hz_ma_wb_data,    // write-back value
+        output      logic      hz_ma_wb_valid,   // write-back value valid
 
         // stage outputs (to WB)
-        output      word     ma_ir,            // instruction register
-        output      logic    ma_is_load,       // is this a loan instruction?
-        output      word     ma_wb_data        // write-back register value
+        output      word_t     ma_ir,            // instruction register
+        output      logic      ma_is_load,       // is this a loan instruction?
+        output      word_t     ma_wb_data        // write-back register value
     );
     
 

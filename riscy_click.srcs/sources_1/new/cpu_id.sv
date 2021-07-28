@@ -7,45 +7,45 @@
 
 module cpu_id
     // Import Constants
-    import consts::*;
+    import common::*;
     (
         // cpu signals
-        input  wire logic    clk,            // clock
-        input  wire logic    reset,          // reset
+        input  wire logic      clk,            // clock
+        input  wire logic      reset,          // reset
 
         // stage inputs
-        input  wire word     if_pc,          // program counter
-        input  wire word     if_ir,          // instruction register
-        input  wire logic    if_valid,       // fetch stage data is valid
+        input  wire word_t     if_pc,          // program counter
+        input  wire word_t     if_ir,          // instruction register
+        input  wire logic      if_valid,       // fetch stage data is valid
         
         // stage inputs (data hazards)
-        input  wire regaddr  hz_ex_wb_addr,     // write-back register address
-        input  wire word     hz_ex_wb_data,     // write-back register data
-        input  wire logic    hz_ex_wb_valid,    // write-back data valid
-        input  wire regaddr  hz_ma_wb_addr,     // write-back register address
-        input  wire word     hz_ma_wb_data,     // write-back register data
-        input  wire logic    hz_ma_wb_valid,    // write-back data valid
-        input  wire regaddr  hz_wb_addr,        // write-back register address
-        input  wire word     hz_wb_data,        // write-back register data
+        input  wire regaddr_t  hz_ex_wb_addr,     // write-back register address
+        input  wire word_t     hz_ex_wb_data,     // write-back register data
+        input  wire logic      hz_ex_wb_valid,    // write-back data valid
+        input  wire regaddr_t  hz_ma_wb_addr,     // write-back register address
+        input  wire word_t     hz_ma_wb_data,     // write-back register data
+        input  wire logic      hz_ma_wb_valid,    // write-back data valid
+        input  wire regaddr_t  hz_wb_addr,        // write-back register address
+        input  wire word_t     hz_wb_data,        // write-back register data
 
         // stage outputs
-        output      logic    id_halt,        // halt
+        output      logic      id_halt,        // halt
                 
         // stage outputs (to IF)
-        output      logic    id_ready,       // stage ready for new inputs
-        output      word     id_jmp_addr,    // jump address
-        output      logic    id_jmp_valid,   // jump address valid
+        output      logic      id_ready,       // stage ready for new inputs
+        output      word_t     id_jmp_addr,    // jump address
+        output      logic      id_jmp_valid,   // jump address valid
 
         // stage outputs (to EX)
-        output      word     id_ir,          // instruction register
-        output      word     id_alu_op1,     // ALU operand 1
-        output      word     id_alu_op2,     // ALU operand 2
-        output      alu_mode id_alu_mode,    // ALU mode
-        output      ma_mode  id_ma_mode,     // memory access mode
-        output      ma_size  id_ma_size,     // memory access size
-        output      word     id_ma_data,     // memory access data (for store operations)
-        output      wb_src   id_wb_src,      // write-back source
-        output      word     id_wb_data      // write-back data
+        output      word_t     id_ir,          // instruction register
+        output      word_t     id_alu_op1,     // ALU operand 1
+        output      word_t     id_alu_op2,     // ALU operand 2
+        output      alu_mode_t id_alu_mode,    // ALU mode
+        output      ma_mode_t  id_ma_mode,     // memory access mode
+        output      ma_size_t  id_ma_size,     // memory access size
+        output      word_t     id_ma_data,     // memory access data (for store operations)
+        output      wb_src_t   id_wb_src,      // write-back source
+        output      word_t     id_wb_data      // write-back data
     );
 
 
@@ -54,15 +54,15 @@ module cpu_id
 //
 
 // Instruction
-logic [6:0] opcode;
-logic [4:0] rs1, rs2, rd;
-funct3      f3;
-logic [6:0] f7;
+opcode_t  opcode;
+regaddr_t rs1, rs2, rd;
+funct3_t  f3;
+funct7_t  f7;
 
 always_comb { f7, rs2, rs1, f3, rd, opcode } = if_ir;
 
 // Immediates
-word imm_i, imm_s, imm_b, imm_u, imm_j;
+word_t imm_i, imm_s, imm_b, imm_u, imm_j;
 
 always_comb begin
     imm_i = { {21{if_ir[31]}}, if_ir[30:25], if_ir[24:21], if_ir[20] };
@@ -73,11 +73,11 @@ always_comb begin
 end
 
 // ALU Modes
-alu_mode alu_mode3, alu_mode7;
+alu_mode_t alu_mode3, alu_mode7;
 
 always_comb begin
-    alu_mode7 = alu_mode'({ f7[0], f7[5], f3 });
-    alu_mode3 = alu_mode'({ 2'b0, f3 });
+    alu_mode7 = alu_mode_t'({ f7[0], f7[5], f3 });
+    alu_mode3 = alu_mode_t'({ 2'b0, f3 });
 end
 
 
@@ -86,7 +86,7 @@ end
 //
 
 // output values from register file
-wire word ra, rb;
+wire word_t ra, rb;
 
 regfile regfile (
     .clk(clk),
@@ -110,7 +110,7 @@ regfile regfile (
 //
 
 // Resolved register values (when possible)
-word ra_resolved, rb_resolved;
+word_t ra_resolved, rb_resolved;
 
 // Determine true value for first register access
 always_comb begin
@@ -145,29 +145,29 @@ end
 // Control Word
 //
 
-control_word cw;
+control_word_t cw;
 
 always_comb begin
     casez ({reset, f7, f3, opcode})
-    { 1'b1, 7'b???????, 3'b???,     7'b??????? }:  cw = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,     MA_X,     MA_SIZE_X,    WB_SRC_X   };
-    { 1'b?, 7'b0?00000, F3_SRL_SRA, OP_IMM }:      cw = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, alu_mode7, MA_X,     MA_SIZE_W,    WB_SRC_ALU };
-    { 1'b?, 7'b???????, 3'b???,     OP_IMM }:      cw = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, alu_mode3, MA_X,     MA_SIZE_W,    WB_SRC_ALU };
-    { 1'b?, 7'b???????, 3'b???,     OP_LUI }:      cw = '{ 1'b0, PC_NEXT,     ALU_OP1_IMMU, ALU_OP2_RS2,  ALU_COPY1, MA_X,     MA_SIZE_W,    WB_SRC_ALU };
-    { 1'b?, 7'b???????, 3'b???,     OP_AUIPC }:    cw = '{ 1'b0, PC_NEXT,     ALU_OP1_IMMU, ALU_OP2_PC,   ALU_ADD,   MA_X,     MA_SIZE_W,    WB_SRC_ALU };
-    { 1'b?, 7'b???????, 3'b???,     OP }:          cw = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_RS2,  alu_mode7, MA_X,     MA_SIZE_W,    WB_SRC_ALU };
-    { 1'b?, 7'b???????, 3'b???,     OP_JAL }:      cw = '{ 1'b0, PC_JUMP_REL, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     MA_X,     MA_SIZE_W,    WB_SRC_PC4 };
-    { 1'b?, 7'b???????, 3'b???,     OP_JALR }:     cw = '{ 1'b0, PC_JUMP_ABS, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     MA_X,     MA_SIZE_W,    WB_SRC_PC4 };
-    { 1'b?, 7'b???????, F3_BEQ,     OP_BRANCH }:   cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SUB,   MA_X,     MA_SIZE_X,    WB_SRC_X   };
-    { 1'b?, 7'b???????, F3_BNE,     OP_BRANCH }:   cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SUB,   MA_X,     MA_SIZE_X,    WB_SRC_X   };
-    { 1'b?, 7'b???????, F3_BLT,     OP_BRANCH }:   cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SLT,   MA_X,     MA_SIZE_X,    WB_SRC_X   };
-    { 1'b?, 7'b???????, F3_BGE,     OP_BRANCH }:   cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SLT,   MA_X,     MA_SIZE_X,    WB_SRC_X   };
-    { 1'b?, 7'b???????, F3_BLTU,    OP_BRANCH }:   cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_ULT,   MA_X,     MA_SIZE_X,    WB_SRC_X   };
-    { 1'b?, 7'b???????, F3_BGEU,    OP_BRANCH }:   cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_ULT,   MA_X,     MA_SIZE_X,    WB_SRC_X   };
-    { 1'b?, 7'b???????, 3'b???,     OP_LOAD }:     cw = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, ALU_ADD,   MA_LOAD,  MA_SIZE_W,    WB_SRC_MEM };
-    { 1'b?, 7'b???????, 3'b???,     OP_STORE }:    cw = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMS, ALU_ADD,   MA_STORE, ma_size'(f3), WB_SRC_ALU };
-    { 1'b?, 7'b???????, 3'b???,     OP_MISC_MEM }: cw = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,     MA_X,     MA_SIZE_X,    WB_SRC_X   };
-    { 1'b?, 7'b???????, 3'b???,     OP_SYSTEM }:   cw = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,     MA_X,     MA_SIZE_X,    WB_SRC_X   };
-    default:                                       cw = '{ 1'b1, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,     MA_X,     MA_SIZE_X,    WB_SRC_X   };
+    { 1'b1, 7'b???????, 3'b???,     7'b??????? }:  cw = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,     MA_X,     MA_SIZE_X,      WB_SRC_X   };
+    { 1'b?, 7'b0?00000, F3_SRL_SRA, OP_IMM }:      cw = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, alu_mode7, MA_X,     MA_SIZE_W,      WB_SRC_ALU };
+    { 1'b?, 7'b???????, 3'b???,     OP_IMM }:      cw = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, alu_mode3, MA_X,     MA_SIZE_W,      WB_SRC_ALU };
+    { 1'b?, 7'b???????, 3'b???,     OP_LUI }:      cw = '{ 1'b0, PC_NEXT,     ALU_OP1_IMMU, ALU_OP2_RS2,  ALU_COPY1, MA_X,     MA_SIZE_W,      WB_SRC_ALU };
+    { 1'b?, 7'b???????, 3'b???,     OP_AUIPC }:    cw = '{ 1'b0, PC_NEXT,     ALU_OP1_IMMU, ALU_OP2_PC,   ALU_ADD,   MA_X,     MA_SIZE_W,      WB_SRC_ALU };
+    { 1'b?, 7'b???????, 3'b???,     OP }:          cw = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_RS2,  alu_mode7, MA_X,     MA_SIZE_W,      WB_SRC_ALU };
+    { 1'b?, 7'b???????, 3'b???,     OP_JAL }:      cw = '{ 1'b0, PC_JUMP_REL, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     MA_X,     MA_SIZE_W,      WB_SRC_PC4 };
+    { 1'b?, 7'b???????, 3'b???,     OP_JALR }:     cw = '{ 1'b0, PC_JUMP_ABS, ALU_OP1_X,    ALU_OP2_X,    ALU_X,     MA_X,     MA_SIZE_W,      WB_SRC_PC4 };
+    { 1'b?, 7'b???????, F3_BEQ,     OP_BRANCH }:   cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SUB,   MA_X,     MA_SIZE_X,      WB_SRC_X   };
+    { 1'b?, 7'b???????, F3_BNE,     OP_BRANCH }:   cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SUB,   MA_X,     MA_SIZE_X,      WB_SRC_X   };
+    { 1'b?, 7'b???????, F3_BLT,     OP_BRANCH }:   cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SLT,   MA_X,     MA_SIZE_X,      WB_SRC_X   };
+    { 1'b?, 7'b???????, F3_BGE,     OP_BRANCH }:   cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SLT,   MA_X,     MA_SIZE_X,      WB_SRC_X   };
+    { 1'b?, 7'b???????, F3_BLTU,    OP_BRANCH }:   cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_ULT,   MA_X,     MA_SIZE_X,      WB_SRC_X   };
+    { 1'b?, 7'b???????, F3_BGEU,    OP_BRANCH }:   cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_ULT,   MA_X,     MA_SIZE_X,      WB_SRC_X   };
+    { 1'b?, 7'b???????, 3'b???,     OP_LOAD }:     cw = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, ALU_ADD,   MA_LOAD,  MA_SIZE_W,      WB_SRC_MEM };
+    { 1'b?, 7'b???????, 3'b???,     OP_STORE }:    cw = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMS, ALU_ADD,   MA_STORE, ma_size_t'(f3), WB_SRC_ALU };
+    { 1'b?, 7'b???????, 3'b???,     OP_MISC_MEM }: cw = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,     MA_X,     MA_SIZE_X,      WB_SRC_X   };
+    { 1'b?, 7'b???????, 3'b???,     OP_SYSTEM }:   cw = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,     MA_X,     MA_SIZE_X,      WB_SRC_X   };
+    default:                                       cw = '{ 1'b1, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,     MA_X,     MA_SIZE_X,      WB_SRC_X   };
     endcase
 end
 
@@ -176,10 +176,10 @@ end
 // ALU Operand #1
 //
 
-word next_alu_op1;
+word_t next_alu_op1;
 
 always_comb begin
-    unique case (cw.alu_op1_sel)
+    unique case (cw.alu_op1)
     ALU_OP1_RS1:  next_alu_op1 = ra_resolved;
     ALU_OP1_IMMU: next_alu_op1 = imm_u;
     endcase
@@ -190,10 +190,10 @@ end
 // ALU Operand #2
 //
 
-word next_alu_op2;
+word_t next_alu_op2;
 
 always_comb begin
-    unique case (cw.alu_op2_sel)
+    unique case (cw.alu_op2)
     ALU_OP2_RS2:  next_alu_op2 = rb_resolved;
     ALU_OP2_IMMI: next_alu_op2 = imm_i;
     ALU_OP2_IMMS: next_alu_op2 = imm_s;
@@ -206,11 +206,11 @@ end
 // Jumps and Branches
 //
 
-logic next_id_jmp_valid;
-word  next_id_jmp_addr;
+logic  next_id_jmp_valid;
+word_t next_id_jmp_addr;
 
 always_comb begin
-    unique case (cw.pc_mode_sel)
+    unique case (cw.pc_mode)
     PC_NEXT:
         begin
             next_id_jmp_valid = 1'b0;
@@ -262,13 +262,11 @@ always_comb begin
         id_jmp_valid = next_id_jmp_valid;
         id_jmp_addr  = next_id_jmp_addr;
         id_ready     = ~data_hazard_condition;
-        id_halt      = cw.halt;
     end else begin
         // then indicate we can accept a new one
         id_jmp_valid = 1'b0;
         id_jmp_addr  = 32'h00000000;
         id_ready     = 1'b1;
-        id_halt      = 1'b0;
     end
        
     if (reset) begin
@@ -276,7 +274,6 @@ always_comb begin
         id_jmp_valid = 1'b0;
         id_jmp_addr  = 32'h00000000;
         id_ready     = 1'b1;
-        id_halt      = 1'b0;
     end    
 end
 
@@ -293,17 +290,19 @@ always_ff @(posedge clk) begin
         id_ma_data  <= 32'h00000000;
         id_wb_src   <= WB_SRC_ALU;
         id_wb_data  <= 32'h00000000;
+        id_halt     <= 1'b0;
     end else begin
         // otherwise, output decoded control signals
         id_ir       <= if_ir;
         id_alu_op1  <= next_alu_op1;
         id_alu_op2  <= next_alu_op2;
-        id_alu_mode <= cw.alu_mode_sel;
-        id_ma_mode  <= cw.ma_mode_sel;
-        id_ma_size  <= cw.ma_size_sel;
+        id_alu_mode <= cw.alu_mode;
+        id_ma_mode  <= cw.ma_mode;
+        id_ma_size  <= cw.ma_size;
         id_ma_data  <= rb_resolved;
-        id_wb_src   <= cw.wb_src_sel;
-        id_wb_data  <= (cw.wb_src_sel == WB_SRC_PC4) ? (if_pc + 4) : 32'h00000000;
+        id_wb_src   <= cw.wb_src;
+        id_wb_data  <= (cw.wb_src == WB_SRC_PC4) ? (if_pc + 4) : 32'h00000000;
+        id_halt     <= cw.halt;
     end
         
     if (reset) begin
@@ -317,6 +316,7 @@ always_ff @(posedge clk) begin
         id_ma_data    <= 32'h00000000;
         id_wb_src     <= NOP_WB_SRC;
         id_wb_data    <= 32'h00000000;
+        id_halt       <= 1'b0;
     end
 end
 

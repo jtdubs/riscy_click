@@ -3,10 +3,13 @@
 ## - uncomment the lines corresponding to used pins
 ## - rename the used ports (in each line, after get_ports) according to the top level signal names in the project
 
+# Voltage properties
+set_property CFGBVS VCCO [current_design]
+set_property CONFIG_VOLTAGE 3.3 [current_design]
+
 ## Clock signal
 set_property -dict {PACKAGE_PIN E3 IOSTANDARD LVCMOS33} [get_ports clk]
 create_clock -period 100.000 -name sys_clk_pin -waveform {0.000 50.000} -add [get_ports clk]
-
 
 ##Switches
 set_property -dict {PACKAGE_PIN J15 IOSTANDARD LVCMOS33} [get_ports {switch[0]}]
@@ -26,6 +29,9 @@ set_property -dict {PACKAGE_PIN U12 IOSTANDARD LVCMOS33} [get_ports {switch[13]}
 set_property -dict {PACKAGE_PIN U11 IOSTANDARD LVCMOS33} [get_ports {switch[14]}]
 set_property -dict {PACKAGE_PIN V10 IOSTANDARD LVCMOS33} [get_ports {switch[15]}]
 
+set_input_delay -clock sys_clk_pin 0 [get_ports {switch[*]}]
+set_false_path -from [get_ports {switch[*]}]
+
 ## LEDs
 set_property -dict {PACKAGE_PIN H17 IOSTANDARD LVCMOS33} [get_ports halt]
 #set_property -dict { PACKAGE_PIN K15   IOSTANDARD LVCMOS33 } [get_ports { LED[1] }]; #IO_L24P_T3_RS1_15 Sch=led[1]
@@ -43,6 +49,9 @@ set_property -dict {PACKAGE_PIN H17 IOSTANDARD LVCMOS33} [get_ports halt]
 #set_property -dict { PACKAGE_PIN V14   IOSTANDARD LVCMOS33 } [get_ports { LED[13] }]; #IO_L22N_T3_A04_D20_14 Sch=led[13]
 #set_property -dict { PACKAGE_PIN V12   IOSTANDARD LVCMOS33 } [get_ports { LED[14] }]; #IO_L20N_T3_A07_D23_14 Sch=led[14]
 #set_property -dict { PACKAGE_PIN V11   IOSTANDARD LVCMOS33 } [get_ports { LED[15] }]; #IO_L21N_T3_DQS_A06_D22_14 Sch=led[15]
+
+set_output_delay -clock sys_clk_pin 0 [get_ports {halt}]
+set_false_path -to [get_ports {halt}]
 
 ## RGB LEDs
 #set_property -dict { PACKAGE_PIN R12   IOSTANDARD LVCMOS33 } [get_ports { LED16_B }]; #IO_L5P_T0_D06_14 Sch=led16_b
@@ -70,6 +79,12 @@ set_property -dict {PACKAGE_PIN T14 IOSTANDARD LVCMOS33} [get_ports {segment_a[5
 set_property -dict {PACKAGE_PIN K2  IOSTANDARD LVCMOS33} [get_ports {segment_a[6]}]
 set_property -dict {PACKAGE_PIN U13 IOSTANDARD LVCMOS33} [get_ports {segment_a[7]}]
 
+set_output_delay -clock sys_clk_pin 0 [get_ports {segment_a[*]}]
+set_false_path -to [get_ports {segment_a[*]}]
+
+set_output_delay -clock sys_clk_pin 0 [get_ports {segment_c[*]}]
+set_false_path -to [get_ports {segment_c[*]}]
+
 ##Buttons
 #set_property -dict { PACKAGE_PIN C12   IOSTANDARD LVCMOS33 } [get_ports { CPU_RESETN }]; #IO_L3P_T0_DQS_AD1P_15 Sch=cpu_resetn
 set_property -dict {PACKAGE_PIN N17 IOSTANDARD LVCMOS33} [get_ports reset]
@@ -78,6 +93,8 @@ set_property -dict {PACKAGE_PIN N17 IOSTANDARD LVCMOS33} [get_ports reset]
 #set_property -dict { PACKAGE_PIN M17   IOSTANDARD LVCMOS33 } [get_ports { BTNR }]; #IO_L10N_T1_D15_14 Sch=btnr
 #set_property -dict { PACKAGE_PIN P18   IOSTANDARD LVCMOS33 } [get_ports { BTND }]; #IO_L9N_T1_DQS_D13_14 Sch=btnd
 
+set_input_delay -clock sys_clk_pin 0 [get_ports {reset}]
+set_false_path -from [get_ports {reset}]
 
 ##Pmod Headers
 ##Pmod Header JA

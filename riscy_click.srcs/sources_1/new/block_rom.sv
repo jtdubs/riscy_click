@@ -3,21 +3,21 @@
 
 module block_rom
     // Import Constants
-    import consts::*;
+    import common::*;
     #(
         CONTENTS = ""
     )
     (
-        input  wire logic clk,
-        input  wire logic reset,
+        input  wire logic  clk,
+        input  wire logic  reset,
         
         // port a
-        input  wire word  addr_a,
-        output wire word  data_a,
+        input  wire word_t addr_a,
+        output wire word_t data_a,
         
         // port b
-        input  wire word  addr_b,
-        output wire word  data_b
+        input  wire word_t addr_b,
+        output wire word_t data_b
     );
 
 // RAMB36E1: 36K-bit Configurable Synchronous Block RAM
@@ -232,7 +232,7 @@ bios_rom (
     .INJECTSBITERR(1'b0), // 1-bit input: Inject a single bit error
     // Port A Address/Control Signals: 16-bit (each) input: Port A address and control signals (read port
     // when RAM_MODE="SDP")
-    .ADDRARDADDR({ addr_a[12:2], 5'b00000 }),     // 16-bit input: A port address/Read address
+    .ADDRARDADDR({ 1'b1, addr_a[11:2], 5'b00000 }),     // 16-bit input: A port address/Read address
     .CLKARDCLK(clk),         // 1-bit input: A port clock/Read clock
     .ENARDEN(1'b1),             // 1-bit input: A port enable/Read enable
     .REGCEAREGCE(1'b1),     // 1-bit input: A port register enable/Register enable
@@ -244,7 +244,7 @@ bios_rom (
     .DIPADIP(4'h0),             // 4-bit input: A port parity/LSB parity
     // Port B Address/Control Signals: 16-bit (each) input: Port B address and control signals (write port
     // when RAM_MODE="SDP")
-    .ADDRBWRADDR({ addr_b[12:2], 5'b00000 }),     // 16-bit input: B port address/Write address
+    .ADDRBWRADDR({ 1'b1, addr_b[11:2], 5'b00000 }),     // 16-bit input: B port address/Write address
     .CLKBWRCLK(clk),         // 1-bit input: B port clock/Write clock
     .ENBWREN(1'b1),             // 1-bit input: B port enable/Write enable
     .REGCEB(1'b1),               // 1-bit input: B port register enable

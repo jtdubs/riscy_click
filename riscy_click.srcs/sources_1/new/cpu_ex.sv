@@ -7,45 +7,44 @@
 
 module cpu_ex
     // Import Constants
-    import consts::*;
+    import common::*;
     (
         // cpu signals
-        input  wire logic    clk,            // clock
-        input  wire logic    reset,          // reset
-        input  wire logic    halt,           // halt
+        input  wire logic      clk,            // clock
+        input  wire logic      reset,          // reset
 
         // stage inputs
-        input  wire word     id_ir,          // instruction register
-        input  wire word     id_alu_op1,     // ALU operand 1
-        input  wire word     id_alu_op2,     // ALU operand 2
-        input  wire alu_mode id_alu_mode,    // ALU mode
-        input  wire ma_mode  id_ma_mode,     // memory access mode
-        input  wire ma_size  id_ma_size,     // memory access size
-        input  wire word     id_ma_data,     // memory access data
-        input  wire wb_src   id_wb_src,      // write-back source
-        input  wire word     id_wb_data,     // write-back data
+        input  wire word_t     id_ir,          // instruction register
+        input  wire word_t     id_alu_op1,     // ALU operand 1
+        input  wire word_t     id_alu_op2,     // ALU operand 2
+        input  wire alu_mode_t id_alu_mode,    // ALU mode
+        input  wire ma_mode_t  id_ma_mode,     // memory access mode
+        input  wire ma_size_t  id_ma_size,     // memory access size
+        input  wire word_t     id_ma_data,     // memory access data
+        input  wire wb_src_t   id_wb_src,      // write-back source
+        input  wire word_t     id_wb_data,     // write-back data
         
         // stage outputs (data hazards)
-        output      regaddr  hz_ex_wb_addr,     // write-back address
-        output      word     hz_ex_wb_data,     // write-back value
-        output      logic    hz_ex_wb_valid,    // write-back value valid
+        output      regaddr_t  hz_ex_wb_addr,     // write-back address
+        output      word_t     hz_ex_wb_data,     // write-back value
+        output      logic      hz_ex_wb_valid,    // write-back value valid
 
         // stage outputs (to MA)
-        output      word     ex_ir,          // instruction register
-        output      word     ex_ma_addr,     // memory access address
-        output      ma_mode  ex_ma_mode,     // memory access mode
-        output      ma_size  ex_ma_size,     // memory access size
-        output      word     ex_ma_data,     // memory access data
-        output      wb_src   ex_wb_src,      // write-back source
-        output      word     ex_wb_data      // write-back register value
+        output      word_t     ex_ir,          // instruction register
+        output      word_t     ex_ma_addr,     // memory access address
+        output      ma_mode_t  ex_ma_mode,     // memory access mode
+        output      ma_size_t  ex_ma_size,     // memory access size
+        output      word_t     ex_ma_data,     // memory access data
+        output      wb_src_t   ex_wb_src,      // write-back source
+        output      word_t     ex_wb_data      // write-back register value
     );
 
 //
 // ALU
 //
 
-wire logic alu_zero;
-wire word  alu_result;
+wire logic  alu_zero;
+wire word_t alu_result;
 
 alu alu (
     .mode(id_alu_mode),

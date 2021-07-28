@@ -6,15 +6,15 @@
 
 module alu
     // Import Constants
-    import consts::*;
+    import common::*;
     (
         // Inputs
-        input  wire alu_mode mode,
-        input  wire word     operand1,
-        input  wire word     operand2,
+        input  wire alu_mode_t mode,
+        input  wire word_t     operand1,
+        input  wire word_t     operand2,
         
         // Outputs
-        output      word     result,
+        output      word_t   result,
         output      logic    zero
     );
 

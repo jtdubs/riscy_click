@@ -3,14 +3,14 @@
 
 module block_ram
     // Import Constants
-    import consts::*;
+    import common::*;
     (
-        input  wire logic clk,
-        input  wire logic reset,
+        input  wire logic       clk,
+        input  wire logic       reset,
         
-        input  wire word  addr,
-        output wire word  read_data,
-        input  wire word  write_data,
+        input  wire word_t      addr,
+        output wire word_t      read_data,
+        input  wire word_t      write_data,
         input  wire logic [3:0] write_mask
     );
 
@@ -226,7 +226,7 @@ bios_rom (
     .INJECTSBITERR(1'b0), // 1-bit input: Inject a single bit error
     // Port A Address/Control Signals: 16-bit (each) input: Port A address and control signals (read port
     // when RAM_MODE="SDP")
-    .ADDRARDADDR({ addr[12:2], 5'b00000 }),     // 16-bit input: A port address/Read address
+    .ADDRARDADDR({ 1'b1, addr[11:2], 5'b00000 }),     // 16-bit input: A port address/Read address
     .CLKARDCLK(clk),         // 1-bit input: A port clock/Read clock
     .ENARDEN(1'b1),             // 1-bit input: A port enable/Read enable
     .REGCEAREGCE(1'b1),     // 1-bit input: A port register enable/Register enable

@@ -3,7 +3,7 @@
 
 module cpu_ex_tb
     // Import Constants
-    import consts::*;
+    import common::*;
     ();
 
 // cpu signals
@@ -12,49 +12,49 @@ logic       reset;          // reset
 logic       halt;           // halt
 
 // IF memory access
-word        imem_addr;      // address
-word        imem_data;      // data
+word_t      imem_addr;      // address
+word_t      imem_data;      // data
 
 // ID stage inputs
-word        if_pc;          // program counter
-word        if_ir;          // instruction register
+word_t      if_pc;          // program counter
+word_t      if_ir;          // instruction register
 logic       if_valid;       // fetch stage data is valid
 
 // ID stage inputs (data hazards)
-regaddr     hz_ex_wb_addr;     // write-back register address
-word        hz_ex_wb_data;     // write-back register value
+regaddr_t     hz_ex_wb_addr;     // write-back register address
+word_t      hz_ex_wb_data;     // write-back register value
 logic       hz_ex_wb_enable;   // write-back enable
 logic       hz_ex_wb_valid;    // write-back data valid
-regaddr     hz_ma_wb_addr;     // write-back register address
-word        hz_ma_wb_data;     // write-back register value
+regaddr_t     hz_ma_wb_addr;     // write-back register address
+word_t      hz_ma_wb_data;     // write-back register value
 logic       hz_ma_wb_enable;   // write-back enable
-regaddr     hz_wb_addr;        // write-back register address
-word        hz_wb_data;        // write-back register value
+regaddr_t     hz_wb_addr;        // write-back register address
+word_t      hz_wb_data;        // write-back register value
 logic       hz_wb_enable;      // write-back enable
 
 // ID stage outputs (to IF)
 logic       id_ready;       // stage ready for new inputs
-word        id_jmp_addr;    // jump address
+word_t      id_jmp_addr;    // jump address
 logic       id_jmp_valid;   // jump address valid
 
 // ID stage outputs (to EX)
-word        id_ir;          // instruction register
-word        id_alu_op1;     // ALU operand 1
-word        id_alu_op2;     // ALU operand 2
-alu_mode    id_alu_mode;    // ALU mode
-ma_mode     id_ma_mode;     // memory access mode
-ma_size     id_ma_size;     // memory access size
-word        id_ma_data;     // memory access data
-wb_src      id_wb_src;      // write-back register address
+word_t      id_ir;          // instruction register
+word_t      id_alu_op1;     // ALU operand 1
+word_t      id_alu_op2;     // ALU operand 2
+alu_mode_t  id_alu_mode;    // ALU mode
+ma_mode_t   id_ma_mode;     // memory access mode
+ma_size_t   id_ma_size;     // memory access size
+word_t      id_ma_data;     // memory access data
+wb_src_t    id_wb_src;      // write-back register address
 
 // EX stage outputs (to MA)
-word        ex_ir;          // instruction register
-word        ex_alu_result;  // alu result
-ma_mode     ex_ma_mode;     // memory access mode
-ma_size     ex_ma_size;     // memory access size
-word        ex_ma_data;     // memory access data
-wb_src      ex_wb_src;      // write-back source
-word        ex_wb_data;     // write-back register value
+word_t      ex_ir;          // instruction register
+word_t      ex_alu_result;  // alu result
+ma_mode_t   ex_ma_mode;     // memory access mode
+ma_size_t   ex_ma_size;     // memory access size
+word_t      ex_ma_data;     // memory access data
+wb_src_t    ex_wb_src;      // write-back source
+word_t      ex_wb_data;     // write-back register value
 
 
 // Instruction Memory

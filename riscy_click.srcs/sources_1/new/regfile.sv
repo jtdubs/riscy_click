@@ -11,26 +11,26 @@
 
 module regfile
     // Import Constants
-    import consts::*;
+    import common::*;
     (
         input  wire logic       clk,          // Clock
 
         // read port 1
         input  wire logic [4:0] read_addr1,   // Read Address #1
-        output      word        read_data1,   // Data Output #1
+        output      word_t      read_data1,   // Data Output #1
 
         // read port 2
         input  wire logic [4:0] read_addr2,   // Read Address #2
-        output      word        read_data2,   // Data Output #2
+        output      word_t      read_data2,   // Data Output #2
 
         // write port
         input  wire logic       write_enable, // Write Enable
         input  wire logic [4:0] write_addr,   // Write Address
-        input  wire word        write_data    // Write Data
+        input  wire word_t      write_data    // Write Data
     );
 
 // Memory
-word mem [31:0];
+word_t mem [31:0];
 
 // Initialize with Zeroes
 integer i;

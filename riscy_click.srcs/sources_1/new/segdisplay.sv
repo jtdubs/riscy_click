@@ -7,7 +7,7 @@
 
 module segdisplay
     // Import Constants
-    import consts::*;
+    import common::*;
     #(
         parameter int unsigned CLK_DIVISOR = 10000 // Clock ratio
     )
@@ -21,9 +21,9 @@ module segdisplay
         output      logic [7:0] c, // cathodes
 
          // data bus interface
-        input  wire word        addr,
-        output wire word        read_data,
-        input  wire word        write_data,
+        input  wire word_t      addr,
+        output wire word_t      read_data,
+        input  wire word_t      write_data,
         input  wire logic [3:0] write_mask
     );
 
@@ -31,8 +31,8 @@ module segdisplay
 localparam int unsigned COUNTER_ROLLOVER = (CLK_DIVISOR / 2) - 1;
 
 // Registers
-word         value;
-word         display_value;
+word_t       value;
+word_t       display_value;
 logic [15:0] counter;
 logic [ 3:0] nibble;
 logic [ 3:0] index;

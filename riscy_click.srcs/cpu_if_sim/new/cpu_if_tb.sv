@@ -3,7 +3,7 @@
 
 module cpu_if_tb
     // Import Constants
-    import consts::*;
+    import common::*;
     ();
 
 // cpu signals
@@ -12,18 +12,18 @@ logic       reset;          // reset
 logic       halt;           // halt
 
 // IF memory access
-word        imem_addr;      // address
-word        imem_data;      // data
+word_t      imem_addr;      // address
+word_t      imem_data;      // data
 
 
 // ID stage inputs
-word        if_pc;          // program counter
-word        if_ir;          // instruction register
+word_t      if_pc;          // program counter
+word_t      if_ir;          // instruction register
 logic       if_valid;       // fetch stage data is valid
 
 // ID stage outputs (to IF)
 logic       id_ready;       // stage ready for new inputs
-word        id_jmp_addr;    // jump address
+word_t      id_jmp_addr;    // jump address
 logic       id_jmp_valid;   // jump address valid
 
 // Instruction Memory

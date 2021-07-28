@@ -7,24 +7,23 @@
 
 module cpu_wb
     // Import Constants
-    import consts::*;
+    import common::*;
     (
         // cpu signals
-        input  wire logic    clk,        // clock
-        input  wire logic    reset,      // reset
-        input  wire logic    halt,       // halt
+        input  wire logic     clk,             // clock
+        input  wire logic     reset,           // reset
         
         // data memory
-        input  wire word     dmem_read_data,  // memory data
+        input  wire word_t    dmem_read_data,  // memory data
 
         // stage inputs
-        input  wire word     ma_ir,      // instruction register
-        input  wire logic    ma_is_load, // is this a load instruction?
-        input  wire word     ma_wb_data, // write-back register value
+        input  wire word_t    ma_ir,           // instruction register
+        input  wire logic     ma_is_load,      // is this a load instruction?
+        input  wire word_t    ma_wb_data,      // write-back register value
         
         // stage outputs (data hazards)
-        output      regaddr  hz_wb_addr, // write-back address
-        output      word     hz_wb_data  // write-back value
+        output      regaddr_t hz_wb_addr,      // write-back address
+        output      word_t    hz_wb_data       // write-back value
     );
     
 

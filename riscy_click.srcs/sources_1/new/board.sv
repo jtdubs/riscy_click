@@ -7,7 +7,7 @@
 
 module board
     // Import Constants
-    import consts::*;
+    import common::*;
     (
         input  wire logic clk,   // clock
         input  wire logic reset, // reset
@@ -25,13 +25,13 @@ module board
 //
 
 // Instruction Memory
-wire word imem_addr;
-wire word imem_data;
+wire word_t imem_addr;
+wire word_t imem_data;
 
 // Data Memory
-wire word        dmem_addr;
-     word        dmem_read_data;
-wire word        dmem_write_data;
+wire word_t      dmem_addr;
+     word_t      dmem_read_data;
+wire word_t      dmem_write_data;
 wire logic [3:0] dmem_write_mask;
 
 // Write Masks
@@ -39,9 +39,9 @@ logic [3:0] dsp_write_mask;
 logic [3:0] ram_write_mask;
 
 // Device
-wire word dsp_read_data;
-wire word bios_read_data;
-wire word ram_read_data;
+wire word_t dsp_read_data;
+wire word_t bios_read_data;
+wire word_t ram_read_data;
 
 
 //
@@ -91,7 +91,7 @@ segdisplay #(.CLK_DIVISOR(10000)) disp (
 // FF000000:            Seven Segment Display
 // FF000004:            Switch Bank
 //
-word dmem_return_addr;
+word_t dmem_return_addr;
 
 always_ff @(posedge clk) begin
     dmem_return_addr <= reset ? 32'h00000000 : dmem_addr;
