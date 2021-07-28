@@ -122,4 +122,15 @@ end
 
 cpu cpu (.*);
 
+
+//
+// Debug Counter
+//
+
+word_t cycle_counter;
+
+always_ff @(posedge clk) begin
+    cycle_counter <= reset ? 32'h00000000 : cycle_counter + 1;
+end
+
 endmodule

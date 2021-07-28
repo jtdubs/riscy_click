@@ -1,9 +1,5 @@
 TODO:
-- rename consts module to common
-- custom types should be _t ??
-- Debug cycle counter on board
-- Does it work?  Simulation, I think so.  Implementation, no.
-
+- Use debug core to get implementation working... start with cycle_counter, pc, ir...
 - Naming convention for signals that handles the bypass / hazard signals better.  consider _i / _o...
 - Floorplanning?
 - Analyze timing more?
