@@ -1,33 +1,14 @@
 TODO:
+- custom types should be _t ??
 - Does it work?  Currently, maybe??
-- Naming convention for signals that handles the bypass / hazard signals better
+- Naming convention for signals that handles the bypass / hazard signals better.  consider _i / _o...
 - Check out the timing a bit harder
 
 Steps:
-0. Debug cycle counter?  Could put on board.
-1. Pipelining
+1. Debug cycle counter?  Could put on board.
 2. Allow for arbitrary-time memory access / stalls
 3. Switch to mix of BRAM & DDR
 4. Move to design with unified memory, instruction/data caches, memory controller
-
-Stages:
-- IF (Fetch instruction)
-- ID (Decode instruction and read registers)
-- EX (Execute instruction (ALU))
-- MA (Memory access)
-- WB (Register commit)
-
-Hazards:
-- Structural - Hardware resources used by multiple stages.  Avoid this by not sharing resources across stages.
-- Data       - Instruction needs reg or mem value being modified by later instruction
-- Control    - Earlier stages may need to be flushed if a branch occurs, as it is the wrong instruction in-flight
-
-Data hazard avoidance:
-- EX, MA & WB advertise the pending register values; ID consumes them if needed.
-
-Control hazard avoidance:
-- ID advertises branch addresses; IF notice and flush
-- Therefore, stages advertise if they are empty/stalled so subsequent stages can also stall
 
 Reference:
 http://fpgacpu.ca/fpga/index.html
