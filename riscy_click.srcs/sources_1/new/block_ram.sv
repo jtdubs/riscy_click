@@ -203,7 +203,7 @@ RAMB36E1 #(
     .WRITE_MODE_A("WRITE_FIRST"),
     .WRITE_MODE_B("WRITE_FIRST")
 )
-bios_rom (
+bram_instance (
     // Cascade Signals: 1-bit (each) output: BRAM cascade ports (to create 64kx1)
     .CASCADEOUTA(),     // 1-bit output: A port cascade
     .CASCADEOUTB(),     // 1-bit output: B port cascade

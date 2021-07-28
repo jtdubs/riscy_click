@@ -49,7 +49,7 @@ wire word_t ram_read_data;
 //
 
 // BIOS
-block_rom #(.CONTENTS("d:/dev/riscy_click/bios/bios.coe")) rom (
+block_rom #(.CONTENTS("bios.mem")) rom (
     .clk(clk),
     .reset(reset),
     .addr_a(imem_addr),
@@ -127,7 +127,7 @@ cpu cpu (.*);
 // Debug Counter
 //
 
-word_t cycle_counter;
+(* KEEP = "TRUE" *) word_t cycle_counter;
 
 always_ff @(posedge clk) begin
     cycle_counter <= reset ? 32'h00000000 : cycle_counter + 1;

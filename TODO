@@ -1,10 +1,9 @@
 TODO:
-- Use debug core to get implementation working... start with cycle_counter, pc, ir...
 - Naming convention for signals that handles the bypass / hazard signals better.  consider _i / _o...
-- Floorplanning?
-- Analyze timing more?
+- Seems like it would currently runat 50MHz, analyze timing and shoot for 100MHz.
+- Figure out how to use updatemem to replace the BIOS without having to re-run implementation
 
-Steps:
+Next Steps:
 1. Allow for arbitrary-time memory access / stalls
 2. Switch to mix of BRAM & DDR
 3. Move to design with unified memory, instruction/data caches, memory controller
