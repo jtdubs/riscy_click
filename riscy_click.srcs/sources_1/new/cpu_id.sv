@@ -37,7 +37,6 @@ module cpu_id
         output      logic    id_jmp_valid,   // jump address valid
 
         // stage outputs (to EX)
-        output      word     id_pc,          // program counter
         output      word     id_ir,          // instruction register
         output      word     id_alu_op1,     // ALU operand 1
         output      word     id_alu_op2,     // ALU operand 2
@@ -46,7 +45,7 @@ module cpu_id
         output      ma_size  id_ma_size,     // memory access size
         output      word     id_ma_data,     // memory access data (for store operations)
         output      wb_src   id_wb_src,      // write-back source
-        output      regaddr  id_wb_addr      // write-back address (TODO: addr isn't needed.  stages can send back the "rd" bits from IR.)
+        output      word     id_wb_data      // write-back data
     );
 
 
@@ -285,7 +284,6 @@ always_ff @(posedge clk) begin
     // if a bubble is needed
     if (bubble_needed) begin
         // output a NOP to EX stage (addi x0, x0, 0)
-        id_pc       <= 32'h00000000;
         id_ir       <= 32'h00000013;
         id_alu_op1  <= 32'h00000000;
         id_alu_op2  <= 32'h00000000;
@@ -293,11 +291,10 @@ always_ff @(posedge clk) begin
         id_ma_mode  <= MA_X;
         id_ma_size  <= MA_SIZE_X;
         id_ma_data  <= 32'h00000000;
-        id_wb_addr  <= 5'b00000;
         id_wb_src   <= WB_SRC_ALU;
+        id_wb_data  <= 32'h00000000;
     end else begin
         // otherwise, output decoded control signals
-        id_pc       <= if_pc;
         id_ir       <= if_ir;
         id_alu_op1  <= next_alu_op1;
         id_alu_op2  <= next_alu_op2;
@@ -305,13 +302,12 @@ always_ff @(posedge clk) begin
         id_ma_mode  <= cw.ma_mode_sel;
         id_ma_size  <= cw.ma_size_sel;
         id_ma_data  <= rb_resolved;
-        id_wb_addr  <= rd; // TODO: don't need this.  WB stage can pick it out of IR.
         id_wb_src   <= cw.wb_src_sel;
+        id_wb_data  <= (cw.wb_src_sel == WB_SRC_PC4) ? (if_pc + 4) : 32'h00000000;
     end
         
     if (reset) begin
         // output a NOP to EX stage (addi x0, x0, 0)
-        id_pc         <= NOP_PC;
         id_ir         <= NOP_IR;
         id_alu_op1    <= 32'h00000000;
         id_alu_op2    <= 32'h00000000;
@@ -320,7 +316,7 @@ always_ff @(posedge clk) begin
         id_ma_size    <= NOP_MA_SIZE;
         id_ma_data    <= 32'h00000000;
         id_wb_src     <= NOP_WB_SRC;
-        id_wb_addr    <= NOP_WB_ADDR;
+        id_wb_data    <= 32'h00000000;
     end
 end
 

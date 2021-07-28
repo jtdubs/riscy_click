@@ -36,7 +36,6 @@ word        id_jmp_addr;    // jump address
 logic       id_jmp_valid;   // jump address valid
 
 // ID stage outputs (to EX)
-word        id_pc;          // program counter
 word        id_ir;          // instruction register
 word        id_alu_op1;     // ALU operand 1
 word        id_alu_op2;     // ALU operand 2
@@ -45,23 +44,18 @@ ma_mode     id_ma_mode;     // memory access mode
 ma_size     id_ma_size;     // memory access size
 word        id_ma_data;     // memory access data
 wb_src      id_wb_src;      // write-back register address
-regaddr     id_wb_addr;     // write-back register address
 
 // EX stage outputs (to MA)
-word        ex_pc;          // program counter
 word        ex_ir;          // instruction register
 word        ex_alu_result;  // alu result
 ma_mode     ex_ma_mode;     // memory access mode
 ma_size     ex_ma_size;     // memory access size
 word        ex_ma_data;     // memory access data
 wb_src      ex_wb_src;      // write-back source
-regaddr     ex_wb_addr;     // write-back register address
 word        ex_wb_data;     // write-back register value
 
 // MA stage outputs (to WB)
-word        ma_pc;          // program counter
 word        ma_ir;          // instruction register
-regaddr     ma_wb_addr;     // write-back register address
 word        ma_wb_data;     // write-back register value
 
 // MA memory access

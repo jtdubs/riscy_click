@@ -18,10 +18,8 @@ module cpu_wb
         input  wire word     dmem_read_data,  // memory data
 
         // stage inputs
-        input  wire word     ma_pc,      // program counter
         input  wire word     ma_ir,      // instruction register
         input  wire logic    ma_is_load, // is this a load instruction?
-        input  wire regaddr  ma_wb_addr, // write-back register address
         input  wire word     ma_wb_data, // write-back register value
         
         // stage outputs (data hazards)
@@ -35,7 +33,7 @@ module cpu_wb
 //
 
 always_comb begin
-    hz_wb_addr = ma_wb_addr;
+    hz_wb_addr = ma_ir[11:7];
     hz_wb_data = ma_is_load ? dmem_read_data : ma_wb_data;
 end 
 

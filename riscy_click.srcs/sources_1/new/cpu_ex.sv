@@ -15,7 +15,6 @@ module cpu_ex
         input  wire logic    halt,           // halt
 
         // stage inputs
-        input  wire word     id_pc,          // program counter
         input  wire word     id_ir,          // instruction register
         input  wire word     id_alu_op1,     // ALU operand 1
         input  wire word     id_alu_op2,     // ALU operand 2
@@ -24,7 +23,7 @@ module cpu_ex
         input  wire ma_size  id_ma_size,     // memory access size
         input  wire word     id_ma_data,     // memory access data
         input  wire wb_src   id_wb_src,      // write-back source
-        input  wire regaddr  id_wb_addr,     // write-back address
+        input  wire word     id_wb_data,     // write-back data
         
         // stage outputs (data hazards)
         output      regaddr  hz_ex_wb_addr,     // write-back address
@@ -32,14 +31,12 @@ module cpu_ex
         output      logic    hz_ex_wb_valid,    // write-back value valid
 
         // stage outputs (to MA)
-        output      word     ex_pc,          // program counter
         output      word     ex_ir,          // instruction register
-        output      word     ex_alu_result,  // alu result
+        output      word     ex_ma_addr,     // memory access address
         output      ma_mode  ex_ma_mode,     // memory access mode
         output      ma_size  ex_ma_size,     // memory access size
         output      word     ex_ma_data,     // memory access data
         output      wb_src   ex_wb_src,      // write-back source
-        output      regaddr  ex_wb_addr,     // write-back register address
         output      word     ex_wb_data      // write-back register value
     );
 
@@ -64,25 +61,9 @@ alu alu (
 //
 
 always_comb begin
-    hz_ex_wb_addr   = id_wb_addr;
-
-    unique case (id_wb_src)
-    WB_SRC_ALU:
-        begin
-            hz_ex_wb_data   = alu_result;
-            hz_ex_wb_valid  = 1'b1;
-        end  
-    WB_SRC_PC4:
-        begin
-            hz_ex_wb_data   = id_pc + 4; // NOTE: could have come from ID directly
-            hz_ex_wb_valid  = 1'b1;
-        end
-    WB_SRC_MEM:
-        begin
-            hz_ex_wb_data   = 32'b0;
-            hz_ex_wb_valid  = 1'b0; // will come from MA stage
-        end
-    endcase
+    hz_ex_wb_addr  = id_ir[11:7];
+    hz_ex_wb_data  = (id_wb_src == WB_SRC_ALU) ? alu_result : id_wb_data;
+    hz_ex_wb_valid = (id_wb_src != WB_SRC_MEM); 
 end  
 
 
@@ -91,26 +72,22 @@ end
 //
 
 always_ff @(posedge clk) begin
-    ex_pc         <= id_pc;
-    ex_ir         <= id_ir;
-    ex_alu_result <= alu_result;
-    ex_ma_mode    <= id_ma_mode;
-    ex_ma_size    <= id_ma_size;
-    ex_ma_data    <= id_ma_data;
-    ex_wb_src     <= id_wb_src;
-    ex_wb_addr    <= id_wb_addr;
-    ex_wb_data    <= hz_ex_wb_data;
+    ex_ir      <= id_ir;
+    ex_ma_addr <= alu_result;
+    ex_ma_mode <= id_ma_mode;
+    ex_ma_size <= id_ma_size;
+    ex_ma_data <= id_ma_data;
+    ex_wb_src  <= id_wb_src;
+    ex_wb_data <= hz_ex_wb_data;
     
     if (reset) begin
-        ex_pc         <= NOP_PC;
-        ex_ir         <= NOP_IR;
-        ex_alu_result <= 32'h00000000;
-        ex_ma_mode    <= NOP_MA_MODE;
-        ex_ma_size    <= NOP_MA_SIZE;
-        ex_ma_data    <= 32'h00000000;
-        ex_wb_src     <= NOP_WB_SRC;
-        ex_wb_addr    <= NOP_WB_ADDR;
-        ex_wb_data    <= 32'h00000000;
+        ex_ir      <= NOP_IR;
+        ex_ma_addr <= 32'h00000000;
+        ex_ma_mode <= NOP_MA_MODE;
+        ex_ma_size <= NOP_MA_SIZE;
+        ex_ma_data <= 32'h00000000;
+        ex_wb_src  <= NOP_WB_SRC;
+        ex_wb_data <= 32'h00000000;
     end
 end
 

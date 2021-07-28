@@ -1,7 +1,6 @@
 TODO:
 - Does it work?  Currently, maybe??
 - Naming convention for signals that handles the bypass / hazard signals better
-- Sanity check need for signals passing through stages
 - Check out the timing a bit harder
 
 Steps:
