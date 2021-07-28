@@ -1,9 +1,7 @@
 TODO:
-- EX and MA outputs aren't clear on reset...
 - Does it work?  Currently, maybe??
 - Naming convention for signals that handles the bypass / hazard signals better
 - Sanity check need for signals passing through stages
-- Do I have pc+4 and crap in too many places?
 - Check out the timing a bit harder
 
 Steps:

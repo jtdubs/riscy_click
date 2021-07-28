@@ -36,11 +36,15 @@ module cpu_if
 
 wire logic skid_ready;       // can skid accept data?
      logic skid_valid;       // is skip input valid?
+     logic skid_reset;       // reset signal
      word  skid_pc, skid_ir; // IR and PC to input
+
+// flush the skid buffer on jump, as those instructions aren't valid     
+always_comb skid_reset = reset || id_jmp_valid;
      
 skid_buffer #(.WORD_WIDTH(64)) output_buffer (
     .clk(clk),
-    .reset(reset | id_jmp_valid),
+    .reset(skid_reset),
     .input_valid(skid_valid),
     .input_ready(skid_ready),
     .input_data({ skid_pc, skid_ir }),
@@ -61,7 +65,7 @@ word skid_pc_next;
 
 // combiantional logic for next PC value
 always_comb begin
-    if (halt)
+    priority if (halt)
         skid_pc_next = skid_pc;         // no change on halt  
     else if (reset)
         skid_pc_next = 32'h00000000;    // zero on reset

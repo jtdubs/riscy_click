@@ -3,7 +3,7 @@
 
 module skid_buffer
     #(
-        parameter WORD_WIDTH = 0
+        parameter int unsigned WORD_WIDTH = 0
     )
     (
         input  wire logic                  clk,
@@ -18,7 +18,7 @@ module skid_buffer
         output      logic [WORD_WIDTH-1:0] output_data
     );
     
-localparam WORD_ZERO = {WORD_WIDTH{1'b0}};
+localparam logic [WORD_WIDTH-1:0] WORD_ZERO = {WORD_WIDTH{1'b0}};
 
 //
 // Finite State Machine
@@ -43,23 +43,23 @@ sb_state state, next_state;
 // which buffer operations are requested
 logic insert, remove;
 always_comb begin
-    insert = input_valid  & input_ready;  // insert will occur if data is being provided, and can be accepted
-    remove = output_valid & output_ready; // output will occur if data is being requested, and can be provided
+    insert = input_valid  && input_ready;  // insert will occur if data is being provided, and can be accepted
+    remove = output_valid && output_ready; // output will occur if data is being requested, and can be provided
 end
 
 // which state transition is occuring
 logic load, unload, buffer, unbuffer, run;
 always_comb begin
-    load     = (state == EMPTY)   &  insert;           // inserting into an empty output register
-    unload   = (state == RUNNING) & ~insert &  remove; // output register consumed; now empty
-    buffer   = (state == RUNNING) &  insert & ~remove; // inserting but output register full; new data stored in buffer
-    unbuffer = (state == FULL)              &  remove; // output register consumed; reload from buffer
-    run      = (state == RUNNING) &  insert &  remove; // inserting into an just emptied output register
+    load     = (state == EMPTY)   &&  insert;            // inserting into an empty output register
+    unload   = (state == RUNNING) && !insert &&  remove; // output register consumed; now empty
+    buffer   = (state == RUNNING) &&  insert && !remove; // inserting but output register full; new data stored in buffer
+    unbuffer = (state == FULL)               &&  remove; // output register consumed; reload from buffer
+    run      = (state == RUNNING) &&  insert &&  remove; // inserting into an just emptied output register
 end
 
 // what will the next state be
 always_comb begin
-    if (load | unbuffer)
+    priority if (load || unbuffer)
         next_state = RUNNING;
     else if (buffer)
         next_state = FULL;
@@ -87,18 +87,22 @@ always_ff @(posedge clk) begin
     output_valid <= (next_state != EMPTY);
     
     // set output register
-    if (load | run)
+    unique if (load || run)
         output_data <= input_data;  // make input available in output register
     else if (unload)
         output_data <= 'd0;         // clear output buffer
     else if (unbuffer)     
         output_data <= data_buffer; // transfer buffer to output register
-        
+    else
+        output_data <= output_data;  
+       
     // set buffer register
-    if (buffer)
+    unique if (buffer)
         data_buffer <= input_data;  // buffer the input
     else if (unbuffer)
         data_buffer <= 'd0;         // clear the buffer
+    else
+        data_buffer <= data_buffer;
     
     if (reset) begin
         // reset to EMPTY state

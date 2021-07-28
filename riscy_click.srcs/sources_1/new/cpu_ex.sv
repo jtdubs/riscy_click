@@ -66,7 +66,7 @@ alu alu (
 always_comb begin
     hz_ex_wb_addr   = id_wb_addr;
 
-    case (id_wb_src)
+    unique case (id_wb_src)
     WB_SRC_ALU:
         begin
             hz_ex_wb_data   = alu_result;
@@ -77,7 +77,7 @@ always_comb begin
             hz_ex_wb_data   = id_pc + 4; // NOTE: could have come from ID directly
             hz_ex_wb_valid  = 1'b1;
         end
-    default: /* WB_SRC_MEM */
+    WB_SRC_MEM:
         begin
             hz_ex_wb_data   = 32'b0;
             hz_ex_wb_valid  = 1'b0; // will come from MA stage

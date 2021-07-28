@@ -9,7 +9,7 @@ module segdisplay
     // Import Constants
     import consts::*;
     #(
-        parameter CLK_DIVISOR = 10000 // Clock ratio
+        parameter int unsigned CLK_DIVISOR = 10000 // Clock ratio
     )
     (
         // system clock domain
@@ -28,7 +28,7 @@ module segdisplay
     );
 
 // Counter rolls over at half the divisor so that a full cycle of the derived clock occurs at the divided frequency
-localparam COUNTER_ROLLOVER = (CLK_DIVISOR / 2) - 1;
+localparam int unsigned COUNTER_ROLLOVER = (CLK_DIVISOR / 2) - 1;
 
 // Registers
 word         value;
@@ -42,7 +42,7 @@ assign read_data = value;
 
 // Combination logic for current nibble
 always_comb begin
-    case (index[3:1])
+    unique case (index[3:1])
     0: nibble <= display_value[ 3: 0];
     1: nibble <= display_value[ 7: 4];
     2: nibble <= display_value[11: 8];
@@ -50,7 +50,7 @@ always_comb begin
     4: nibble <= display_value[19:16];
     5: nibble <= display_value[23:20];
     6: nibble <= display_value[27:24];
-    default: /* 7 */ nibble <= display_value[31:28];
+    7: nibble <= display_value[31:28];
     endcase
 end
 
@@ -59,7 +59,7 @@ always_ff @(posedge clk) begin
     if (index[0]) begin
         a <= 8'b11111111;
     end else begin
-        case (index[3:1])
+        unique case (index[3:1])
         0: a <= 8'b11111110;
         1: a <= 8'b11111101;
         2: a <= 8'b11111011;
@@ -67,7 +67,7 @@ always_ff @(posedge clk) begin
         4: a <= 8'b11101111;
         5: a <= 8'b11011111;
         6: a <= 8'b10111111;
-        default: /* 7 */ a <= 8'b01111111;
+        7: a <= 8'b01111111;
         endcase
     end
 end
@@ -77,7 +77,7 @@ always_ff @(posedge clk) begin
     if (index[0]) begin
         c <= 8'b11111111;
     end else begin
-        case (nibble)
+        unique case (nibble)
         0:  c <= 8'b11000000;
         1:  c <= 8'b11111001;
         2:  c <= 8'b10100100;
@@ -93,7 +93,7 @@ always_ff @(posedge clk) begin
         12: c <= 8'b11000110;
         13: c <= 8'b10100001;
         14: c <= 8'b10000110;
-        default: /* 15 */ c <= 8'b10001110;
+        15: c <= 8'b10001110;
         endcase
     end
 end

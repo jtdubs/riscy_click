@@ -27,7 +27,7 @@ always_comb zero = (result == 32'b0) ? 1'b1 : 1'b0;
 
 // Result Logic
 always_comb begin
-    case (mode)
+    unique case (mode)
         ALU_ADD:   result = operand1 + operand2;
         ALU_SUB:   result = operand1 - operand2;
         ALU_LSL:   result = operand1 << shamt;
@@ -36,10 +36,10 @@ always_comb begin
         ALU_AND:   result = operand1 & operand2;
         ALU_OR:    result = operand1 | operand2;
         ALU_XOR:   result = operand1 ^ operand2;
-        ALU_SLT:   result = ($signed(operand1) < $signed(operand2)) ? 1 : 0;
+        ALU_SLT:   result = (signed'(operand1) < signed'(operand2)) ? 1 : 0;
         ALU_ULT:   result = (operand1 < operand2) ? 1 : 0;
         ALU_COPY1: result = operand1;
-        default:   result = 32'b0;
+        ALU_X:     result = 32'b0;
     endcase;
 end
 

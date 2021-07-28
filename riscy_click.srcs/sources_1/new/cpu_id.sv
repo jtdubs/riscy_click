@@ -115,7 +115,7 @@ word ra_resolved, rb_resolved;
 
 // Determine true value for first register access
 always_comb begin
-    if (rs1 == 5'b00000)
+    priority if (rs1 == 5'b00000)
         ra_resolved = ra;
     else if (rs1 == hz_wb_addr)
         ra_resolved = hz_wb_data;
@@ -129,7 +129,7 @@ end
 
 // Determine true value for second register access
 always_comb begin
-    if (rs2 == 5'b00000)
+    priority if (rs2 == 5'b00000)
         rb_resolved = rb;
     else if (rs2 == hz_wb_addr)
         rb_resolved = hz_wb_data;
@@ -180,9 +180,9 @@ end
 word next_alu_op1;
 
 always_comb begin
-    case (cw.alu_op1_sel)
-    ALU_OP1_RS1:                next_alu_op1 = ra_resolved;
-    default: /* ALU_OP1_IMMU */ next_alu_op1 = imm_u;
+    unique case (cw.alu_op1_sel)
+    ALU_OP1_RS1:  next_alu_op1 = ra_resolved;
+    ALU_OP1_IMMU: next_alu_op1 = imm_u;
     endcase
 end
 
@@ -194,11 +194,11 @@ end
 word next_alu_op2;
 
 always_comb begin
-    case (cw.alu_op2_sel)
-    ALU_OP2_RS2:              next_alu_op2 = rb_resolved;
-    ALU_OP2_IMMI:             next_alu_op2 = imm_i;
-    ALU_OP2_IMMS:             next_alu_op2 = imm_s;
-    default: /* ALU_OP2_PC */ next_alu_op2 = if_pc;
+    unique case (cw.alu_op2_sel)
+    ALU_OP2_RS2:  next_alu_op2 = rb_resolved;
+    ALU_OP2_IMMI: next_alu_op2 = imm_i;
+    ALU_OP2_IMMS: next_alu_op2 = imm_s;
+    ALU_OP2_PC:   next_alu_op2 = if_pc;
     endcase
 end
 
@@ -211,7 +211,7 @@ logic next_id_jmp_valid;
 word  next_id_jmp_addr;
 
 always_comb begin
-    case (cw.pc_mode_sel)
+    unique case (cw.pc_mode_sel)
     PC_NEXT:
         begin
             next_id_jmp_valid = 1'b0;
@@ -227,15 +227,16 @@ always_comb begin
             next_id_jmp_valid = 1'b1;
             next_id_jmp_addr  = ra_resolved + imm_i;
         end
-    default: /* PC_BRANCH */
+    PC_BRANCH:
         begin
             case (f3)
-                F3_BEQ:                next_id_jmp_valid = (        ra_resolved  ==         rb_resolved)  ? 1'b1 : 1'b0;
-                F3_BNE:                next_id_jmp_valid = (        ra_resolved  ==         rb_resolved)  ? 1'b0 : 1'b1;
-                F3_BLT:                next_id_jmp_valid = ($signed(ra_resolved) <  $signed(rb_resolved)) ? 1'b1 : 1'b0;
-                F3_BGE:                next_id_jmp_valid = ($signed(ra_resolved) <  $signed(rb_resolved)) ? 1'b0 : 1'b1;
-                F3_BLTU:               next_id_jmp_valid = (        ra_resolved  <          rb_resolved)  ? 1'b1 : 1'b0;
-                default: /* F3_BGEU */ next_id_jmp_valid = (        ra_resolved  <          rb_resolved)  ? 1'b0 : 1'b1;
+                F3_BEQ:  next_id_jmp_valid = (        ra_resolved  ==         rb_resolved)  ? 1'b1 : 1'b0;
+                F3_BNE:  next_id_jmp_valid = (        ra_resolved  ==         rb_resolved)  ? 1'b0 : 1'b1;
+                F3_BLT:  next_id_jmp_valid = (signed'(ra_resolved) <  signed'(rb_resolved)) ? 1'b1 : 1'b0;
+                F3_BGE:  next_id_jmp_valid = (signed'(ra_resolved) <  signed'(rb_resolved)) ? 1'b0 : 1'b1;
+                F3_BLTU: next_id_jmp_valid = (        ra_resolved  <          rb_resolved)  ? 1'b1 : 1'b0;
+                F3_BGEU: next_id_jmp_valid = (        ra_resolved  <          rb_resolved)  ? 1'b0 : 1'b1;
+                default: next_id_jmp_valid = 1'b0;
             endcase
             next_id_jmp_addr = if_pc + imm_b;
         end
@@ -249,8 +250,8 @@ end
 
 // Data Hazard: EX stage has a colliding writeback and the data isn't available yet (ex. JALR or LW)
 logic data_hazard_condition;
-always_comb data_hazard_condition = ((rs1 != 5'b00000) & ((hz_ex_wb_addr == rs1 & ~hz_ex_wb_valid) | (hz_ma_wb_addr == rs1 & ~hz_ma_wb_valid)))
-                                  | ((rs2 != 5'b00000) & ((hz_ex_wb_addr == rs2 & ~hz_ex_wb_valid) | (hz_ma_wb_addr == rs2 & ~hz_ma_wb_valid)));
+always_comb data_hazard_condition = ((rs1 != 5'b00000) && ((hz_ex_wb_addr == rs1 && !hz_ex_wb_valid) || (hz_ma_wb_addr == rs1 && !hz_ma_wb_valid)))
+                                 || ((rs2 != 5'b00000) && ((hz_ex_wb_addr == rs2 && !hz_ex_wb_valid) || (hz_ma_wb_addr == rs2 && !hz_ma_wb_valid)));
 
 // a bubble needs to be output if we are in a data hazard condition, or if there was no valid instruction to decode
 logic bubble_needed;
