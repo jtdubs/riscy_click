@@ -64,7 +64,7 @@
     <Option Name="IPStaticSourceDir" Val="$PIPUSERFILESDIR/ipstatic"/>
     <Option Name="EnableBDX" Val="FALSE"/>
     <Option Name="DSABoardId" Val="nexys4_ddr"/>
-    <Option Name="WTXSimLaunchSim" Val="689"/>
+    <Option Name="WTXSimLaunchSim" Val="717"/>
     <Option Name="WTModelSimLaunchSim" Val="0"/>
     <Option Name="WTQuestaLaunchSim" Val="0"/>
     <Option Name="WTIesLaunchSim" Val="0"/>
@@ -171,18 +171,6 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PPRDIR/bios/bios.coe">
-        <FileInfo>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PPRDIR/bios/tb_bios.coe">
-        <FileInfo>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
       <File Path="$PSRCDIR/sources_1/new/skid_buffer.sv">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -207,6 +195,27 @@
       <File Path="$PPRDIR/bios/bios.mem">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/new/vga_controller.sv">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/new/pixel_clk_gen.sv">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/new/cpu_clk_gen.sv">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
@@ -235,10 +244,17 @@
       </Config>
     </FileSet>
     <FileSet Name="cpu_if_sim" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/cpu_if_sim" RelGenDir="$PGENDIR/cpu_if_sim">
+      <Filter Type="Srcs"/>
       <File Path="$PSRCDIR/cpu_if_sim/new/cpu_if_tb.sv">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/bios/tb_bios.mem">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
@@ -256,6 +272,7 @@
       </Config>
     </FileSet>
     <FileSet Name="board_sim" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/board_sim" RelGenDir="$PGENDIR/board_sim">
+      <Filter Type="Srcs"/>
       <File Path="$PSRCDIR/board_sim/new/board_tb.sv">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -279,6 +296,7 @@
       </Config>
     </FileSet>
     <FileSet Name="skid_buffer_sim" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/skid_buffer_sim" RelGenDir="$PGENDIR/skid_buffer_sim">
+      <Filter Type="Srcs"/>
       <File Path="$PSRCDIR/skid_buffer_sim/new/skid_buffer_tb.sv">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -301,10 +319,17 @@
       </Config>
     </FileSet>
     <FileSet Name="block_rom_sim" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/block_rom_sim" RelGenDir="$PGENDIR/block_rom_sim">
+      <Filter Type="Srcs"/>
       <File Path="$PSRCDIR/block_rom_sim/new/block_rom_tb.sv">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/bios/tb_bios.mem">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
@@ -323,6 +348,7 @@
       </Config>
     </FileSet>
     <FileSet Name="cpu_id_sim" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/cpu_id_sim" RelGenDir="$PGENDIR/cpu_id_sim">
+      <Filter Type="Srcs"/>
       <File Path="$PSRCDIR/cpu_id_sim/new/cpu_id_tb.sv">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -345,6 +371,7 @@
       </Config>
     </FileSet>
     <FileSet Name="cpu_ex_sim" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/cpu_ex_sim" RelGenDir="$PGENDIR/cpu_ex_sim">
+      <Filter Type="Srcs"/>
       <File Path="$PSRCDIR/cpu_ex_sim/new/cpu_ex_tb.sv">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -367,6 +394,7 @@
       </Config>
     </FileSet>
     <FileSet Name="cpu_ma_sim" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/cpu_ma_sim" RelGenDir="$PGENDIR/cpu_ma_sim">
+      <Filter Type="Srcs"/>
       <File Path="$PSRCDIR/cpu_ma_sim/new/cpu_ma_tb.sv">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -389,6 +417,7 @@
       </Config>
     </FileSet>
     <FileSet Name="cpu_wb_sim" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/cpu_wb_sim" RelGenDir="$PGENDIR/cpu_wb_sim">
+      <Filter Type="Srcs"/>
       <File Path="$PSRCDIR/cpu_wb_sim/new/cpu_wb_tb.sv">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>

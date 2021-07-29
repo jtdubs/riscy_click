@@ -5,3 +5,5 @@ bios
 *.coe
 *.bit
 *.mem
+*.jou
+*.log

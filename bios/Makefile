@@ -21,5 +21,5 @@ bios.mem: bios.img
 	echo "@0000" > bios.mem
 	hexdump -v -e '/4 "%08X" "\n"' bios.img >> bios.mem
 
-bios.bit: bios.mem
+bios.bit: bios.mem ../riscy_click.runs/impl_1/board.bit
 	cmd.exe /c "C:\Xilinx\Vivado\2021.1\bin\updatemem.bat -meminfo bios.mmi -data bios.mem -proc rom/xpm_memory_dprom_inst/xpm_memory_base_inst -bit ..\riscy_click.runs\impl_1\board.bit -out bios.bit -force"

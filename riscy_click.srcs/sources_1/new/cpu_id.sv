@@ -228,15 +228,21 @@ always_comb begin
         end
     PC_BRANCH:
         begin
-            case (f3)
-                F3_BEQ:  next_id_jmp_valid = (        ra_resolved  ==         rb_resolved)  ? 1'b1 : 1'b0;
-                F3_BNE:  next_id_jmp_valid = (        ra_resolved  ==         rb_resolved)  ? 1'b0 : 1'b1;
-                F3_BLT:  next_id_jmp_valid = (signed'(ra_resolved) <  signed'(rb_resolved)) ? 1'b1 : 1'b0;
-                F3_BGE:  next_id_jmp_valid = (signed'(ra_resolved) <  signed'(rb_resolved)) ? 1'b0 : 1'b1;
-                F3_BLTU: next_id_jmp_valid = (        ra_resolved  <          rb_resolved)  ? 1'b1 : 1'b0;
-                F3_BGEU: next_id_jmp_valid = (        ra_resolved  <          rb_resolved)  ? 1'b0 : 1'b1;
-                default: next_id_jmp_valid = 1'b0;
+//            unique case (f3)
+//                F3_BEQ:  next_id_jmp_valid = (        ra_resolved  ==         rb_resolved)  ? 1'b1 : 1'b0;
+//                F3_BNE:  next_id_jmp_valid = (        ra_resolved  ==         rb_resolved)  ? 1'b0 : 1'b1;
+//                F3_BLT:  next_id_jmp_valid = (signed'(ra_resolved) <  signed'(rb_resolved)) ? 1'b1 : 1'b0;
+//                F3_BGE:  next_id_jmp_valid = (signed'(ra_resolved) <  signed'(rb_resolved)) ? 1'b0 : 1'b1;
+//                F3_BLTU: next_id_jmp_valid = (        ra_resolved  <          rb_resolved)  ? 1'b1 : 1'b0;
+//                F3_BGEU: next_id_jmp_valid = (        ra_resolved  <          rb_resolved)  ? 1'b0 : 1'b1;
+//            endcase
+
+            unique case (f3[2:1])
+                2'b00:  next_id_jmp_valid = (        ra_resolved  ==         rb_resolved);
+                2'b10:  next_id_jmp_valid = (signed'(ra_resolved) <  signed'(rb_resolved));
+                2'b11:  next_id_jmp_valid = (        ra_resolved  <          rb_resolved);
             endcase
+            next_id_jmp_valid = f3[0] ? !next_id_jmp_valid : next_id_jmp_valid;
             next_id_jmp_addr = if_pc + imm_b;
         end
     endcase

@@ -9,15 +9,61 @@ module board
     // Import Constants
     import common::*;
     (
-        input  wire logic clk,   // clock
-        input  wire logic reset, // reset
-        output wire logic halt,  // halt
+        input  wire logic sys_clk,            // 100MHz system clock
+        input  wire logic reset_async,        // reset (async)
+        output wire logic halt,               // halt
 
         // I/O
-        output wire logic [ 7:0] segment_a, // seven segment display anodes
-        output wire logic [ 7:0] segment_c, // seven segment display cathodes
-        input  wire logic [15:0] switch     // hardware switch bank
+        output wire logic [ 7:0] segment_a,   // seven segment display anodes
+        output wire logic [ 7:0] segment_c,   // seven segment display cathodes
+        input  wire logic [15:0] switch_async // hardware switch bank (async)
     );
+
+
+//
+// Clocks
+//
+
+wire logic cpu_clk;
+wire logic cpu_clk_ready;
+
+cpu_clk_gen cpu_clk_gen (
+    .sys_clk(sys_clk),
+    .reset(1'b0),
+    .cpu_clk(cpu_clk),
+    .cpu_clk_ready(cpu_clk_ready)
+);
+
+
+//
+// Clocked Resets
+//
+
+localparam integer RESET_CYCLES = 12;
+const logic [RESET_CYCLES-1:0] RESET_ONES = {RESET_CYCLES{1'b1}};
+
+logic cpu_reset;
+logic [RESET_CYCLES-1:0] cpu_reset_chain;
+
+always_ff @(posedge cpu_clk, posedge reset_async) begin
+    if (reset_async)
+        // if resetting, fill the chain with ones
+        { cpu_reset, cpu_reset_chain } <= { 1'b1, RESET_ONES };
+    else
+        // otherwise, start shifting out the ones
+        { cpu_reset, cpu_reset_chain } <= { cpu_reset_chain, 1'b0 };
+end
+
+
+//
+// Clock in Switch States
+//
+
+logic [15:0] cpu_switch;
+
+always_ff @(posedge cpu_clk) begin
+    cpu_switch <= switch_async;
+end
 
 
 //
@@ -50,8 +96,8 @@ wire word_t ram_read_data;
 
 // BIOS
 block_rom #(.CONTENTS("bios.mem")) rom (
-    .clk(clk),
-    .reset(reset),
+    .clk(cpu_clk),
+    .reset(cpu_reset),
     .addr_a(imem_addr),
     .data_a(imem_data),
     .addr_b(dmem_addr),
@@ -60,8 +106,8 @@ block_rom #(.CONTENTS("bios.mem")) rom (
 
 // RAM
 block_ram ram (
-    .clk(clk),
-    .reset(reset),
+    .clk(cpu_clk),
+    .reset(cpu_reset),
     .addr(dmem_addr),
     .read_data(ram_read_data),
     .write_data(dmem_write_data),
@@ -70,8 +116,8 @@ block_ram ram (
 
 // Display
 segdisplay #(.CLK_DIVISOR(50000)) disp (
-    .clk(clk),
-    .reset(reset),
+    .clk(cpu_clk),
+    .reset(cpu_reset),
     .a(segment_a),
     .c(segment_c),
     .addr(dmem_addr),
@@ -93,8 +139,8 @@ segdisplay #(.CLK_DIVISOR(50000)) disp (
 //
 word_t dmem_return_addr;
 
-always_ff @(posedge clk) begin
-    dmem_return_addr <= reset ? 32'h00000000 : dmem_addr;
+always_ff @(posedge cpu_clk) begin
+    dmem_return_addr <= cpu_reset ? 32'h00000000 : dmem_addr;
 end
 
 always_comb begin
@@ -107,11 +153,11 @@ always_comb begin
     endcase
     
     casez (dmem_return_addr)
-    32'h0???????: begin dmem_read_data <= bios_read_data;     end
-    32'h1???????: begin dmem_read_data <= ram_read_data;      end
-    32'hFF000000: begin dmem_read_data <= dsp_read_data;      end
-    32'hFF000004: begin dmem_read_data <= { 16'h00, switch }; end
-    default:      begin dmem_read_data <= 32'h00000000;       end
+    32'h0???????: begin dmem_read_data <= bios_read_data;         end
+    32'h1???????: begin dmem_read_data <= ram_read_data;          end
+    32'hFF000000: begin dmem_read_data <= dsp_read_data;          end
+    32'hFF000004: begin dmem_read_data <= { 16'h00, cpu_switch }; end
+    default:      begin dmem_read_data <= 32'h00000000;           end
     endcase
 end
 
@@ -120,8 +166,17 @@ end
 // CPU
 //
 
-cpu cpu (.*);
-
+cpu cpu (
+    .clk(cpu_clk),
+    .reset(cpu_reset),
+    .halt(halt),
+    .imem_addr(imem_addr),
+    .imem_data(imem_data),
+    .dmem_addr(dmem_addr),
+    .dmem_read_data(dmem_read_data),
+    .dmem_write_data(dmem_write_data),
+    .dmem_write_mask(dmem_write_mask)
+);
 
 //
 // Debug Counter
@@ -129,8 +184,8 @@ cpu cpu (.*);
 
 (* KEEP = "TRUE" *) word_t cycle_counter;
 
-always_ff @(posedge clk) begin
-    cycle_counter <= reset ? 32'h00000000 : cycle_counter + 1;
+always_ff @(posedge cpu_clk) begin
+    cycle_counter <= cpu_reset ? 32'h00000000 : cycle_counter + 1;
 end
 
 endmodule

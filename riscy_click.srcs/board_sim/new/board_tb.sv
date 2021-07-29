@@ -4,37 +4,37 @@
 module board_tb ();
 
 // cpu signals
-logic        clk;            // clock
-logic        reset;          // reset
+logic        sys_clk;        // clock
+logic        reset_async;    // reset
 logic        halt;           // board
 
 // IO signals
 logic [ 7:0] segment_a;
 logic [ 7:0] segment_c;
-logic [15:0] switch;
+logic [15:0] switch_async;
 
 board board (.*);
 
 // clock generator
 initial begin
-    clk = 1;
+    sys_clk = 1;
     forever begin
-        #50 clk <= ~clk;
+        #5 sys_clk <= ~sys_clk;
     end
 end
 
 // reset pulse
 initial begin
-    reset = 1;
-    #250 reset = 0;
+    reset_async = 1;
+    #25 reset_async = 0;
 end
 
 // switches
 integer i;
 initial begin
-    switch = 16'h0000;
-    for (i=0; i<16; i++)
-        #1000000 switch[i] = 1;
+    switch_async = 16'h9999;
+//    for (i=0; i<16; i++)
+//        #1000000 switch_async[i] = 1;
 end
 
 endmodule

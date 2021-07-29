@@ -6,46 +6,76 @@
       <db_ref path="board_tb_behav.wdb" id="1">
          <top_modules>
             <top_module name="board_tb" />
-            <top_module name="consts" />
+            <top_module name="common" />
             <top_module name="glbl" />
          </top_modules>
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
-      <ZoomEndTime time="2,298.001 ns"></ZoomEndTime>
-      <Cursor1Time time="944.000 ns"></Cursor1Time>
+      <ZoomStartTime time="0.000000 us"></ZoomStartTime>
+      <ZoomEndTime time="9,145.000001 us"></ZoomEndTime>
+      <Cursor1Time time="0.000000 us"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="452"></NameColumnWidth>
-      <ValueColumnWidth column_width="221"></ValueColumnWidth>
+      <NameColumnWidth column_width="304"></NameColumnWidth>
+      <ValueColumnWidth column_width="215"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="5" />
-   <wvobject fp_name="/board_tb/board/clk" type="logic">
-      <obj_property name="ElementShortName">clk</obj_property>
-      <obj_property name="ObjectShortName">clk</obj_property>
-      <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
-      <obj_property name="UseCustomSignalColor">true</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board_tb/board/reset" type="logic">
-      <obj_property name="ElementShortName">reset</obj_property>
-      <obj_property name="ObjectShortName">reset</obj_property>
-      <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
-      <obj_property name="UseCustomSignalColor">true</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board_tb/board/halt" type="logic">
-      <obj_property name="ElementShortName">halt</obj_property>
-      <obj_property name="ObjectShortName">halt</obj_property>
-      <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
-      <obj_property name="UseCustomSignalColor">true</obj_property>
+   <WVObjectSize size="3" />
+   <wvobject fp_name="group184" type="group">
+      <obj_property name="label">External</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/board_tb/board/sys_clk" type="logic">
+         <obj_property name="ElementShortName">sys_clk</obj_property>
+         <obj_property name="ObjectShortName">sys_clk</obj_property>
+         <obj_property name="CustomSignalColor">#DCDCDC</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board_tb/board/reset_async" type="logic">
+         <obj_property name="ElementShortName">reset_async</obj_property>
+         <obj_property name="ObjectShortName">reset_async</obj_property>
+         <obj_property name="CustomSignalColor">#DCDCDC</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board_tb/board/switch_async" type="array">
+         <obj_property name="ElementShortName">switch_async[15:0]</obj_property>
+         <obj_property name="ObjectShortName">switch_async[15:0]</obj_property>
+         <obj_property name="CustomSignalColor">#DCDCDC</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
    </wvobject>
    <wvobject fp_name="group1268" type="group">
       <obj_property name="label">Board</obj_property>
       <obj_property name="DisplayName">label</obj_property>
       <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/board_tb/board/cpu_clk" type="logic">
+         <obj_property name="ElementShortName">cpu_clk</obj_property>
+         <obj_property name="ObjectShortName">cpu_clk</obj_property>
+         <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board_tb/board/cpu_clk_ready" type="logic">
+         <obj_property name="ElementShortName">cpu_clk_ready</obj_property>
+         <obj_property name="ObjectShortName">cpu_clk_ready</obj_property>
+         <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board_tb/board/cpu_reset" type="logic">
+         <obj_property name="ElementShortName">cpu_reset</obj_property>
+         <obj_property name="ObjectShortName">cpu_reset</obj_property>
+         <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board_tb/board/halt" type="logic">
+         <obj_property name="ElementShortName">halt</obj_property>
+         <obj_property name="ObjectShortName">halt</obj_property>
+         <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
       <wvobject fp_name="group1251" type="group">
          <obj_property name="label">IO</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/board_tb/board/segment_a" type="array">
             <obj_property name="ElementShortName">segment_a[7:0]</obj_property>
             <obj_property name="ObjectShortName">segment_a[7:0]</obj_property>
@@ -54,9 +84,9 @@
             <obj_property name="ElementShortName">segment_c[7:0]</obj_property>
             <obj_property name="ObjectShortName">segment_c[7:0]</obj_property>
          </wvobject>
-         <wvobject fp_name="/board_tb/board/switch" type="array">
-            <obj_property name="ElementShortName">switch[15:0]</obj_property>
-            <obj_property name="ObjectShortName">switch[15:0]</obj_property>
+         <wvobject fp_name="/board_tb/board/cpu_switch" type="array">
+            <obj_property name="ElementShortName">cpu_switch[15:0]</obj_property>
+            <obj_property name="ObjectShortName">cpu_switch[15:0]</obj_property>
          </wvobject>
       </wvobject>
       <wvobject fp_name="group1255" type="group">
@@ -114,7 +144,6 @@
       <wvobject fp_name="group1269" type="group">
          <obj_property name="label">ROM</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/board_tb/board/rom/addr_a" type="array">
             <obj_property name="ElementShortName">addr_a[31:0]</obj_property>
             <obj_property name="ObjectShortName">addr_a[31:0]</obj_property>
@@ -256,12 +285,6 @@
             <obj_property name="CustomSignalColor">#D2691E</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
-         <wvobject fp_name="/board_tb/board/cpu/cpu_id/id_pc" type="array">
-            <obj_property name="ElementShortName">id_pc[31:0]</obj_property>
-            <obj_property name="ObjectShortName">id_pc[31:0]</obj_property>
-            <obj_property name="CustomSignalColor">#D2691E</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-         </wvobject>
          <wvobject fp_name="/board_tb/board/cpu/cpu_id/id_ir" type="array">
             <obj_property name="ElementShortName">id_ir[31:0]</obj_property>
             <obj_property name="ObjectShortName">id_ir[31:0]</obj_property>
@@ -274,22 +297,10 @@
             <obj_property name="CustomSignalColor">#D2691E</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
-         <wvobject fp_name="/board_tb/board/cpu/cpu_ex/ex_pc" type="array">
-            <obj_property name="ElementShortName">ex_pc[31:0]</obj_property>
-            <obj_property name="ObjectShortName">ex_pc[31:0]</obj_property>
-            <obj_property name="CustomSignalColor">#008000</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-         </wvobject>
          <wvobject fp_name="/board_tb/board/cpu/cpu_ex/ex_ir" type="array">
             <obj_property name="ElementShortName">ex_ir[31:0]</obj_property>
             <obj_property name="ObjectShortName">ex_ir[31:0]</obj_property>
             <obj_property name="CustomSignalColor">#008000</obj_property>
-            <obj_property name="UseCustomSignalColor">true</obj_property>
-         </wvobject>
-         <wvobject fp_name="/board_tb/board/cpu/cpu_ma/ma_pc" type="array">
-            <obj_property name="ElementShortName">ma_pc[31:0]</obj_property>
-            <obj_property name="ObjectShortName">ma_pc[31:0]</obj_property>
-            <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
             <obj_property name="UseCustomSignalColor">true</obj_property>
          </wvobject>
          <wvobject fp_name="/board_tb/board/cpu/cpu_ma/ma_ir" type="array">
@@ -573,19 +584,11 @@
                <obj_property name="ElementShortName">id_wb_src[1:0]</obj_property>
                <obj_property name="ObjectShortName">id_wb_src[1:0]</obj_property>
             </wvobject>
-            <wvobject fp_name="/board_tb/board/cpu/cpu_id/id_wb_addr" type="array">
-               <obj_property name="ElementShortName">id_wb_addr[4:0]</obj_property>
-               <obj_property name="ObjectShortName">id_wb_addr[4:0]</obj_property>
-            </wvobject>
          </wvobject>
       </wvobject>
       <wvobject fp_name="group1495" type="group">
          <obj_property name="label">EX</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <wvobject fp_name="/board_tb/board/cpu/cpu_ex/id_pc" type="array">
-            <obj_property name="ElementShortName">id_pc[31:0]</obj_property>
-            <obj_property name="ObjectShortName">id_pc[31:0]</obj_property>
-         </wvobject>
          <wvobject fp_name="/board_tb/board/cpu/cpu_ex/id_ir" type="array">
             <obj_property name="ElementShortName">id_ir[31:0]</obj_property>
             <obj_property name="ObjectShortName">id_ir[31:0]</obj_property>
@@ -601,10 +604,6 @@
          <wvobject fp_name="/board_tb/board/cpu/cpu_ex/hz_ex_wb_valid" type="logic">
             <obj_property name="ElementShortName">hz_ex_wb_valid</obj_property>
             <obj_property name="ObjectShortName">hz_ex_wb_valid</obj_property>
-         </wvobject>
-         <wvobject fp_name="/board_tb/board/cpu/cpu_ex/ex_alu_result" type="array">
-            <obj_property name="ElementShortName">ex_alu_result[31:0]</obj_property>
-            <obj_property name="ObjectShortName">ex_alu_result[31:0]</obj_property>
          </wvobject>
          <wvobject fp_name="/board_tb/board/cpu/cpu_ex/ex_ma_data" type="array">
             <obj_property name="ElementShortName">ex_ma_data[31:0]</obj_property>
@@ -638,18 +637,9 @@
       <wvobject fp_name="group1509" type="group">
          <obj_property name="label">MA</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
-         <wvobject fp_name="/board_tb/board/cpu/cpu_ma/ex_pc" type="array">
-            <obj_property name="ElementShortName">ex_pc[31:0]</obj_property>
-            <obj_property name="ObjectShortName">ex_pc[31:0]</obj_property>
-         </wvobject>
          <wvobject fp_name="/board_tb/board/cpu/cpu_ma/ex_ir" type="array">
             <obj_property name="ElementShortName">ex_ir[31:0]</obj_property>
             <obj_property name="ObjectShortName">ex_ir[31:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/board_tb/board/cpu/cpu_ma/ex_alu_result" type="array">
-            <obj_property name="ElementShortName">ex_alu_result[31:0]</obj_property>
-            <obj_property name="ObjectShortName">ex_alu_result[31:0]</obj_property>
          </wvobject>
          <wvobject fp_name="/board_tb/board/cpu/cpu_ma/ex_ma_mode" type="array">
             <obj_property name="ElementShortName">ex_ma_mode[1:0]</obj_property>
@@ -663,10 +653,6 @@
             <obj_property name="ElementShortName">ex_ma_data[31:0]</obj_property>
             <obj_property name="ObjectShortName">ex_ma_data[31:0]</obj_property>
          </wvobject>
-         <wvobject fp_name="/board_tb/board/cpu/cpu_ma/ex_wb_addr" type="array">
-            <obj_property name="ElementShortName">ex_wb_addr[4:0]</obj_property>
-            <obj_property name="ObjectShortName">ex_wb_addr[4:0]</obj_property>
-         </wvobject>
          <wvobject fp_name="/board_tb/board/cpu/cpu_ma/ex_wb_data" type="array">
             <obj_property name="ElementShortName">ex_wb_data[31:0]</obj_property>
             <obj_property name="ObjectShortName">ex_wb_data[31:0]</obj_property>
@@ -675,11 +661,6 @@
       <wvobject fp_name="group1515" type="group">
          <obj_property name="label">WB</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
-         <wvobject fp_name="/board_tb/board/cpu/cpu_wb/ma_pc" type="array">
-            <obj_property name="ElementShortName">ma_pc[31:0]</obj_property>
-            <obj_property name="ObjectShortName">ma_pc[31:0]</obj_property>
-         </wvobject>
          <wvobject fp_name="/board_tb/board/cpu/cpu_wb/ma_ir" type="array">
             <obj_property name="ElementShortName">ma_ir[31:0]</obj_property>
             <obj_property name="ObjectShortName">ma_ir[31:0]</obj_property>
@@ -687,10 +668,6 @@
          <wvobject fp_name="/board_tb/board/cpu/cpu_wb/dmem_read_data" type="array">
             <obj_property name="ElementShortName">dmem_read_data[31:0]</obj_property>
             <obj_property name="ObjectShortName">dmem_read_data[31:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/board_tb/board/cpu/cpu_wb/ma_wb_addr" type="array">
-            <obj_property name="ElementShortName">ma_wb_addr[4:0]</obj_property>
-            <obj_property name="ObjectShortName">ma_wb_addr[4:0]</obj_property>
          </wvobject>
          <wvobject fp_name="/board_tb/board/cpu/cpu_wb/ma_wb_data" type="array">
             <obj_property name="ElementShortName">ma_wb_data[31:0]</obj_property>
