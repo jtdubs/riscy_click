@@ -2,4 +2,6 @@ bios
 *.dis
 *.img
 *.o
-bios.coe
+*.coe
+*.bit
+*.mem

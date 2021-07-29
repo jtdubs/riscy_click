@@ -1,9 +1,9 @@
 .PHONY: all clean
 
-all: bios.coe bios.dis
+all: bios.mem bios.dis bios.bit
 
 clean:
-	rm -f bios.o bios dios.dis bios.img bios.coe
+	rm -f bios.o bios dios.dis bios.img bios.mem
 
 bios.o: bios.c
 	clang -O -c --target=riscv32 -march=rv32im bios.c -o bios.o
@@ -17,5 +17,9 @@ bios.dis: bios
 bios.img: bios
 	llvm-objcopy bios -O binary bios.img
 
-bios.coe: bios.img
-	hexdump -v -e '/4 "%08X" "\n"' bios.img > bios.coe
+bios.mem: bios.img
+	echo "@0000" > bios.mem
+	hexdump -v -e '/4 "%08X" "\n"' bios.img >> bios.mem
+
+bios.bit: bios.mem
+	cmd.exe /c "C:\Xilinx\Vivado\2021.1\bin\updatemem.bat -meminfo bios.mmi -data bios.mem -proc rom/xpm_memory_dprom_inst/xpm_memory_base_inst -bit ..\riscy_click.runs\impl_1\board.bit -out bios.bit -force"

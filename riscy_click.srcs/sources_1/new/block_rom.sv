@@ -32,7 +32,7 @@ xpm_memory_dprom #(
   .ECC_MODE("no_ecc"),            // String
   .MEMORY_INIT_FILE(CONTENTS),    // String
   .MEMORY_INIT_PARAM("0"),        // String
-  .MEMORY_OPTIMIZATION("true"),   // String
+  .MEMORY_OPTIMIZATION("false"),  // String
   .MEMORY_PRIMITIVE("block"),     // String
   .MEMORY_SIZE(32768),            // DECIMAL
   .MESSAGE_CONTROL(0),            // DECIMAL

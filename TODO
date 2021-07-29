@@ -1,6 +1,5 @@
 TODO:
 - Naming convention for signals that handles the bypass / hazard signals better.  consider _i / _o...
-- Figure out how to use updatemem to replace the BIOS without having to re-run implementation
 
 Next Steps:
 1. Allow for arbitrary-time memory access / stalls
