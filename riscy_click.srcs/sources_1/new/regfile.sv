@@ -48,7 +48,7 @@ end
 
 // Clocked Writing
 always_ff @(posedge clk) begin
-    if (write_enable && write_addr != 5'b0) begin
+    if (write_enable && write_addr != 5'b00000) begin
         mem[write_addr] <= write_data;
     end
 end

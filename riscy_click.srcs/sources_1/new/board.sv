@@ -69,7 +69,7 @@ block_ram ram (
 );
 
 // Display
-segdisplay #(.CLK_DIVISOR(10000)) disp (
+segdisplay #(.CLK_DIVISOR(50000)) disp (
     .clk(clk),
     .reset(reset),
     .a(segment_a),

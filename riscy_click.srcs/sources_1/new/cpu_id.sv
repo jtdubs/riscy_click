@@ -99,7 +99,7 @@ regfile regfile (
     // let the write-back stage drive the write signals
     .write_addr(hz_wb_addr),
     .write_data(hz_wb_data),
-    .write_enable(hz_wb_addr != 5'b00000)
+    .write_enable(1'b1)
 );
 
 
@@ -118,7 +118,7 @@ always_comb begin
         ra_resolved = ra;
     else if (rs1 == hz_wb_addr)
         ra_resolved = hz_wb_data;
-    else if ( rs1 == hz_ma_wb_addr)
+    else if (rs1 == hz_ma_wb_addr)
         ra_resolved = hz_ma_wb_data;
     else if (rs1 == hz_ex_wb_addr)
         ra_resolved = hz_ex_wb_data;
