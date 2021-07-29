@@ -1,11 +1,6 @@
 TODO:
 - Naming convention for signals that handles the bypass / hazard signals better.  consider _i / _o...
-- Seems like it would currently runat 50MHz, analyze timing and shoot for 100MHz.
 - Figure out how to use updatemem to replace the BIOS without having to re-run implementation
-
-Slow path looks like:
-    id_alu_op2 -> ex stage -> ALU -> wb hazard -> branch comparison -> jmp valid -> IF -> mem addr
-    EX WB data (5LUT) -> ID Jmp Valid (7LUT) -> IF Mem Addr (2LUT) -> BIOS
 
 Next Steps:
 1. Allow for arbitrary-time memory access / stalls
