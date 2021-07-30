@@ -24,7 +24,8 @@ end
 // reset pulse (2 cycle)
 initial begin
     ic_rst = 1;
-    #20 ic_rst = 0;
+    #20
+    @(posedge clk) ic_rst = 0;
 end
 
 // write signals
