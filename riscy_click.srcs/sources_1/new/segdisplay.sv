@@ -13,15 +13,15 @@ module segdisplay
     )
     (
         // system clock domain
-        input  wire logic clk,
-        input  wire logic ic_rst,
+        input  wire logic       clk,
+        input  wire logic       ic_rst,
 
         // display interface
-        output      logic [7:0] oc_dsp_a, // common anodes
-        output      logic [7:0] oc_dsp_c, // cathodes
+        output      logic [7:0] oc_dsp_a,   // common anodes
+        output      logic [7:0] oc_dsp_c,   // cathodes
 
-         // read port
-        output wire word_t      oc_rd_data,
+        // read port
+        output      word_t      oc_rd_data,
         
         // write port
         input  wire word_t      ic_wr_data,
@@ -29,7 +29,7 @@ module segdisplay
     );
 
 // Counter rolls over at half the divisor so that a full cycle of the derived clock occurs at the divided frequency
-localparam int unsigned COUNTER_ROLLOVER = (CLK_DIVISOR / 2) - 1;
+localparam int unsigned COUNTER_ROLLOVER = CLK_DIVISOR - 1;
 
 // Registers
 word_t       c_value;
@@ -39,7 +39,30 @@ logic [ 3:0] c_index;
 logic [ 3:0] a_nibble;
 
 // Read Port
-assign oc_rd_data = c_value;
+always_comb oc_rd_data = c_value;
+
+// Clocked value updates
+always_ff @(posedge clk) begin
+    // Only write bytes where mask is set
+    if (ic_wr_mask[3]) c_value[31:24] <= ic_wr_data[31:24];
+    if (ic_wr_mask[2]) c_value[23:16] <= ic_wr_data[23:16];
+    if (ic_wr_mask[1]) c_value[15: 8] <= ic_wr_data[15: 8];
+    if (ic_wr_mask[0]) c_value[ 7: 0] <= ic_wr_data[ 7: 0];
+        
+    if (ic_rst) c_value <= 32'h00000000;
+end
+
+// Clocked update of display value on digit transitions
+always_ff @(posedge clk) begin
+    if (c_counter == COUNTER_ROLLOVER)
+        c_display_value <= c_value;
+    else
+        c_display_value <= c_display_value;
+        
+    if (ic_rst)
+        c_display_value <= 32'h00000000;
+end
+
 
 // Combination logic for current nibble
 always_comb begin
@@ -102,28 +125,6 @@ always_ff @(posedge clk) begin
         15: oc_dsp_c <= 8'b10001110;
         endcase
     end
-end
-
-// Clocked value updates
-always_ff @(posedge clk) begin
-    // Only write bytes where mask is set
-    if (ic_wr_mask[3]) c_value[31:24] <= ic_wr_data[31:24];
-    if (ic_wr_mask[2]) c_value[23:16] <= ic_wr_data[23:16];
-    if (ic_wr_mask[1]) c_value[15: 8] <= ic_wr_data[15: 8];
-    if (ic_wr_mask[0]) c_value[ 7: 0] <= ic_wr_data[ 7: 0];
-        
-    if (ic_rst) c_value <= 32'h00000000;
-end
-
-// Clocked update of display value on digit transitions
-always_ff @(posedge clk) begin
-    if (c_counter == COUNTER_ROLLOVER)
-        c_display_value <= c_value;
-    else
-        c_display_value <= c_display_value;
-        
-    if (ic_rst)
-        c_display_value <= 32'h00000000;
 end
 
 // Clocked counter
