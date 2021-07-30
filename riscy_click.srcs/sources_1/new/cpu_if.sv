@@ -10,23 +10,25 @@ module cpu_if
     import common::*;
     (
         // cpu signals
-        input  wire logic  clk,          // clock
-        input  wire logic  reset,        // reset
-        input  wire logic  halt,         // halt
+        input  wire logic  clk,           // clock
+        input  wire logic  ia_rst,        // reset
+        input  wire logic  ia_halt,       // halt
 
-        // instruction memory
-        output      word_t imem_addr,    // address
-        input  wire word_t imem_data,    // data
+        // instruction memory port
+        output      word_t oa_imem_addr,  // memory address
+        input  wire word_t ia_imem_data,  // data
         
-        // stage inputs
-        input  wire word_t id_jmp_addr,  // jump address from execute stage
-        input  wire logic  id_jmp_valid, // whether or not jump address is valid
-        input  wire logic  id_ready,     // is the ID stage ready to accept input
+        // control flow port
+        input  wire word_t ia_jmp_addr,   // jump address
+        input  wire logic  ia_jmp_valid,  // whether or not jump address is valid
+        
+        // backpressure port
+        input  wire logic  ia_ready,      // is the ID stage ready to accept input
 
-        // stage outputs
-        output wire word_t if_pc,        // program counter
-        output wire word_t if_ir,        // instruction register
-        output wire logic  if_valid      // is the stage output valid
+        // pipeline output port
+        output wire word_t oc_if_pc,      // program counter
+        output wire word_t oc_if_ir,      // instruction register
+        output wire logic  oc_if_valid    // is the stage output valid
     );
    
 
@@ -34,52 +36,53 @@ module cpu_if
 // Skid Buffer
 //
 
-wire logic  skid_ready;       // can skid accept data?
-     logic  skid_valid;       // is skip input valid?
-     logic  skid_reset;       // reset signal
-     word_t skid_pc, skid_ir; // IR and PC to input
+wire logic  c_buf_ready; // can skid accept data?
+     logic  a_buf_valid; // is skip input valid?
+     logic  a_buf_reset; // reset signal
+     word_t c_buf_pc;    // IR and PC to input
+     word_t a_buf_ir;    // IR and PC to input
 
 // flush the skid buffer on jump, as those instructions aren't valid     
-always_comb skid_reset = reset || id_jmp_valid;
-     
-skid_buffer #(.WORD_WIDTH(64)) output_buffer (
-    .clk(clk),
-    .reset(skid_reset),
-    .input_valid(skid_valid),
-    .input_ready(skid_ready),
-    .input_data({ skid_pc, skid_ir }),
-    .output_valid(if_valid),
-    .output_ready(id_ready),
-    .output_data({ if_pc, if_ir })
-);
+always_comb a_buf_reset = ia_rst || ia_jmp_valid;
 
 // Skid input is valid if we aren't jumping
-always_comb skid_valid = ~id_jmp_valid; 
+always_comb a_buf_valid = ~ia_jmp_valid;
+
+skid_buffer #(.WORD_WIDTH(64)) output_buffer (
+    .clk(clk),
+    .ic_rst(a_buf_reset),
+    .oc_in_ready(c_buf_ready),
+    .ic_in_valid(a_buf_valid),
+    .ic_in_data({ c_buf_pc, a_buf_ir }),
+    .ic_out_ready(ia_ready),
+    .oc_out_valid(oc_if_valid),
+    .oc_out_data({ oc_if_pc, oc_if_ir })
+);
 
 
 //
 // Program Counter Advancement
 //
 
-word_t skid_pc_next;
+word_t a_buf_pc_next;
 
 // combiantional logic for next PC value
 always_comb begin
-    priority if (halt)
-        skid_pc_next = skid_pc;         // no change on halt  
-    else if (reset)
-        skid_pc_next = 32'h00000000;    // zero on reset
-    else if (id_jmp_valid)
-        skid_pc_next = id_jmp_addr;     // respect jumps
-    else if (~skid_ready)
-        skid_pc_next = skid_pc;         // no change backpressure
+    priority if (ia_halt)
+        a_buf_pc_next = c_buf_pc;     // no change on halt  
+    else if (ia_rst)
+        a_buf_pc_next = 32'h00000000;   // zero on reset
+    else if (ia_jmp_valid)
+        a_buf_pc_next = ia_jmp_addr; // respect jumps
+    else if (~c_buf_ready)
+        a_buf_pc_next = c_buf_pc;     // no change backpressure
     else
-        skid_pc_next = skid_pc + 4;     // otherwise keep advancing
+        a_buf_pc_next = c_buf_pc + 4; // otherwise keep advancing
 end
 
 // advance every clock cycle
 always_ff @(posedge clk) begin
-    skid_pc <= skid_pc_next;
+    c_buf_pc <= a_buf_pc_next;
 end
 
 
@@ -88,8 +91,8 @@ end
 //
 
 always_comb begin
-    skid_ir   = imem_data;    // Data from memory is IR
-    imem_addr = skid_pc_next; // Address to request for next cycle is next PC value
+    a_buf_ir     = ia_imem_data;  // Data from memory is IR
+    oa_imem_addr = a_buf_pc_next; // Address to request for next cycle is next PC value
 end
 
 endmodule

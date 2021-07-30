@@ -11,47 +11,47 @@ module cpu_ex
     (
         // cpu signals
         input  wire logic      clk,            // clock
-        input  wire logic      reset,          // reset
+        input  wire logic      ia_rst,         // reset
 
-        // stage inputs
-        input  wire word_t     id_ir,          // instruction register
-        input  wire word_t     id_alu_op1,     // ALU operand 1
-        input  wire word_t     id_alu_op2,     // ALU operand 2
-        input  wire alu_mode_t id_alu_mode,    // ALU mode
-        input  wire ma_mode_t  id_ma_mode,     // memory access mode
-        input  wire ma_size_t  id_ma_size,     // memory access size
-        input  wire word_t     id_ma_data,     // memory access data
-        input  wire wb_src_t   id_wb_src,      // write-back source
-        input  wire word_t     id_wb_data,     // write-back data
+        // pipeline input port
+        input  wire word_t     ic_ex_ir,          // instruction register
+        input  wire word_t     ic_ex_alu_op1,     // ALU operand 1
+        input  wire word_t     ic_ex_alu_op2,     // ALU operand 2
+        input  wire alu_mode_t ic_ex_alu_mode,    // ALU mode
+        input  wire ma_mode_t  ic_ex_ma_mode,     // memory access mode
+        input  wire ma_size_t  ic_ex_ma_size,     // memory access size
+        input  wire word_t     ic_ex_ma_data,     // memory access data
+        input  wire wb_src_t   ic_ex_wb_src,      // write-back source
+        input  wire word_t     ic_ex_wb_data,     // write-back data
         
-        // stage outputs (data hazards)
-        output      regaddr_t  hz_ex_wb_addr,     // write-back address
-        output      word_t     hz_ex_wb_data,     // write-back value
-        output      logic      hz_ex_wb_valid,    // write-back value valid
+        // data hazard port
+        output      regaddr_t  oa_hz_ex_addr,     // write-back address
+        output      word_t     oa_hz_ex_data,     // write-back value
+        output      logic      oa_hz_ex_valid,    // write-back value valid
 
-        // stage outputs (to MA)
-        output      word_t     ex_ir,          // instruction register
-        output      word_t     ex_ma_addr,     // memory access address
-        output      ma_mode_t  ex_ma_mode,     // memory access mode
-        output      ma_size_t  ex_ma_size,     // memory access size
-        output      word_t     ex_ma_data,     // memory access data
-        output      wb_src_t   ex_wb_src,      // write-back source
-        output      word_t     ex_wb_data      // write-back register value
+        // pipeline output port
+        output      word_t     oc_ex_ir,          // instruction register
+        output      word_t     oc_ex_ma_addr,     // memory access address
+        output      ma_mode_t  oc_ex_ma_mode,     // memory access mode
+        output      ma_size_t  oc_ex_ma_size,     // memory access size
+        output      word_t     oc_ex_ma_data,     // memory access data
+        output      wb_src_t   oc_ex_wb_src,      // write-back source
+        output      word_t     oc_ex_wb_data      // write-back register value
     );
 
 //
 // ALU
 //
 
-wire logic  alu_zero;
-wire word_t alu_result;
+wire logic  a_alu_zero;
+wire word_t a_alu_result;
 
 alu alu (
-    .mode(id_alu_mode),
-    .operand1(id_alu_op1),
-    .operand2(id_alu_op2),
-    .zero(alu_zero),
-    .result(alu_result)
+    .ia_alu_mode(ic_ex_alu_mode),
+    .ia_alu_operand1(ic_ex_alu_op1),
+    .ia_alu_operand2(ic_ex_alu_op2),
+    .oa_alu_zero(a_alu_zero),
+    .oa_alu_result(a_alu_result)
 );
 
 
@@ -60,9 +60,9 @@ alu alu (
 //
 
 always_comb begin
-    hz_ex_wb_addr  = id_ir[11:7];
-    hz_ex_wb_data  = (id_wb_src == WB_SRC_ALU) ? alu_result : id_wb_data;
-    hz_ex_wb_valid = (id_wb_src != WB_SRC_MEM); 
+    oa_hz_ex_addr  = ic_ex_ir[11:7];
+    oa_hz_ex_data  = (ic_ex_wb_src == WB_SRC_ALU) ? a_alu_result : ic_ex_wb_data;
+    oa_hz_ex_valid = (ic_ex_wb_src != WB_SRC_MEM); 
 end  
 
 
@@ -71,22 +71,22 @@ end
 //
 
 always_ff @(posedge clk) begin
-    ex_ir      <= id_ir;
-    ex_ma_addr <= alu_result;
-    ex_ma_mode <= id_ma_mode;
-    ex_ma_size <= id_ma_size;
-    ex_ma_data <= id_ma_data;
-    ex_wb_src  <= id_wb_src;
-    ex_wb_data <= hz_ex_wb_data;
+    oc_ex_ir      <= ic_ex_ir;
+    oc_ex_ma_addr <= a_alu_result;
+    oc_ex_ma_mode <= ic_ex_ma_mode;
+    oc_ex_ma_size <= ic_ex_ma_size;
+    oc_ex_ma_data <= ic_ex_ma_data;
+    oc_ex_wb_src  <= ic_ex_wb_src;
+    oc_ex_wb_data <= oa_hz_ex_data;
     
-    if (reset) begin
-        ex_ir      <= NOP_IR;
-        ex_ma_addr <= 32'h00000000;
-        ex_ma_mode <= NOP_MA_MODE;
-        ex_ma_size <= NOP_MA_SIZE;
-        ex_ma_data <= 32'h00000000;
-        ex_wb_src  <= NOP_WB_SRC;
-        ex_wb_data <= 32'h00000000;
+    if (ia_rst) begin
+        oc_ex_ir      <= NOP_IR;
+        oc_ex_ma_addr <= 32'h00000000;
+        oc_ex_ma_mode <= NOP_MA_MODE;
+        oc_ex_ma_size <= NOP_MA_SIZE;
+        oc_ex_ma_data <= 32'h00000000;
+        oc_ex_wb_src  <= NOP_WB_SRC;
+        oc_ex_wb_data <= 32'h00000000;
     end
 end
 

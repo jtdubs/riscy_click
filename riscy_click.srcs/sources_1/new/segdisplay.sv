@@ -14,86 +14,92 @@ module segdisplay
     (
         // system clock domain
         input  wire logic clk,
-        input  wire logic reset,
+        input  wire logic ic_rst,
 
         // display interface
-        output      logic [7:0] a, // common anodes
-        output      logic [7:0] c, // cathodes
+        output      logic [7:0] oc_dsp_a, // common anodes
+        output      logic [7:0] oc_dsp_c, // cathodes
 
-         // data bus interface
-        input  wire word_t      addr,
-        output wire word_t      read_data,
-        input  wire word_t      write_data,
-        input  wire logic [3:0] write_mask
+         // read port
+        output wire word_t      oc_rd_data,
+        
+        // write port
+        input  wire word_t      ic_wr_data,
+        input  wire logic [3:0] ic_wr_mask
     );
 
 // Counter rolls over at half the divisor so that a full cycle of the derived clock occurs at the divided frequency
 localparam int unsigned COUNTER_ROLLOVER = (CLK_DIVISOR / 2) - 1;
 
 // Registers
-word_t       value;
-word_t       display_value;
-logic [15:0] counter;
-logic [ 3:0] nibble;
-logic [ 3:0] index;
+word_t       c_value;
+word_t       c_display_value;
+logic [15:0] c_counter;
+logic [ 3:0] c_index;
+logic [ 3:0] a_nibble;
 
-// Reading Logic
-assign read_data = value;
+// Read Port
+assign oc_rd_data = c_value;
 
 // Combination logic for current nibble
 always_comb begin
-    unique case (index[3:1])
-    0: nibble <= display_value[ 3: 0];
-    1: nibble <= display_value[ 7: 4];
-    2: nibble <= display_value[11: 8];
-    3: nibble <= display_value[15:12];
-    4: nibble <= display_value[19:16];
-    5: nibble <= display_value[23:20];
-    6: nibble <= display_value[27:24];
-    7: nibble <= display_value[31:28];
+    unique case (c_index[3:1])
+    0: a_nibble <= c_display_value[ 3: 0];
+    1: a_nibble <= c_display_value[ 7: 4];
+    2: a_nibble <= c_display_value[11: 8];
+    3: a_nibble <= c_display_value[15:12];
+    4: a_nibble <= c_display_value[19:16];
+    5: a_nibble <= c_display_value[23:20];
+    6: a_nibble <= c_display_value[27:24];
+    7: a_nibble <= c_display_value[31:28];
     endcase
 end
 
 // Clocked annode update
 always_ff @(posedge clk) begin
-    if (index[0]) begin
-        a <= 8'b11111111;
+    if (c_index[0]) begin
+        // on odd indexes, output nothing
+        oc_dsp_a <= 8'b11111111;
     end else begin
-        unique case (index[3:1])
-        0: a <= 8'b11111110;
-        1: a <= 8'b11111101;
-        2: a <= 8'b11111011;
-        3: a <= 8'b11110111;
-        4: a <= 8'b11101111;
-        5: a <= 8'b11011111;
-        6: a <= 8'b10111111;
-        7: a <= 8'b01111111;
+        // on even indexes, output to the appropriate segment
+        unique case (c_index[3:1])
+        0: oc_dsp_a <= 8'b11111110;
+        1: oc_dsp_a <= 8'b11111101;
+        2: oc_dsp_a <= 8'b11111011;
+        3: oc_dsp_a <= 8'b11110111;
+        4: oc_dsp_a <= 8'b11101111;
+        5: oc_dsp_a <= 8'b11011111;
+        6: oc_dsp_a <= 8'b10111111;
+        7: oc_dsp_a <= 8'b01111111;
         endcase
     end
 end
 
 // Clocked cathode update
 always_ff @(posedge clk) begin
-    if (index[0]) begin
-        c <= 8'b11111111;
+    if (c_index[0]) begin
+        // on odd indexes, output nothing
+        oc_dsp_c <= 8'b11111111;
     end else begin
-        unique case (nibble)
-        0:  c <= 8'b11000000;
-        1:  c <= 8'b11111001;
-        2:  c <= 8'b10100100;
-        3:  c <= 8'b10110000;
-        4:  c <= 8'b10011001;
-        5:  c <= 8'b10010010;
-        6:  c <= 8'b10000010;
-        7:  c <= 8'b11111000;
-        8:  c <= 8'b10000000;
-        9:  c <= 8'b10011000;
-        10: c <= 8'b10001000;
-        11: c <= 8'b10000011;
-        12: c <= 8'b11000110;
-        13: c <= 8'b10100001;
-        14: c <= 8'b10000110;
-        15: c <= 8'b10001110;
+        // on even indexes, output current nibble
+        // TODO: debug this.  i think because dsp_c depends on nibble depends on lc_dsp_value... it will be delayed a cycle?
+        unique case (a_nibble)
+        0:  oc_dsp_c <= 8'b11000000;
+        1:  oc_dsp_c <= 8'b11111001;
+        2:  oc_dsp_c <= 8'b10100100;
+        3:  oc_dsp_c <= 8'b10110000;
+        4:  oc_dsp_c <= 8'b10011001;
+        5:  oc_dsp_c <= 8'b10010010;
+        6:  oc_dsp_c <= 8'b10000010;
+        7:  oc_dsp_c <= 8'b11111000;
+        8:  oc_dsp_c <= 8'b10000000;
+        9:  oc_dsp_c <= 8'b10011000;
+        10: oc_dsp_c <= 8'b10001000;
+        11: oc_dsp_c <= 8'b10000011;
+        12: oc_dsp_c <= 8'b11000110;
+        13: oc_dsp_c <= 8'b10100001;
+        14: oc_dsp_c <= 8'b10000110;
+        15: oc_dsp_c <= 8'b10001110;
         endcase
     end
 end
@@ -101,40 +107,39 @@ end
 // Clocked value updates
 always_ff @(posedge clk) begin
     // Only write bytes where mask is set
-    if (write_mask[3]) value[31:24] <= write_data[31:24];
-    if (write_mask[2]) value[23:16] <= write_data[23:16];
-    if (write_mask[1]) value[15: 8] <= write_data[15: 8];
-    if (write_mask[0]) value[ 7: 0] <= write_data[ 7: 0];
+    if (ic_wr_mask[3]) c_value[31:24] <= ic_wr_data[31:24];
+    if (ic_wr_mask[2]) c_value[23:16] <= ic_wr_data[23:16];
+    if (ic_wr_mask[1]) c_value[15: 8] <= ic_wr_data[15: 8];
+    if (ic_wr_mask[0]) c_value[ 7: 0] <= ic_wr_data[ 7: 0];
         
-    if (reset) value <= 32'h00000000;
+    if (ic_rst) c_value <= 32'h00000000;
 end
 
-// Clicked update of display value on digit transitions
+// Clocked update of display value on digit transitions
 always_ff @(posedge clk) begin
-    if (counter == COUNTER_ROLLOVER)
-        display_value <= value;
+    if (c_counter == COUNTER_ROLLOVER)
+        c_display_value <= c_value;
     else
-        display_value <= display_value;
+        c_display_value <= c_display_value;
         
-    if (reset)
-        display_value <= 32'h00000000;
+    if (ic_rst)
+        c_display_value <= 32'h00000000;
 end
-
 
 // Clocked counter
 always_ff @(posedge clk)
 begin
-    if (counter == COUNTER_ROLLOVER) begin
-        counter <= 0;
-        index <= index + 1;
+    if (c_counter == COUNTER_ROLLOVER) begin
+        c_counter <= 0;
+        c_index   <= c_index + 1;
     end else begin
-        counter <= counter + 1;
-        index <= index;
+        c_counter <= c_counter + 1;
+        c_index   <= c_index;
     end
      
-    if (reset) begin
-        counter <= 0;
-        index <= 0;
+    if (ic_rst) begin
+        c_counter <= 0;
+        c_index   <= 0;
     end
 end
 
