@@ -1,5 +1,7 @@
 TODO:
-- Naming convention for signals that handles the bypass / hazard signals better.  consider _i / _o...
+- Naming convention for signals (clock domain, in/out, bypass/hazard, pipeline stage, etc.)
+- VGA output
+- Memmory mapped character buffer for text console output
 - USB UART would be awesome...
 - USB HID via PS/2 emulation would be awesome...
 - Command-line vivado usage???? Looks fairly awesome.  No more crazy directory structure.  Just src/*.sv ??
@@ -14,9 +16,3 @@ http://fpgacpu.ca/fpga/index.html
 https://passlab.github.io/CSE564/notes/lecture09_RISCV_Impl_pipeline.pdf
 https://github.com/ultraembedded/riscv/
 https://github.com/combinatorylogic/soc/blob/master/backends/c2/hw/rtl/core.v
-
-Video signals?
-Keyboard/mouse signals?
-USB signals?
-Pipelining?
-Switch from distributed memory to BRAM or DDR?
