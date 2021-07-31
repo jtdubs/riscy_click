@@ -3,9 +3,8 @@ op1 vs operand1
 read1/read2 vs ra/rb
 
 TODO:
-- Reconsider this signal naming convention... :)
 - VGA output
-- Memmory mapped character buffer for text console output
+- Memory mapped character buffer for text console output
 - USB UART would be awesome...
 - USB HID via PS/2 emulation would be awesome...
 - Command-line vivado usage???? Looks fairly awesome.  No more crazy directory structure.  Just src/*.sv ??
