@@ -45,7 +45,7 @@ const logic [RESET_CYCLES-1:0] RESET_ONES = {RESET_CYCLES{1'b1}};
 logic                    cpu_rst_r;
 logic [RESET_CYCLES-1:0] cpu_rst_chain_r;
 
-always_ff @(posedge clk_cpu_w, posedge reset_async_i) begin
+always_ff @(posedge clk_cpu_w) begin
     if (reset_async_i)
         // if resetting, fill the chain with ones
         { cpu_rst_r, cpu_rst_chain_r } <= { 1'b1, RESET_ONES };

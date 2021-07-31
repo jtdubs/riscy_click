@@ -61,10 +61,22 @@ cpu_clk_pll (
 );
 
 // Global Clock Buffer
-BUFGCE cpu_clk_buffer (
-  .O(clk_cpu_o),
-  .CE(ready_async_o),
-  .I(clk_cpu_w)
+BUFGCTRL #(
+  .INIT_OUT(0),            // Initial value of BUFGCTRL output ($VALUES;)
+  .PRESELECT_I0("TRUE"),   // BUFGCTRL output uses I0 input ($VALUES;)
+  .PRESELECT_I1("FALSE"),  // BUFGCTRL output uses I1 input ($VALUES;)
+  .SIM_DEVICE("7SERIES")
+)
+cpu_clk_buffer (
+  .O(clk_cpu_o),       // 1-bit output: Clock output
+  .CE0(ready_async_o), // 1-bit input: Clock enable input for I0
+  .CE1(1'b0),          // 1-bit input: Clock enable input for I1
+  .I0(clk_cpu_w),      // 1-bit input: Primary clock
+  .I1(1'b0),           // 1-bit input: Secondary clock
+  .IGNORE0(1'b0),      // 1-bit input: Clock ignore input for I0
+  .IGNORE1(1'b1),      // 1-bit input: Clock ignore input for I1
+  .S0(1'b1),           // 1-bit input: Clock select for I0
+  .S1(1'b0)            // 1-bit input: Clock select for I1
 );
 
 endmodule
