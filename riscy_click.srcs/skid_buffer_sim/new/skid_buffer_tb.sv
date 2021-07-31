@@ -3,7 +3,7 @@
 
 module skid_buffer_tb ();
 
-logic clk, reset;
+logic clk_i, reset_i;
 logic input_ready, output_ready;
 logic input_valid, output_valid;
 logic [7:0] input_data, output_data;
@@ -12,16 +12,16 @@ skid_buffer #(.WORD_WIDTH(8)) sb (.*);
 
 // clock generator
 initial begin
-    clk = 1;
+    clk_i = 1;
     forever begin
-        #50 clk <= ~clk;
+        #50 clk_i <= ~clk_i;
     end
 end
 
-// reset pulse (2 cycle)
+// reset_i pulse (2 cycle)
 initial begin
-    reset = 1;
-    #150 reset = 0;
+    reset_i = 1;
+    #150 reset_i = 0;
 end
 
 // input side
@@ -36,7 +36,7 @@ assign output_ready = state[1];
 
 initial counter = 8'h00;
 
-always_ff @(negedge clk) begin
+always_ff @(negedge clk_i) begin
     if (input_ready & input_valid) begin
         counter <= next_counter;
     end
@@ -46,7 +46,7 @@ end
 initial begin
     state <= 0;
     forever begin
-        #600 @(negedge clk) state <= state + 1;
+        #600 @(negedge clk_i) state <= state + 1;
     end
 end
 

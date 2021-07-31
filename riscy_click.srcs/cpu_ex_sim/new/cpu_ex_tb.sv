@@ -7,8 +7,8 @@ module cpu_ex_tb
     ();
 
 // cpu signals
-logic       clk;            // clock
-logic       reset;          // reset
+logic       clk_i;            // clock
+logic       reset_i;          // reset_i
 logic       halt;           // halt
 
 // IF memory access
@@ -59,8 +59,8 @@ word_t      ex_wb_data;     // write-back register value
 
 // Instruction Memory
 block_rom #(.CONTENTS("d:/dev/riscy_click/bios/bios.coe")) rom (
-    .clk(clk),
-    .reset(reset),
+    .clk_i(clk_i),
+    .reset_i(reset_i),
     .addr_a(imem_addr),
     .data_a(imem_data),
     .addr_b(32'h00000000),
@@ -78,16 +78,16 @@ cpu_ex cpu_ex (.*);
 
 // clock generator
 initial begin
-    clk = 1;
+    clk_i = 1;
     forever begin
-        #50 clk <= ~clk;
+        #50 clk_i <= ~clk_i;
     end
 end
 
-// reset pulse
+// reset_i pulse
 initial begin
-    reset = 1;
-    #250 reset = 0;
+    reset_i = 1;
+    #250 reset_i = 0;
 end
 
 // write-back logic

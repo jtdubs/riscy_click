@@ -7,8 +7,8 @@ module cpu_if_tb
     ();
 
 // cpu signals
-logic       clk;            // clock
-logic       reset;          // reset
+logic       clk_i;            // clock
+logic       reset_i;          // reset_i
 logic       halt;           // halt
 
 // IF memory access
@@ -28,8 +28,8 @@ logic       id_jmp_valid;   // jump address valid
 
 // Instruction Memory
 block_rom #(.CONTENTS("d:/dev/riscy_click/bios/tb_bios.coe")) rom (
-    .clk(clk),
-    .reset(reset),
+    .clk_i(clk_i),
+    .reset_i(reset_i),
     .addr_a(imem_addr),
     .data_a(imem_data),
     .addr_b(32'h00000000),
@@ -42,16 +42,16 @@ cpu_if #(.MEM_ACCESS_CYCLES(1)) cpu_if (.*);
 
 // clock generator
 initial begin
-    clk = 1;
+    clk_i = 1;
     forever begin
-        #50 clk <= ~clk;
+        #50 clk_i <= ~clk_i;
     end
 end
 
-// reset pulse
+// reset_i pulse
 initial begin
-    reset = 1;
-    #250 reset = 0;
+    reset_i = 1;
+    #250 reset_i = 0;
 end
 
 // halt eventually
@@ -65,9 +65,9 @@ initial begin
     id_ready = 1'b1;
 
     #2400
-    @(posedge clk) id_ready = 1'b0;
-    @(posedge clk);
-    @(posedge clk) id_ready = 1'b1;
+    @(posedge clk_i) id_ready = 1'b0;
+    @(posedge clk_i);
+    @(posedge clk_i) id_ready = 1'b1;
 end
 
 // do some jumps
@@ -76,21 +76,21 @@ initial begin
     id_jmp_valid = 1'b0;
 
     #700
-    @(posedge clk) begin
+    @(posedge clk_i) begin
         id_jmp_addr = 32'h0100;
         id_jmp_valid = 1'b1;
     end
-    @(posedge clk) begin
+    @(posedge clk_i) begin
         id_jmp_addr = 32'hXXXX;
         id_jmp_valid = 1'b0;
     end
     
     #600
-    @(posedge clk) begin
+    @(posedge clk_i) begin
         id_jmp_addr = 32'h0080;
         id_jmp_valid = 1'b1;
     end
-    @(posedge clk) begin
+    @(posedge clk_i) begin
         id_jmp_addr = 32'hXXXX;
         id_jmp_valid = 1'b0;
     end

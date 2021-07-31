@@ -5,33 +5,33 @@ module segdisplay_tb
     import common::*;
     ();
 
-logic clk, ic_rst;
-wire logic [7:0] oc_dsp_a, oc_dsp_c;
-wire word_t oc_rd_data;
-word_t ic_wr_data;
-logic [3:0] ic_wr_mask;
+logic clk_i, reset_i;
+wire logic [7:0] dsp_anode_o, dsp_cathode_o;
+wire word_t read_data_o;
+word_t write_data_i;
+logic [3:0] write_mask_i;
 
 segdisplay #(.CLK_DIVISOR(4)) segdisplay (.*);
     
 // clock generator
 initial begin
-    clk = 1;
+    clk_i = 1;
     forever begin
-        #5 clk <= ~clk;
+        #5 clk_i <= ~clk_i;
     end
 end
 
-// reset pulse (2 cycle)
+// reset_i pulse (2 cycle)
 initial begin
-    ic_rst = 1;
+    reset_i = 1;
     #20
-    @(posedge clk) ic_rst = 0;
+    @(posedge clk_i) reset_i = 0;
 end
 
 // write signals
 initial begin
-    ic_wr_data = 32'h12345678;
-    ic_wr_mask = 4'b1111;
+    write_data_i = 32'h12345678;
+    write_mask_i = 4'b1111;
 end
 
 endmodule

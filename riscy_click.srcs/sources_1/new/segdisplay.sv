@@ -13,142 +13,145 @@ module segdisplay
     )
     (
         // system clock domain
-        input  wire logic       clk,
-        input  wire logic       ic_rst,
+        input  wire logic       clk_i,
+        input  wire logic       reset_i,
 
         // display interface
-        output      logic [7:0] oc_dsp_a,   // common anodes
-        output      logic [7:0] oc_dsp_c,   // cathodes
+        output      logic [7:0] dsp_anode_o,   // common anodes
+        output      logic [7:0] dsp_cathode_o,   // cathodes
 
         // read port
-        output      word_t      oc_rd_data,
+        output      word_t      read_data_o,
         
         // write port
-        input  wire word_t      ic_wr_data,
-        input  wire logic [3:0] ic_wr_mask
+        input  wire word_t      write_data_i,
+        input  wire logic [3:0] write_mask_i
     );
 
 localparam int unsigned COUNTER_ROLLOVER = CLK_DIVISOR - 1;
 
 // Registers
-word_t       c_value;
-word_t       c_display_value, a_display_value_next;
-logic [15:0] c_counter, a_counter_next;
-logic [ 3:0] c_index, a_index_next;
-logic [ 3:0] a_nibble_next;
-logic [ 7:0] a_dsp_a_next;
-logic [ 7:0] a_dsp_c_next;
+word_t       bus_value_r;
+word_t       dsp_value_r;
+word_t       dsp_value_w;
+logic [15:0] counter_r;
+logic [15:0] counter_w;
+logic [ 3:0] index_r;
+logic [ 3:0] index_w;
+logic [ 3:0] nibble_w;
+logic [ 7:0] dsp_anode_w;
+logic [ 7:0] dsp_cathode_w;
 
 // Read Port
-always_comb oc_rd_data = c_value;
+always_comb read_data_o = bus_value_r;
 
 // Next display value
 always_comb begin
     // Promote value to display if between digits
-    if (c_counter == COUNTER_ROLLOVER)
-        a_display_value_next = c_value;
+    if (counter_r == COUNTER_ROLLOVER)
+        dsp_value_w = bus_value_r;
     else
-        a_display_value_next = c_display_value;
+        dsp_value_w = dsp_value_r;
 end
 
 // Next counter & index
 always_comb begin
     // If rollover 
-    if (c_counter == COUNTER_ROLLOVER) begin
+    if (counter_r == COUNTER_ROLLOVER) begin
         // Start over and bump index
-        a_counter_next = 16'b0;
-        a_index_next   = c_index + 1;
+        counter_w = 16'b0;
+        index_w   = index_r + 1;
     end else begin
         // Otherwise, keep counting
-        a_counter_next = c_counter + 1;
-        a_index_next   = c_index;
+        counter_w = counter_r + 1;
+        index_w   = index_r;
     end
 end
 
 // Next nibble to display
 always_comb begin
-    unique case (a_index_next[3:1])
-    0: a_nibble_next = a_display_value_next[ 3: 0];
-    1: a_nibble_next = a_display_value_next[ 7: 4];
-    2: a_nibble_next = a_display_value_next[11: 8];
-    3: a_nibble_next = a_display_value_next[15:12];
-    4: a_nibble_next = a_display_value_next[19:16];
-    5: a_nibble_next = a_display_value_next[23:20];
-    6: a_nibble_next = a_display_value_next[27:24];
-    7: a_nibble_next = a_display_value_next[31:28];
+    unique case (index_w[3:1])
+    0: nibble_w = dsp_value_w[ 3: 0];
+    1: nibble_w = dsp_value_w[ 7: 4];
+    2: nibble_w = dsp_value_w[11: 8];
+    3: nibble_w = dsp_value_w[15:12];
+    4: nibble_w = dsp_value_w[19:16];
+    5: nibble_w = dsp_value_w[23:20];
+    6: nibble_w = dsp_value_w[27:24];
+    7: nibble_w = dsp_value_w[31:28];
     endcase
 end
 
 // Next anode values
 always_comb begin
-    if (a_index_next[0]) begin
+    if (index_w[0]) begin
         // on odd indexes, output nothing
-        a_dsp_a_next = 8'b11111111;
+        dsp_anode_w = 8'b11111111;
     end else begin
         // on even indexes, light up the appropriate segment
-        unique case (a_index_next[3:1])
-        0: a_dsp_a_next = 8'b11111110;
-        1: a_dsp_a_next = 8'b11111101;
-        2: a_dsp_a_next = 8'b11111011;
-        3: a_dsp_a_next = 8'b11110111;
-        4: a_dsp_a_next = 8'b11101111;
-        5: a_dsp_a_next = 8'b11011111;
-        6: a_dsp_a_next = 8'b10111111;
-        7: a_dsp_a_next = 8'b01111111;
+        unique case (index_w[3:1])
+        0: dsp_anode_w = 8'b11111110;
+        1: dsp_anode_w = 8'b11111101;
+        2: dsp_anode_w = 8'b11111011;
+        3: dsp_anode_w = 8'b11110111;
+        4: dsp_anode_w = 8'b11101111;
+        5: dsp_anode_w = 8'b11011111;
+        6: dsp_anode_w = 8'b10111111;
+        7: dsp_anode_w = 8'b01111111;
         endcase
     end
 end
 
 // Next cathode values
 always_comb begin
-    if (a_index_next[0]) begin
+    if (index_w[0]) begin
         // on odd indexes, output nothing
-        a_dsp_c_next <= 8'b11111111;
+        dsp_cathode_w <= 8'b11111111;
     end else begin
         // on even indexes, output the appropriate nibble
-        unique case (a_nibble_next)
-        0:  a_dsp_c_next <= 8'b11000000;
-        1:  a_dsp_c_next <= 8'b11111001;
-        2:  a_dsp_c_next <= 8'b10100100;
-        3:  a_dsp_c_next <= 8'b10110000;
-        4:  a_dsp_c_next <= 8'b10011001;
-        5:  a_dsp_c_next <= 8'b10010010;
-        6:  a_dsp_c_next <= 8'b10000010;
-        7:  a_dsp_c_next <= 8'b11111000;
-        8:  a_dsp_c_next <= 8'b10000000;
-        9:  a_dsp_c_next <= 8'b10011000;
-        10: a_dsp_c_next <= 8'b10001000;
-        11: a_dsp_c_next <= 8'b10000011;
-        12: a_dsp_c_next <= 8'b11000110;
-        13: a_dsp_c_next <= 8'b10100001;
-        14: a_dsp_c_next <= 8'b10000110;
-        15: a_dsp_c_next <= 8'b10001110;
+        unique case (nibble_w)
+        0:  dsp_cathode_w <= 8'b11000000;
+        1:  dsp_cathode_w <= 8'b11111001;
+        2:  dsp_cathode_w <= 8'b10100100;
+        3:  dsp_cathode_w <= 8'b10110000;
+        4:  dsp_cathode_w <= 8'b10011001;
+        5:  dsp_cathode_w <= 8'b10010010;
+        6:  dsp_cathode_w <= 8'b10000010;
+        7:  dsp_cathode_w <= 8'b11111000;
+        8:  dsp_cathode_w <= 8'b10000000;
+        9:  dsp_cathode_w <= 8'b10011000;
+        10: dsp_cathode_w <= 8'b10001000;
+        11: dsp_cathode_w <= 8'b10000011;
+        12: dsp_cathode_w <= 8'b11000110;
+        13: dsp_cathode_w <= 8'b10100001;
+        14: dsp_cathode_w <= 8'b10000110;
+        15: dsp_cathode_w <= 8'b10001110;
         endcase
     end
 end
 
 // Clocked updates
-always_ff @(posedge clk) begin
+always_ff @(posedge clk_i) begin
     // update registers
-    c_display_value <= a_display_value_next;
-    c_counter       <= a_counter_next;
-    c_index         <= a_index_next;
-    oc_dsp_c        <= a_dsp_c_next;
-    oc_dsp_a        <= a_dsp_a_next;
+    dsp_value_r   <= dsp_value_w;
+    counter_r     <= counter_w;
+    index_r       <= index_w;
+    dsp_cathode_o <= dsp_cathode_w;
+    dsp_anode_o   <= dsp_anode_w;
 
     // Only write bytes where mask is set
-    if (ic_wr_mask[3]) c_value[31:24] <= ic_wr_data[31:24];
-    if (ic_wr_mask[2]) c_value[23:16] <= ic_wr_data[23:16];
-    if (ic_wr_mask[1]) c_value[15: 8] <= ic_wr_data[15: 8];
-    if (ic_wr_mask[0]) c_value[ 7: 0] <= ic_wr_data[ 7: 0];
+    if (write_mask_i[3]) bus_value_r[31:24] <= write_data_i[31:24];
+    if (write_mask_i[2]) bus_value_r[23:16] <= write_data_i[23:16];
+    if (write_mask_i[1]) bus_value_r[15: 8] <= write_data_i[15: 8];
+    if (write_mask_i[0]) bus_value_r[ 7: 0] <= write_data_i[ 7: 0];
     
-    if (ic_rst) begin
-        c_value         <= 32'b0;
-        c_display_value <= 32'b0;
-        c_counter       <= COUNTER_ROLLOVER;
-        c_index         <= 4'b1111;
-        oc_dsp_c        <= 8'b11111111;
-        oc_dsp_a        <= 8'b11111111;
+    if (reset_i) begin
+        bus_value_r   <= 32'b0;
+        dsp_value_r   <= 32'b0;
+        counter_r     <= COUNTER_ROLLOVER;
+        index_r       <= 4'b1111;
+        dsp_cathode_o <= 8'b11111111;
+        dsp_anode_o   <= 8'b11111111;
     end 
 end
 

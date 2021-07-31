@@ -7,8 +7,8 @@ module cpu_ma_tb
     ();
 
 // cpu signals
-logic       clk;            // clock
-logic       reset;          // reset
+logic       clk_i;            // clock
+logic       reset_i;          // reset_i
 logic       halt;           // halt
 
 // IF memory access
@@ -66,8 +66,8 @@ logic [3:0] dmem_write_mask; // write mask
 
 // Instruction Memory
 block_rom #(.CONTENTS("d:/dev/riscy_click/bios/bios.coe")) rom (
-    .clk(clk),
-    .reset(reset),
+    .clk_i(clk_i),
+    .reset_i(reset_i),
     .addr_a(imem_addr),
     .data_a(imem_data),
     .addr_b(32'h00000000),
@@ -76,8 +76,8 @@ block_rom #(.CONTENTS("d:/dev/riscy_click/bios/bios.coe")) rom (
 
 // Data Memory
 block_ram ram (
-    .clk(clk),
-    .reset(reset),
+    .clk_i(clk_i),
+    .reset_i(reset_i),
     .addr(dmem_addr),
     .read_data(dmem_read_data),
     .write_data(dmem_write_data),
@@ -98,16 +98,16 @@ cpu_ma cpu_ma (.*);
 
 // clock generator
 initial begin
-    clk = 1;
+    clk_i = 1;
     forever begin
-        #50 clk <= ~clk;
+        #50 clk_i <= ~clk_i;
     end
 end
 
-// reset pulse
+// reset_i pulse
 initial begin
-    reset = 1;
-    #250 reset = 0;
+    reset_i = 1;
+    #250 reset_i = 0;
 end
 
 // write-back logic

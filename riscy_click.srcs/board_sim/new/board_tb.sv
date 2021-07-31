@@ -3,32 +3,32 @@
 
 module board_tb ();
 
-logic clk_sys;
-logic ia_rst;
-wire logic oc_halt;
-wire logic [ 7:0] oc_segment_a;
-wire logic [ 7:0] oc_segment_c;
-logic [15:0] ia_switch;
+logic clk_sys_i;
+logic reset_async_i;
+wire logic halt_o;
+wire logic [ 7:0] dsp_anode_o;
+wire logic [ 7:0] dsp_cathode_o;
+logic [15:0] switch_async_i;
 
 board board (.*);
 
 // clock generator
 initial begin
-    clk_sys = 1;
+    clk_sys_i = 1;
     forever begin
-        #5 clk_sys <= ~clk_sys;
+        #5 clk_sys_i <= ~clk_sys_i;
     end
 end
 
-// reset pulse
+// reset_i pulse
 initial begin
-    ia_rst = 1;
-    #25 ia_rst = 0;
+    reset_async_i = 1;
+    #25 reset_async_i = 0;
 end
 
 // switches
 initial begin
-    ia_switch = 16'h9999;
+    switch_async_i = 16'h9999;
 end
 
 endmodule

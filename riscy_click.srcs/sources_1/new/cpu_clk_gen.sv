@@ -5,17 +5,17 @@ module cpu_clk_gen
     // Import Constants
     import common::*;
     (
-        input  wire logic clk_sys, // 100MHz system clock
-        input  wire logic ia_rst,  // reset
+        input  wire logic clk_sys_i,     // 100MHz system clock
+        input  wire logic reset_async_i, // reset
         
         // cpu clock output
-        output wire logic clk_cpu, // 50MHz cpu clock
-        output wire logic oa_ready // cpu clock ready
+        output wire logic clk_cpu_o,     // 50MHz cpu clock
+        output wire logic ready_async_o  // cpu clock ready
     );
 
 // internal signals
-wire logic l_clk_feedback;
-wire logic l_clk_cpu;
+wire logic clk_feedback_w;
+wire logic clk_cpu_w;
 
 // PLL Module
 PLLE2_BASE #(
@@ -46,25 +46,25 @@ PLLE2_BASE #(
   .STARTUP_WAIT("TRUE")
 )
 cpu_clk_pll (
-  .CLKOUT0(l_clk_cpu),
+  .CLKOUT0(clk_cpu_w),
   .CLKOUT1(),
   .CLKOUT2(),
   .CLKOUT3(),
   .CLKOUT4(),
   .CLKOUT5(),
-  .CLKFBOUT(l_clk_feedback),
-  .LOCKED(oa_ready),
-  .CLKIN1(clk_sys),
+  .CLKFBOUT(clk_feedback_w),
+  .LOCKED(ready_async_o),
+  .CLKIN1(clk_sys_i),
   .PWRDWN(1'b0),
-  .RST(ia_rst),
-  .CLKFBIN(l_clk_feedback)
+  .RST(reset_async_i),
+  .CLKFBIN(clk_feedback_w)
 );
 
 // Global Clock Buffer
 BUFGCE cpu_clk_buffer (
-  .O(clk_cpu),
-  .CE(oa_ready),
-  .I(l_clk_cpu)
+  .O(clk_cpu_o),
+  .CE(ready_async_o),
+  .I(clk_cpu_w)
 );
 
 endmodule

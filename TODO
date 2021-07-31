@@ -1,3 +1,7 @@
+wb vs writeback
+op1 vs operand1
+read1/read2 vs ra/rb
+
 TODO:
 - Reconsider this signal naming convention... :)
 - VGA output

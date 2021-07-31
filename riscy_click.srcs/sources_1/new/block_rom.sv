@@ -8,16 +8,16 @@ module block_rom
         CONTENTS = ""
     )
     (
-        input  wire logic  clk,
-        input  wire logic  ic_rst,
+        input  wire logic  clk_i,
+        input  wire logic  reset_i,
         
         // read port a
-        input  wire word_t ic_ra_addr,
-        output wire word_t oa_ra_data,
+        input  wire word_t read1_addr_i,
+        output wire word_t read1_data_o,
         
         // read port b
-        input  wire word_t ic_rb_addr,
-        output wire word_t oa_rb_data
+        input  wire word_t read2_addr_i,
+        output wire word_t read2_data_o
     );
 
 // ROM primitive
@@ -58,24 +58,24 @@ rom_inst (
     .sleep(1'b0),
     
     // port A
-    .clka(clk),
-    .rsta(ic_rst),
+    .clka(clk_i),
+    .rsta(reset_i),
     .ena(1'b1),
     .regcea(1'b1),
-    .addra(ic_ra_addr[11:2]),
-    .douta(oa_ra_data),
+    .addra(read1_addr_i[11:2]),
+    .douta(read1_data_o),
     .dbiterra(),
     .sbiterra(),
     .injectdbiterra(1'b0),
     .injectsbiterra(1'b0),
       
     // port B
-    .clkb(clk),
-    .rstb(ic_rst),
+    .clkb(clk_i),
+    .rstb(reset_i),
     .enb(1'b1),
     .regceb(1'b1),
-    .addrb(ic_rb_addr[11:2]),
-    .doutb(oa_rb_data),
+    .addrb(read2_addr_i[11:2]),
+    .doutb(read2_data_o),
     .dbiterrb(),
     .sbiterrb(),
     .injectdbiterrb(1'b0),

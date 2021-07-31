@@ -9,38 +9,38 @@ module alu
     import common::*;
     (
         // Inputs
-        input  wire alu_mode_t ia_alu_mode,
-        input  wire word_t     ia_alu_operand1,
-        input  wire word_t     ia_alu_operand2,
+        input  wire alu_mode_t alu_mode_async_i,
+        input  wire word_t     alu_operand1_async_i,
+        input  wire word_t     alu_operand2_async_i,
         
         // Outputs
-        output      word_t     oa_alu_result,
-        output      logic      oa_alu_zero
+        output      word_t     alu_result_async_o,
+        output      logic      alu_zero_async_o
     );
 
 
 // Shift Amount
-logic [4:0] a_shamt;
-always_comb a_shamt = ia_alu_operand2[4:0];
+logic [4:0] shamt_w;
+always_comb shamt_w = alu_operand2_async_i[4:0];
 
 // Zero Logic
-always_comb oa_alu_zero = (oa_alu_result == 32'b0);
+always_comb alu_zero_async_o = (alu_result_async_o == 32'b0);
 
 // Result Logic
 always_comb begin
-    unique case (ia_alu_mode)
-        ALU_ADD:   oa_alu_result = ia_alu_operand1 + ia_alu_operand2;
-        ALU_SUB:   oa_alu_result = ia_alu_operand1 - ia_alu_operand2;
-        ALU_AND:   oa_alu_result = ia_alu_operand1 & ia_alu_operand2;
-        ALU_OR:    oa_alu_result = ia_alu_operand1 | ia_alu_operand2;
-        ALU_XOR:   oa_alu_result = ia_alu_operand1 ^ ia_alu_operand2;
-        ALU_LSL:   oa_alu_result = ia_alu_operand1 <<  a_shamt;
-        ALU_LSR:   oa_alu_result = ia_alu_operand1 >>  a_shamt;
-        ALU_ASR:   oa_alu_result = ia_alu_operand1 >>> a_shamt;
-        ALU_SLT:   oa_alu_result = (signed'(ia_alu_operand1) < signed'(ia_alu_operand2)) ? 32'b1 : 32'b0;
-        ALU_ULT:   oa_alu_result = (        ia_alu_operand1  <         ia_alu_operand2)  ? 32'b1 : 32'b0;
-        ALU_COPY1: oa_alu_result = ia_alu_operand1;
-        ALU_X:     oa_alu_result = 32'b0;
+    unique case (alu_mode_async_i)
+        ALU_ADD:   alu_result_async_o = alu_operand1_async_i + alu_operand2_async_i;
+        ALU_SUB:   alu_result_async_o = alu_operand1_async_i - alu_operand2_async_i;
+        ALU_AND:   alu_result_async_o = alu_operand1_async_i & alu_operand2_async_i;
+        ALU_OR:    alu_result_async_o = alu_operand1_async_i | alu_operand2_async_i;
+        ALU_XOR:   alu_result_async_o = alu_operand1_async_i ^ alu_operand2_async_i;
+        ALU_LSL:   alu_result_async_o = alu_operand1_async_i <<  shamt_w;
+        ALU_LSR:   alu_result_async_o = alu_operand1_async_i >>  shamt_w;
+        ALU_ASR:   alu_result_async_o = alu_operand1_async_i >>> shamt_w;
+        ALU_SLT:   alu_result_async_o = (signed'(alu_operand1_async_i) < signed'(alu_operand2_async_i)) ? 32'b1 : 32'b0;
+        ALU_ULT:   alu_result_async_o = (        alu_operand1_async_i  <         alu_operand2_async_i)  ? 32'b1 : 32'b0;
+        ALU_COPY1: alu_result_async_o = alu_operand1_async_i;
+        ALU_X:     alu_result_async_o = 32'b0;
     endcase;
 end
 

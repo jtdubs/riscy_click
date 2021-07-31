@@ -10,32 +10,32 @@ module cpu_ma
     import common::*;
     (
         // cpu signals
-        input  wire logic       clk,            // clock
-        input  wire logic       ic_rst,         // reset
+        input  wire logic       clk_i,            // clock
+        input  wire logic       reset_i,         // reset_i
 
         // data memory port
-        output      word_t      oa_dmem_addr,   // address
-        output      word_t      oa_dmem_wrdata,   // write data
-        output      logic [3:0] oa_dmem_wrmask,   // write enable
+        output      word_t      dmem_addr_o,   // address
+        output      word_t      dmem_write_data_o,   // write data
+        output      logic [3:0] dmem_write_mask_o,   // write enable
         
         // pipeline input port
-        input  wire word_t      ic_ma_ir,       // instruction register
-        input  wire word_t      ic_ma_addr,     // memory access address
-        input  wire ma_mode_t   ic_ma_mode,     // memory access mode
-        input  wire ma_size_t   ic_ma_size,     // memory access size
-        input  wire word_t      ic_ma_data,     // memory access data
-        input  wire wb_src_t    ic_ma_wb_src,   // write-back source
-        input  wire word_t      ic_ma_wb_data,  // write-back register value
+        input  wire word_t      ir_i,       // instruction register
+        input  wire word_t      ma_addr_i,     // memoricy access address
+        input  wire ma_mode_t   ma_mode_i,     // memory access mode
+        input  wire ma_size_t   ma_size_i,     // memory access size
+        input  wire word_t      ma_data_i,     // memory access data
+        input  wire wb_src_t    writeback_src_i,   // write-back source
+        input  wire word_t      writeback_data_i,  // write-back register value
         
         // data hazard port
-        output      regaddr_t   oa_hz_ma_addr,  // write-back address
-        output      word_t      oa_hz_ma_data,  // write-back value
-        output      logic       oa_hz_ma_valid, // write-back value valid
+        output      regaddr_t   ma_writeback_addr_o,  // write-back address
+        output      word_t      ma_writeback_data_o,  // write-back value
+        output      logic       ma_writeback_valid_o, // write-back value valid
 
         // pipeline output port
-        output      word_t      oc_ma_ir,       // instruction register
-        output      logic       oc_ma_is_load,  // is this a loan instruction?
-        output      word_t      oc_ma_wb_data   // write-back register value
+        output      word_t      ir_o,       // instruction register
+        output      logic       load_o,  // is this a loan instruction?
+        output      word_t      writeback_data_o   // write-back register value
     );
     
 
@@ -44,9 +44,9 @@ module cpu_ma
 //
 
 always_comb begin
-    oa_dmem_addr   = ic_ma_addr;
-    oa_dmem_wrdata = ic_ma_data;
-    oa_dmem_wrmask = (ic_ma_mode == MA_STORE) ? 4'b1111 : 4'b0000;
+    dmem_addr_o       = ma_addr_i;
+    dmem_write_data_o = ma_data_i;
+    dmem_write_mask_o = (ma_mode_i == MA_STORE) ? 4'b1111 : 4'b0000;
     // TODO: deal with MA_SIZE values other than W
 end 
 
@@ -56,18 +56,18 @@ end
 //
 
 always_comb begin
-    oa_hz_ma_addr = ic_ma_ir[11:7];
+    ma_writeback_addr_o = ir_i[11:7];
 
-    case (ic_ma_wb_src)
+    case (writeback_src_i)
     WB_SRC_MEM:
         begin
-            oa_hz_ma_data   = 32'b0;
-            oa_hz_ma_valid  = 1'b0; // not available yet
+            ma_writeback_data_o   = 32'b0;
+            ma_writeback_valid_o  = 1'b0; // not available yet
         end
     default:  
         begin
-            oa_hz_ma_data   = ic_ma_wb_data;
-            oa_hz_ma_valid  = 1'b1;
+            ma_writeback_data_o   = writeback_data_i;
+            ma_writeback_valid_o  = 1'b1;
         end  
     endcase
 end  
@@ -77,15 +77,15 @@ end
 // Pass-through Signals to WB stage
 //
 
-always_ff @(posedge clk) begin
-    oc_ma_ir      <= ic_ma_ir;
-    oc_ma_is_load <= (ic_ma_mode == MA_LOAD);
-    oc_ma_wb_data <= ic_ma_wb_data;
+always_ff @(posedge clk_i) begin
+    ir_o   <= ir_i;
+    load_o <= (ma_mode_i == MA_LOAD);
+    writeback_data_o <= writeback_data_i;
     
-    if (ic_rst) begin
-        oc_ma_ir      <= NOP_IR;
-        oc_ma_is_load <= 1'b0;
-        oc_ma_wb_data <= 32'h00000000;
+    if (reset_i) begin
+        ir_o   <= NOP_IR;
+        load_o <= 1'b0;
+        writeback_data_o <= 32'h00000000;
     end
 end
 

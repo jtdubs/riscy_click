@@ -5,14 +5,14 @@ module block_ram
     // Import Constants
     import common::*;
     (
-        input  wire logic       clk,
-        input  wire logic       ic_rst,
+        input  wire logic       clk_i,
+        input  wire logic       reset_i,
         
         // read/write port
-        input  wire word_t      ic_rw_addr,
-        input  wire word_t      ic_rw_wrdata,
-        input  wire logic [3:0] ic_rw_wrmask,
-        output wire word_t      oa_rw_rddata
+        input  wire word_t      addr_i,
+        input  wire word_t      write_data_i,
+        input  wire logic [3:0] write_mask_i,
+        output wire word_t      read_data_o
     );
 
 // RAM primitive
@@ -48,14 +48,14 @@ ram_inst (
     .sleep(1'b0),
     
     // port
-    .clka(clk),
-    .rsta(ic_rst),
+    .clka(clk_i),
+    .rsta(reset_i),
     .regcea(1'b1),
     .ena(1'b1),
-    .addra(ic_rw_addr[11:2]),
-    .douta(oa_rw_rddata),
-    .dina(ic_rw_wrdata),
-    .wea(ic_rw_wrmask),
+    .addra(addr_i[11:2]),
+    .douta(read_data_o),
+    .dina(write_data_i),
+    .wea(write_mask_i),
     .dbiterra(),
     .sbiterra(),
     .injectdbiterra(1'b0),
