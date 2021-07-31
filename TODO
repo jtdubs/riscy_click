@@ -20,6 +20,4 @@ https://github.com/combinatorylogic/soc/blob/master/backends/c2/hw/rtl/core.v
 
 Possible issues:
 - Mixing of async and sync resets seems odd
-- segdisplay seems to have an off-by-one issue due to a clocked output depending on an async that depends on another clocked signal
 - try out all the testbenches again...
-

@@ -31,13 +31,13 @@ module segdisplay
 localparam int unsigned COUNTER_ROLLOVER = CLK_DIVISOR - 1;
 
 // Registers
-word_t c_value;
-word_t c_display_value, a_display_value_next;
+word_t       c_value;
+word_t       c_display_value, a_display_value_next;
 logic [15:0] c_counter, a_counter_next;
 logic [ 3:0] c_index, a_index_next;
 logic [ 3:0] a_nibble_next;
-logic [7:0] a_dsp_a_next;
-logic [7:0] a_dsp_c_next;
+logic [ 7:0] a_dsp_a_next;
+logic [ 7:0] a_dsp_c_next;
 
 // Read Port
 always_comb oc_rd_data = c_value;
@@ -49,9 +49,6 @@ always_comb begin
         a_display_value_next = c_value;
     else
         a_display_value_next = c_display_value;
-        
-    if (ic_rst)
-        a_display_value_next = 32'h00000000;
 end
 
 // Next counter & index
@@ -65,11 +62,6 @@ always_comb begin
         // Otherwise, keep counting
         a_counter_next = c_counter + 1;
         a_index_next   = c_index;
-    end
-     
-    if (ic_rst) begin
-        a_counter_next = 16'b0;
-        a_index_next   = 4'b0;
     end
 end
 
@@ -85,11 +77,9 @@ always_comb begin
     6: a_nibble_next = a_display_value_next[27:24];
     7: a_nibble_next = a_display_value_next[31:28];
     endcase
-    
-    if (ic_rst) a_nibble_next = 4'b0;
 end
 
-// Next annode values
+// Next anode values
 always_comb begin
     if (a_index_next[0]) begin
         // on odd indexes, output nothing
@@ -107,8 +97,6 @@ always_comb begin
         7: a_dsp_a_next = 8'b01111111;
         endcase
     end
-    
-    if (ic_rst) a_dsp_a_next = 8'b11111111;
 end
 
 // Next cathode values
@@ -137,12 +125,11 @@ always_comb begin
         15: a_dsp_c_next <= 8'b10001110;
         endcase
     end
-    
-    if (ic_rst) a_dsp_c_next = 8'b11111111;
 end
 
 // Clocked updates
 always_ff @(posedge clk) begin
+    // update registers
     c_display_value <= a_display_value_next;
     c_counter       <= a_counter_next;
     c_index         <= a_index_next;
@@ -154,8 +141,15 @@ always_ff @(posedge clk) begin
     if (ic_wr_mask[2]) c_value[23:16] <= ic_wr_data[23:16];
     if (ic_wr_mask[1]) c_value[15: 8] <= ic_wr_data[15: 8];
     if (ic_wr_mask[0]) c_value[ 7: 0] <= ic_wr_data[ 7: 0];
-       
-    if (ic_rst) c_value <= 32'h00000000;
+    
+    if (ic_rst) begin
+        c_value         <= 32'b0;
+        c_display_value <= 32'b0;
+        c_counter       <= COUNTER_ROLLOVER;
+        c_index         <= 4'b1111;
+        oc_dsp_c        <= 8'b11111111;
+        oc_dsp_a        <= 8'b11111111;
+    end 
 end
 
 endmodule
