@@ -44,7 +44,7 @@ module cpu_ma
 //
 
 always_comb begin
-    oa_dmem_addr = ic_ma_addr;
+    oa_dmem_addr   = ic_ma_addr;
     oa_dmem_wrdata = ic_ma_data;
     oa_dmem_wrmask = (ic_ma_mode == MA_STORE) ? 4'b1111 : 4'b0000;
     // TODO: deal with MA_SIZE values other than W

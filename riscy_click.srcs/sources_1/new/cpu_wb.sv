@@ -10,19 +10,19 @@ module cpu_wb
     import common::*;
     (
         // cpu signals
-        input  wire logic     clk,           // clock
+        input  wire logic     clk,            // clock
         
         // data memory port
-        input  wire word_t    ia_dmem_rddata,  // memory data
+        input  wire word_t    ia_dmem_rddata, // memory data
 
         // pipeline input port
-        input  wire word_t    ic_wb_ir,      // instruction register
-        input  wire logic     ic_wb_is_load, // is this a load instruction?
-        input  wire word_t    ic_wb_data,    // write-back register value
+        input  wire word_t    ic_wb_ir,       // instruction register
+        input  wire logic     ic_wb_is_load,  // is this a load instruction?
+        input  wire word_t    ic_wb_data,     // write-back register value
         
         // pipeline output port
-        output      regaddr_t oa_wb_addr,    // write-back address
-        output      word_t    oa_wb_data     // write-back value
+        output      regaddr_t oa_wb_addr,     // write-back address
+        output      word_t    oa_wb_data      // write-back value
     );
     
 

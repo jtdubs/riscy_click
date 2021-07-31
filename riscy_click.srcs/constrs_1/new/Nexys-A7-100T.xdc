@@ -239,3 +239,74 @@ set_false_path -from [get_ports ia_rst]
 #set_property -dict { PACKAGE_PIN L14   IOSTANDARD LVCMOS33 } [get_ports { QSPI_DQ[2] }]; #IO_L2P_T0_D02_14 Sch=qspi_dq[2]
 #set_property -dict { PACKAGE_PIN M14   IOSTANDARD LVCMOS33 } [get_ports { QSPI_DQ[3] }]; #IO_L2N_T0_D03_14 Sch=qspi_dq[3]
 #set_property -dict { PACKAGE_PIN L13   IOSTANDARD LVCMOS33 } [get_ports { QSPI_CSN }]; #IO_L6P_T0_FCS_B_14 Sch=qspi_csn
+
+create_debug_core u_ila_0 ila
+set_property ALL_PROBE_SAME_MU true [get_debug_cores u_ila_0]
+set_property ALL_PROBE_SAME_MU_CNT 4 [get_debug_cores u_ila_0]
+set_property C_ADV_TRIGGER true [get_debug_cores u_ila_0]
+set_property C_DATA_DEPTH 4096 [get_debug_cores u_ila_0]
+set_property C_EN_STRG_QUAL true [get_debug_cores u_ila_0]
+set_property C_INPUT_PIPE_STAGES 0 [get_debug_cores u_ila_0]
+set_property C_TRIGIN_EN false [get_debug_cores u_ila_0]
+set_property C_TRIGOUT_EN false [get_debug_cores u_ila_0]
+set_property port_width 1 [get_debug_ports u_ila_0/clk]
+connect_debug_port u_ila_0/clk [get_nets [list cpu_clk_gen/clk_cpu]]
+set_property PROBE_TYPE DATA [get_debug_ports u_ila_0/probe0]
+set_property port_width 32 [get_debug_ports u_ila_0/probe0]
+connect_debug_port u_ila_0/probe0 [get_nets [list {cpu/c_id_ir[0]} {cpu/c_id_ir[1]} {cpu/c_id_ir[2]} {cpu/c_id_ir[3]} {cpu/c_id_ir[4]} {cpu/c_id_ir[5]} {cpu/c_id_ir[6]} {cpu/c_id_ir[7]} {cpu/c_id_ir[8]} {cpu/c_id_ir[9]} {cpu/c_id_ir[10]} {cpu/c_id_ir[11]} {cpu/c_id_ir[12]} {cpu/c_id_ir[13]} {cpu/c_id_ir[14]} {cpu/c_id_ir[15]} {cpu/c_id_ir[16]} {cpu/c_id_ir[17]} {cpu/c_id_ir[18]} {cpu/c_id_ir[19]} {cpu/c_id_ir[20]} {cpu/c_id_ir[21]} {cpu/c_id_ir[22]} {cpu/c_id_ir[23]} {cpu/c_id_ir[24]} {cpu/c_id_ir[25]} {cpu/c_id_ir[26]} {cpu/c_id_ir[27]} {cpu/c_id_ir[28]} {cpu/c_id_ir[29]} {cpu/c_id_ir[30]} {cpu/c_id_ir[31]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA [get_debug_ports u_ila_0/probe1]
+set_property port_width 32 [get_debug_ports u_ila_0/probe1]
+connect_debug_port u_ila_0/probe1 [get_nets [list {cpu/c_if_ir[0]} {cpu/c_if_ir[1]} {cpu/c_if_ir[2]} {cpu/c_if_ir[3]} {cpu/c_if_ir[4]} {cpu/c_if_ir[5]} {cpu/c_if_ir[6]} {cpu/c_if_ir[7]} {cpu/c_if_ir[8]} {cpu/c_if_ir[9]} {cpu/c_if_ir[10]} {cpu/c_if_ir[11]} {cpu/c_if_ir[12]} {cpu/c_if_ir[13]} {cpu/c_if_ir[14]} {cpu/c_if_ir[15]} {cpu/c_if_ir[16]} {cpu/c_if_ir[17]} {cpu/c_if_ir[18]} {cpu/c_if_ir[19]} {cpu/c_if_ir[20]} {cpu/c_if_ir[21]} {cpu/c_if_ir[22]} {cpu/c_if_ir[23]} {cpu/c_if_ir[24]} {cpu/c_if_ir[25]} {cpu/c_if_ir[26]} {cpu/c_if_ir[27]} {cpu/c_if_ir[28]} {cpu/c_if_ir[29]} {cpu/c_if_ir[30]} {cpu/c_if_ir[31]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA [get_debug_ports u_ila_0/probe2]
+set_property port_width 32 [get_debug_ports u_ila_0/probe2]
+connect_debug_port u_ila_0/probe2 [get_nets [list {cpu/c_if_pc[0]} {cpu/c_if_pc[1]} {cpu/c_if_pc[2]} {cpu/c_if_pc[3]} {cpu/c_if_pc[4]} {cpu/c_if_pc[5]} {cpu/c_if_pc[6]} {cpu/c_if_pc[7]} {cpu/c_if_pc[8]} {cpu/c_if_pc[9]} {cpu/c_if_pc[10]} {cpu/c_if_pc[11]} {cpu/c_if_pc[12]} {cpu/c_if_pc[13]} {cpu/c_if_pc[14]} {cpu/c_if_pc[15]} {cpu/c_if_pc[16]} {cpu/c_if_pc[17]} {cpu/c_if_pc[18]} {cpu/c_if_pc[19]} {cpu/c_if_pc[20]} {cpu/c_if_pc[21]} {cpu/c_if_pc[22]} {cpu/c_if_pc[23]} {cpu/c_if_pc[24]} {cpu/c_if_pc[25]} {cpu/c_if_pc[26]} {cpu/c_if_pc[27]} {cpu/c_if_pc[28]} {cpu/c_if_pc[29]} {cpu/c_if_pc[30]} {cpu/c_if_pc[31]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA [get_debug_ports u_ila_0/probe3]
+set_property port_width 32 [get_debug_ports u_ila_0/probe3]
+connect_debug_port u_ila_0/probe3 [get_nets [list {cpu/c_ma_ir[0]} {cpu/c_ma_ir[1]} {cpu/c_ma_ir[2]} {cpu/c_ma_ir[3]} {cpu/c_ma_ir[4]} {cpu/c_ma_ir[5]} {cpu/c_ma_ir[6]} {cpu/c_ma_ir[7]} {cpu/c_ma_ir[8]} {cpu/c_ma_ir[9]} {cpu/c_ma_ir[10]} {cpu/c_ma_ir[11]} {cpu/c_ma_ir[12]} {cpu/c_ma_ir[13]} {cpu/c_ma_ir[14]} {cpu/c_ma_ir[15]} {cpu/c_ma_ir[16]} {cpu/c_ma_ir[17]} {cpu/c_ma_ir[18]} {cpu/c_ma_ir[19]} {cpu/c_ma_ir[20]} {cpu/c_ma_ir[21]} {cpu/c_ma_ir[22]} {cpu/c_ma_ir[23]} {cpu/c_ma_ir[24]} {cpu/c_ma_ir[25]} {cpu/c_ma_ir[26]} {cpu/c_ma_ir[27]} {cpu/c_ma_ir[28]} {cpu/c_ma_ir[29]} {cpu/c_ma_ir[30]} {cpu/c_ma_ir[31]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA [get_debug_ports u_ila_0/probe4]
+set_property port_width 32 [get_debug_ports u_ila_0/probe4]
+connect_debug_port u_ila_0/probe4 [get_nets [list {cpu/c_ex_ir[0]} {cpu/c_ex_ir[1]} {cpu/c_ex_ir[2]} {cpu/c_ex_ir[3]} {cpu/c_ex_ir[4]} {cpu/c_ex_ir[5]} {cpu/c_ex_ir[6]} {cpu/c_ex_ir[7]} {cpu/c_ex_ir[8]} {cpu/c_ex_ir[9]} {cpu/c_ex_ir[10]} {cpu/c_ex_ir[11]} {cpu/c_ex_ir[12]} {cpu/c_ex_ir[13]} {cpu/c_ex_ir[14]} {cpu/c_ex_ir[15]} {cpu/c_ex_ir[16]} {cpu/c_ex_ir[17]} {cpu/c_ex_ir[18]} {cpu/c_ex_ir[19]} {cpu/c_ex_ir[20]} {cpu/c_ex_ir[21]} {cpu/c_ex_ir[22]} {cpu/c_ex_ir[23]} {cpu/c_ex_ir[24]} {cpu/c_ex_ir[25]} {cpu/c_ex_ir[26]} {cpu/c_ex_ir[27]} {cpu/c_ex_ir[28]} {cpu/c_ex_ir[29]} {cpu/c_ex_ir[30]} {cpu/c_ex_ir[31]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe5]
+set_property port_width 32 [get_debug_ports u_ila_0/probe5]
+connect_debug_port u_ila_0/probe5 [get_nets [list {c_cycle_counter[0]} {c_cycle_counter[1]} {c_cycle_counter[2]} {c_cycle_counter[3]} {c_cycle_counter[4]} {c_cycle_counter[5]} {c_cycle_counter[6]} {c_cycle_counter[7]} {c_cycle_counter[8]} {c_cycle_counter[9]} {c_cycle_counter[10]} {c_cycle_counter[11]} {c_cycle_counter[12]} {c_cycle_counter[13]} {c_cycle_counter[14]} {c_cycle_counter[15]} {c_cycle_counter[16]} {c_cycle_counter[17]} {c_cycle_counter[18]} {c_cycle_counter[19]} {c_cycle_counter[20]} {c_cycle_counter[21]} {c_cycle_counter[22]} {c_cycle_counter[23]} {c_cycle_counter[24]} {c_cycle_counter[25]} {c_cycle_counter[26]} {c_cycle_counter[27]} {c_cycle_counter[28]} {c_cycle_counter[29]} {c_cycle_counter[30]} {c_cycle_counter[31]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA [get_debug_ports u_ila_0/probe6]
+set_property port_width 32 [get_debug_ports u_ila_0/probe6]
+connect_debug_port u_ila_0/probe6 [get_nets [list {a_dmem_wrdata[0]} {a_dmem_wrdata[1]} {a_dmem_wrdata[2]} {a_dmem_wrdata[3]} {a_dmem_wrdata[4]} {a_dmem_wrdata[5]} {a_dmem_wrdata[6]} {a_dmem_wrdata[7]} {a_dmem_wrdata[8]} {a_dmem_wrdata[9]} {a_dmem_wrdata[10]} {a_dmem_wrdata[11]} {a_dmem_wrdata[12]} {a_dmem_wrdata[13]} {a_dmem_wrdata[14]} {a_dmem_wrdata[15]} {a_dmem_wrdata[16]} {a_dmem_wrdata[17]} {a_dmem_wrdata[18]} {a_dmem_wrdata[19]} {a_dmem_wrdata[20]} {a_dmem_wrdata[21]} {a_dmem_wrdata[22]} {a_dmem_wrdata[23]} {a_dmem_wrdata[24]} {a_dmem_wrdata[25]} {a_dmem_wrdata[26]} {a_dmem_wrdata[27]} {a_dmem_wrdata[28]} {a_dmem_wrdata[29]} {a_dmem_wrdata[30]} {a_dmem_wrdata[31]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA [get_debug_ports u_ila_0/probe7]
+set_property port_width 4 [get_debug_ports u_ila_0/probe7]
+connect_debug_port u_ila_0/probe7 [get_nets [list {a_dmem_wrmask[0]} {a_dmem_wrmask[1]} {a_dmem_wrmask[2]} {a_dmem_wrmask[3]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA [get_debug_ports u_ila_0/probe8]
+set_property port_width 32 [get_debug_ports u_ila_0/probe8]
+connect_debug_port u_ila_0/probe8 [get_nets [list {a_dmem_addr[0]} {a_dmem_addr[1]} {a_dmem_addr[2]} {a_dmem_addr[3]} {a_dmem_addr[4]} {a_dmem_addr[5]} {a_dmem_addr[6]} {a_dmem_addr[7]} {a_dmem_addr[8]} {a_dmem_addr[9]} {a_dmem_addr[10]} {a_dmem_addr[11]} {a_dmem_addr[12]} {a_dmem_addr[13]} {a_dmem_addr[14]} {a_dmem_addr[15]} {a_dmem_addr[16]} {a_dmem_addr[17]} {a_dmem_addr[18]} {a_dmem_addr[19]} {a_dmem_addr[20]} {a_dmem_addr[21]} {a_dmem_addr[22]} {a_dmem_addr[23]} {a_dmem_addr[24]} {a_dmem_addr[25]} {a_dmem_addr[26]} {a_dmem_addr[27]} {a_dmem_addr[28]} {a_dmem_addr[29]} {a_dmem_addr[30]} {a_dmem_addr[31]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA [get_debug_ports u_ila_0/probe9]
+set_property port_width 32 [get_debug_ports u_ila_0/probe9]
+connect_debug_port u_ila_0/probe9 [get_nets [list {a_imem_addr[0]} {a_imem_addr[1]} {a_imem_addr[2]} {a_imem_addr[3]} {a_imem_addr[4]} {a_imem_addr[5]} {a_imem_addr[6]} {a_imem_addr[7]} {a_imem_addr[8]} {a_imem_addr[9]} {a_imem_addr[10]} {a_imem_addr[11]} {a_imem_addr[12]} {a_imem_addr[13]} {a_imem_addr[14]} {a_imem_addr[15]} {a_imem_addr[16]} {a_imem_addr[17]} {a_imem_addr[18]} {a_imem_addr[19]} {a_imem_addr[20]} {a_imem_addr[21]} {a_imem_addr[22]} {a_imem_addr[23]} {a_imem_addr[24]} {a_imem_addr[25]} {a_imem_addr[26]} {a_imem_addr[27]} {a_imem_addr[28]} {a_imem_addr[29]} {a_imem_addr[30]} {a_imem_addr[31]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA [get_debug_ports u_ila_0/probe10]
+set_property port_width 32 [get_debug_ports u_ila_0/probe10]
+connect_debug_port u_ila_0/probe10 [get_nets [list {a_dmem_rddata[0]} {a_dmem_rddata[1]} {a_dmem_rddata[2]} {a_dmem_rddata[3]} {a_dmem_rddata[4]} {a_dmem_rddata[5]} {a_dmem_rddata[6]} {a_dmem_rddata[7]} {a_dmem_rddata[8]} {a_dmem_rddata[9]} {a_dmem_rddata[10]} {a_dmem_rddata[11]} {a_dmem_rddata[12]} {a_dmem_rddata[13]} {a_dmem_rddata[14]} {a_dmem_rddata[15]} {a_dmem_rddata[16]} {a_dmem_rddata[17]} {a_dmem_rddata[18]} {a_dmem_rddata[19]} {a_dmem_rddata[20]} {a_dmem_rddata[21]} {a_dmem_rddata[22]} {a_dmem_rddata[23]} {a_dmem_rddata[24]} {a_dmem_rddata[25]} {a_dmem_rddata[26]} {a_dmem_rddata[27]} {a_dmem_rddata[28]} {a_dmem_rddata[29]} {a_dmem_rddata[30]} {a_dmem_rddata[31]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA [get_debug_ports u_ila_0/probe11]
+set_property port_width 32 [get_debug_ports u_ila_0/probe11]
+connect_debug_port u_ila_0/probe11 [get_nets [list {a_imem_data[0]} {a_imem_data[1]} {a_imem_data[2]} {a_imem_data[3]} {a_imem_data[4]} {a_imem_data[5]} {a_imem_data[6]} {a_imem_data[7]} {a_imem_data[8]} {a_imem_data[9]} {a_imem_data[10]} {a_imem_data[11]} {a_imem_data[12]} {a_imem_data[13]} {a_imem_data[14]} {a_imem_data[15]} {a_imem_data[16]} {a_imem_data[17]} {a_imem_data[18]} {a_imem_data[19]} {a_imem_data[20]} {a_imem_data[21]} {a_imem_data[22]} {a_imem_data[23]} {a_imem_data[24]} {a_imem_data[25]} {a_imem_data[26]} {a_imem_data[27]} {a_imem_data[28]} {a_imem_data[29]} {a_imem_data[30]} {a_imem_data[31]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe12]
+set_property port_width 1 [get_debug_ports u_ila_0/probe12]
+connect_debug_port u_ila_0/probe12 [get_nets [list cpu/ic_rst]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe13]
+set_property port_width 1 [get_debug_ports u_ila_0/probe13]
+connect_debug_port u_ila_0/probe13 [get_nets [list cpu/oc_halt]]
+set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
+set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
+set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]
+connect_debug_port dbg_hub/clk [get_nets clk_cpu]

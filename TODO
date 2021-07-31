@@ -1,5 +1,5 @@
 TODO:
-- Naming convention for signals (clock domain, in/out, bypass/hazard, pipeline stage, etc.)
+- Reconsider this signal naming convention... :)
 - VGA output
 - Memmory mapped character buffer for text console output
 - USB UART would be awesome...
@@ -16,9 +16,3 @@ http://fpgacpu.ca/fpga/index.html
 https://passlab.github.io/CSE564/notes/lecture09_RISCV_Impl_pipeline.pdf
 https://github.com/ultraembedded/riscv/
 https://github.com/combinatorylogic/soc/blob/master/backends/c2/hw/rtl/core.v
-
-
-Possible issues:
-- Mixing of async and sync resets seems odd.  Standardize on sync resets I think?
-- Is halt really async??
-- try out all the testbenches again...

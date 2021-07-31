@@ -97,7 +97,7 @@ wire word_t a_ram_rddata;
 // BIOS
 block_rom #(.CONTENTS("bios.mem")) rom (
     .clk(clk_cpu),
-    .ic_rst(c_cpu_rst),
+    .ic_rst(1'b0),
     .ic_ra_addr(a_imem_addr),
     .oa_ra_data(a_imem_data),
     .ic_rb_addr(a_dmem_addr),
@@ -107,7 +107,7 @@ block_rom #(.CONTENTS("bios.mem")) rom (
 // RAM
 block_ram ram (
     .clk(clk_cpu),
-    .ic_rst(c_cpu_rst),
+    .ic_rst(1'b0),
     .ic_rw_addr(a_dmem_addr),
     .ic_rw_wrdata(a_dmem_wrdata),
     .ic_rw_wrmask(a_ram_wrmask),
