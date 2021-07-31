@@ -232,15 +232,6 @@ always_comb begin
         end
     PC_BRANCH:
         begin
-//            unique case (f3_w)
-//                F3_BEQ:  jmp_valid_w = (        ra_resolved_w  ==         rb_resolved_w)  ? 1'b1 : 1'b0;
-//                F3_BNE:  jmp_valid_w = (        ra_resolved_w  ==         rb_resolved_w)  ? 1'b0 : 1'b1;
-//                F3_BLT:  jmp_valid_w = (signed'(ra_resolved_w) <  signed'(rb_resolved_w)) ? 1'b1 : 1'b0;
-//                F3_BGE:  jmp_valid_w = (signed'(ra_resolved_w) <  signed'(rb_resolved_w)) ? 1'b0 : 1'b1;
-//                F3_BLTU: jmp_valid_w = (        ra_resolved_w  <          rb_resolved_w)  ? 1'b1 : 1'b0;
-//                F3_BGEU: jmp_valid_w = (        ra_resolved_w  <          rb_resolved_w)  ? 1'b0 : 1'b1;
-//            endcase
-
             unique case (f3_w[2:1])
                 2'b00:  jmp_valid_w = (        ra_resolved_w  ==         rb_resolved_w);
                 2'b10:  jmp_valid_w = (signed'(ra_resolved_w) <  signed'(rb_resolved_w));
