@@ -5,7 +5,7 @@ module board_tb ();
 
 logic clk_sys;
 logic ia_rst;
-wire logic oa_halt;
+wire logic oc_halt;
 wire logic [ 7:0] oc_segment_a;
 wire logic [ 7:0] oc_segment_c;
 logic [15:0] ia_switch;

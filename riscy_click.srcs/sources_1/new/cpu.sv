@@ -12,7 +12,7 @@ module cpu
         // board signals
         input  wire logic       clk,     // clock
         input  wire logic       ic_rst,  // reset
-        output wire logic       oa_halt, // halt
+        output wire logic       oc_halt, // halt
 
         // instruction memory bus
         output      word_t      oa_imem_addr,
@@ -39,8 +39,8 @@ wire logic  c_if_valid;
 
 cpu_if cpu_if (
     .clk(clk),
-    .ia_rst(ic_rst),
-    .ia_halt(oa_halt),
+    .ic_rst(ic_rst),
+    .ic_halt(oc_halt),
     .oa_imem_addr(oa_imem_addr),
     .ia_imem_data(ia_imem_data),
     .ia_jmp_addr(a_jmp_addr),
@@ -73,7 +73,7 @@ wire word_t     c_id_wb_data;
         
 cpu_id cpu_id (
     .clk(clk),
-    .ia_rst(ic_rst),
+    .ic_rst(ic_rst),
     .ic_id_pc(c_if_pc),
     .ic_id_ir(c_if_ir),
     .ic_id_valid(c_if_valid),
@@ -88,7 +88,7 @@ cpu_id cpu_id (
     .oa_ready(a_ready),
     .oa_jmp_addr(a_jmp_addr),
     .oa_jmp_valid(a_jmp_valid),
-    .oc_halt(oa_halt),
+    .oc_halt(oc_halt),
     .oc_id_ir(c_id_ir),
     .oc_id_alu_op1(c_id_alu_op1),
     .oc_id_alu_op2(c_id_alu_op2),
@@ -111,7 +111,7 @@ wire word_t     c_ex_wb_data;
 
 cpu_ex cpu_ex (
     .clk(clk),
-    .ia_rst(ic_rst),
+    .ic_rst(ic_rst),
     .ic_ex_ir(c_id_ir),
     .ic_ex_alu_op1(c_id_alu_op1),
     .ic_ex_alu_op2(c_id_alu_op2),
@@ -140,7 +140,7 @@ wire word_t      c_ma_wb_data;
         
 cpu_ma cpu_ma (
     .clk(clk),
-    .ia_rst(ic_rst),
+    .ic_rst(ic_rst),
     .oa_dmem_addr(oa_dmem_addr),
     .oa_dmem_wrdata(oa_dmem_wrdata),
     .oa_dmem_wrmask(oa_dmem_wrmask),
@@ -162,7 +162,6 @@ cpu_ma cpu_ma (
 // Write Back
 cpu_wb cpu_wb (
     .clk(clk),
-    .ia_rst(ic_rst),
     .ia_dmem_rddata(ia_dmem_rddata),
     .ic_wb_ir(c_ma_ir),
     .ic_wb_is_load(c_ma_is_load),

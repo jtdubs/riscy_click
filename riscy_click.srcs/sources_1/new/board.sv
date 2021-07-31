@@ -11,7 +11,7 @@ module board
     (
         input  wire logic clk_sys,             // 100MHz system clock
         input  wire logic ia_rst,              // reset (async)
-        output wire logic oa_halt,             // halt
+        output wire logic oc_halt,             // halt
 
         // I/O
         output wire logic [ 7:0] oc_segment_a, // seven segment display anodes
@@ -168,7 +168,7 @@ end
 cpu cpu (
     .clk(clk_cpu),
     .ic_rst(c_cpu_rst),
-    .oa_halt(oa_halt),
+    .oc_halt(oc_halt),
     .oa_imem_addr(a_imem_addr),
     .ia_imem_data(a_imem_data),
     .oa_dmem_addr(a_dmem_addr),

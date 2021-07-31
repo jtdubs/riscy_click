@@ -11,7 +11,7 @@ module cpu_id
     (
         // cpu signals
         input  wire logic      clk,            // clock
-        input  wire logic      ia_rst,         // reset
+        input  wire logic      ic_rst,         // reset
 
         // pipeline input port
         input  wire word_t     ic_id_pc,          // program counter
@@ -150,25 +150,24 @@ end
 control_word_t a_cw;
 
 always_comb begin
-    casez ({ia_rst, a_f7, a_f3, a_opcode})
-    { 1'b1, 7'b???????, 3'b???,     7'b??????? }:  a_cw = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,     MA_SIZE_X,        WB_SRC_X   };
-    { 1'b?, 7'b0?00000, F3_SRL_SRA, OP_IMM }:      a_cw = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, a_alu_mode7, MA_X,     MA_SIZE_W,        WB_SRC_ALU };
-    { 1'b?, 7'b???????, 3'b???,     OP_IMM }:      a_cw = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, a_alu_mode3, MA_X,     MA_SIZE_W,        WB_SRC_ALU };
-    { 1'b?, 7'b???????, 3'b???,     OP_LUI }:      a_cw = '{ 1'b0, PC_NEXT,     ALU_OP1_IMMU, ALU_OP2_RS2,  ALU_COPY1,   MA_X,     MA_SIZE_W,        WB_SRC_ALU };
-    { 1'b?, 7'b???????, 3'b???,     OP_AUIPC }:    a_cw = '{ 1'b0, PC_NEXT,     ALU_OP1_IMMU, ALU_OP2_PC,   ALU_ADD,     MA_X,     MA_SIZE_W,        WB_SRC_ALU };
-    { 1'b?, 7'b???????, 3'b???,     OP }:          a_cw = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_RS2,  a_alu_mode7, MA_X,     MA_SIZE_W,        WB_SRC_ALU };
-    { 1'b?, 7'b???????, 3'b???,     OP_JAL }:      a_cw = '{ 1'b0, PC_JUMP_REL, ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,     MA_SIZE_W,        WB_SRC_PC4 };
-    { 1'b?, 7'b???????, 3'b???,     OP_JALR }:     a_cw = '{ 1'b0, PC_JUMP_ABS, ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,     MA_SIZE_W,        WB_SRC_PC4 };
-    { 1'b?, 7'b???????, F3_BEQ,     OP_BRANCH }:   a_cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SUB,     MA_X,     MA_SIZE_X,        WB_SRC_X   };
-    { 1'b?, 7'b???????, F3_BNE,     OP_BRANCH }:   a_cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SUB,     MA_X,     MA_SIZE_X,        WB_SRC_X   };
-    { 1'b?, 7'b???????, F3_BLT,     OP_BRANCH }:   a_cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SLT,     MA_X,     MA_SIZE_X,        WB_SRC_X   };
-    { 1'b?, 7'b???????, F3_BGE,     OP_BRANCH }:   a_cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SLT,     MA_X,     MA_SIZE_X,        WB_SRC_X   };
-    { 1'b?, 7'b???????, F3_BLTU,    OP_BRANCH }:   a_cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_ULT,     MA_X,     MA_SIZE_X,        WB_SRC_X   };
-    { 1'b?, 7'b???????, F3_BGEU,    OP_BRANCH }:   a_cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_ULT,     MA_X,     MA_SIZE_X,        WB_SRC_X   };
-    { 1'b?, 7'b???????, 3'b???,     OP_LOAD }:     a_cw = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, ALU_ADD,     MA_LOAD,  MA_SIZE_W,        WB_SRC_MEM };
-    { 1'b?, 7'b???????, 3'b???,     OP_STORE }:    a_cw = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMS, ALU_ADD,     MA_STORE, ma_size_t'(a_f3), WB_SRC_ALU };
-    { 1'b?, 7'b???????, 3'b???,     OP_MISC_MEM }: a_cw = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,     MA_SIZE_X,        WB_SRC_X   };
-    { 1'b?, 7'b???????, 3'b???,     OP_SYSTEM }:   a_cw = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,     MA_SIZE_X,        WB_SRC_X   };
+    casez ({a_f7, a_f3, a_opcode})
+    { 7'b0?00000, F3_SRL_SRA, OP_IMM }:      a_cw = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, a_alu_mode7, MA_X,     MA_SIZE_W,        WB_SRC_ALU };
+    { 7'b???????, 3'b???,     OP_IMM }:      a_cw = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, a_alu_mode3, MA_X,     MA_SIZE_W,        WB_SRC_ALU };
+    { 7'b???????, 3'b???,     OP_LUI }:      a_cw = '{ 1'b0, PC_NEXT,     ALU_OP1_IMMU, ALU_OP2_RS2,  ALU_COPY1,   MA_X,     MA_SIZE_W,        WB_SRC_ALU };
+    { 7'b???????, 3'b???,     OP_AUIPC }:    a_cw = '{ 1'b0, PC_NEXT,     ALU_OP1_IMMU, ALU_OP2_PC,   ALU_ADD,     MA_X,     MA_SIZE_W,        WB_SRC_ALU };
+    { 7'b???????, 3'b???,     OP }:          a_cw = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_RS2,  a_alu_mode7, MA_X,     MA_SIZE_W,        WB_SRC_ALU };
+    { 7'b???????, 3'b???,     OP_JAL }:      a_cw = '{ 1'b0, PC_JUMP_REL, ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,     MA_SIZE_W,        WB_SRC_PC4 };
+    { 7'b???????, 3'b???,     OP_JALR }:     a_cw = '{ 1'b0, PC_JUMP_ABS, ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,     MA_SIZE_W,        WB_SRC_PC4 };
+    { 7'b???????, F3_BEQ,     OP_BRANCH }:   a_cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SUB,     MA_X,     MA_SIZE_X,        WB_SRC_X   };
+    { 7'b???????, F3_BNE,     OP_BRANCH }:   a_cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SUB,     MA_X,     MA_SIZE_X,        WB_SRC_X   };
+    { 7'b???????, F3_BLT,     OP_BRANCH }:   a_cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SLT,     MA_X,     MA_SIZE_X,        WB_SRC_X   };
+    { 7'b???????, F3_BGE,     OP_BRANCH }:   a_cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SLT,     MA_X,     MA_SIZE_X,        WB_SRC_X   };
+    { 7'b???????, F3_BLTU,    OP_BRANCH }:   a_cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_ULT,     MA_X,     MA_SIZE_X,        WB_SRC_X   };
+    { 7'b???????, F3_BGEU,    OP_BRANCH }:   a_cw = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_ULT,     MA_X,     MA_SIZE_X,        WB_SRC_X   };
+    { 7'b???????, 3'b???,     OP_LOAD }:     a_cw = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, ALU_ADD,     MA_LOAD,  MA_SIZE_W,        WB_SRC_MEM };
+    { 7'b???????, 3'b???,     OP_STORE }:    a_cw = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMS, ALU_ADD,     MA_STORE, ma_size_t'(a_f3), WB_SRC_ALU };
+    { 7'b???????, 3'b???,     OP_MISC_MEM }: a_cw = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,     MA_SIZE_X,        WB_SRC_X   };
+    { 7'b???????, 3'b???,     OP_SYSTEM }:   a_cw = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,     MA_SIZE_X,        WB_SRC_X   };
     default:                                       a_cw = '{ 1'b1, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,     MA_SIZE_X,        WB_SRC_X   };
     endcase
 end
@@ -276,7 +275,7 @@ always_comb begin
         oa_jmp_addr  = 32'h00000000;
     end
        
-    if (ia_rst) begin
+    if (ic_rst) begin
         // set initial signal values
         oa_jmp_valid = 1'b0;
         oa_jmp_addr  = 32'h00000000;
@@ -293,7 +292,7 @@ always_comb begin
         oa_ready = 1'b1;
     end
        
-    if (ia_rst) begin
+    if (ic_rst) begin
         // set initial signal values
         oa_ready = 1'b1;
     end    
@@ -328,7 +327,7 @@ always_ff @(posedge clk) begin
         oc_halt        <= a_cw.halt;
     end
         
-    if (ia_rst) begin
+    if (ic_rst) begin
         // output a NOP (addi x0, x0, 0)
         oc_id_ir       <= NOP_IR;
         oc_id_alu_op1  <= 32'h00000000;

@@ -11,7 +11,7 @@ module cpu_ma
     (
         // cpu signals
         input  wire logic       clk,            // clock
-        input  wire logic       ia_rst,         // reset
+        input  wire logic       ic_rst,         // reset
 
         // data memory port
         output      word_t      oa_dmem_addr,   // address
@@ -82,7 +82,7 @@ always_ff @(posedge clk) begin
     oc_ma_is_load <= (ic_ma_mode == MA_LOAD);
     oc_ma_wb_data <= ic_ma_wb_data;
     
-    if (ia_rst) begin
+    if (ic_rst) begin
         oc_ma_ir      <= NOP_IR;
         oc_ma_is_load <= 1'b0;
         oc_ma_wb_data <= 32'h00000000;

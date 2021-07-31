@@ -19,5 +19,6 @@ https://github.com/combinatorylogic/soc/blob/master/backends/c2/hw/rtl/core.v
 
 
 Possible issues:
-- Mixing of async and sync resets seems odd
+- Mixing of async and sync resets seems odd.  Standardize on sync resets I think?
+- Is halt really async??
 - try out all the testbenches again...

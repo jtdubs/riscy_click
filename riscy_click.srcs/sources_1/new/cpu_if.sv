@@ -11,8 +11,8 @@ module cpu_if
     (
         // cpu signals
         input  wire logic  clk,           // clock
-        input  wire logic  ia_rst,        // reset
-        input  wire logic  ia_halt,       // halt
+        input  wire logic  ic_rst,        // reset
+        input  wire logic  ic_halt,       // halt
 
         // instruction memory port
         output      word_t oa_imem_addr,  // memory address
@@ -43,7 +43,7 @@ wire logic  c_buf_ready; // can skid accept data?
      word_t a_buf_ir;    // IR and PC to input
 
 // flush the skid buffer on jump, as those instructions aren't valid     
-always_comb a_buf_reset = ia_rst || ia_jmp_valid;
+always_comb a_buf_reset = ic_rst || ia_jmp_valid;
 
 // Skid input is valid if we aren't jumping
 always_comb a_buf_valid = ~ia_jmp_valid;
@@ -68,10 +68,8 @@ word_t a_buf_pc_next;
 
 // combiantional logic for next PC value
 always_comb begin
-    priority if (ia_halt)
+    priority if (ic_halt)
         a_buf_pc_next = c_buf_pc;     // no change on halt  
-    else if (ia_rst)
-        a_buf_pc_next = 32'h00000000;   // zero on reset
     else if (ia_jmp_valid)
         a_buf_pc_next = ia_jmp_addr; // respect jumps
     else if (~c_buf_ready)
@@ -82,7 +80,7 @@ end
 
 // advance every clock cycle
 always_ff @(posedge clk) begin
-    c_buf_pc <= a_buf_pc_next;
+    c_buf_pc <= ic_rst ? 32'h0 : a_buf_pc_next;
 end
 
 
@@ -91,8 +89,8 @@ end
 //
 
 always_comb begin
-    a_buf_ir     = ia_imem_data;  // Data from memory is IR
-    oa_imem_addr = a_buf_pc_next; // Address to request for next cycle is next PC value
+    a_buf_ir     = ic_rst ? 32'h0 : ia_imem_data;  // Data from memory is IR
+    oa_imem_addr = ic_rst ? 32'h0 : a_buf_pc_next; // Address to request for next cycle is next PC value
 end
 
 endmodule

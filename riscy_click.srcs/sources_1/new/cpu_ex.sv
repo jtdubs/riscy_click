@@ -11,7 +11,7 @@ module cpu_ex
     (
         // cpu signals
         input  wire logic      clk,            // clock
-        input  wire logic      ia_rst,         // reset
+        input  wire logic      ic_rst,         // reset
 
         // pipeline input port
         input  wire word_t     ic_ex_ir,          // instruction register
@@ -79,7 +79,7 @@ always_ff @(posedge clk) begin
     oc_ex_wb_src  <= ic_ex_wb_src;
     oc_ex_wb_data <= oa_hz_ex_data;
     
-    if (ia_rst) begin
+    if (ic_rst) begin
         oc_ex_ir      <= NOP_IR;
         oc_ex_ma_addr <= 32'h00000000;
         oc_ex_ma_mode <= NOP_MA_MODE;
