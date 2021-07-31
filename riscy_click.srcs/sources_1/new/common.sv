@@ -111,13 +111,14 @@ typedef enum logic [1:0] {
 
 // Memory Access Size
 typedef enum logic [2:0] {
-    MA_SIZE_X    = 3'b000,     // No writeback
-    MA_SIZE_B    = 3'b001,     // Byte (Signed)
-    MA_SIZE_H    = 3'b010,     // Half-Word (Signed)
-    MA_SIZE_W    = 3'b100,     // Word
-    MA_SIZE_BU   = 3'b101,     // Byte (Unsigned)
-    MA_SIZE_HU   = 3'b110      // Half-Word (Unsigned)
+    MA_SIZE_B    = 3'b000,     // Byte (Signed)
+    MA_SIZE_H    = 3'b001,     // Half-Word (Signed)
+    MA_SIZE_W    = 3'b010,     // Word
+    MA_SIZE_BU   = 3'b100,     // Byte (Unsigned)
+    MA_SIZE_HU   = 3'b101      // Half-Word (Unsigned)
 } ma_size_t;
+
+const ma_size_t MA_SIZE_X = MA_SIZE_W;
 
 // Write-Back Source
 typedef enum logic [1:0] {
@@ -154,7 +155,7 @@ const word_t     NOP_IR       = 32'h00000013;
 const word_t     NOP_ALU_OP   = 32'h00000000;
 const alu_mode_t NOP_ALU_MODE = ALU_ADD;
 const ma_mode_t  NOP_MA_MODE  = MA_X;
-const ma_size_t  NOP_MA_SIZE  = MA_SIZE_X;
+const ma_size_t  NOP_MA_SIZE  = MA_SIZE_W;
 const word_t     NOP_MA_DATA  = 32'h00000000;
 const regaddr_t  NOP_WB_ADDR  = 5'b00000;
 const wb_src_t   NOP_WB_SRC   = WB_SRC_ALU;

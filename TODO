@@ -1,5 +1,4 @@
 TODO:
-- Debug load/store sizes in simulator, cause I'm getting 0000FFFF on the display, lol
 - Try to remove unnecessary comparisons by making better control signals...
 - VGA output
 - Memory mapped character buffer for text console output
