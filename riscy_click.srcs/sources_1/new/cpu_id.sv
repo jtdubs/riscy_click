@@ -20,19 +20,19 @@ module cpu_id
         input  wire logic      valid_i,       // fetch stage data is valid
         
         // data hazard port
-        input  wire regaddr_t  ex_writeback_addr_i,     // hazard write-back register address
-        input  wire word_t     ex_writeback_data_i,     // hazard write-back register data
-        input  wire logic      ex_writeback_valid_i,    // hazard write-back data valid
-        input  wire regaddr_t  ma_writeback_addr_i,     // hazard write-back register address
-        input  wire word_t     ma_writeback_data_i,     // hazard write-back register data
-        input  wire logic      ma_writeback_valid_i,    // hazard write-back data valid
+        input  wire regaddr_t  ex_wb_addr_i,  // hazard write-back register address
+        input  wire word_t     ex_wb_data_i,  // hazard write-back register data
+        input  wire logic      ex_wb_valid_i, // hazard write-back data valid
+        input  wire regaddr_t  ma_wb_addr_i,  // hazard write-back register address
+        input  wire word_t     ma_wb_data_i,  // hazard write-back register data
+        input  wire logic      ma_wb_valid_i, // hazard write-back data valid
         
         // writeback port
-        input  wire regaddr_t  writeback_addr_i,        // write-back register address
-        input  wire word_t     writeback_data_i,        // write-back register data
+        input  wire regaddr_t  wb_addr_i,     // write-back register address
+        input  wire word_t     wb_data_i,     // write-back register data
 
         // backpressure port
-        output      logic      ready_async_o,       // stage ready for new inputs
+        output      logic      ready_async_o, // stage ready for new inputs
         
         // control flow port
         output      word_t     jmp_addr_o,    // jump address
@@ -46,8 +46,8 @@ module cpu_id
         output      ma_mode_t  ma_mode_o,     // memory access mode
         output      ma_size_t  ma_size_o,     // memory access size
         output      word_t     ma_data_o,     // memory access data (for store operations)
-        output      wb_src_t   writeback_src_o,      // write-back source
-        output      word_t     writeback_data_o      // write-back data
+        output      wb_src_t   wb_src_o,      // write-back source
+        output      word_t     wb_data_o      // write-back data
     );
         
 
@@ -57,14 +57,20 @@ module cpu_id
 
 // Instruction
 opcode_t  opcode_w;
-regaddr_t rs1_w, rs2_w, rd_w;
+regaddr_t rs1_w;
+regaddr_t rs2_w;
+regaddr_t rd_w;
 funct3_t  f3_w;
 funct7_t  f7_w;
 
 always_comb { f7_w, rs2_w, rs1_w, f3_w, rd_w, opcode_w } = ir_i;
 
 // Immediates
-word_t imm_i_w, imm_s_w, imm_b_w, imm_u_w, imm_j_w;
+word_t imm_i_w;
+word_t imm_s_w;
+word_t imm_b_w;
+word_t imm_u_w;
+word_t imm_j_w;
 
 always_comb begin
     imm_i_w = { {21{ir_i[31]}}, ir_i[30:25], ir_i[24:21], ir_i[20] };
@@ -75,7 +81,8 @@ always_comb begin
 end
 
 // ALU Modes
-alu_mode_t alu_mode3_w, alu_mode7_w;
+alu_mode_t alu_mode3_w;
+alu_mode_t alu_mode7_w;
 
 always_comb begin
     alu_mode7_w = alu_mode_t'({ f7_w[0], f7_w[5], f3_w });
@@ -88,20 +95,21 @@ end
 //
 
 // output values from register file
-wire word_t ra_w, rb_w;
+wire word_t ra_w;
+wire word_t rb_w;
 
 regfile regfile (
-    .clk_i(clk_i),
+    .clk_i              (clk_i),
     // read from rs1 in the opcode into ra
-    .read1_addr_async_i(rs1_w),
-    .read1_data_async_o(ra_w),
+    .read1_addr_async_i (rs1_w),
+    .read1_data_async_o (ra_w),
     // read from rs2 in the opcode into rb
-    .read2_addr_async_i(rs2_w),
-    .read2_data_async_o(rb_w),
+    .read2_addr_async_i (rs2_w),
+    .read2_data_async_o (rb_w),
     // let the write-back stage drive the write signals
-    .write_addr_i(writeback_addr_i),
-    .write_data_i(writeback_data_i),
-    .write_enable_i(1'b1)
+    .write_addr_i       (wb_addr_i),
+    .write_data_i       (wb_data_i),
+    .write_enable_i     (1'b1)
 );
 
 
@@ -112,18 +120,19 @@ regfile regfile (
 //
 
 // Resolved register values (when possible)
-word_t ra_resolved_w, rb_resolved_w;
+word_t ra_resolved_w;
+word_t rb_resolved_w;
 
 // Determine true value for first register access
 always_comb begin
     priority if (rs1_w == 5'b00000)
         ra_resolved_w = ra_w;
-    else if (rs1_w == writeback_addr_i)
-        ra_resolved_w = writeback_data_i;
-    else if (rs1_w == ma_writeback_addr_i)
-        ra_resolved_w = ma_writeback_data_i;
-    else if (rs1_w == ex_writeback_addr_i)
-        ra_resolved_w = ex_writeback_data_i;
+    else if (rs1_w == wb_addr_i)
+        ra_resolved_w = wb_data_i;
+    else if (rs1_w == ma_wb_addr_i)
+        ra_resolved_w = ma_wb_data_i;
+    else if (rs1_w == ex_wb_addr_i)
+        ra_resolved_w = ex_wb_data_i;
     else
         ra_resolved_w = ra_w;
 end
@@ -132,12 +141,12 @@ end
 always_comb begin
     priority if (rs2_w == 5'b00000)
         rb_resolved_w = rb_w;
-    else if (rs2_w == writeback_addr_i)
-        rb_resolved_w = writeback_data_i;
-    else if (rs2_w == ma_writeback_addr_i)
-        rb_resolved_w = ma_writeback_data_i;
-    else if (rs2_w == ex_writeback_addr_i)
-        rb_resolved_w = ex_writeback_data_i;
+    else if (rs2_w == wb_addr_i)
+        rb_resolved_w = wb_data_i;
+    else if (rs2_w == ma_wb_addr_i)
+        rb_resolved_w = ma_wb_data_i;
+    else if (rs2_w == ex_wb_addr_i)
+        rb_resolved_w = ex_wb_data_i;
     else
         rb_resolved_w = rb_w;
 end
@@ -174,10 +183,11 @@ end
 
 
 //
-// ALU Operand #1
+// ALU Operands
 //
 
 word_t alu_op1_w;
+word_t alu_op2_w;
 
 always_comb begin
     unique case (cw_w.alu_op1)
@@ -185,13 +195,6 @@ always_comb begin
     ALU_OP1_IMMU: alu_op1_w = imm_u_w;
     endcase
 end
-
-
-//
-// ALU Operand #2
-//
-
-word_t alu_op2_w;
 
 always_comb begin
     unique case (cw_w.alu_op2)
@@ -256,8 +259,8 @@ end
 
 // Data Hazard: EX stage has a colliding writeback and the data isn't available yet (ex. JALR or LW)
 logic data_hazard_w;
-always_comb data_hazard_w = ((rs1_w != 5'b00000) && ((ex_writeback_addr_i == rs1_w && !ex_writeback_valid_i) || (ma_writeback_addr_i == rs1_w && !ma_writeback_valid_i)))
-                         || ((rs2_w != 5'b00000) && ((ex_writeback_addr_i == rs2_w && !ex_writeback_valid_i) || (ma_writeback_addr_i == rs2_w && !ma_writeback_valid_i)));
+always_comb data_hazard_w = ((rs1_w != 5'b00000) && ((ex_wb_addr_i == rs1_w && !ex_wb_valid_i) || (ma_wb_addr_i == rs1_w && !ma_wb_valid_i)))
+                         || ((rs2_w != 5'b00000) && ((ex_wb_addr_i == rs2_w && !ex_wb_valid_i) || (ma_wb_addr_i == rs2_w && !ma_wb_valid_i)));
 
 // a bubble needs to be output if we are in a data hazard condition, or if there was no valid instruction to decode
 logic bubble_w;
@@ -303,42 +306,42 @@ always_ff @(posedge clk_i) begin
     // if a bubble is needed
     if (bubble_w) begin
         // output a NOP (addi x0, x0, 0)
-        ir_o             <= NOP_IR;
-        alu_op1_o        <= 32'h00000000;
-        alu_op2_o        <= 32'h00000000;
-        alu_mode_o       <= NOP_ALU_MODE;
-        ma_mode_o        <= NOP_MA_MODE;
-        ma_size_o        <= NOP_MA_SIZE;
-        ma_data_o        <= 32'h00000000;
-        writeback_src_o  <= NOP_WB_SRC;
-        writeback_data_o <= 32'h00000000;
-        halt_o           <= 1'b0;
+        ir_o       <= NOP_IR;
+        alu_op1_o  <= 32'h00000000;
+        alu_op2_o  <= 32'h00000000;
+        alu_mode_o <= NOP_ALU_MODE;
+        ma_mode_o  <= NOP_MA_MODE;
+        ma_size_o  <= NOP_MA_SIZE;
+        ma_data_o  <= 32'h00000000;
+        wb_src_o   <= NOP_WB_SRC;
+        wb_data_o  <= 32'h00000000;
+        halt_o     <= 1'b0;
     end else begin
         // otherwise, output decoded control signals
-        ir_o             <= ir_i;
-        alu_op1_o        <= alu_op1_w;
-        alu_op2_o        <= alu_op2_w;
-        alu_mode_o       <= cw_w.alu_mode;
-        ma_mode_o        <= cw_w.ma_mode;
-        ma_size_o        <= cw_w.ma_size;
-        ma_data_o        <= rb_resolved_w;
-        writeback_src_o  <= cw_w.wb_src;
-        writeback_data_o <= (cw_w.wb_src == WB_SRC_PC4) ? (pc_i + 4) : 32'h00000000;
-        halt_o           <= cw_w.halt;
+        ir_o       <= ir_i;
+        alu_op1_o  <= alu_op1_w;
+        alu_op2_o  <= alu_op2_w;
+        alu_mode_o <= cw_w.alu_mode;
+        ma_mode_o  <= cw_w.ma_mode;
+        ma_size_o  <= cw_w.ma_size;
+        ma_data_o  <= rb_resolved_w;
+        wb_src_o   <= cw_w.wb_src;
+        wb_data_o  <= (cw_w.wb_src == WB_SRC_PC4) ? (pc_i + 4) : 32'h00000000; // TODO: this is unnecessary
+        halt_o     <= cw_w.halt;
     end
         
     if (reset_i) begin
         // output a NOP (addi x0, x0, 0)
-        ir_o             <= NOP_IR;
-        alu_op1_o        <= 32'h00000000;
-        alu_op2_o        <= 32'h00000000;
-        alu_mode_o       <= NOP_ALU_MODE;
-        ma_mode_o        <= NOP_MA_MODE;
-        ma_size_o        <= NOP_MA_SIZE;
-        ma_data_o        <= 32'h00000000;
-        writeback_src_o  <= NOP_WB_SRC;
-        writeback_data_o <= 32'h00000000;
-        halt_o           <= 1'b0;
+        ir_o       <= NOP_IR;
+        alu_op1_o  <= 32'h00000000;
+        alu_op2_o  <= 32'h00000000;
+        alu_mode_o <= NOP_ALU_MODE;
+        ma_mode_o  <= NOP_MA_MODE;
+        ma_size_o  <= NOP_MA_SIZE;
+        ma_data_o  <= 32'h00000000;
+        wb_src_o   <= NOP_WB_SRC;
+        wb_data_o  <= 32'h00000000;
+        halt_o     <= 1'b0;
     end
 end
 

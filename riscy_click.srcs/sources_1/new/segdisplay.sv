@@ -17,8 +17,8 @@ module segdisplay
         input  wire logic       reset_i,
 
         // display interface
-        output      logic [7:0] dsp_anode_o,   // common anodes
-        output      logic [7:0] dsp_cathode_o,   // cathodes
+        output      logic [7:0] dsp_anode_o,
+        output      logic [7:0] dsp_cathode_o,
 
         // read port
         output      word_t      read_data_o,
@@ -106,26 +106,26 @@ end
 always_comb begin
     if (index_w[0]) begin
         // on odd indexes, output nothing
-        dsp_cathode_w <= 8'b11111111;
+        dsp_cathode_w = 8'b11111111;
     end else begin
         // on even indexes, output the appropriate nibble
         unique case (nibble_w)
-        0:  dsp_cathode_w <= 8'b11000000;
-        1:  dsp_cathode_w <= 8'b11111001;
-        2:  dsp_cathode_w <= 8'b10100100;
-        3:  dsp_cathode_w <= 8'b10110000;
-        4:  dsp_cathode_w <= 8'b10011001;
-        5:  dsp_cathode_w <= 8'b10010010;
-        6:  dsp_cathode_w <= 8'b10000010;
-        7:  dsp_cathode_w <= 8'b11111000;
-        8:  dsp_cathode_w <= 8'b10000000;
-        9:  dsp_cathode_w <= 8'b10011000;
-        10: dsp_cathode_w <= 8'b10001000;
-        11: dsp_cathode_w <= 8'b10000011;
-        12: dsp_cathode_w <= 8'b11000110;
-        13: dsp_cathode_w <= 8'b10100001;
-        14: dsp_cathode_w <= 8'b10000110;
-        15: dsp_cathode_w <= 8'b10001110;
+        0:  dsp_cathode_w = 8'b11000000;
+        1:  dsp_cathode_w = 8'b11111001;
+        2:  dsp_cathode_w = 8'b10100100;
+        3:  dsp_cathode_w = 8'b10110000;
+        4:  dsp_cathode_w = 8'b10011001;
+        5:  dsp_cathode_w = 8'b10010010;
+        6:  dsp_cathode_w = 8'b10000010;
+        7:  dsp_cathode_w = 8'b11111000;
+        8:  dsp_cathode_w = 8'b10000000;
+        9:  dsp_cathode_w = 8'b10011000;
+        10: dsp_cathode_w = 8'b10001000;
+        11: dsp_cathode_w = 8'b10000011;
+        12: dsp_cathode_w = 8'b11000110;
+        13: dsp_cathode_w = 8'b10100001;
+        14: dsp_cathode_w = 8'b10000110;
+        15: dsp_cathode_w = 8'b10001110;
         endcase
     end
 end

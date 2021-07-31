@@ -10,20 +10,20 @@ module cpu_if
     import common::*;
     (
         // cpu signals
-        input  wire logic  clk_i,        // clock
-        input  wire logic  reset_i,      // reset_i
-        input  wire logic  halt_i,       // halt
+        input  wire logic  clk_i,       // clock
+        input  wire logic  reset_i,     // reset_i
+        input  wire logic  halt_i,      // halt
 
         // instruction memory port
-        output      word_t imem_addr_o,  // memory address
-        input  wire word_t imem_data_i,  // data
+        output      word_t imem_addr_o, // memory address
+        input  wire word_t imem_data_i, // data
         
         // control flow port
-        input  wire word_t jmp_addr_i,   // jump address
-        input  wire logic  jmp_valid_i,  // whether or not jump address is valid
+        input  wire word_t jmp_addr_i,  // jump address
+        input  wire logic  jmp_valid_i, // whether or not jump address is valid
         
         // backpressure port
-        input  wire logic  ready_i,      // is the ID stage ready to accept input
+        input  wire logic  ready_i,     // is the ID stage ready to accept input
 
         // pipeline output port
         output wire word_t pc_o,        // program counter
@@ -49,14 +49,14 @@ always_comb reset_w = reset_i || jmp_valid_i;
 always_comb write_valid_w = ~jmp_valid_i;
 
 skid_buffer #(.WORD_WIDTH(64)) output_buffer (
-    .clk_i(clk_i),
-    .reset_i(reset_w),
-    .write_ready_o(write_ready_w),
-    .write_valid_i(write_valid_w),
-    .write_data_i({ write_pc_r, write_ir_w }),
-    .read_ready_i(ready_i),
-    .read_valid_o(valid_o),
-    .read_data_o({ pc_o, ir_o })
+    .clk_i         (clk_i),
+    .reset_i       (reset_w),
+    .write_ready_o (write_ready_w),
+    .write_valid_i (write_valid_w),
+    .write_data_i  ({ write_pc_r, write_ir_w }),
+    .read_ready_i  (ready_i),
+    .read_valid_o  (valid_o),
+    .read_data_o   ({ pc_o, ir_o })
 );
 
 

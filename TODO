@@ -1,7 +1,3 @@
-wb vs writeback
-op1 vs operand1
-read1/read2 vs ra/rb
-
 TODO:
 - VGA output
 - Memory mapped character buffer for text console output

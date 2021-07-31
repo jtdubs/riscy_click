@@ -21,7 +21,6 @@ module block_rom
     );
 
 // ROM primitive
-
 xpm_memory_dprom #(
     // common parameters
     .MEMORY_INIT_FILE(CONTENTS),

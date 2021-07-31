@@ -41,17 +41,25 @@ typedef enum logic [1:0] {
 } state_t;
 
 // current and next state
-state_t state_r, state_w;
+state_t state_r;
+state_t state_w;
 
 // which buffer operations will occur
-logic insert_w, remove_w;
+logic insert_w;
+logic remove_w;
+
 always_comb begin
     insert_w = write_valid_i && write_ready_o; // insert will occur if input can be accepted, and is provided
     remove_w =  read_valid_o &&  read_ready_i; // remove will occur if output can be accepted, and is provided
 end
 
 // which state transition is occuring
-logic load_w, unload_w, buffer_w, unbuffer_w, run_w;
+logic load_w;
+logic unload_w;
+logic buffer_w;
+logic unbuffer_w;
+logic run_w;
+
 always_comb begin
     load_w     = (state_r == EMPTY)   &&  insert_w;              // inserting into an empty output register
     unload_w   = (state_r == RUNNING) && !insert_w &&  remove_w; // output register consumed; now empty
