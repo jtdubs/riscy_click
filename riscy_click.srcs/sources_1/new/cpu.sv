@@ -133,9 +133,10 @@ cpu_ex cpu_ex (
 );
 
 // Memory Access
-wire word_t ma_ir_w;
-wire logic  ma_load_w;
-wire word_t ma_wb_data_w;
+wire word_t    ma_ir_w;
+wire logic     ma_load_w;
+wire word_t    ma_wb_data_w;
+wire ma_size_t ma_size_w;
         
 cpu_ma cpu_ma (
     .clk_i             (clk_i),
@@ -155,6 +156,7 @@ cpu_ma cpu_ma (
     .ma_wb_valid_o     (id_ma_wb_valid_w),
     .ir_o              (ma_ir_w),
     .load_o            (ma_load_w),
+    .ma_size_o         (ma_size_w),
     .wb_data_o         (ma_wb_data_w)
 );
 
@@ -164,6 +166,7 @@ cpu_wb cpu_wb (
     .dmem_read_data_i (dmem_read_data_i),
     .ir_i             (ma_ir_w),
     .load_i           (ma_load_w),
+    .ma_size_i        (ma_size_w),
     .wb_data_i        (ma_wb_data_w),
     .wb_addr_o        (wb_addr_w),
     .wb_data_o        (wb_data_w)

@@ -18,6 +18,7 @@ module cpu_wb
         // pipeline input port
         input  wire word_t    ir_i,             // instruction register
         input  wire logic     load_i,           // is this a load instruction?
+        input  wire ma_size_t ma_size_i,        // memory access size
         input  wire word_t    wb_data_i,        // write-back register value
         
         // pipeline output port
@@ -32,7 +33,17 @@ module cpu_wb
 
 always_comb begin
     wb_addr_o = ir_i[11:7];
-    wb_data_o = load_i ? dmem_read_data_i : wb_data_i;
+    wb_data_o = wb_data_i;
+    
+    if (load_i) begin
+        unique case (ma_size_i)
+        MA_SIZE_B:   wb_data_o = { {24{dmem_read_data_i[ 7]}},  dmem_read_data_i[ 7:0] };
+        MA_SIZE_H:   wb_data_o = { {16{dmem_read_data_i[15]}},  dmem_read_data_i[15:0] };
+        MA_SIZE_BU:  wb_data_o = { 24'b0,                       dmem_read_data_i[ 7:0] };
+        MA_SIZE_HU:  wb_data_o = { 16'b0,                       dmem_read_data_i[15:0] };
+        MA_SIZE_W:   wb_data_o = dmem_read_data_i;
+        endcase
+    end
 end 
 
 endmodule

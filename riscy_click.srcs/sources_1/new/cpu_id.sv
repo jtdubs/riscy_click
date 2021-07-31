@@ -326,7 +326,7 @@ always_ff @(posedge clk_i) begin
         ma_size_o  <= cw_w.ma_size;
         ma_data_o  <= rb_resolved_w;
         wb_src_o   <= cw_w.wb_src;
-        wb_data_o  <= (cw_w.wb_src == WB_SRC_PC4) ? (pc_i + 4) : 32'h00000000; // TODO: this is unnecessary
+        wb_data_o  <= pc_i + 4;
         halt_o     <= cw_w.halt;
     end
         

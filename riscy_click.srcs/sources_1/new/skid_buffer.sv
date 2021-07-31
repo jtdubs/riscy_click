@@ -33,7 +33,6 @@ localparam logic [WORD_WIDTH-1:0] WORD_ZERO = {WORD_WIDTH{1'b0}};
    
 
 // state definitions
-// TODO: does it do a better job synthesizing if I leave these values out?
 typedef enum logic [1:0] {
     EMPTY   = 2'b00, // buffer empty; no output available
     RUNNING = 2'b01, // buffer input and output both possible
@@ -98,7 +97,6 @@ always_ff @(posedge clk_i) begin
     read_valid_o <= (state_w != EMPTY);
     
     // set output register
-    // TODO: is 'unique if' appropriate here, or should I leave off the 'else' because I want to infer a flip-flop anyway
     unique if (load_w || run_w)
         read_data_o <= write_data_i;  // make input available in output register
     else if (unload_w)
@@ -109,7 +107,6 @@ always_ff @(posedge clk_i) begin
         read_data_o <= read_data_o;  
        
     // set buffer register
-    // TODO: is 'unique if' appropriate here, or should I leave off the 'else' because I want to infer a flip-flop anyway
     unique if (buffer_w)
         data_buffer_r <= write_data_i; // buffer the input
     else if (unbuffer_w)

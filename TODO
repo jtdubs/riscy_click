@@ -1,4 +1,6 @@
 TODO:
+- BUFGCTRL instead of BUFGCE
+- Try to remove unnecessary comparisons by making better control signals...
 - VGA output
 - Memory mapped character buffer for text console output
 - USB UART would be awesome...

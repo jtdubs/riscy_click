@@ -35,6 +35,7 @@ module cpu_ma
         // pipeline output port
         output      word_t      ir_o,              // instruction register
         output      logic       load_o,            // is this a loan instruction?
+        output      ma_size_t   ma_size_o,         // memory access size
         output      word_t      wb_data_o          // write-back register value
     );
     
@@ -46,9 +47,40 @@ module cpu_ma
 always_comb begin
     dmem_addr_o       = ma_addr_i;
     dmem_write_data_o = ma_data_i;
-    dmem_write_mask_o = (ma_mode_i == MA_STORE) ? 4'b1111 : 4'b0000;
-    // TODO: deal with MA_SIZE values other than W
+    dmem_write_mask_o = 4'b0000;
+    
+    if (ma_mode_i == MA_STORE) begin
+        unique case (ma_size_i)
+        MA_SIZE_B:
+            begin
+                dmem_write_data_o = { 4{ma_data_i[ 7:0]} };
+                unique case (ma_addr_i[1:0])
+                2'b00: dmem_write_mask_o = 4'b0001;
+                2'b01: dmem_write_mask_o = 4'b0010;
+                2'b10: dmem_write_mask_o = 4'b0100;
+                2'b11: dmem_write_mask_o = 4'b1000;
+                endcase
+            end
+        MA_SIZE_H:
+            begin
+                dmem_write_data_o = { 2{ma_data_i[15:0]} };
+                begin
+                    unique case (ma_addr_i[1:0])
+                    2'b00:   dmem_write_mask_o = 4'b0011;
+                    2'b10:   dmem_write_mask_o = 4'b1100;
+                    default: dmem_write_mask_o = 4'b0000;
+                endcase
+            end
+        end
+        MA_SIZE_W:
+            begin
+                dmem_write_data_o = ma_data_i;
+                dmem_write_mask_o = 4'b1111;
+            end
+        endcase
+    end  
 end 
+
 
 
 //
@@ -56,20 +88,9 @@ end
 //
 
 always_comb begin
-    ma_wb_addr_o = ir_i[11:7];
-
-    case (wb_src_i)
-    WB_SRC_MEM:
-        begin
-            ma_wb_data_o   = 32'b0;
-            ma_wb_valid_o  = 1'b0;
-        end
-    default:  
-        begin
-            ma_wb_data_o   = wb_data_i;
-            ma_wb_valid_o  = 1'b1;
-        end  
-    endcase
+    ma_wb_addr_o  = ir_i[11:7];
+    ma_wb_data_o  = wb_data_i;
+    ma_wb_valid_o = (wb_src_i != WB_SRC_MEM); 
 end  
 
 
@@ -80,11 +101,13 @@ end
 always_ff @(posedge clk_i) begin
     ir_o      <= ir_i;
     load_o    <= (ma_mode_i == MA_LOAD);
+    ma_size_o <= ma_size_i;
     wb_data_o <= wb_data_i;
     
     if (reset_i) begin
         ir_o      <= NOP_IR;
         load_o    <= 1'b0;
+        ma_size_o <= NOP_MA_SIZE;
         wb_data_o <= 32'h00000000;
     end
 end
