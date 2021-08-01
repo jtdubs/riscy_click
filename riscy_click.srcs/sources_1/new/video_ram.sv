@@ -4,6 +4,9 @@
 module video_ram
     // Import Constants
     import common::*;
+    #(
+        CONTENTS = "none"
+    )
     (
         // cpu interface
         input  wire logic        clk_cpu_i,
@@ -26,7 +29,7 @@ xpm_memory_tdpram #(
     .CASCADE_HEIGHT(0),
     .CLOCKING_MODE("independent_clock"),
     .ECC_MODE("no_ecc"),
-    .MEMORY_INIT_FILE("none"),
+    .MEMORY_INIT_FILE(CONTENTS),
     .MEMORY_INIT_PARAM("0"),
     .MEMORY_OPTIMIZATION("true"),
     .MEMORY_PRIMITIVE("block"),
@@ -82,7 +85,7 @@ video_tdpram_inst (
     .addrb(pxl_addr_i),
     .doutb(pxl_data_o),
     .dinb(8'b0),
-    .web(4'b0),
+    .web(1'b0),
     .enb(1'b1),
     .regceb(1'b1),
     .rstb(pxl_reset_i),

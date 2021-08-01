@@ -8,12 +8,12 @@ module character_rom
         CONTENTS = ""
     )
     (
-        input  wire logic  clk_i,
-        input  wire logic  reset_i,
+        input  wire logic        clk_i,
+        input  wire logic        reset_i,
         
         // port
-        input  wire word_t addr_i,
-        output wire word_t data_o
+        input  wire logic [11:0] addr_i,
+        output wire logic [31:0] data_o
     );
     
     

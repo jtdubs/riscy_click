@@ -1,6 +1,7 @@
 TODO:
-- Try to remove unnecessary comparisons by making better control signals...
-- VGA output
+- Need a way to build a character rom from a font
+- Need a BIOS that outputs something to VRAM
+
 - Memory mapped character buffer for text console output
 - USB UART would be awesome...
 - USB HID via PS/2 emulation would be awesome...

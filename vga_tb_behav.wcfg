@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="vga_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="common" />
+            <top_module name="glbl" />
+            <top_module name="vga_tb" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="1,046.501 ns"></ZoomEndTime>
+      <Cursor1Time time="5,000.000 ns"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="404"></NameColumnWidth>
+      <ValueColumnWidth column_width="136"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="30" />
+   <wvobject fp_name="/vga_tb/vga/clk_pxl_i" type="logic">
+      <obj_property name="ElementShortName">clk_pxl_i</obj_property>
+      <obj_property name="ObjectShortName">clk_pxl_i</obj_property>
+      <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/reset_i" type="logic">
+      <obj_property name="ElementShortName">reset_i</obj_property>
+      <obj_property name="ObjectShortName">reset_i</obj_property>
+      <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/x_w" type="array">
+      <obj_property name="ElementShortName">x_w[9:0]</obj_property>
+      <obj_property name="ObjectShortName">x_w[9:0]</obj_property>
+      <obj_property name="CustomSignalColor">#F0E68C</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/y_w" type="array">
+      <obj_property name="ElementShortName">y_w[9:0]</obj_property>
+      <obj_property name="ObjectShortName">y_w[9:0]</obj_property>
+      <obj_property name="CustomSignalColor">#F0E68C</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/x_r" type="array">
+      <obj_property name="ElementShortName">x_r[9:0]</obj_property>
+      <obj_property name="ObjectShortName">x_r[9:0]</obj_property>
+      <obj_property name="CustomSignalColor">#F0E68C</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/y_r" type="array">
+      <obj_property name="ElementShortName">y_r[9:0]</obj_property>
+      <obj_property name="ObjectShortName">y_r[9:0]</obj_property>
+      <obj_property name="CustomSignalColor">#F0E68C</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/display_area_w" type="logic">
+      <obj_property name="ElementShortName">display_area_w</obj_property>
+      <obj_property name="ObjectShortName">display_area_w</obj_property>
+      <obj_property name="CustomSignalColor">#008080</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/hsync_w" type="logic">
+      <obj_property name="ElementShortName">hsync_w</obj_property>
+      <obj_property name="ObjectShortName">hsync_w</obj_property>
+      <obj_property name="CustomSignalColor">#008080</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/vsync_w" type="logic">
+      <obj_property name="ElementShortName">vsync_w</obj_property>
+      <obj_property name="ObjectShortName">vsync_w</obj_property>
+      <obj_property name="CustomSignalColor">#008080</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/char_boundary_w" type="logic">
+      <obj_property name="ElementShortName">char_boundary_w</obj_property>
+      <obj_property name="ObjectShortName">char_boundary_w</obj_property>
+      <obj_property name="CustomSignalColor">#008080</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/x_char_index_w" type="array">
+      <obj_property name="ElementShortName">x_char_index_w[6:0]</obj_property>
+      <obj_property name="ObjectShortName">x_char_index_w[6:0]</obj_property>
+      <obj_property name="CustomSignalColor">#D2691E</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/y_char_index_w" type="array">
+      <obj_property name="ElementShortName">y_char_index_w[4:0]</obj_property>
+      <obj_property name="ObjectShortName">y_char_index_w[4:0]</obj_property>
+      <obj_property name="CustomSignalColor">#D2691E</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/x_char_offset_w" type="array">
+      <obj_property name="ElementShortName">x_char_offset_w[2:0]</obj_property>
+      <obj_property name="ObjectShortName">x_char_offset_w[2:0]</obj_property>
+      <obj_property name="CustomSignalColor">#D2691E</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/y_char_offset_w" type="array">
+      <obj_property name="ElementShortName">y_char_offset_w[3:0]</obj_property>
+      <obj_property name="ObjectShortName">y_char_offset_w[3:0]</obj_property>
+      <obj_property name="CustomSignalColor">#D2691E</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/x_char_index_r" type="array">
+      <obj_property name="ElementShortName">x_char_index_r[6:0]</obj_property>
+      <obj_property name="ObjectShortName">x_char_index_r[6:0]</obj_property>
+      <obj_property name="CustomSignalColor">#D2691E</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/y_char_index_r" type="array">
+      <obj_property name="ElementShortName">y_char_index_r[4:0]</obj_property>
+      <obj_property name="ObjectShortName">y_char_index_r[4:0]</obj_property>
+      <obj_property name="CustomSignalColor">#D2691E</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/x_char_offset_r" type="array">
+      <obj_property name="ElementShortName">x_char_offset_r[2:0]</obj_property>
+      <obj_property name="ObjectShortName">x_char_offset_r[2:0]</obj_property>
+      <obj_property name="CustomSignalColor">#D2691E</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/y_char_offset_r" type="array">
+      <obj_property name="ElementShortName">y_char_offset_r[3:0]</obj_property>
+      <obj_property name="ObjectShortName">y_char_offset_r[3:0]</obj_property>
+      <obj_property name="CustomSignalColor">#D2691E</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/vram_addr_o" type="array">
+      <obj_property name="ElementShortName">vram_addr_o[11:0]</obj_property>
+      <obj_property name="ObjectShortName">vram_addr_o[11:0]</obj_property>
+      <obj_property name="CustomSignalColor">#808000</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/vram_data_i" type="array">
+      <obj_property name="ElementShortName">vram_data_i[7:0]</obj_property>
+      <obj_property name="ObjectShortName">vram_data_i[7:0]</obj_property>
+      <obj_property name="CustomSignalColor">#808000</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/crom_addr_w" type="array">
+      <obj_property name="ElementShortName">crom_addr_w[11:0]</obj_property>
+      <obj_property name="ObjectShortName">crom_addr_w[11:0]</obj_property>
+      <obj_property name="CustomSignalColor">#808000</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/crom_data_w" type="array">
+      <obj_property name="ElementShortName">crom_data_w[7:0]</obj_property>
+      <obj_property name="ObjectShortName">crom_data_w[7:0]</obj_property>
+      <obj_property name="CustomSignalColor">#808000</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/char_row_w" type="array">
+      <obj_property name="ElementShortName">char_row_w[31:0]</obj_property>
+      <obj_property name="ObjectShortName">char_row_w[31:0]</obj_property>
+      <obj_property name="CustomSignalColor">#808000</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/char_row_r" type="array">
+      <obj_property name="ElementShortName">char_row_r[31:0]</obj_property>
+      <obj_property name="ObjectShortName">char_row_r[31:0]</obj_property>
+      <obj_property name="CustomSignalColor">#808000</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/rgb_w" type="array">
+      <obj_property name="ElementShortName">rgb_w[3:0]</obj_property>
+      <obj_property name="ObjectShortName">rgb_w[3:0]</obj_property>
+      <obj_property name="CustomSignalColor">#FFFFFF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/vga_red_o" type="array">
+      <obj_property name="ElementShortName">vga_red_o[3:0]</obj_property>
+      <obj_property name="ObjectShortName">vga_red_o[3:0]</obj_property>
+      <obj_property name="CustomSignalColor">#F0E68C</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/vga_green_o" type="array">
+      <obj_property name="ElementShortName">vga_green_o[3:0]</obj_property>
+      <obj_property name="ObjectShortName">vga_green_o[3:0]</obj_property>
+      <obj_property name="CustomSignalColor">#F0E68C</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/vga_blue_o" type="array">
+      <obj_property name="ElementShortName">vga_blue_o[3:0]</obj_property>
+      <obj_property name="ObjectShortName">vga_blue_o[3:0]</obj_property>
+      <obj_property name="CustomSignalColor">#F0E68C</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/vga_hsync_o" type="logic">
+      <obj_property name="ElementShortName">vga_hsync_o</obj_property>
+      <obj_property name="ObjectShortName">vga_hsync_o</obj_property>
+      <obj_property name="CustomSignalColor">#F0E68C</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject fp_name="/vga_tb/vga/vga_vsync_o" type="logic">
+      <obj_property name="ElementShortName">vga_vsync_o</obj_property>
+      <obj_property name="ObjectShortName">vga_vsync_o</obj_property>
+      <obj_property name="CustomSignalColor">#F0E68C</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+</wave_config>
