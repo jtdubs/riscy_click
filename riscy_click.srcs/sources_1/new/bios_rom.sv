@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-module block_rom
+module bios_rom
     // Import Constants
     import common::*;
     #(
@@ -52,7 +52,7 @@ xpm_memory_dprom #(
     .READ_RESET_VALUE_B("0"),
     .RST_MODE_B("SYNC")
 )
-rom_inst (
+bios_dprom_inst (
     // common
     .sleep(1'b0),
     
