@@ -1,12 +1,9 @@
 TODO:
-- Need to fix vga controller so it doesn't output a pile of jank
 - Need a way to build a character rom from a font
-- Need a BIOS that outputs something to VRAM
-- Need a Makefile that can update both ROM images in bitstream
 
 Future:
-- USB UART would be awesome...
 - USB HID via PS/2 emulation would be awesome...
+- USB UART would be awesome...
 - Command-line vivado usage???? Looks fairly awesome.  No more crazy directory structure.  Just src/*.sv ??
 - Allow for arbitrary-time memory access / stalls
 - Switch to mix of BRAM & DDR

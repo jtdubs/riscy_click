@@ -67,7 +67,6 @@ end
 logic display_area_w;
 logic hsync_w;
 logic vsync_w;
-logic char_boundary_w;
 
 always_comb begin
     //horizontal:
@@ -85,44 +84,19 @@ always_comb begin
     display_area_w = (x_w <= 640) && (y_w <= 480);
     hsync_w = (x_w >= 656) && (x_w <= 751);
     vsync_w = (y_w >= 490) && (y_w <= 491);
-    char_boundary_w = display_area_w && (x_w[2:0] == 3'b000);
 end
 
 
 // keep track of character location
-logic [6:0] x_char_index_r, x_char_index_w;
-logic [4:0] y_char_index_r, y_char_index_w;
-logic [2:0] x_char_offset_r, x_char_offset_w;
-logic [3:0] y_char_offset_r, y_char_offset_w;
+logic [6:0] x_char_index_w;
+logic [2:0] x_char_offset_w;
+
+logic [5:0] y_char_index_w;
+logic [3:0] y_char_offset_w;
 
 always_comb begin
-    if (x_char_index_r == 7'd79) begin
-        x_char_index_w = 7'b0;
-        if (y_char_index_r == 6'd29)
-            y_char_index_w = 5'b0;
-        else
-            y_char_index_w = y_char_index_r + 1;
-    end else begin
-        x_char_index_w = x_char_index_r + 1;
-        y_char_index_w = y_char_index_r; 
-    end 
-    
-    x_char_offset_w = x_w[2:0];
-    y_char_offset_w = y_w[3:0];
-end
-
-always_ff @(posedge clk_pxl_i) begin
-    if (reset_i) begin
-        x_char_index_r <= 10'd79;
-        y_char_index_r <= 10'd29;
-        x_char_offset_r <= 3'b111;
-        y_char_offset_r <= 4'b1111;
-    end else if (char_boundary_w) begin
-        x_char_index_r <= x_char_index_w;
-        y_char_index_r <= y_char_index_w;
-        x_char_offset_r <= x_char_offset_w;
-        y_char_offset_r <= y_char_offset_w;
-    end
+    { x_char_index_w, x_char_offset_w } = x_w;
+    { y_char_index_w, y_char_offset_w } = y_w;
 end
 
 
@@ -130,16 +104,17 @@ end
 logic [31:0] char_row_r, char_row_w;
 
 always_comb begin
-    vram_addr_o = { y_char_index_w, x_char_index_w };
+    vram_addr_o = { y_char_index_w[4:0], x_char_index_w };
     crom_addr_w = { vram_data_i, y_char_offset_w };
     char_row_w  = crom_data_w;
 end
 
 always_ff @(posedge clk_pxl_i) begin
+    if (x_char_offset_w == 3'b000)
+        char_row_r <= char_row_w;
+        
     if (reset_i)
         char_row_r <= 32'b0;
-    else if (char_boundary_w)
-        char_row_r <= char_row_w;
 end
 
 
@@ -148,14 +123,14 @@ logic [3:0] rgb_w;
 
 always_comb begin
     case (x_char_offset_w)
-    0: rgb_w = char_row_w[31:28];
-    1: rgb_w = char_row_w[27:24];
-    2: rgb_w = char_row_w[23:20];
-    3: rgb_w = char_row_w[19:16];
-    4: rgb_w = char_row_w[15:12];
-    5: rgb_w = char_row_w[11: 8];
-    6: rgb_w = char_row_w[ 7: 4];
-    7: rgb_w = char_row_w[ 3: 0];
+    0: rgb_w = char_row_r[31:28];
+    1: rgb_w = char_row_r[27:24];
+    2: rgb_w = char_row_r[23:20];
+    3: rgb_w = char_row_r[19:16];
+    4: rgb_w = char_row_r[15:12];
+    5: rgb_w = char_row_r[11: 8];
+    6: rgb_w = char_row_r[ 7: 4];
+    7: rgb_w = char_row_r[ 3: 0];
     endcase
 end
 
