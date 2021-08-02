@@ -21,11 +21,5 @@ bios.mem: bios.img
 	echo "@0000" > bios.mem
 	hexdump -v -e '/4 "%08X" "\n"' bios.img >> bios.mem
 
-board.bit: ../riscy_click.runs/impl_1/board.bit
-	cp -f ../riscy_click.runs/impl_1/board.bit board.bit
-
-update_bios: board.bit
-	cmd.exe /c "C:\Xilinx\Vivado\2021.1\bin\updatemem.bat -meminfo board.mmi -data bios.mem -proc bios/bios_dprom_inst/xpm_memory_base_inst -bit board.bit -out board.bit -force"
-
-update_crom: board.bit
-	cmd.exe /c "C:\Xilinx\Vivado\2021.1\bin\updatemem.bat -meminfo board.mmi -data crom.mem -proc vga/crom_inst/character_sprom_inst/xpm_memory_base_inst -bit board.bit -out board.bit -force"
+board.bit: ../riscy_click.runs/impl_1/board.bit bios.mem crom.mem
+	cmd.exe /c "C:\Xilinx\Vivado\2021.1\bin\updatemem.bat -debug -meminfo board.mmi -data bios.mem -proc bios/bios_dprom_inst/xpm_memory_base_inst -data crom.mem -proc vga/crom_inst/character_sprom_inst/xpm_memory_base_inst -bit ../riscy_click.runs/impl_1/board.bit -out board.bit -force -debug"

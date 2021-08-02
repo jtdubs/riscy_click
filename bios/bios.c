@@ -7,11 +7,11 @@ volatile unsigned int*  SWITCH     = (volatile unsigned int*)0xFF000004;
 void _start() {
     for (unsigned short y=0; y<30; y++) {
         for (unsigned short x=0; x<80; x++) {
-            VRAM_BASE[(y << 7) | x] = (unsigned char)(x ^ y);
+            VRAM_BASE[(y << 7) | x] = (unsigned char)(x + y);
         }
     }
 
     for (;;) {
-        *DISPLAY = ~(*SWITCH);
+        *DISPLAY = *SWITCH;
     }
 }
