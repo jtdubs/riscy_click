@@ -5,11 +5,11 @@ import freetype
 
 def main(*args):
     # load the font
-    face = freetype.Face("NotoSansMono-Regular.ttf")
+    face = freetype.Face("RobotoMono-Regular.ttf")
 
     # 6pt wide is 1/12" which at 96dpi is  8 pixels
     # 9pt tall is 1/8"  which at 96dpi is 12 pixels
-    face.set_char_size(width=9*64, height=11*64, hres=96, vres=96)
+    face.set_char_size(width=10*64, height=10*64, hres=96, vres=96)
 
     chars = {}
 
@@ -46,8 +46,8 @@ def main(*args):
     # print("Bottom: '{0}' ({1}): {2}".format(chr(bottom), bottom, chars[bottom]))
     # print("Left:   '{0}' ({1}): {2}".format(chr(left), left, chars[left]))
     # print("Right:  '{0}' ({1}): {2}".format(chr(right), right, chars[right]))
-    print("Width:  '{0}' ({1}): {2}".format(chr(width), width, chars[width]))
-    print("Height: '{0}' ({1}): {2}".format(chr(height), height, chars[height]))
+    # print("Width:  '{0}' ({1}): {2}".format(chr(width), width, chars[width]))
+    # print("Height: '{0}' ({1}): {2}".format(chr(height), height, chars[height]))
 
 
     left = chars[left]["left"]
