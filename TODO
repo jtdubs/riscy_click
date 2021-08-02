@@ -1,6 +1,7 @@
 TODO:
-- VGA Controller bug: Only looks up next char one cycle ahead of time, need two cycles to resolve through both memory lookups.
-- Need a way to build a character rom from a font
+- Tweak character rom params more, fonts are a bit blurry
+- Try another font
+- Can I bump up VGA res from 640x480 to something higher?  And increase font res?  Possibly 1280x1024??
 
 Future:
 - USB HID via PS/2 emulation would be awesome...
