@@ -41,20 +41,35 @@ crom_inst (
 
 
 // keep track of x & y coordinates
-logic [9:0] x_r, x_w;
-logic [9:0] y_r, y_w;
+logic [9:0] x_r, x_w, x_lookahead_w;
+logic [9:0] y_r, y_w, y_lookahead_w;
 
+// next pixel needed to plan new RGB values
 always_comb begin
-    if (x_r == 10'd799) begin
-        x_w = 10'b0;
-        if (y_r == 10'd524)
-            y_w = 10'b0;
-        else
-            y_w = y_r + 1;
-    end else begin
-        x_w = x_r + 1;
-        y_w = y_r; 
-    end 
+    x_w = x_r + 1;
+    y_w = y_r;
+    
+    if (x_w >= 10'd800) begin
+        x_w = x_w - 10'd800;
+        y_w = y_r + 1;
+    end
+    
+    if (y_w >= 525)
+        y_w = 10'd0;
+end
+
+// 8 pixels from now needed to start memory lookups for next tile
+always_comb begin
+    x_lookahead_w = x_r + 8;
+    y_lookahead_w = y_r;
+    
+    if (x_lookahead_w >= 10'd800) begin
+        x_lookahead_w = x_lookahead_w - 10'd800;
+        y_lookahead_w = y_lookahead_w + 1;
+    end
+    
+    if (y_lookahead_w >= 525)
+        y_lookahead_w = 10'd0;
 end
 
 always_ff @(posedge clk_pxl_i) begin
@@ -90,13 +105,20 @@ end
 // keep track of character location
 logic [6:0] x_char_index_w;
 logic [2:0] x_char_offset_w;
-
 logic [5:0] y_char_index_w;
 logic [3:0] y_char_offset_w;
+
+logic [6:0] x_lookahead_char_index_w;
+logic [2:0] x_lookahead_char_offset_w;
+logic [5:0] y_lookahead_char_index_w;
+logic [3:0] y_lookahead_char_offset_w;
 
 always_comb begin
     { x_char_index_w, x_char_offset_w } = x_w;
     { y_char_index_w, y_char_offset_w } = y_w;
+    
+    { x_lookahead_char_index_w, x_lookahead_char_offset_w } = x_lookahead_w;
+    { y_lookahead_char_index_w, y_lookahead_char_offset_w } = y_lookahead_w;
 end
 
 
@@ -104,13 +126,13 @@ end
 logic [31:0] char_row_r, char_row_w;
 
 always_comb begin
-    vram_addr_o = { y_char_index_w[4:0], x_char_index_w };
-    crom_addr_w = { vram_data_i, y_char_offset_w };
+    vram_addr_o = { y_lookahead_char_index_w[4:0], x_lookahead_char_index_w };
+    crom_addr_w = { vram_data_i, y_lookahead_char_offset_w };
     char_row_w  = crom_data_w;
 end
 
 always_ff @(posedge clk_pxl_i) begin
-    if (x_char_offset_w == 3'b000)
+    if (x_char_offset_w == 3'b111)
         char_row_r <= char_row_w;
         
     if (reset_i)
