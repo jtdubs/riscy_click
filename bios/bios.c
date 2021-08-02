@@ -5,9 +5,9 @@ volatile unsigned int*  DISPLAY    = (volatile unsigned int*)0xFF000000;
 volatile unsigned int*  SWITCH     = (volatile unsigned int*)0xFF000004;
 
 void _start() {
-    for (unsigned short y=0; y<480; y++) {
-        for (unsigned short x=0; x<640; x++) {
-            VRAM_BASE[(y << 7) | x] = (x ^ y);
+    for (unsigned short y=0; y<24; y++) {
+        for (unsigned short x=0; x<24; x++) {
+            VRAM_BASE[(y << 7) | x] = (unsigned char)(x ^ y);
         }
     }
 

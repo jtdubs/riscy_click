@@ -127,12 +127,12 @@ word_t rb_resolved_w;
 always_comb begin
     priority if (rs1_w == 5'b00000)
         ra_resolved_w = ra_w;
-    else if (rs1_w == wb_addr_i)
-        ra_resolved_w = wb_data_i;
-    else if (rs1_w == ma_wb_addr_i)
-        ra_resolved_w = ma_wb_data_i;
     else if (rs1_w == ex_wb_addr_i)
         ra_resolved_w = ex_wb_data_i;
+    else if (rs1_w == ma_wb_addr_i)
+        ra_resolved_w = ma_wb_data_i;
+    else if (rs1_w == wb_addr_i)
+        ra_resolved_w = wb_data_i;
     else
         ra_resolved_w = ra_w;
 end
@@ -141,12 +141,12 @@ end
 always_comb begin
     priority if (rs2_w == 5'b00000)
         rb_resolved_w = rb_w;
-    else if (rs2_w == wb_addr_i)
-        rb_resolved_w = wb_data_i;
-    else if (rs2_w == ma_wb_addr_i)
-        rb_resolved_w = ma_wb_data_i;
     else if (rs2_w == ex_wb_addr_i)
         rb_resolved_w = ex_wb_data_i;
+    else if (rs2_w == ma_wb_addr_i)
+        rb_resolved_w = ma_wb_data_i;
+    else if (rs2_w == wb_addr_i)
+        rb_resolved_w = wb_data_i;
     else
         rb_resolved_w = rb_w;
 end
