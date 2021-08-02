@@ -91,15 +91,15 @@ end
 
 // keep track of character location
 logic [6:0] x_char_index_r, x_char_index_w;
-logic [5:0] y_char_index_r, y_char_index_w;
+logic [4:0] y_char_index_r, y_char_index_w;
 logic [2:0] x_char_offset_r, x_char_offset_w;
 logic [3:0] y_char_offset_r, y_char_offset_w;
 
 always_comb begin
     if (x_char_index_r == 7'd79) begin
         x_char_index_w = 7'b0;
-        if (y_char_index_r == 6'd39)
-            y_char_index_w = 6'b0;
+        if (y_char_index_r == 6'd29)
+            y_char_index_w = 5'b0;
         else
             y_char_index_w = y_char_index_r + 1;
     end else begin
@@ -114,7 +114,7 @@ end
 always_ff @(posedge clk_pxl_i) begin
     if (reset_i) begin
         x_char_index_r <= 10'd79;
-        y_char_index_r <= 10'd39;
+        y_char_index_r <= 10'd29;
         x_char_offset_r <= 3'b111;
         y_char_offset_r <= 4'b1111;
     end else if (char_boundary_w) begin
