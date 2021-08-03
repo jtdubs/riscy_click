@@ -20,16 +20,17 @@ module cpu_id
         input  wire logic      valid_i,       // fetch stage data is valid
         
         // data hazard port
-        input  wire regaddr_t  ex_wb_addr_i,  // hazard write-back register address
-        input  wire word_t     ex_wb_data_i,  // hazard write-back register data
-        input  wire logic      ex_wb_valid_i, // hazard write-back data valid
-        input  wire regaddr_t  ma_wb_addr_i,  // hazard write-back register address
-        input  wire word_t     ma_wb_data_i,  // hazard write-back register data
-        input  wire logic      ma_wb_valid_i, // hazard write-back data valid
+        input  wire regaddr_t  ex_wb_addr_i,  // hazard write-back address
+        input  wire word_t     ex_wb_data_i,  // hazard write-back data
+        input  wire logic      ex_wb_ready_i, // hazard write-back data ready
+        input  wire regaddr_t  ma_wb_addr_i,  // hazard write-back address
+        input  wire word_t     ma_wb_data_i,  // hazard write-back data
+        input  wire logic      ma_wb_ready_i, // hazard write-back data ready
         
         // writeback port
-        input  wire regaddr_t  wb_addr_i,     // write-back register address
-        input  wire word_t     wb_data_i,     // write-back register data
+        input  wire regaddr_t  wb_addr_i,     // write-back address
+        input  wire word_t     wb_data_i,     // write-back data
+        input  wire logic      wb_valid_i,    // write-back valid
 
         // backpressure port
         output      logic      ready_async_o, // stage ready for new inputs
@@ -48,7 +49,8 @@ module cpu_id
         output      ma_size_t  ma_size_o,     // memory access size
         output      word_t     ma_data_o,     // memory access data (for store operations)
         output      wb_src_t   wb_src_o,      // write-back source
-        output      word_t     wb_data_o      // write-back data
+        output      word_t     wb_data_o,     // write-back data
+        output      logic      wb_valid_o     // write-back valid
     );
 
 initial start_logging();
@@ -112,7 +114,7 @@ regfile regfile (
     // let the write-back stage drive the write signals
     .write_addr_i       (wb_addr_i),
     .write_data_i       (wb_data_i),
-    .write_enable_i     (1'b1)
+    .write_enable_i     (wb_valid_i)
 );
 
 
@@ -163,24 +165,24 @@ control_word_t cw_w;
 
 always_comb begin
     casez ({f7_w, f3_w, opcode_w})
-    { 7'b0?00000, F3_SRL_SRA, OP_IMM }:      cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, alu_mode7_w, MA_X,     MA_SIZE_W,        WB_SRC_ALU };
-    { 7'b???????, 3'b???,     OP_IMM }:      cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, alu_mode3_w, MA_X,     MA_SIZE_W,        WB_SRC_ALU };
-    { 7'b???????, 3'b???,     OP_LUI }:      cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_IMMU, ALU_OP2_RS2,  ALU_COPY1,   MA_X,     MA_SIZE_W,        WB_SRC_ALU };
-    { 7'b???????, 3'b???,     OP_AUIPC }:    cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_IMMU, ALU_OP2_PC,   ALU_ADD,     MA_X,     MA_SIZE_W,        WB_SRC_ALU };
-    { 7'b???????, 3'b???,     OP }:          cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_RS2,  alu_mode7_w, MA_X,     MA_SIZE_W,        WB_SRC_ALU };
-    { 7'b???????, 3'b???,     OP_JAL }:      cw_w = '{ 1'b0, PC_JUMP_REL, ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,     MA_SIZE_W,        WB_SRC_PC4 };
-    { 7'b???????, 3'b???,     OP_JALR }:     cw_w = '{ 1'b0, PC_JUMP_ABS, ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,     MA_SIZE_W,        WB_SRC_PC4 };
-    { 7'b???????, F3_BEQ,     OP_BRANCH }:   cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SUB,     MA_X,     MA_SIZE_X,        WB_SRC_X   };
-    { 7'b???????, F3_BNE,     OP_BRANCH }:   cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SUB,     MA_X,     MA_SIZE_X,        WB_SRC_X   };
-    { 7'b???????, F3_BLT,     OP_BRANCH }:   cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SLT,     MA_X,     MA_SIZE_X,        WB_SRC_X   };
-    { 7'b???????, F3_BGE,     OP_BRANCH }:   cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SLT,     MA_X,     MA_SIZE_X,        WB_SRC_X   };
-    { 7'b???????, F3_BLTU,    OP_BRANCH }:   cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_ULT,     MA_X,     MA_SIZE_X,        WB_SRC_X   };
-    { 7'b???????, F3_BGEU,    OP_BRANCH }:   cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_ULT,     MA_X,     MA_SIZE_X,        WB_SRC_X   };
-    { 7'b???????, 3'b???,     OP_LOAD }:     cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, ALU_ADD,     MA_LOAD,  MA_SIZE_W,        WB_SRC_MEM };
-    { 7'b???????, 3'b???,     OP_STORE }:    cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMS, ALU_ADD,     MA_STORE, ma_size_t'(f3_w), WB_SRC_ALU };
-    { 7'b???????, 3'b???,     OP_MISC_MEM }: cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,     MA_SIZE_X,        WB_SRC_X   };
-    { 7'b???????, 3'b???,     OP_SYSTEM }:   cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,     MA_SIZE_X,        WB_SRC_X   };
-    default:                                 cw_w = '{ 1'b1, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,     MA_SIZE_X,        WB_SRC_X   };
+    { 7'b0?00000, F3_SRL_SRA, OP_IMM }:      cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, alu_mode7_w, MA_X,     MA_SIZE_W,        WB_SRC_ALU, 1'b1 };
+    { 7'b???????, 3'b???,     OP_IMM }:      cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, alu_mode3_w, MA_X,     MA_SIZE_W,        WB_SRC_ALU, 1'b1 };
+    { 7'b???????, 3'b???,     OP_LUI }:      cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_IMMU, ALU_OP2_RS2,  ALU_COPY1,   MA_X,     MA_SIZE_W,        WB_SRC_ALU, 1'b1 };
+    { 7'b???????, 3'b???,     OP_AUIPC }:    cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_IMMU, ALU_OP2_PC,   ALU_ADD,     MA_X,     MA_SIZE_W,        WB_SRC_ALU, 1'b1 };
+    { 7'b???????, 3'b???,     OP }:          cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_RS2,  alu_mode7_w, MA_X,     MA_SIZE_W,        WB_SRC_ALU, 1'b1 };
+    { 7'b???????, 3'b???,     OP_JAL }:      cw_w = '{ 1'b0, PC_JUMP_REL, ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,     MA_SIZE_W,        WB_SRC_PC4, 1'b1 };
+    { 7'b???????, 3'b???,     OP_JALR }:     cw_w = '{ 1'b0, PC_JUMP_ABS, ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,     MA_SIZE_W,        WB_SRC_PC4, 1'b1 };
+    { 7'b???????, F3_BEQ,     OP_BRANCH }:   cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SUB,     MA_X,     MA_SIZE_X,        WB_SRC_X,   1'b0 };
+    { 7'b???????, F3_BNE,     OP_BRANCH }:   cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SUB,     MA_X,     MA_SIZE_X,        WB_SRC_X,   1'b0 };
+    { 7'b???????, F3_BLT,     OP_BRANCH }:   cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SLT,     MA_X,     MA_SIZE_X,        WB_SRC_X,   1'b0 };
+    { 7'b???????, F3_BGE,     OP_BRANCH }:   cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_SLT,     MA_X,     MA_SIZE_X,        WB_SRC_X,   1'b0 };
+    { 7'b???????, F3_BLTU,    OP_BRANCH }:   cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_ULT,     MA_X,     MA_SIZE_X,        WB_SRC_X,   1'b0 };
+    { 7'b???????, F3_BGEU,    OP_BRANCH }:   cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_ULT,     MA_X,     MA_SIZE_X,        WB_SRC_X,   1'b0 };
+    { 7'b???????, 3'b???,     OP_LOAD }:     cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, ALU_ADD,     MA_LOAD,  MA_SIZE_W,        WB_SRC_MEM, 1'b1 };
+    { 7'b???????, 3'b???,     OP_STORE }:    cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMS, ALU_ADD,     MA_STORE, ma_size_t'(f3_w), WB_SRC_ALU, 1'b0 };
+    { 7'b???????, 3'b???,     OP_MISC_MEM }: cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,     MA_SIZE_X,        WB_SRC_X,   1'b1 };
+    { 7'b???????, 3'b???,     OP_SYSTEM }:   cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,     MA_SIZE_X,        WB_SRC_X,   1'b1 };
+    default:                                 cw_w = '{ 1'b1, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,     MA_SIZE_X,        WB_SRC_X,   1'b1 };
     endcase
 end
 
@@ -253,8 +255,8 @@ end
 
 // Data Hazard: EX stage has a colliding writeback and the data isn't available yet (ex. JALR or LW)
 logic data_hazard_w;
-always_comb data_hazard_w = ((rs1_w != 5'b00000) && ((ex_wb_addr_i == rs1_w && !ex_wb_valid_i) || (ma_wb_addr_i == rs1_w && !ma_wb_valid_i)))
-                         || ((rs2_w != 5'b00000) && ((ex_wb_addr_i == rs2_w && !ex_wb_valid_i) || (ma_wb_addr_i == rs2_w && !ma_wb_valid_i)));
+always_comb data_hazard_w = ((rs1_w != 5'b00000) && ((ex_wb_addr_i == rs1_w && !ex_wb_ready_i) || (ma_wb_addr_i == rs1_w && !ma_wb_ready_i)))
+                         || ((rs2_w != 5'b00000) && ((ex_wb_addr_i == rs2_w && !ex_wb_ready_i) || (ma_wb_addr_i == rs2_w && !ma_wb_ready_i)));
 
 // a bubble needs to be output if we are in a data hazard condition, or if there was no valid instruction to decode
 logic bubble_w;
@@ -301,7 +303,7 @@ end
 
 // pipeline output
 always_ff @(posedge clk_i) begin
-    $fstrobe(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"alu_op1\": \"%0d\", \"alu_op2\": \"%0d\", \"alu_mode\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"halt\": \"%0d\" },", $time, pc_o, ir_o, alu_op1_o, alu_op2_o, alu_mode_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_o, halt_o);
+    $fstrobe(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"alu_op1\": \"%0d\", \"alu_op2\": \"%0d\", \"alu_mode\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\", \"halt\": \"%0d\" },", $time, pc_o, ir_o, alu_op1_o, alu_op2_o, alu_mode_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_o, wb_valid_o, halt_o);
     
     // if a bubble is needed
     if (bubble_w) begin
@@ -316,6 +318,7 @@ always_ff @(posedge clk_i) begin
         ma_data_o  <= 32'h00000000;
         wb_src_o   <= NOP_WB_SRC;
         wb_data_o  <= 32'h00000000;
+        wb_valid_o <= 1'b0;
         halt_o     <= 1'b0;
     end else begin
         // otherwise, output decoded control signals
@@ -329,6 +332,7 @@ always_ff @(posedge clk_i) begin
         ma_data_o  <= rb_resolved_w;
         wb_src_o   <= cw_w.wb_src;
         wb_data_o  <= pc_i + 4;
+        wb_valid_o <= cw_w.wb_valid;
         halt_o     <= cw_w.halt;
     end
         
@@ -344,6 +348,7 @@ always_ff @(posedge clk_i) begin
         ma_data_o  <= 32'h00000000;
         wb_src_o   <= NOP_WB_SRC;
         wb_data_o  <= 32'h00000000;
+        wb_valid_o <= 1'b0;
         halt_o     <= 1'b0;
     end
 end

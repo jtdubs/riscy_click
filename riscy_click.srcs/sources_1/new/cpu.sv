@@ -54,12 +54,13 @@ cpu_if cpu_if (
 // Instruction Decode
 wire regaddr_t  id_ex_wb_addr_w;
 wire word_t     id_ex_wb_data_w;
-wire logic      id_ex_wb_valid_w;
+wire logic      id_ex_wb_ready_w;
 wire regaddr_t  id_ma_wb_addr_w;
 wire word_t     id_ma_wb_data_w;
-wire logic      id_ma_wb_valid_w;
+wire logic      id_ma_wb_ready_w;
 wire regaddr_t  wb_addr_w;
 wire word_t     wb_data_w;
+wire word_t     wb_valid_w;
 wire word_t     id_pc_w;
 wire word_t     id_ir_w;
 wire word_t     id_alu_op1_w;
@@ -70,6 +71,7 @@ wire ma_size_t  id_ma_size_w;
 wire word_t     id_ma_data_w;
 wire wb_src_t   id_wb_src_w;
 wire word_t     id_wb_data_w;
+wire logic      id_wb_valid_w;
         
 cpu_id cpu_id (
     .clk_i         (clk_i),
@@ -79,12 +81,13 @@ cpu_id cpu_id (
     .valid_i       (if_valid_w),
     .ex_wb_addr_i  (id_ex_wb_addr_w),
     .ex_wb_data_i  (id_ex_wb_data_w),
-    .ex_wb_valid_i (id_ex_wb_valid_w),
+    .ex_wb_ready_i (id_ex_wb_ready_w),
     .ma_wb_addr_i  (id_ma_wb_addr_w),
     .ma_wb_data_i  (id_ma_wb_data_w),
-    .ma_wb_valid_i (id_ma_wb_valid_w),
+    .ma_wb_ready_i (id_ma_wb_ready_w),
     .wb_addr_i     (wb_addr_w),
     .wb_data_i     (wb_data_w),
+    .wb_valid_i    (wb_valid_w),
     .ready_async_o (ready_w),
     .jmp_addr_o    (jmp_addr_w),
     .jmp_valid_o   (jmp_valid_w),
@@ -98,7 +101,8 @@ cpu_id cpu_id (
     .ma_size_o     (id_ma_size_w),
     .ma_data_o     (id_ma_data_w),
     .wb_src_o      (id_wb_src_w),
-    .wb_data_o     (id_wb_data_w)
+    .wb_data_o     (id_wb_data_w),
+    .wb_valid_o    (id_wb_valid_w)
 );
 
 // Execute    
@@ -110,6 +114,7 @@ wire ma_size_t ex_ma_size_w;
 wire word_t    ex_ma_data_w;
 wire wb_src_t  ex_wb_src_w;
 wire word_t    ex_wb_data_w;
+wire logic     ex_wb_valid_w;
 
 cpu_ex cpu_ex (
     .clk_i         (clk_i),
@@ -124,9 +129,10 @@ cpu_ex cpu_ex (
     .ma_data_i     (id_ma_data_w),
     .wb_src_i      (id_wb_src_w),
     .wb_data_i     (id_wb_data_w),
+    .wb_valid_i    (id_wb_valid_w),
     .ex_wb_addr_o  (id_ex_wb_addr_w),
     .ex_wb_data_o  (id_ex_wb_data_w),
-    .ex_wb_valid_o (id_ex_wb_valid_w),
+    .ex_wb_ready_o (id_ex_wb_ready_w),
     .pc_o          (ex_pc_w),
     .ir_o          (ex_ir_w),
     .ma_addr_o     (ex_ma_addr_w),
@@ -134,7 +140,8 @@ cpu_ex cpu_ex (
     .ma_size_o     (ex_ma_size_w),
     .ma_data_o     (ex_ma_data_w),
     .wb_src_o      (ex_wb_src_w),
-    .wb_data_o     (ex_wb_data_w)
+    .wb_data_o     (ex_wb_data_w),
+    .wb_valid_o    (ex_wb_valid_w)
 );
 
 // Memory Access
@@ -142,6 +149,7 @@ wire word_t    ma_pc_w;
 wire word_t    ma_ir_w;
 wire logic     ma_load_w;
 wire word_t    ma_wb_data_w;
+wire logic     ma_wb_valid_w;
 wire ma_size_t ma_size_w;
         
 cpu_ma cpu_ma (
@@ -158,14 +166,16 @@ cpu_ma cpu_ma (
     .ma_data_i         (ex_ma_data_w),
     .wb_src_i          (ex_wb_src_w),
     .wb_data_i         (ex_wb_data_w),
+    .wb_valid_i        (ex_wb_valid_w),
     .ma_wb_addr_o      (id_ma_wb_addr_w),
     .ma_wb_data_o      (id_ma_wb_data_w),
-    .ma_wb_valid_o     (id_ma_wb_valid_w),
+    .ma_wb_ready_o     (id_ma_wb_ready_w),
     .pc_o              (ma_pc_w),
     .ir_o              (ma_ir_w),
     .load_o            (ma_load_w),
     .ma_size_o         (ma_size_w),
-    .wb_data_o         (ma_wb_data_w)
+    .wb_data_o         (ma_wb_data_w),
+    .wb_valid_o        (ma_wb_valid_w)
 );
 
 // Write Back
@@ -177,8 +187,10 @@ cpu_wb cpu_wb (
     .load_i           (ma_load_w),
     .ma_size_i        (ma_size_w),
     .wb_data_i        (ma_wb_data_w),
+    .wb_valid_i       (ma_wb_valid_w),
     .wb_addr_o        (wb_addr_w),
-    .wb_data_o        (wb_data_w)
+    .wb_data_o        (wb_data_w),
+    .wb_valid_o       (wb_valid_w)
 );
 
 endmodule

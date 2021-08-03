@@ -173,6 +173,7 @@ typedef struct packed {
     ma_mode_t  ma_mode;
     ma_size_t  ma_size;
     wb_src_t   wb_src;
+    logic      wb_valid;
 } control_word_t;
 
 

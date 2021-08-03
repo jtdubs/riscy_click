@@ -1,6 +1,4 @@
 Future:
-- Need to pass a rd_valid signal through so wb knows to ignore it...
-
 - Figure out how to test the implementation better...
 - Implement more of the Risc-V ISA
 - Increase VGA resolution to 1280x1024?

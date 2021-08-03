@@ -24,11 +24,12 @@ module cpu_ex
         input  wire word_t     ma_data_i,     // memory access data
         input  wire wb_src_t   wb_src_i,      // write-back source
         input  wire word_t     wb_data_i,     // write-back data
+        input  wire logic      wb_valid_i,    // write-back valid
         
         // data hazard port
         output      regaddr_t  ex_wb_addr_o,  // write-back address
-        output      word_t     ex_wb_data_o,  // write-back value
-        output      logic      ex_wb_valid_o, // write-back value valid
+        output      word_t     ex_wb_data_o,  // write-back data
+        output      logic      ex_wb_ready_o, // write-back data ready
 
         // pipeline output port
         output      word_t     pc_o,          // program counter
@@ -38,7 +39,8 @@ module cpu_ex
         output      ma_size_t  ma_size_o,     // memory access size
         output      word_t     ma_data_o,     // memory access data
         output      wb_src_t   wb_src_o,      // write-back source
-        output      word_t     wb_data_o      // write-back register value
+        output      word_t     wb_data_o,     // write-back data
+        output      logic      wb_valid_o     // write-back valid
     );
 
 initial start_logging();
@@ -65,11 +67,17 @@ alu alu (
 //
 
 always_comb begin
-    $fstrobe(log_fd, "{ \"stage\": \"EX\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ex_wb_addr\": \"%0d\", \"ex_wb_data\": \"%0d\", \"ex_wb_valid\": \"%0d\" },", $time, pc_i, ex_wb_addr_o, ex_wb_data_o, ex_wb_valid_o);
+    $fstrobe(log_fd, "{ \"stage\": \"EX\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ex_wb_addr\": \"%0d\", \"ex_wb_data\": \"%0d\", \"ex_wb_ready\": \"%0d\" },", $time, pc_i, ex_wb_addr_o, ex_wb_data_o, ex_wb_ready_o);
 
-    ex_wb_addr_o  = ir_i[11:7];
-    ex_wb_data_o  = (wb_src_i == WB_SRC_ALU) ? alu_result_w : wb_data_i;
-    ex_wb_valid_o = (wb_src_i != WB_SRC_MEM); 
+    if (wb_valid_i) begin
+        ex_wb_addr_o  = ir_i[11:7];
+        ex_wb_data_o  = (wb_src_i == WB_SRC_ALU) ? alu_result_w : wb_data_i;
+        ex_wb_ready_o = (wb_src_i != WB_SRC_MEM);
+    end else begin
+        ex_wb_addr_o  = 5'b00000;
+        ex_wb_data_o  = 32'h00000000;
+        ex_wb_ready_o = 1'b1;
+    end    
 end  
 
 
@@ -78,26 +86,28 @@ end
 //
 
 always_ff @(posedge clk_i) begin
-    $fstrobe(log_fd, "{ \"stage\": \"EX\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"ma_addr\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\" },", $time, pc_o, ir_o, ma_addr_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_o);
+    $fstrobe(log_fd, "{ \"stage\": \"EX\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"ma_addr\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\" },", $time, pc_o, ir_o, ma_addr_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_o, wb_valid_o);
 
-    pc_o      <= pc_i;
-    ir_o      <= ir_i;
-    ma_addr_o <= alu_result_w;
-    ma_mode_o <= ma_mode_i;
-    ma_size_o <= ma_size_i;
-    ma_data_o <= ma_data_i;
-    wb_src_o  <= wb_src_i;
-    wb_data_o <= ex_wb_data_o;
+    pc_o       <= pc_i;
+    ir_o       <= ir_i;
+    ma_addr_o  <= alu_result_w;
+    ma_mode_o  <= ma_mode_i;
+    ma_size_o  <= ma_size_i;
+    ma_data_o  <= ma_data_i;
+    wb_src_o   <= wb_src_i;
+    wb_data_o  <= ex_wb_data_o;
+    wb_valid_o <= wb_valid_i;
     
     if (reset_i) begin
-        pc_o      <= 32'hFFFFFFFF;
-        ir_o      <= NOP_IR;
-        ma_addr_o <= 32'h00000000;
-        ma_mode_o <= NOP_MA_MODE;
-        ma_size_o <= NOP_MA_SIZE;
-        ma_data_o <= 32'h00000000;
-        wb_src_o  <= NOP_WB_SRC;
-        wb_data_o <= 32'h00000000;
+        pc_o       <= 32'hFFFFFFFF;
+        ir_o       <= NOP_IR;
+        ma_addr_o  <= 32'h00000000;
+        ma_mode_o  <= NOP_MA_MODE;
+        ma_size_o  <= NOP_MA_SIZE;
+        ma_data_o  <= 32'h00000000;
+        wb_src_o   <= NOP_WB_SRC;
+        wb_data_o  <= 32'h00000000;
+        wb_valid_o <= 1'b0;
     end
 end
 

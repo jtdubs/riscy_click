@@ -60,7 +60,7 @@ def main(*args):
         if e["stage"] == "WB" and "ir" in e:
             # print("RETIRE: {0}".format(e["pc"]))
             instr = next(f for f in in_flight if f["pc"] == int(e["pc"]) and not "writeback_time" in f)
-            instr.update({ "writeback_time": int(e["time"]), "writeback_addr": int(e["wb_addr"]), "writeback_data": int(e["wb_data"]) })
+            instr.update({ "writeback_time": int(e["time"]), "writeback_addr": int(e["wb_addr"]), "writeback_data": int(e["wb_data"]), "writeback_valid": int(e["wb_valid"]) })
             in_flight.remove(instr)
             retired.append(instr)
 
@@ -75,7 +75,7 @@ def main(*args):
         }
 
         if "jmp_addr" in e:
-            s["jump"] = "JMP@{0:X}".format(e["jmp_addr"])
+            s["jump"] = "JUMP @{0:X}".format(e["jmp_addr"])
         else:
             s["jump"] = ""
 
@@ -89,7 +89,7 @@ def main(*args):
         else:
             s["store"] = ""
 
-        if int(e["writeback_addr"]) != 0:
+        if int(e["writeback_valid"]) == 1:
             s["writeback"] = "x{0} = 0x{1:X}".format(str(e["writeback_addr"]).ljust(2), e["writeback_data"])
         else:
             s["writeback"] = ""
@@ -97,7 +97,18 @@ def main(*args):
         summary.append(s)
 
     for s in summary:
-        a = "{0}[{1}]: {2} {3} {4} {5}".format(s["pc"].rjust(8), s["ir"], s["writeback"].ljust(16), s["load"].ljust(9), s["jump"].ljust(14), s["store"].ljust(34))
+        if (s["store"]):
+            a = "{0}[{1}]: {2}".format(s["pc"].rjust(8), s["ir"], s["store"].ljust(34))
+        elif (s["load"]):
+            a = "{0}[{1}]: {2} [{3}]".format(s["pc"].rjust(8), s["ir"], s["writeback"].ljust(16), s["load"])
+        elif (s["jump"] and s["writeback"]):
+            a = "{0}[{1}]: {2} & {3}".format(s["pc"].rjust(8), s["ir"], s["writeback"].ljust(16), s["jump"])
+        elif (s["jump"]):
+            a = "{0}[{1}]: {2}".format(s["pc"].rjust(8), s["ir"], s["jump"])
+        elif (s["writeback"]):
+            a = "{0}[{1}]: {2}".format(s["pc"].rjust(8), s["ir"], s["writeback"])
+        else:
+            a = "{0}[{1}]: !!!!!!!! {2} {3} {4} {5}".format(s["pc"].rjust(8), s["ir"], s["writeback"].ljust(16), s["load"].ljust(9), s["jump"].ljust(14), s["store"])
         print(a)
 
 if __name__ == "__main__":

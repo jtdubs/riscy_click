@@ -64,7 +64,7 @@
     <Option Name="IPStaticSourceDir" Val="$PIPUSERFILESDIR/ipstatic"/>
     <Option Name="EnableBDX" Val="FALSE"/>
     <Option Name="DSABoardId" Val="nexys4_ddr"/>
-    <Option Name="WTXSimLaunchSim" Val="866"/>
+    <Option Name="WTXSimLaunchSim" Val="870"/>
     <Option Name="WTModelSimLaunchSim" Val="0"/>
     <Option Name="WTQuestaLaunchSim" Val="0"/>
     <Option Name="WTIesLaunchSim" Val="0"/>
@@ -460,6 +460,7 @@
       </Config>
     </FileSet>
     <FileSet Name="segdisplay_sim" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/segdisplay_sim" RelGenDir="$PGENDIR/segdisplay_sim">
+      <Filter Type="Srcs"/>
       <File Path="$PSRCDIR/segdisplay_sim/new/segdisplay_tb.sv">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -482,6 +483,7 @@
       </Config>
     </FileSet>
     <FileSet Name="vga_sim" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/vga_sim" RelGenDir="$PGENDIR/vga_sim">
+      <Filter Type="Srcs"/>
       <File Path="$PSRCDIR/vga_sim/new/vga_tb.sv">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
