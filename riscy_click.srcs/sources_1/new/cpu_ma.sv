@@ -19,6 +19,7 @@ module cpu_ma
         output      logic [3:0] dmem_write_mask_o, // write enable
         
         // pipeline input port
+        input  wire word_t      pc_i,              // program counter
         input  wire word_t      ir_i,              // instruction register
         input  wire word_t      ma_addr_i,         // memoricy access address
         input  wire ma_mode_t   ma_mode_i,         // memory access mode
@@ -33,18 +34,23 @@ module cpu_ma
         output      logic       ma_wb_valid_o,     // write-back value valid
 
         // pipeline output port
+        output      word_t      pc_o,              // program counter
         output      word_t      ir_o,              // instruction register
-        output      logic       load_o,            // is this a loan instruction?
+        output      logic       load_o,            // is this a load instruction?
         output      ma_size_t   ma_size_o,         // memory access size
         output      word_t      wb_data_o          // write-back register value
     );
     
+initial start_logging();
+final stop_logging();
 
 //
 // Memory Signals
 //
 
 always_comb begin
+    $fstrobe(log_fd, "{ \"stage\": \"MA\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ma_mode\": \"%0d\", \"dmem_addr\": \"%0d\", \"dmem_write_data\": \"%0d\", \"dmem_write_mask\": \"%0d\" },", $time, pc_i, ma_mode_i, dmem_addr_o, dmem_write_data_o, dmem_write_mask_o);
+
     dmem_addr_o       = ma_addr_i;
     dmem_write_data_o = ma_data_i;
     dmem_write_mask_o = 4'b0000;
@@ -88,6 +94,8 @@ end
 //
 
 always_comb begin
+    $fstrobe(log_fd, "{ \"stage\": \"MA\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ma_wb_addr\": \"%0d\", \"ma_wb_data\": \"%0d\", \"ma_wb_valid\": \"%0d\" },", $time, pc_i, ma_wb_addr_o, ma_wb_data_o, ma_wb_valid_o);
+
     ma_wb_addr_o  = ir_i[11:7];
     ma_wb_data_o  = wb_data_i;
     ma_wb_valid_o = (wb_src_i != WB_SRC_MEM); 
@@ -99,12 +107,16 @@ end
 //
 
 always_ff @(posedge clk_i) begin
+    $fstrobe(log_fd, "{ \"stage\": \"MA\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"load\": \"%0d\", \"ma_size\": \"%0d\", \"wb_data\": \"%0d\" },", $time, pc_o, ir_o, load_o, ma_size_o, wb_data_o);
+
+    pc_o      <= pc_i;
     ir_o      <= ir_i;
     load_o    <= (ma_mode_i == MA_LOAD);
     ma_size_o <= ma_size_i;
     wb_data_o <= wb_data_i;
     
     if (reset_i) begin
+        pc_o      <= 32'hFFFFFFFF;
         ir_o      <= NOP_IR;
         load_o    <= 1'b0;
         ma_size_o <= NOP_MA_SIZE;

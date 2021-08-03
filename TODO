@@ -15,3 +15,6 @@ http://fpgacpu.ca/fpga/index.html
 https://passlab.github.io/CSE564/notes/lecture09_RISCV_Impl_pipeline.pdf
 https://github.com/ultraembedded/riscv/
 https://github.com/combinatorylogic/soc/blob/master/backends/c2/hw/rtl/core.v
+https://github.com/google/riscv-dv
+https://github.com/riscv/riscv-isa-sim
+https://github.com/rems-project/sail-riscv

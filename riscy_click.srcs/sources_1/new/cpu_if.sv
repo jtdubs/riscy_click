@@ -30,7 +30,9 @@ module cpu_if
         output wire word_t ir_o,        // instruction register
         output wire logic  valid_o      // is the stage output valid
     );
-   
+
+initial start_logging();
+final stop_logging();
 
 //
 // Skid Buffer
@@ -80,6 +82,8 @@ end
 
 // advance every clock cycle
 always_ff @(posedge clk_i) begin
+    $fstrobe(log_fd, "{ \"stage\": \"IF\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"valid\": \"%0d\" },", $time, pc_o, ir_o, valid_o);
+
     write_pc_r <= reset_i ? 32'h0 : write_pc_w;
 end
 

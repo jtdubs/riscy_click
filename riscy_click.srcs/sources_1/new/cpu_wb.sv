@@ -16,6 +16,7 @@ module cpu_wb
         input  wire word_t    dmem_read_data_i, // memory data
 
         // pipeline input port
+        input  wire word_t    pc_i,             // program counter
         input  wire word_t    ir_i,             // instruction register
         input  wire logic     load_i,           // is this a load instruction?
         input  wire ma_size_t ma_size_i,        // memory access size
@@ -25,7 +26,9 @@ module cpu_wb
         output      regaddr_t wb_addr_o,        // write-back address
         output      word_t    wb_data_o         // write-back value
     );
-    
+
+initial start_logging();
+final stop_logging();
 
 //
 // Write Back Signals
@@ -45,5 +48,9 @@ always_comb begin
         endcase
     end
 end 
+
+always_ff @(posedge clk_i) begin
+    $fdisplay(log_fd, "{ \"stage\": \"WB\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"wb_addr\": \"%0d\", \"wb_data\": \"%0d\" },", $time, pc_i, ir_i, wb_addr_o, wb_data_o);
+end
 
 endmodule

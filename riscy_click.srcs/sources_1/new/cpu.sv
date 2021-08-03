@@ -60,6 +60,7 @@ wire word_t     id_ma_wb_data_w;
 wire logic      id_ma_wb_valid_w;
 wire regaddr_t  wb_addr_w;
 wire word_t     wb_data_w;
+wire word_t     id_pc_w;
 wire word_t     id_ir_w;
 wire word_t     id_alu_op1_w;
 wire word_t     id_alu_op2_w;
@@ -88,6 +89,7 @@ cpu_id cpu_id (
     .jmp_addr_o    (jmp_addr_w),
     .jmp_valid_o   (jmp_valid_w),
     .halt_o        (halt_o),
+    .pc_o          (id_pc_w),
     .ir_o          (id_ir_w),
     .alu_op1_o     (id_alu_op1_w),
     .alu_op2_o     (id_alu_op2_w),
@@ -100,6 +102,7 @@ cpu_id cpu_id (
 );
 
 // Execute    
+wire word_t    ex_pc_w;
 wire word_t    ex_ir_w;
 wire word_t    ex_ma_addr_w;
 wire ma_mode_t ex_ma_mode_w;
@@ -111,6 +114,7 @@ wire word_t    ex_wb_data_w;
 cpu_ex cpu_ex (
     .clk_i         (clk_i),
     .reset_i       (reset_i),
+    .pc_i          (id_pc_w),
     .ir_i          (id_ir_w),
     .alu_op1_i     (id_alu_op1_w),
     .alu_op2_i     (id_alu_op2_w),
@@ -123,6 +127,7 @@ cpu_ex cpu_ex (
     .ex_wb_addr_o  (id_ex_wb_addr_w),
     .ex_wb_data_o  (id_ex_wb_data_w),
     .ex_wb_valid_o (id_ex_wb_valid_w),
+    .pc_o          (ex_pc_w),
     .ir_o          (ex_ir_w),
     .ma_addr_o     (ex_ma_addr_w),
     .ma_mode_o     (ex_ma_mode_w),
@@ -133,6 +138,7 @@ cpu_ex cpu_ex (
 );
 
 // Memory Access
+wire word_t    ma_pc_w;
 wire word_t    ma_ir_w;
 wire logic     ma_load_w;
 wire word_t    ma_wb_data_w;
@@ -144,6 +150,7 @@ cpu_ma cpu_ma (
     .dmem_addr_o       (dmem_addr_o),
     .dmem_write_data_o (dmem_write_data_o),
     .dmem_write_mask_o (dmem_write_mask_o),
+    .pc_i              (ex_pc_w),
     .ir_i              (ex_ir_w),
     .ma_addr_i         (ex_ma_addr_w),
     .ma_mode_i         (ex_ma_mode_w),
@@ -154,6 +161,7 @@ cpu_ma cpu_ma (
     .ma_wb_addr_o      (id_ma_wb_addr_w),
     .ma_wb_data_o      (id_ma_wb_data_w),
     .ma_wb_valid_o     (id_ma_wb_valid_w),
+    .pc_o              (ma_pc_w),
     .ir_o              (ma_ir_w),
     .load_o            (ma_load_w),
     .ma_size_o         (ma_size_w),
@@ -164,6 +172,7 @@ cpu_ma cpu_ma (
 cpu_wb cpu_wb (
     .clk_i            (clk_i),
     .dmem_read_data_i (dmem_read_data_i),
+    .pc_i             (ma_pc_w),
     .ir_i             (ma_ir_w),
     .load_i           (ma_load_w),
     .ma_size_i        (ma_size_w),

@@ -39,6 +39,7 @@ module cpu_id
         output      logic      jmp_valid_o,   // jump address valid
 
         // pipeline output port
+        output      word_t     pc_o,          // program counter
         output      word_t     ir_o,          // instruction register
         output      word_t     alu_op1_o,     // ALU operand 1
         output      word_t     alu_op2_o,     // ALU operand 2
@@ -49,7 +50,9 @@ module cpu_id
         output      wb_src_t   wb_src_o,      // write-back source
         output      word_t     wb_data_o      // write-back data
     );
-        
+
+initial start_logging();
+final stop_logging();
 
 //
 // Instruction Unpacking
@@ -259,6 +262,8 @@ always_comb bubble_w = data_hazard_w | ~valid_i;
 
 // control flow
 always_comb begin
+    $fstrobe(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"jmp_valid\": \"%0d\", \"jmp_addr\": \"%0d\" },", $time, pc_i, jmp_valid_o, jmp_addr_o);
+
     if (valid_i) begin
         // if instruction is valid, so is our jump feedback
         jmp_valid_o = jmp_valid_w;
@@ -278,6 +283,8 @@ end
 
 // backpressure
 always_comb begin
+    $fstrobe(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"valid\": \"%0d\", \"ready\": \"%0d\" },", $time, pc_i, valid_i, ready_async_o);
+
     if (valid_i) begin
         // if instruction is valid, so is our data hazard determination
         ready_async_o = ~data_hazard_w;
@@ -294,9 +301,12 @@ end
 
 // pipeline output
 always_ff @(posedge clk_i) begin
+    $fstrobe(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"alu_op1\": \"%0d\", \"alu_op2\": \"%0d\", \"alu_mode\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"halt\": \"%0d\" },", $time, pc_o, ir_o, alu_op1_o, alu_op2_o, alu_mode_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_o, halt_o);
+    
     // if a bubble is needed
     if (bubble_w) begin
         // output a NOP (addi x0, x0, 0)
+        pc_o       <= 32'hFFFFFFFF;
         ir_o       <= NOP_IR;
         alu_op1_o  <= 32'h00000000;
         alu_op2_o  <= 32'h00000000;
@@ -309,6 +319,7 @@ always_ff @(posedge clk_i) begin
         halt_o     <= 1'b0;
     end else begin
         // otherwise, output decoded control signals
+        pc_o       <= pc_i;
         ir_o       <= ir_i;
         alu_op1_o  <= alu_op1_w;
         alu_op2_o  <= alu_op2_w;
@@ -323,6 +334,7 @@ always_ff @(posedge clk_i) begin
         
     if (reset_i) begin
         // output a NOP (addi x0, x0, 0)
+        pc_o       <= 32'hFFFFFFFF;
         ir_o       <= NOP_IR;
         alu_op1_o  <= 32'h00000000;
         alu_op2_o  <= 32'h00000000;

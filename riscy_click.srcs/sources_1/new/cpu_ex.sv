@@ -14,6 +14,7 @@ module cpu_ex
         input  wire logic      reset_i,       // reset_i
 
         // pipeline input port
+        input  wire word_t     pc_i,          // program counter
         input  wire word_t     ir_i,          // instruction register
         input  wire word_t     alu_op1_i,     // ALU operand 1
         input  wire word_t     alu_op2_i,     // ALU operand 2
@@ -30,6 +31,7 @@ module cpu_ex
         output      logic      ex_wb_valid_o, // write-back value valid
 
         // pipeline output port
+        output      word_t     pc_o,          // program counter
         output      word_t     ir_o,          // instruction register
         output      word_t     ma_addr_o,     // memory access address
         output      ma_mode_t  ma_mode_o,     // memory access mode
@@ -38,6 +40,9 @@ module cpu_ex
         output      wb_src_t   wb_src_o,      // write-back source
         output      word_t     wb_data_o      // write-back register value
     );
+
+initial start_logging();
+final stop_logging();
 
 //
 // ALU
@@ -60,6 +65,8 @@ alu alu (
 //
 
 always_comb begin
+    $fstrobe(log_fd, "{ \"stage\": \"EX\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ex_wb_addr\": \"%0d\", \"ex_wb_data\": \"%0d\", \"ex_wb_valid\": \"%0d\" },", $time, pc_i, ex_wb_addr_o, ex_wb_data_o, ex_wb_valid_o);
+
     ex_wb_addr_o  = ir_i[11:7];
     ex_wb_data_o  = (wb_src_i == WB_SRC_ALU) ? alu_result_w : wb_data_i;
     ex_wb_valid_o = (wb_src_i != WB_SRC_MEM); 
@@ -71,6 +78,9 @@ end
 //
 
 always_ff @(posedge clk_i) begin
+    $fstrobe(log_fd, "{ \"stage\": \"EX\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"ma_addr\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\" },", $time, pc_o, ir_o, ma_addr_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_o);
+
+    pc_o      <= pc_i;
     ir_o      <= ir_i;
     ma_addr_o <= alu_result_w;
     ma_mode_o <= ma_mode_i;
@@ -80,6 +90,7 @@ always_ff @(posedge clk_i) begin
     wb_data_o <= ex_wb_data_o;
     
     if (reset_i) begin
+        pc_o      <= 32'hFFFFFFFF;
         ir_o      <= NOP_IR;
         ma_addr_o <= 32'h00000000;
         ma_mode_o <= NOP_MA_MODE;
