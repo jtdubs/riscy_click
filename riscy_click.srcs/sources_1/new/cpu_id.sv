@@ -180,7 +180,7 @@ always_comb begin
     { 7'b???????, F3_BGEU,    OP_BRANCH }:   cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_RS1,  ALU_OP2_RS2,  ALU_ULT,     MA_X,     MA_SIZE_X,        WB_SRC_X,   1'b0 };
     { 7'b???????, 3'b???,     OP_LOAD }:     cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, ALU_ADD,     MA_LOAD,  MA_SIZE_W,        WB_SRC_MEM, 1'b1 };
     { 7'b???????, 3'b???,     OP_STORE }:    cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMS, ALU_ADD,     MA_STORE, ma_size_t'(f3_w), WB_SRC_ALU, 1'b0 };
-    { 7'b???????, 3'b???,     OP_MISC_MEM }: cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,     MA_SIZE_X,        WB_SRC_X,   1'b1 };
+    { 7'b???????, 3'b???,     OP_MISC_MEM }: cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,     MA_SIZE_X,        WB_SRC_X,   1'b0 };
     { 7'b???????, 3'b???,     OP_SYSTEM }:   cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,     MA_SIZE_X,        WB_SRC_X,   1'b1 };
     default:                                 cw_w = '{ 1'b1, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,     MA_SIZE_X,        WB_SRC_X,   1'b1 };
     endcase

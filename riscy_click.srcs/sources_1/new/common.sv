@@ -64,25 +64,70 @@ const opcode_t OP_SYSTEM    = 7'b1110011; // System Calls
 
 // Funct3
 typedef logic [2:0] funct3_t;
-const funct3_t F3_ADD_SUB   = 3'b000;     // Addition or Subtraction
-const funct3_t F3_SRL_SRA   = 3'b101;     // Shift Right Logical or Arithmetic
+
+// Funct3 (OP_BRANCH)
 const funct3_t F3_BEQ       = 3'b000;     // Branch if EQ
 const funct3_t F3_BNE       = 3'b001;     // Branch if NE
 const funct3_t F3_BLT       = 3'b100;     // Branch if LT (Signed)
 const funct3_t F3_BGE       = 3'b101;     // Branch if GE (Signed)
 const funct3_t F3_BLTU      = 3'b110;     // Branch if LT (Unsigned)
 const funct3_t F3_BGEU      = 3'b111;     // Branch if GE (Unsigned)
+
+// Funct3 (OP_LOAD)
 const funct3_t F3_LB        = 3'b000;     // Load Byte (Signed Extended)
 const funct3_t F3_LH        = 3'b001;     // Load Half-Word (Signed Extended)
 const funct3_t F3_LW        = 3'b010;     // Load Word
 const funct3_t F3_LBU       = 3'b100;     // Load Byte (Unsigned)
 const funct3_t F3_LHU       = 3'b101;     // Load Half-Word (Unsigned)
+
+// Funct3 (OP_STORE)
 const funct3_t F3_SB        = 3'b000;     // Store Byte
 const funct3_t F3_SH        = 3'b001;     // Store Half-Word
 const funct3_t F3_SW        = 3'b010;     // Store Word
+const funct3_t F3_FENCE     = 3'b000;     // Fence
+
+// Funct3 (OP_IMM and OP)
+const funct3_t F3_ADD_SUB   = 3'b000;     // Addition or Subtraction
+const funct3_t F3_SLT       = 3'b010;     // Signed Less-Than
+const funct3_t F3_SLTU      = 3'b011;     // Signed Less-Than(Upper)
+const funct3_t F3_XOR       = 3'b100;     // Binary XOR
+const funct3_t F3_OR        = 3'b110;     // Binary OR
+const funct3_t F3_AND       = 3'b111;     // Binary AND
+const funct3_t F3_SLL       = 3'b001;     // Shift Left Logical
+const funct3_t F3_SRL_SRA   = 3'b101;     // Shift Right Logical and Arithmetic
+
+// Funct3 (OP_MISC_MEM)
+const funct3_t F3_FENCE     = 3'b000;     // Fence
+const funct3_t F3_FENCEI    = 3'b001;     // Fence Immediate
+
+// Funct3 (OP_SYSTEM)
+const funct3_t F3_PRIV      = 3'b000;     // Environment Call
+const funct3_t F3_CSRRW     = 3'b001;     // Atomic R/W CSR
+const funct3_t F3_CSRRS     = 3'b010;     // Atomic RSB CSR
+const funct3_t F3_CSRRC     = 3'b011;     // Atomic RC CSR
+const funct3_t F3_CSRRWI    = 3'b101;     // Atomic R/W Immedate CSR
+const funct3_t F3_CSRRSI    = 3'b110;     // Atomic RSB Immedate CSR
+const funct3_t F3_CSRRCI    = 3'b111;     // Atomic RC Immedate CSR
 
 // Funct7
 typedef logic [6:0] funct7_t;
+
+// CSR
+typedef logic [11:0] csr_t;
+const csr_t CSR_FFLAGS      = 12'h001;     // Floating-Point Accrued Exceptions
+const csr_t CSR_FRM         = 12'h002;     // Floating-Point Dynamic Rounding Mode
+const csr_t CSR_FCSR        = 12'h003;     // Floating-Point Control and Status Registers
+const csr_t CSR_CYCLE       = 12'hC00;     // Cycle Counter for RDCYCLE instruction
+const csr_t CSR_TIME        = 12'hC01;     // Timer for RDTIME instruction
+const csr_t CSR_INSTRET     = 12'hC02;     // Instructions-retired counter for RDINSTRET instruction
+const csr_t CSR_CYCLEH      = 12'hC80;     // Upper 32 bits of cycle, RV32I only
+const csr_t CSR_TIMEH       = 12'hC81;     // Upper 32 bits of time, RV32I only
+const csr_t CSR_INSTRETH    = 12'hC82;     // Upper 32 bits of instret, RV32I only
+
+// Funct12
+typedef logic [11:0] funct12_t;
+const funct12_t F12_ECALL   = 12'h000;     // Environment call
+const funct12_t F12_EBREAK  = 12'h001;     // Environment breakpoint
 
 
 ///
