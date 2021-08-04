@@ -35,7 +35,6 @@ wire logic  jmp_valid_w;
 wire logic  ready_w;
 wire word_t if_pc_w;
 wire word_t if_ir_w;
-wire logic  if_valid_w;
 
 cpu_if cpu_if (
     .clk_i       (clk_i),
@@ -47,8 +46,7 @@ cpu_if cpu_if (
     .jmp_valid_i (jmp_valid_w),
     .ready_i     (ready_w),
     .pc_o        (if_pc_w),
-    .ir_o        (if_ir_w),
-    .valid_o     (if_valid_w)
+    .ir_o        (if_ir_w)
 );
 
 // Instruction Decode
@@ -78,7 +76,6 @@ cpu_id cpu_id (
     .reset_i       (reset_i),
     .pc_i          (if_pc_w),
     .ir_i          (if_ir_w),
-    .valid_i       (if_valid_w),
     .ex_wb_addr_i  (id_ex_wb_addr_w),
     .ex_wb_data_i  (id_ex_wb_data_w),
     .ex_wb_ready_i (id_ex_wb_ready_w),

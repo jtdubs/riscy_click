@@ -17,7 +17,6 @@ module cpu_id
         // pipeline input port
         input  wire word_t     pc_i,          // program counter
         input  wire word_t     ir_i,          // instruction register
-        input  wire logic      valid_i,       // fetch stage data is valid
         
         // data hazard port
         input  wire regaddr_t  ex_wb_addr_i,  // hazard write-back address
@@ -258,23 +257,13 @@ logic data_hazard_w;
 always_comb data_hazard_w = ((rs1_w != 5'b00000) && ((ex_wb_addr_i == rs1_w && !ex_wb_ready_i) || (ma_wb_addr_i == rs1_w && !ma_wb_ready_i)))
                          || ((rs2_w != 5'b00000) && ((ex_wb_addr_i == rs2_w && !ex_wb_ready_i) || (ma_wb_addr_i == rs2_w && !ma_wb_ready_i)));
 
-// a bubble needs to be output if we are in a data hazard condition, or if there was no valid instruction to decode
-logic bubble_w;
-always_comb bubble_w = data_hazard_w | ~valid_i;
 
 // control flow
 always_comb begin
     $fstrobe(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"jmp_valid\": \"%0d\", \"jmp_addr\": \"%0d\" },", $time, pc_i, jmp_valid_o, jmp_addr_o);
 
-    if (valid_i) begin
-        // if instruction is valid, so is our jump feedback
-        jmp_valid_o = jmp_valid_w;
-        jmp_addr_o  = jmp_addr_w;
-    end else begin
-        // otherwise, it's not
-        jmp_valid_o = 1'b0;
-        jmp_addr_o  = 32'h00000000;
-    end
+    jmp_valid_o = jmp_valid_w;
+    jmp_addr_o  = jmp_addr_w;
        
     if (reset_i) begin
         // set initial signal values
@@ -285,16 +274,10 @@ end
 
 // backpressure
 always_comb begin
-    $fstrobe(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"valid\": \"%0d\", \"ready\": \"%0d\" },", $time, pc_i, valid_i, ready_async_o);
+    $fstrobe(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ready\": \"%0d\" },", $time, pc_i, ready_async_o);
 
-    if (valid_i) begin
-        // if instruction is valid, so is our data hazard determination
-        ready_async_o = ~data_hazard_w;
-    end else begin
-        // otherwise, we are ready for a valid instruction
-        ready_async_o = 1'b1;
-    end
-       
+    ready_async_o = ~data_hazard_w;
+          
     if (reset_i) begin
         // set initial signal values
         ready_async_o = 1'b1;
@@ -306,7 +289,7 @@ always_ff @(posedge clk_i) begin
     $fstrobe(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"alu_op1\": \"%0d\", \"alu_op2\": \"%0d\", \"alu_mode\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\", \"halt\": \"%0d\" },", $time, pc_o, ir_o, alu_op1_o, alu_op2_o, alu_mode_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_o, wb_valid_o, halt_o);
     
     // if a bubble is needed
-    if (bubble_w) begin
+    if (data_hazard_w) begin
         // output a NOP (addi x0, x0, 0)
         pc_o       <= 32'hFFFFFFFF;
         ir_o       <= NOP_IR;

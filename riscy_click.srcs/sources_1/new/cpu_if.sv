@@ -26,65 +26,47 @@ module cpu_if
         input  wire logic  ready_i,     // is the ID stage ready to accept input
 
         // pipeline output port
-        output wire word_t pc_o,        // program counter
-        output wire word_t ir_o,        // instruction register
-        output wire logic  valid_o      // is the stage output valid
+        output             word_t pc_o, // program counter
+        output             word_t ir_o  // instruction register
     );
 
 initial start_logging();
 final stop_logging();
-
-//
-// Skid Buffer
-//
-
-wire logic  write_ready_w; // can skid accept data?
-     logic  write_valid_w; // is skip input valid?
-     logic  reset_w;       // reset_i signal
-     word_t write_pc_r;    // IR and PC to input
-     word_t write_ir_w;    // IR and PC to input
-
-// flush the skid buffer on jump, as those instructions aren't valid     
-always_comb reset_w = reset_i || jmp_valid_i;
-
-// Skid input is valid if we aren't jumping
-always_comb write_valid_w = ~jmp_valid_i;
-
-skid_buffer #(.WORD_WIDTH(64)) output_buffer (
-    .clk_i         (clk_i),
-    .reset_i       (reset_w),
-    .write_ready_o (write_ready_w),
-    .write_valid_i (write_valid_w),
-    .write_data_i  ({ write_pc_r, write_ir_w }),
-    .read_ready_i  (ready_i),
-    .read_valid_o  (valid_o),
-    .read_data_o   ({ pc_o, ir_o })
-);
 
 
 //
 // Program Counter Advancement
 //
 
-word_t write_pc_w;
+word_t pc_i, pc_w;
 
 // combiantional logic for next PC value
 always_comb begin
-    priority if (halt_i)
-        write_pc_w = write_pc_r;     // no change on halt  
+    priority if (reset_i)
+        pc_w <= 32'h0;     // zero on reset
+    else if (halt_i)
+        pc_w = pc_i;       // no change on halt  
     else if (jmp_valid_i)
-        write_pc_w = jmp_addr_i;     // respect jumps
-    else if (~write_ready_w)
-        write_pc_w = write_pc_r;     // no change backpressure
+        pc_w = jmp_addr_i; // respect jumps
+    else if (~ready_i)
+        pc_w = pc_i;       // no change backpressure
     else
-        write_pc_w = write_pc_r + 4; // otherwise keep advancing
+        pc_w = pc_i + 4;   // otherwise keep advancing
 end
 
 // advance every clock cycle
 always_ff @(posedge clk_i) begin
-    $fstrobe(log_fd, "{ \"stage\": \"IF\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"valid\": \"%0d\" },", $time, pc_o, ir_o, valid_o);
+    $fstrobe(log_fd, "{ \"stage\": \"IF\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\" },", $time, pc_o, ir_o);
 
-    write_pc_r <= reset_i ? 32'h0 : write_pc_w;
+    pc_i <= pc_w;
+    
+    priority if (jmp_valid_i || reset_i) begin
+        pc_o <= NOP_PC;
+        ir_o <= NOP_IR;
+    end else if (ready_i) begin
+        pc_o <= pc_i;
+        ir_o <= imem_data_i;
+    end
 end
 
 
@@ -93,8 +75,8 @@ end
 //
 
 always_comb begin
-    write_ir_w  = reset_i ? 32'h0 : imem_data_i; // Data from memory is IR
-    imem_addr_o = reset_i ? 32'h0 : write_pc_w;  // Address to request for next cycle is next PC value
+    // Address to request for next cycle is next PC value
+    imem_addr_o = pc_w;
 end
 
 endmodule

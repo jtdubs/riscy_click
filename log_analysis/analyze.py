@@ -15,10 +15,10 @@ def main(log_file="../riscy_click.sim/board_sim/behav/xsim/log.json", *args):
     for e in events:
         if not "time" in e: break
         if e["time"] == "0": continue
-        if e["pc"] == str(0xFFFFFFFF): continue
+        if e["pc"] == str(0xFFFFFFFF) or e["pc"] == "x": continue
 
         # Fetch
-        if e["stage"] == "IF" and e["valid"] == "1":
+        if e["stage"] == "IF":
             # print("ISSUE: {0}".format(e["pc"]))
             in_flight.append({ "issue_time": int(e["time"]), "pc": int(e["pc"]), "ir": int(e["ir"]) })
 
@@ -28,11 +28,11 @@ def main(log_file="../riscy_click.sim/board_sim/behav/xsim/log.json", *args):
         if e["stage"] == "ID" and "jmp_valid" in e and e["jmp_valid"] == "1":
             next(f for f in in_flight if f["pc"] == int(e["pc"]) and not "decode_time" in f).update({ "jmp_time": int(e["time"]), "jmp_addr": int(e["jmp_addr"]) })
 
-        if e["stage"] == "ID" and "ready" in e and (e["ready"] == "0" or e["valid"] == "1"):
+        if e["stage"] == "ID" and "ready" in e and e["ready"] == "0":
             # print("STALL: {0}".format(e["pc"]))
             next(f for f in in_flight if f["pc"] == int(e["pc"]) and not "decode_time" in f).update({ "stall_start_time": int(e["time"]) })
 
-        if e["stage"] == "ID" and "ready" in e and e["ready"] == "1" and e["valid"] == "1":
+        if e["stage"] == "ID" and "ready" in e and e["ready"] == "1":
             # print("RESUME: {0}".format(e["pc"]))
             next(f for f in in_flight if f["pc"] == int(e["pc"]) and not "decode_time" in f).update({ "stall_end_time": int(e["time"]) })
 
@@ -100,7 +100,7 @@ def main(log_file="../riscy_click.sim/board_sim/behav/xsim/log.json", *args):
 
     for s in summary:
         if (s["store"]):
-            a = "[{0}] {1}[{2}]: {3}".format(s["cycles"], s["pc"].rjust(8), s["ir"], s["store"].ljust(34))
+            a = "[{0}] {1}[{2}]: {3}".format(s["cycles"], s["pc"].rjust(8), s["ir"], s["store"])
         elif (s["load"]):
             a = "[{0}] {1}[{2}]: {3} [{4}]".format(s["cycles"], s["pc"].rjust(8), s["ir"], s["writeback"].ljust(16), s["load"])
         elif (s["jump"] and s["writeback"]):
