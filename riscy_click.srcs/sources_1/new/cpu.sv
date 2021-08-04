@@ -58,7 +58,7 @@ wire word_t     id_ma_wb_data_w;
 wire logic      id_ma_wb_ready_w;
 wire regaddr_t  wb_addr_w;
 wire word_t     wb_data_w;
-wire word_t     wb_valid_w;
+wire logic      wb_valid_w;
 wire word_t     id_pc_w;
 wire word_t     id_ir_w;
 wire word_t     id_alu_op1_w;

@@ -85,7 +85,6 @@ const funct3_t F3_LHU       = 3'b101;     // Load Half-Word (Unsigned)
 const funct3_t F3_SB        = 3'b000;     // Store Byte
 const funct3_t F3_SH        = 3'b001;     // Store Half-Word
 const funct3_t F3_SW        = 3'b010;     // Store Word
-const funct3_t F3_FENCE     = 3'b000;     // Fence
 
 // Funct3 (OP_IMM and OP)
 const funct3_t F3_ADD_SUB   = 3'b000;     // Addition or Subtraction

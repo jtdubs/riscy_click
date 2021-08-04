@@ -91,7 +91,7 @@ def main(log_file="../riscy_click.sim/board_sim/behav/xsim/log.json", *args):
         else:
             s["store"] = ""
 
-        if int(e["writeback_valid"]) == 1:
+        if int(e["writeback_valid"] and e["writeback_addr"] != 0) == 1:
             s["writeback"] = "x{0} = 0x{1:X}".format(str(e["writeback_addr"]).ljust(2), e["writeback_data"])
         else:
             s["writeback"] = ""
@@ -109,6 +109,8 @@ def main(log_file="../riscy_click.sim/board_sim/behav/xsim/log.json", *args):
             a = "[{0}] {1}[{2}]: {3}".format(s["cycles"], s["pc"].rjust(8), s["ir"], s["jump"])
         elif (s["writeback"]):
             a = "[{0}] {1}[{2}]: {3}".format(s["cycles"], s["pc"].rjust(8), s["ir"], s["writeback"])
+        elif (not s["jump"] and not s["store"] and not s["load"] and not s["writeback"]):
+            a = "[{0}] {1}[{2}]: NOP".format(s["cycles"], s["pc"].rjust(8), s["ir"])
         else:
             a = "[{0}] {1}[{2}]: !!!!!!!! {3} {4} {5} {6}".format(s["cycles"], s["pc"].rjust(8), s["ir"], s["writeback"].ljust(16), s["load"].ljust(9), s["jump"].ljust(14), s["store"])
         print(a)
