@@ -6,7 +6,6 @@ Extensions worth implementing:
 - Counters
 
 Future:
-- Figure out how to test the implementation better...
 - Implement more of the Risc-V ISA
 - Increase VGA resolution to 1280x1024?
 - USB HID via PS/2 emulation would be awesome...
@@ -15,7 +14,6 @@ Future:
 - Allow for arbitrary-time memory access / stalls
 - Switch to mix of BRAM & DDR
 - Move to design with unified memory, instruction/data caches, memory controller
-- Eventually, see if I can get linux to boot on this??
 
 Reference:
 http://fpgacpu.ca/fpga/index.html
