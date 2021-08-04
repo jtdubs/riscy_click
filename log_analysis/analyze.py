@@ -3,9 +3,9 @@ import os
 import sys
 import json
 
-def main(*args):
+def main(log_file="../riscy_click.sim/board_sim/behav/xsim/log.json", *args):
     # load events
-    with open("../riscy_click.sim/board_sim/behav/xsim/log.json", "r") as l:
+    with open(log_file, "r") as l:
         events = json.load(l)
 
     # pass #1: consolidation of stage events into single per-instruction event
@@ -114,4 +114,4 @@ def main(*args):
         print(a)
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main(*sys.argv[1:])
