@@ -144,7 +144,7 @@ end
 logic [3:0] rgb_w;
 
 always_comb begin
-    case (x_char_offset_w)
+    unique case (x_char_offset_w)
     0: rgb_w = char_row_r[31:28];
     1: rgb_w = char_row_r[27:24];
     2: rgb_w = char_row_r[23:20];

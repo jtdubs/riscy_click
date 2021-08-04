@@ -38,9 +38,10 @@ final stop_logging();
 // Program Counter Advancement
 //
 
+// the IF stage provides it's own input: the PC corresponding to the incoming IR from memory
 word_t pc_i, pc_w;
 
-// combiantional logic for next PC value
+// choose next PC value
 always_comb begin
     priority if (reset_i)
         pc_w <= 32'h0;     // zero on reset
@@ -49,34 +50,29 @@ always_comb begin
     else if (jmp_valid_i)
         pc_w = jmp_addr_i; // respect jumps
     else if (~ready_i)
-        pc_w = pc_i;       // no change backpressure
+        pc_w = pc_i;       // no change on backpressure
     else
         pc_w = pc_i + 4;   // otherwise keep advancing
 end
 
-// advance every clock cycle
+// always request the IR corresponding to the next PC value
+always_comb imem_addr_o = pc_w; 
+
+// update output registers
 always_ff @(posedge clk_i) begin
     $fstrobe(log_fd, "{ \"stage\": \"IF\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\" },", $time, pc_o, ir_o);
 
     pc_i <= pc_w;
     
     priority if (jmp_valid_i || reset_i) begin
+        // if jumping or resetting, output a NOP
         pc_o <= NOP_PC;
         ir_o <= NOP_IR;
     end else if (ready_i) begin
+        // if next stage is ready, give them new values
         pc_o <= pc_i;
         ir_o <= imem_data_i;
     end
-end
-
-
-//
-// Memory Access
-//
-
-always_comb begin
-    // Address to request for next cycle is next PC value
-    imem_addr_o = pc_w;
 end
 
 endmodule
