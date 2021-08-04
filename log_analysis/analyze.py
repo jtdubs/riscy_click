@@ -66,13 +66,15 @@ def main(*args):
 
     # pass #2: instruction summaries
     summary = []
+    last_retirement = None
 
     for e in retired:
         s = {
             "pc": "{0:X}".format(e["pc"]),
             "ir": "{0:08X}".format(e["ir"]),
-            "cycles": ((e["writeback_time"]-e["issue_time"])/20000)+1,
+            "cycles": int(((e["writeback_time"]-last_retirement)/40000)+1) if last_retirement else 1,
         }
+        last_retirement = e["writeback_time"]
 
         if "jmp_addr" in e:
             s["jump"] = "JUMP @{0:X}".format(e["jmp_addr"])
@@ -98,17 +100,17 @@ def main(*args):
 
     for s in summary:
         if (s["store"]):
-            a = "{0}[{1}]: {2}".format(s["pc"].rjust(8), s["ir"], s["store"].ljust(34))
+            a = "[{0}] {1}[{2}]: {3}".format(s["cycles"], s["pc"].rjust(8), s["ir"], s["store"].ljust(34))
         elif (s["load"]):
-            a = "{0}[{1}]: {2} [{3}]".format(s["pc"].rjust(8), s["ir"], s["writeback"].ljust(16), s["load"])
+            a = "[{0}] {1}[{2}]: {3} [{4}]".format(s["cycles"], s["pc"].rjust(8), s["ir"], s["writeback"].ljust(16), s["load"])
         elif (s["jump"] and s["writeback"]):
-            a = "{0}[{1}]: {2} & {3}".format(s["pc"].rjust(8), s["ir"], s["writeback"].ljust(16), s["jump"])
+            a = "[{0}] {1}[{2}]: {3} & {4}".format(s["cycles"], s["pc"].rjust(8), s["ir"], s["writeback"].ljust(16), s["jump"])
         elif (s["jump"]):
-            a = "{0}[{1}]: {2}".format(s["pc"].rjust(8), s["ir"], s["jump"])
+            a = "[{0}] {1}[{2}]: {3}".format(s["cycles"], s["pc"].rjust(8), s["ir"], s["jump"])
         elif (s["writeback"]):
-            a = "{0}[{1}]: {2}".format(s["pc"].rjust(8), s["ir"], s["writeback"])
+            a = "[{0}] {1}[{2}]: {3}".format(s["cycles"], s["pc"].rjust(8), s["ir"], s["writeback"])
         else:
-            a = "{0}[{1}]: !!!!!!!! {2} {3} {4} {5}".format(s["pc"].rjust(8), s["ir"], s["writeback"].ljust(16), s["load"].ljust(9), s["jump"].ljust(14), s["store"])
+            a = "[{0}] {1}[{2}]: !!!!!!!! {3} {4} {5} {6}".format(s["cycles"], s["pc"].rjust(8), s["ir"], s["writeback"].ljust(16), s["load"].ljust(9), s["jump"].ljust(14), s["store"])
         print(a)
 
 if __name__ == "__main__":

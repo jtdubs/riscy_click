@@ -1,3 +1,10 @@
+Extensions worth implementing:
+- A - Atomics
+- C - Compressed
+- M - Multiplication & Division.  Will be multi-cycle.
+- CSRs
+- Counters
+
 Future:
 - Figure out how to test the implementation better...
 - Implement more of the Risc-V ISA
