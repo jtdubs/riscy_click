@@ -39,6 +39,7 @@ endfunction
 
 // PC Word Sizes
 typedef logic [31:0] word_t;
+typedef logic [63:0] dword_t;
 
 // Register Address
 typedef logic [4:0] regaddr_t;

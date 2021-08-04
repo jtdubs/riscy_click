@@ -1,7 +1,10 @@
+Verilog case statement can take comma-separated values!!
+Should decode be a unique zcase if it isn't?
+
 Extensions worth implementing:
 - A - Atomics
 - C - Compressed
-- M - Multiplication & Division.  Will be multi-cycle.
+- M - Multiplication & Division.  Will be multi-cycle.  Look at Non-restoring Division on wikipedia.
 - CSRs
 - Counters
 
