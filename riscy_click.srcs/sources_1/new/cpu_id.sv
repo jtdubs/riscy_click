@@ -66,8 +66,10 @@ regaddr_t rs2_w;
 regaddr_t rd_w;
 funct3_t  f3_w;
 funct7_t  f7_w;
+csr_t csr_w;
 
-always_comb { f7_w, rs2_w, rs1_w, f3_w, rd_w, opcode_w } = ir_i;
+always_comb { csr_w, rs1_w, f3_w, rd_w, opcode_w } = ir_i;
+always_comb { f7_w, rs2_w } = csr_w;
 
 // Immediates
 word_t imm_i_w;
@@ -75,6 +77,7 @@ word_t imm_s_w;
 word_t imm_b_w;
 word_t imm_u_w;
 word_t imm_j_w;
+word_t uimm_w;
 
 always_comb begin
     imm_i_w = { {21{ir_i[31]}}, ir_i[30:25], ir_i[24:21], ir_i[20] };
@@ -82,6 +85,8 @@ always_comb begin
     imm_b_w = { {20{ir_i[31]}}, ir_i[7], ir_i[30:25], ir_i[11:8], 1'b0 };
     imm_u_w = { ir_i[31], ir_i[30:20], ir_i[19:12], 12'b0 };
     imm_j_w = { {12{ir_i[31]}}, ir_i[19:12], ir_i[20], ir_i[30:25], ir_i[24:21], 1'b0 };
+    uimm_w  = { 26'b0, ir_i[19:15] };
+    
 end
 
 // ALU Modes

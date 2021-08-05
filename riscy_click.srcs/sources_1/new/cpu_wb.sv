@@ -11,6 +11,7 @@ module cpu_wb
     (
         // cpu signals
         input  wire logic     clk_i,            // clock
+        input  wire logic     reset_i,          // reset
         
         // data memory port
         input  wire word_t    dmem_read_data_i, // memory data

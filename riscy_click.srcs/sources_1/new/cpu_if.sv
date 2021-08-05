@@ -44,7 +44,7 @@ word_t pc_i, pc_w;
 // choose next PC value
 always_comb begin
     priority if (reset_i)
-        pc_w = 32'h0;     // zero on reset
+        pc_w = 32'h0;      // zero on reset
     else if (halt_i)
         pc_w = pc_i;       // no change on halt  
     else if (jmp_valid_i)
