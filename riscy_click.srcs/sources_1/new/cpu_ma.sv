@@ -26,13 +26,14 @@ module cpu_ma
         input  wire ma_size_t   ma_size_i,         // memory access size
         input  wire word_t      ma_data_i,         // memory access data
         input  wire wb_src_t    wb_src_i,          // write-back source
-        input  wire word_t      wb_data_i,         // write-back register value
+        input  wire word_t      wb_data_i,         // write-back data
         input  wire logic       wb_valid_i,        // write-back valid
         
         // data hazard port
         output      regaddr_t   ma_wb_addr_o,      // write-back address
         output      word_t      ma_wb_data_o,      // write-back data
         output      logic       ma_wb_ready_o,     // write-back ready
+        output      logic       ma_wb_valid_o,     // write-back valid
 
         // pipeline output port
         output      word_t      pc_o,              // program counter
@@ -96,18 +97,12 @@ end
 //
 
 always_comb begin
-    $fstrobe(log_fd, "{ \"stage\": \"MA\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ma_wb_addr\": \"%0d\", \"ma_wb_data\": \"%0d\", \"ma_wb_ready\": \"%0d\" },", $time, pc_i, ma_wb_addr_o, ma_wb_data_o, ma_wb_ready_o);
+    $fstrobe(log_fd, "{ \"stage\": \"MA\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ma_wb_addr\": \"%0d\", \"ma_wb_data\": \"%0d\", \"ma_wb_valid\": \"%0d\" },", $time, pc_i, ma_wb_addr_o, ma_wb_data_o, ma_wb_valid_o);
 
-    
-    if (wb_valid_i) begin
-        ma_wb_addr_o  = ir_i[11:7];
-        ma_wb_data_o  = wb_data_i; 
-        ma_wb_ready_o = (wb_src_i != WB_SRC_MEM); 
-    end else begin
-        ma_wb_addr_o  = 5'b00000;
-        ma_wb_data_o  = 32'h00000000;
-        ma_wb_ready_o = 1'b1;
-    end    
+    ma_wb_addr_o  = ir_i[11:7];
+    ma_wb_data_o  = wb_data_i;
+    ma_wb_ready_o = (wb_src_i != WB_SRC_MEM);
+    ma_wb_valid_o = wb_valid_i;
 end  
 
 
@@ -126,12 +121,12 @@ always_ff @(posedge clk_i) begin
     wb_valid_o <= wb_valid_i;
     
     if (reset_i) begin
-        pc_o       <= 32'hFFFFFFFF;
+        pc_o       <= NOP_PC;
         ir_o       <= NOP_IR;
         load_o     <= 1'b0;
         ma_size_o  <= NOP_MA_SIZE;
-        wb_data_o  <= 32'h00000000;
-        wb_valid_o <= 1'b0;
+        wb_data_o  <= 32'b0;
+        wb_valid_o <= NOP_WB_VALID;
     end
 end
 

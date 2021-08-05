@@ -30,6 +30,8 @@ module cpu_ex
         output      regaddr_t  ex_wb_addr_o,  // write-back address
         output      word_t     ex_wb_data_o,  // write-back data
         output      logic      ex_wb_ready_o, // write-back data ready
+        output      logic      ex_wb_valid_o, // write-back valid
+        
 
         // pipeline output port
         output      word_t     pc_o,          // program counter
@@ -67,17 +69,12 @@ alu alu (
 //
 
 always_comb begin
-    $fstrobe(log_fd, "{ \"stage\": \"EX\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ex_wb_addr\": \"%0d\", \"ex_wb_data\": \"%0d\", \"ex_wb_ready\": \"%0d\" },", $time, pc_i, ex_wb_addr_o, ex_wb_data_o, ex_wb_ready_o);
+    $fstrobe(log_fd, "{ \"stage\": \"EX\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ex_wb_addr\": \"%0d\", \"ex_wb_data\": \"%0d\", \"ex_wb_valid\": \"%0d\" },", $time, pc_i, ex_wb_addr_o, ex_wb_data_o, ex_wb_valid_o);
 
-    if (wb_valid_i) begin
-        ex_wb_addr_o  = ir_i[11:7];
-        ex_wb_data_o  = (wb_src_i == WB_SRC_ALU) ? alu_result_w : wb_data_i;
-        ex_wb_ready_o = (wb_src_i != WB_SRC_MEM);
-    end else begin
-        ex_wb_addr_o  = 5'b00000;
-        ex_wb_data_o  = 32'h00000000;
-        ex_wb_ready_o = 1'b1;
-    end    
+    ex_wb_addr_o  = ir_i[11:7];
+    ex_wb_data_o  = (wb_src_i == WB_SRC_ALU) ? alu_result_w : wb_data_i;
+    ex_wb_ready_o = (wb_src_i != WB_SRC_MEM);
+    ex_wb_valid_o = wb_valid_i;
 end  
 
 
@@ -99,15 +96,15 @@ always_ff @(posedge clk_i) begin
     wb_valid_o <= wb_valid_i;
     
     if (reset_i) begin
-        pc_o       <= 32'hFFFFFFFF;
+        pc_o       <= NOP_PC;
         ir_o       <= NOP_IR;
-        ma_addr_o  <= 32'h00000000;
+        ma_addr_o  <= 32'b0;
         ma_mode_o  <= NOP_MA_MODE;
         ma_size_o  <= NOP_MA_SIZE;
-        ma_data_o  <= 32'h00000000;
+        ma_data_o  <= 32'b0;
         wb_src_o   <= NOP_WB_SRC;
-        wb_data_o  <= 32'h00000000;
-        wb_valid_o <= 1'b0;
+        wb_data_o  <= 32'b0;
+        wb_valid_o <= NOP_WB_VALID; 
     end
 end
 

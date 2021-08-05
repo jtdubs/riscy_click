@@ -1,8 +1,8 @@
-volatile unsigned int*  BIOS_BASE  = (volatile unsigned int*)0x00000000;
-volatile unsigned int*  RAM_BASE   = (volatile unsigned int*)0x10000000;
+volatile unsigned int*  BIOS_BASE  = (volatile unsigned int* )0x00000000;
+volatile unsigned int*  RAM_BASE   = (volatile unsigned int* )0x10000000;
 volatile unsigned char* VRAM_BASE  = (volatile unsigned char*)0x20000000;
-volatile unsigned int*  DISPLAY    = (volatile unsigned int*)0xFF000000;
-volatile unsigned int*  SWITCH     = (volatile unsigned int*)0xFF000004;
+volatile unsigned int*  DISPLAY    = (volatile unsigned int* )0xFF000000;
+volatile unsigned int*  SWITCH     = (volatile unsigned int* )0xFF000004;
 
 void _start() {
     *DISPLAY = *SWITCH;

@@ -41,7 +41,7 @@ always_comb begin
         ALU_ULT:   alu_result_async_o = (        alu_op1_async_i  <         alu_op2_async_i);
         ALU_COPY1: alu_result_async_o = alu_op1_async_i;
         ALU_X:     alu_result_async_o = 32'b0;
-    endcase;
+    endcase
 end
 
 endmodule

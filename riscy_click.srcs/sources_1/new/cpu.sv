@@ -53,12 +53,15 @@ cpu_if cpu_if (
 wire regaddr_t  id_ex_wb_addr_w;
 wire word_t     id_ex_wb_data_w;
 wire logic      id_ex_wb_ready_w;
+wire logic      id_ex_wb_valid_w;
 wire regaddr_t  id_ma_wb_addr_w;
 wire word_t     id_ma_wb_data_w;
 wire logic      id_ma_wb_ready_w;
+wire logic      id_ma_wb_valid_w;
 wire regaddr_t  wb_addr_w;
 wire word_t     wb_data_w;
 wire logic      wb_valid_w;
+wire logic      retired_w;
 wire word_t     id_pc_w;
 wire word_t     id_ir_w;
 wire word_t     id_alu_op1_w;
@@ -79,12 +82,15 @@ cpu_id cpu_id (
     .ex_wb_addr_i  (id_ex_wb_addr_w),
     .ex_wb_data_i  (id_ex_wb_data_w),
     .ex_wb_ready_i (id_ex_wb_ready_w),
+    .ex_wb_valid_i (id_ex_wb_valid_w),
     .ma_wb_addr_i  (id_ma_wb_addr_w),
     .ma_wb_data_i  (id_ma_wb_data_w),
     .ma_wb_ready_i (id_ma_wb_ready_w),
+    .ma_wb_valid_i (id_ma_wb_valid_w),
     .wb_addr_i     (wb_addr_w),
     .wb_data_i     (wb_data_w),
     .wb_valid_i    (wb_valid_w),
+    .retired_i     (retired_w),
     .ready_async_o (ready_w),
     .jmp_addr_o    (jmp_addr_w),
     .jmp_valid_o   (jmp_valid_w),
@@ -130,6 +136,7 @@ cpu_ex cpu_ex (
     .ex_wb_addr_o  (id_ex_wb_addr_w),
     .ex_wb_data_o  (id_ex_wb_data_w),
     .ex_wb_ready_o (id_ex_wb_ready_w),
+    .ex_wb_valid_o (id_ex_wb_valid_w),
     .pc_o          (ex_pc_w),
     .ir_o          (ex_ir_w),
     .ma_addr_o     (ex_ma_addr_w),
@@ -167,6 +174,7 @@ cpu_ma cpu_ma (
     .ma_wb_addr_o      (id_ma_wb_addr_w),
     .ma_wb_data_o      (id_ma_wb_data_w),
     .ma_wb_ready_o     (id_ma_wb_ready_w),
+    .ma_wb_valid_o     (id_ma_wb_valid_w),
     .pc_o              (ma_pc_w),
     .ir_o              (ma_ir_w),
     .load_o            (ma_load_w),
@@ -178,6 +186,7 @@ cpu_ma cpu_ma (
 // Write Back
 cpu_wb cpu_wb (
     .clk_i            (clk_i),
+    .reset_i          (reset_i),
     .dmem_read_data_i (dmem_read_data_i),
     .pc_i             (ma_pc_w),
     .ir_i             (ma_ir_w),
@@ -187,7 +196,8 @@ cpu_wb cpu_wb (
     .wb_valid_i       (ma_wb_valid_w),
     .wb_addr_o        (wb_addr_w),
     .wb_data_o        (wb_data_w),
-    .wb_valid_o       (wb_valid_w)
+    .wb_valid_o       (wb_valid_w),
+    .retired_o        (retired_w)
 );
 
 endmodule

@@ -12,13 +12,13 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="100,700.435 ns"></ZoomStartTime>
-      <ZoomEndTime time="101,059.913 ns"></ZoomEndTime>
-      <Cursor1Time time="101,000.000 ns"></Cursor1Time>
+      <ZoomStartTime time="1,000.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="3,220.060 ns"></ZoomEndTime>
+      <Cursor1Time time="1,409.113 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="479"></NameColumnWidth>
-      <ValueColumnWidth column_width="203"></ValueColumnWidth>
+      <ValueColumnWidth column_width="185"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="4" />
    <wvobject fp_name="group184" type="group">
@@ -289,7 +289,6 @@
       <wvobject fp_name="group1318" type="group">
          <obj_property name="label">IF</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/board_tb/board/cpu/cpu_if/imem_addr_o" type="array">
             <obj_property name="ElementShortName">imem_addr_o[31:0]</obj_property>
             <obj_property name="ObjectShortName">imem_addr_o[31:0]</obj_property>
@@ -313,10 +312,6 @@
          <wvobject fp_name="/board_tb/board/cpu/cpu_if/pc_w" type="array">
             <obj_property name="ElementShortName">pc_w[31:0]</obj_property>
             <obj_property name="ObjectShortName">pc_w[31:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/board_tb/board/cpu/cpu_if/pc_r" type="array">
-            <obj_property name="ElementShortName">pc_r[31:0]</obj_property>
-            <obj_property name="ObjectShortName">pc_r[31:0]</obj_property>
          </wvobject>
          <wvobject fp_name="/board_tb/board/cpu/cpu_if/pc_o" type="array">
             <obj_property name="ElementShortName">pc_o[31:0]</obj_property>
@@ -350,6 +345,18 @@
          <wvobject fp_name="/board_tb/board/cpu/cpu_id/jmp_valid_o" type="logic">
             <obj_property name="ElementShortName">jmp_valid_o</obj_property>
             <obj_property name="ObjectShortName">jmp_valid_o</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/cpu/cpu_id/ra_collision_w" type="logic">
+            <obj_property name="ElementShortName">ra_collision_w</obj_property>
+            <obj_property name="ObjectShortName">ra_collision_w</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/cpu/cpu_id/rb_collision_w" type="logic">
+            <obj_property name="ElementShortName">rb_collision_w</obj_property>
+            <obj_property name="ObjectShortName">rb_collision_w</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/cpu/cpu_id/data_hazard_w" type="logic">
+            <obj_property name="ElementShortName">data_hazard_w</obj_property>
+            <obj_property name="ObjectShortName">data_hazard_w</obj_property>
          </wvobject>
          <wvobject fp_name="group1482" type="group">
             <obj_property name="label">Decode</obj_property>
@@ -442,6 +449,14 @@
                <obj_property name="ElementShortName">ex_wb_data_i[31:0]</obj_property>
                <obj_property name="ObjectShortName">ex_wb_data_i[31:0]</obj_property>
             </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/ex_wb_ready_i" type="logic">
+               <obj_property name="ElementShortName">ex_wb_ready_i</obj_property>
+               <obj_property name="ObjectShortName">ex_wb_ready_i</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/ex_wb_valid_i" type="logic">
+               <obj_property name="ElementShortName">ex_wb_valid_i</obj_property>
+               <obj_property name="ObjectShortName">ex_wb_valid_i</obj_property>
+            </wvobject>
             <wvobject fp_name="/board_tb/board/cpu/cpu_id/ma_wb_addr_i" type="array">
                <obj_property name="ElementShortName">ma_wb_addr_i[4:0]</obj_property>
                <obj_property name="ObjectShortName">ma_wb_addr_i[4:0]</obj_property>
@@ -450,6 +465,14 @@
                <obj_property name="ElementShortName">ma_wb_data_i[31:0]</obj_property>
                <obj_property name="ObjectShortName">ma_wb_data_i[31:0]</obj_property>
             </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/ma_wb_ready_i" type="logic">
+               <obj_property name="ElementShortName">ma_wb_ready_i</obj_property>
+               <obj_property name="ObjectShortName">ma_wb_ready_i</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/ma_wb_valid_i" type="logic">
+               <obj_property name="ElementShortName">ma_wb_valid_i</obj_property>
+               <obj_property name="ObjectShortName">ma_wb_valid_i</obj_property>
+            </wvobject>
             <wvobject fp_name="/board_tb/board/cpu/cpu_id/wb_addr_i" type="array">
                <obj_property name="ElementShortName">wb_addr_i[4:0]</obj_property>
                <obj_property name="ObjectShortName">wb_addr_i[4:0]</obj_property>
@@ -457,6 +480,10 @@
             <wvobject fp_name="/board_tb/board/cpu/cpu_id/wb_data_i" type="array">
                <obj_property name="ElementShortName">wb_data_i[31:0]</obj_property>
                <obj_property name="ObjectShortName">wb_data_i[31:0]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/wb_valid_i" type="logic">
+               <obj_property name="ElementShortName">wb_valid_i</obj_property>
+               <obj_property name="ObjectShortName">wb_valid_i</obj_property>
             </wvobject>
          </wvobject>
          <wvobject fp_name="group1484" type="group">
@@ -486,10 +513,67 @@
                <obj_property name="ElementShortName">write_data_i[31:0]</obj_property>
                <obj_property name="ObjectShortName">write_data_i[31:0]</obj_property>
             </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/regfile/write_enable_i" type="logic">
+               <obj_property name="ElementShortName">write_enable_i</obj_property>
+               <obj_property name="ObjectShortName">write_enable_i</obj_property>
+            </wvobject>
+         </wvobject>
+         <wvobject fp_name="group228" type="group">
+            <obj_property name="label">CSR</obj_property>
+            <obj_property name="DisplayName">label</obj_property>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr/retired_i" type="logic">
+               <obj_property name="ElementShortName">retired_i</obj_property>
+               <obj_property name="ObjectShortName">retired_i</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr/csr_read_addr_i" type="array">
+               <obj_property name="ElementShortName">csr_read_addr_i[11:0]</obj_property>
+               <obj_property name="ObjectShortName">csr_read_addr_i[11:0]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr/csr_read_data_o" type="array">
+               <obj_property name="ElementShortName">csr_read_data_o[31:0]</obj_property>
+               <obj_property name="ObjectShortName">csr_read_data_o[31:0]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr/csr_write_addr_i" type="array">
+               <obj_property name="ElementShortName">csr_write_addr_i[11:0]</obj_property>
+               <obj_property name="ObjectShortName">csr_write_addr_i[11:0]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr/csr_write_data_i" type="array">
+               <obj_property name="ElementShortName">csr_write_data_i[31:0]</obj_property>
+               <obj_property name="ObjectShortName">csr_write_data_i[31:0]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr/csr_write_enable_i" type="logic">
+               <obj_property name="ElementShortName">csr_write_enable_i</obj_property>
+               <obj_property name="ObjectShortName">csr_write_enable_i</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr/csr_cycle_r" type="array">
+               <obj_property name="ElementShortName">csr_cycle_r[63:0]</obj_property>
+               <obj_property name="ObjectShortName">csr_cycle_r[63:0]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr/csr_cycle_w" type="array">
+               <obj_property name="ElementShortName">csr_cycle_w[63:0]</obj_property>
+               <obj_property name="ObjectShortName">csr_cycle_w[63:0]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr/csr_time_r" type="array">
+               <obj_property name="ElementShortName">csr_time_r[63:0]</obj_property>
+               <obj_property name="ObjectShortName">csr_time_r[63:0]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr/csr_time_w" type="array">
+               <obj_property name="ElementShortName">csr_time_w[63:0]</obj_property>
+               <obj_property name="ObjectShortName">csr_time_w[63:0]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr/csr_instret_r" type="array">
+               <obj_property name="ElementShortName">csr_instret_r[63:0]</obj_property>
+               <obj_property name="ObjectShortName">csr_instret_r[63:0]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr/csr_instret_w" type="array">
+               <obj_property name="ElementShortName">csr_instret_w[63:0]</obj_property>
+               <obj_property name="ObjectShortName">csr_instret_w[63:0]</obj_property>
+            </wvobject>
          </wvobject>
          <wvobject fp_name="group1483" type="group">
             <obj_property name="label">Register Values</obj_property>
             <obj_property name="DisplayName">label</obj_property>
+            <obj_property name="isExpanded"></obj_property>
             <wvobject fp_name="/board_tb/board/cpu/cpu_id/ra_w" type="array">
                <obj_property name="ElementShortName">ra_w[31:0]</obj_property>
                <obj_property name="ObjectShortName">ra_w[31:0]</obj_property>
@@ -498,13 +582,21 @@
                <obj_property name="ElementShortName">rb_w[31:0]</obj_property>
                <obj_property name="ObjectShortName">rb_w[31:0]</obj_property>
             </wvobject>
-            <wvobject fp_name="/board_tb/board/cpu/cpu_id/ra_resolved_w" type="array">
-               <obj_property name="ElementShortName">ra_resolved_w[31:0]</obj_property>
-               <obj_property name="ObjectShortName">ra_resolved_w[31:0]</obj_property>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/ra_collision_w" type="logic">
+               <obj_property name="ElementShortName">ra_collision_w</obj_property>
+               <obj_property name="ObjectShortName">ra_collision_w</obj_property>
             </wvobject>
-            <wvobject fp_name="/board_tb/board/cpu/cpu_id/rb_resolved_w" type="array">
-               <obj_property name="ElementShortName">rb_resolved_w[31:0]</obj_property>
-               <obj_property name="ObjectShortName">rb_resolved_w[31:0]</obj_property>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/rb_collision_w" type="logic">
+               <obj_property name="ElementShortName">rb_collision_w</obj_property>
+               <obj_property name="ObjectShortName">rb_collision_w</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/ra_bypassed_w" type="array">
+               <obj_property name="ElementShortName">ra_bypassed_w[31:0]</obj_property>
+               <obj_property name="ObjectShortName">ra_bypassed_w[31:0]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/rb_bypassed_w" type="array">
+               <obj_property name="ElementShortName">rb_bypassed_w[31:0]</obj_property>
+               <obj_property name="ObjectShortName">rb_bypassed_w[31:0]</obj_property>
             </wvobject>
          </wvobject>
          <wvobject fp_name="group1481" type="group">
