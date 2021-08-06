@@ -8,6 +8,7 @@
 module cpu_if
     // Import Constants
     import common::*;
+    import logging::*;
     (
         // cpu signals
         input  wire logic  clk_i,             // clock

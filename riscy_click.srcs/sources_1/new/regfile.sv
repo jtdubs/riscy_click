@@ -13,20 +13,20 @@ module regfile
     // Import Constants
     import common::*;
     (
-        input  wire logic       clk_i,              // Clock
+        input  wire logic     clk_i,              // Clock
 
         // read port A
-        input  wire logic [4:0] read1_addr_async_i, // Read Address
-        output      word_t      read1_data_async_o, // Data Output
+        input  wire regaddr_t read1_addr_async_i, // Read Address
+        output      word_t    read1_data_async_o, // Data Output
 
         // read port B
-        input  wire logic [4:0] read2_addr_async_i, // Read Address
-        output      word_t      read2_data_async_o, // Data Output
+        input  wire regaddr_t read2_addr_async_i, // Read Address
+        output      word_t    read2_data_async_o, // Data Output
 
         // write port
-        input  wire logic       write_enable_i,     // Write Enable
-        input  wire logic [4:0] write_addr_i,       // Write Address
-        input  wire word_t      write_data_i        // Write Data
+        input  wire logic     write_enable_i,     // Write Enable
+        input  wire regaddr_t write_addr_i,       // Write Address
+        input  wire word_t    write_data_i        // Write Data
     );
 
 // Memory
