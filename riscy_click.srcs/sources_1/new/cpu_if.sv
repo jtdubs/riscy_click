@@ -33,10 +33,9 @@ final stop_logging();
 
 
 //
-// Program Counter Advancement
+// Pipeline Inputs
 //
 
-// the IF stage provides it's own input: the PC corresponding to the incoming IR from memory
 word_t pc_i, pc_w;
 
 // choose next PC value
@@ -56,12 +55,18 @@ end
 // always request the IR corresponding to the next PC value
 always_comb imem_addr_o = pc_w; 
 
-// update output registers
+// update pipeline input to match the address we are requesting from imem
+always_ff @(posedge clk_i) begin
+    pc_i <= pc_w;
+end
+
+
+//
+// Pipeline Outputs
+//
 always_ff @(posedge clk_i) begin
     $fstrobe(log_fd, "{ \"stage\": \"IF\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\" },", $time, pc_o, ir_o);
-
-    pc_i <= pc_w;
-    
+ 
     if (jmp_valid_async_i || reset_i) begin
         // if jumping or resetting, output a NOP
         pc_o <= NOP_PC;
