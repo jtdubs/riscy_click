@@ -101,7 +101,7 @@ control_word_t cw_w;
 
 always_comb begin
     casez ({f7_w, f3_w, opcode_w})
-    //                                                 Halt  PC Mode      Alu Op #1     Alu Op #1     Alu Mode     Memory Mode  Memory Size       Writeback Source  RA Used?  RB Used?  CSR Used?
+    //                                                 Halt  PC Mode      Alu Op #1     Alu Op #2     Alu Mode     Memory Mode  Memory Size       Writeback Source  RA Used?  RB Used?  CSR Used?
     //                                                 ----  -----------  ------------  ------------  -----------  -----------  ----------------  ----------------  --------  --------  ---------
     { 7'b0?00000, F3_SRL_SRA, OP_IMM }:      cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, alu_mode7_w, MA_X,        MA_SIZE_W,        WB_SRC_ALU,       1'b1,     1'b0,     1'b0 };
     { 7'b???????, 3'b???,     OP_IMM }:      cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, alu_mode3_w, MA_X,        MA_SIZE_W,        WB_SRC_ALU,       1'b1,     1'b0,     1'b0 };
@@ -142,36 +142,46 @@ end
 
 
 //
+// Data Hazard Detection
+//
+
+logic data_hazard_w, ra_collision_w, rb_collision_w;
+
+always_comb begin
+    ra_collision_w = ra_used_w && ((ex_wb_valid_async_i && ex_wb_addr_async_i == rs1_w && !ex_wb_ready_async_i) || (ma_wb_valid_async_i && ma_wb_addr_async_i == rs1_w && !ma_wb_ready_async_i));
+    rb_collision_w = rb_used_w && ((ex_wb_valid_async_i && ex_wb_addr_async_i == rs2_w && !ex_wb_ready_async_i) || (ma_wb_valid_async_i && ma_wb_addr_async_i == rs2_w && !ma_wb_ready_async_i));
+    data_hazard_w  = ra_collision_w || rb_collision_w;
+end
+
+
+//
 // Register File Access
 //
 
 // output values from register file
-wire word_t ra_w;
-wire word_t rb_w;
-regaddr_t wb_addr_w;
-word_t wb_data_w;
-logic  wb_enable_w;
+wire word_t    ra_w;
+wire word_t    rb_w;
+     regaddr_t wb_addr_w;
+     word_t    wb_data_w;
+     logic     wb_enable_w;
 
 regfile regfile (
     .clk_i              (clk_i),
-    // read from rs1 in the opcode into ra
     .read1_addr_async_i (rs1_w),
     .read1_data_async_o (ra_w),
-    // read from rs2 in the opcode into rb
     .read2_addr_async_i (rs2_w),
     .read2_data_async_o (rb_w),
-    // let the write-back stage drive the write signals
     .write_addr_i       (wb_addr_w),
     .write_data_i       (wb_data_w),
     .write_enable_i     (wb_enable_w)
 );
 
 
-
 //
 // CSR File Access
 //
 
+logic  retired_w;
 csr_t  csr_read_addr_w;
 logic  csr_read_enable_w;
 word_t csr_read_data_w;
@@ -182,12 +192,10 @@ logic  csr_write_enable_w;
 cpu_csr csr (
     .clk_i              (clk_i),
     .reset_i            (reset_i),
-    .retired_i          (!wb_empty_async_i || csr_state_r == CSR_STATE_EXECUTING),
-    // read port
+    .retired_i          (retired_w),
     .csr_read_addr_i    (csr_read_addr_w),
     .csr_read_enable_i  (csr_read_enable_w),
     .csr_read_data_o    (csr_read_data_w),
-    // write port
     .csr_write_addr_i   (csr_write_addr_w),
     .csr_write_data_i   (csr_write_data_w),
     .csr_write_enable_i (csr_write_enable_w)
@@ -195,14 +203,14 @@ cpu_csr csr (
 
 
 //
-// Writeback Bypass
+// Register File Bypass
 //
 
 // Bypassed Values
 word_t ra_bypassed_w;
 word_t rb_bypassed_w;
 
-// determine true value for first register access
+// determine bypassed value for first register access
 always_comb begin
     priority if (rs1_w == 5'b00000)
         ra_bypassed_w = ra_w;
@@ -216,7 +224,7 @@ always_comb begin
         ra_bypassed_w = ra_w;
 end
 
-// Determine true value for second register access
+// Determine bypassed value for second register access
 always_comb begin
     priority if (rs2_w == 5'b00000)
         rb_bypassed_w = rb_w;
@@ -258,86 +266,25 @@ end
 
 
 //
-// Jumps and Branches
+// CSR Access State Machine
 //
 
-logic  jmp_valid_w;
-word_t jmp_addr_w;
-
-always_comb begin
-    unique case (cw_w.pc_mode)
-    PC_NEXT:
-        begin
-            jmp_valid_w = 1'b0;
-            jmp_addr_w  = 32'h00000000;
-        end
-    PC_JUMP_REL:
-        begin
-            jmp_valid_w = 1'b1;
-            jmp_addr_w  = pc_i + imm_j_w;
-        end
-    PC_JUMP_ABS:
-        begin
-            jmp_valid_w = 1'b1;
-            jmp_addr_w  = ra_bypassed_w + imm_i_w;
-        end
-    PC_BRANCH:
-        begin
-            unique case (f3_w[2:1])
-                2'b00:  jmp_valid_w = (        ra_bypassed_w  ==         rb_bypassed_w);
-                2'b10:  jmp_valid_w = (signed'(ra_bypassed_w) <  signed'(rb_bypassed_w));
-                2'b11:  jmp_valid_w = (        ra_bypassed_w  <          rb_bypassed_w);
-            endcase
-            jmp_valid_w = f3_w[0] ? !jmp_valid_w : jmp_valid_w;
-            jmp_addr_w  = pc_i + imm_b_w;
-        end
-    endcase
-end
-
-
-//
-// Outputs
-//
-
-// data hazard
-logic data_hazard_w, ra_collision_w, rb_collision_w;
-
-always_comb begin
-    ra_collision_w = ra_used_w && ((ex_wb_valid_async_i && ex_wb_addr_async_i == rs1_w && !ex_wb_ready_async_i) || (ma_wb_valid_async_i && ma_wb_addr_async_i == rs1_w && !ma_wb_ready_async_i));
-    rb_collision_w = rb_used_w && ((ex_wb_valid_async_i && ex_wb_addr_async_i == rs2_w && !ex_wb_ready_async_i) || (ma_wb_valid_async_i && ma_wb_addr_async_i == rs2_w && !ma_wb_ready_async_i));
-    data_hazard_w  = ra_collision_w || rb_collision_w;
-end
-
-
-// control flow
-always_comb begin
-    $fstrobe(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"jmp_valid\": \"%0d\", \"jmp_addr\": \"%0d\" },", $time, pc_i, jmp_valid_async_o, jmp_addr_async_o);
-
-    jmp_valid_async_o = jmp_valid_w;
-    jmp_addr_async_o  = jmp_addr_w;
-       
-    if (reset_i) begin
-        // set initial signal values
-        jmp_valid_async_o = 1'b0;
-        jmp_addr_async_o  = 32'h00000000;
-    end    
-end
-
-
-// CSR state machine
+// states
 typedef enum logic [1:0] {
     CSR_STATE_IDLE      = 2'b00,
     CSR_STATE_FLUSHING  = 2'b01,
     CSR_STATE_EXECUTING = 2'b10
 } csr_state_t;
 
+// transitions
 csr_state_t csr_state_r, csr_state_w;
-logic csr_idle_action_w;
-logic csr_flush_action_w;
-logic csr_wait_action_w;
-logic csr_read_action_w;
-logic csr_write_action_w;
+logic csr_idle_action_w;   // normal idle transition
+logic csr_flush_action_w;  // start processing a CSR by flushing the pipeline
+logic csr_wait_action_w;   // continuing to flush pipeline
+logic csr_read_action_w;   // reading current CSR value
+logic csr_write_action_w;  // writing new CSR value and performing register write-back
 
+// determine transition
 always_comb begin
     csr_idle_action_w  = (csr_state_r == CSR_STATE_IDLE)     && ~cw_w.csr_used;
     csr_flush_action_w = (csr_state_r == CSR_STATE_IDLE)     &&  cw_w.csr_used;
@@ -346,6 +293,7 @@ always_comb begin
     csr_write_action_w = (csr_state_r == CSR_STATE_EXECUTING);
 end
 
+// determine next state
 always_comb begin
     unique if (csr_idle_action_w | csr_write_action_w)
         csr_state_w = CSR_STATE_IDLE;
@@ -355,7 +303,7 @@ always_comb begin
         csr_state_w = CSR_STATE_EXECUTING;
 end
 
-// TODO: actually do the register writebacks lol...
+// update CSR control signals
 always_comb begin
     // always read and write from the CSR specified in the instruction
     csr_read_addr_w  <= csr_w;
@@ -383,8 +331,12 @@ always_comb begin
     F3_CSRRCI: csr_write_data_w = csr_read_data_w & ~uimm_w;
     default:   csr_write_data_w = 32'b0;
     endcase
+    
+    // consider this an instruction retirement if writeback stage is retiring OR we are
+    retired_w = !wb_empty_async_i || csr_state_r == CSR_STATE_EXECUTING;
 end
 
+// update regfile writeback control siganls
 always_comb begin
     // If CSR is writing, it owns the register file's write port
     if (csr_write_action_w) begin
@@ -399,6 +351,7 @@ always_comb begin
     end  
 end
 
+// advance to next state
 always_ff @(posedge clk_i) begin
     $fdisplay(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"csr_addr\": \"%0d\", \"csr_state\": \"%0d\", \"csr_read_data\": \"%0d\", \"csr_write_data\": \"%0d\", \"csr_wb_addr\": \"%0d\", \"csr_wb_enable\": \"%0d\", \"csr_write_enable\": \"%0d\" },", $time, pc_i, csr_w, csr_state_r, csr_read_data_w, csr_write_data_w, wb_addr_w, wb_enable_w, csr_write_enable_w);
     
@@ -406,21 +359,58 @@ always_ff @(posedge clk_i) begin
 end
 
 
-// backpressure
-always_comb begin
-    $fstrobe(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ready\": \"%0d\" },", $time, pc_i, ready_async_o);
+//
+// Async Output
+//
 
-    // we only want a new instruction if we aren't dealing with a datac hazard, and we aren't going to be dealing with a CSR instruction
+always_comb begin
+    $fstrobe(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"jmp_valid\": \"%0d\", \"jmp_addr\": \"%0d\", \"ready\": \"%0d\" },", $time, pc_i, jmp_valid_async_o, jmp_addr_async_o, ready_async_o);
+
+    // jump signals
+    unique case (cw_w.pc_mode)
+    PC_NEXT:
+        begin
+            jmp_valid_async_o = 1'b0;
+            jmp_addr_async_o  = 32'h00000000;
+        end
+    PC_JUMP_REL:
+        begin
+            jmp_valid_async_o = 1'b1;
+            jmp_addr_async_o  = pc_i + imm_j_w;
+        end
+    PC_JUMP_ABS:
+        begin
+            jmp_valid_async_o = 1'b1;
+            jmp_addr_async_o  = ra_bypassed_w + imm_i_w;
+        end
+    PC_BRANCH:
+        begin
+            unique case (f3_w[2:1])
+                2'b00:  jmp_valid_async_o = (        ra_bypassed_w  ==         rb_bypassed_w);
+                2'b10:  jmp_valid_async_o = (signed'(ra_bypassed_w) <  signed'(rb_bypassed_w));
+                2'b11:  jmp_valid_async_o = (        ra_bypassed_w  <          rb_bypassed_w);
+            endcase
+            jmp_valid_async_o = f3_w[0] ? !jmp_valid_async_o : jmp_valid_async_o;
+            jmp_addr_async_o  = pc_i + imm_b_w;
+        end
+    endcase
+       
+   // we only want a new instruction if we aren't dealing with a data hazard, and we aren't going to be dealing with a CSR instruction
     ready_async_o = ~data_hazard_w && (csr_state_w == CSR_STATE_IDLE);
-          
+    
     if (reset_i) begin
         // set initial signal values
+        jmp_valid_async_o = 1'b0;
+        jmp_addr_async_o  = 32'h00000000;
         ready_async_o = 1'b1;
     end    
 end
 
 
-// pipeline output
+//
+// Pipeline Output
+//
+
 always_ff @(posedge clk_i) begin
     $fstrobe(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"alu_op1\": \"%0d\", \"alu_op2\": \"%0d\", \"alu_mode\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_dst\": \"%0d\", \"halt\": \"%0d\" },", $time, pc_o, ir_o, alu_op1_o, alu_op2_o, alu_mode_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_async_o, wb_valid_async_o, halt_o);
     
