@@ -18,6 +18,7 @@ module cpu_csr
         
         // read port
         input  wire csr_t      csr_read_addr_i,
+        input  wire logic      csr_read_enable_i,
         output      word_t     csr_read_data_o,
         
         // write port
@@ -40,16 +41,24 @@ always_comb begin
 end
 
 // Reads
-always_comb begin
-    unique case (csr_read_addr_i)
-    CSR_CYCLE:    csr_read_data_o = csr_cycle_r[31:0];
-    CSR_TIME:     csr_read_data_o = csr_time_r[31:0];
-    CSR_INSTRET:  csr_read_data_o = csr_instret_r[31:0];
-    CSR_CYCLEH:   csr_read_data_o = csr_cycle_r[63:32];
-    CSR_TIMEH:    csr_read_data_o = csr_time_r[63:32];
-    CSR_INSTRETH: csr_read_data_o = csr_instret_r[63:32];
-    default:      csr_read_data_o = 32'b0;
-    endcase
+always_ff @(posedge clk_i) begin
+    if (csr_read_enable_i) begin
+        unique case (csr_read_addr_i)
+        CSR_CYCLE:    csr_read_data_o <= csr_cycle_r[31:0];
+        CSR_TIME:     csr_read_data_o <= csr_time_r[31:0];
+        CSR_INSTRET:  csr_read_data_o <= csr_instret_r[31:0];
+        CSR_CYCLEH:   csr_read_data_o <= csr_cycle_r[63:32];
+        CSR_TIMEH:    csr_read_data_o <= csr_time_r[63:32];
+        CSR_INSTRETH: csr_read_data_o <= csr_instret_r[63:32];
+        default:      csr_read_data_o <= 32'b0;
+        endcase
+    end else begin
+        csr_read_data_o <= 32'b0;
+    end
+   
+    if (reset_i) begin
+        csr_read_data_o <= 32'b0;
+    end
 end
 
 // Writes

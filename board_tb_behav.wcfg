@@ -12,9 +12,9 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="1,059.440 ns"></ZoomStartTime>
-      <ZoomEndTime time="1,435.041 ns"></ZoomEndTime>
-      <Cursor1Time time="2,000.000 ns"></Cursor1Time>
+      <ZoomStartTime time="1,061.250 ns"></ZoomStartTime>
+      <ZoomEndTime time="1,436.851 ns"></ZoomEndTime>
+      <Cursor1Time time="1,241.250 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="479"></NameColumnWidth>
@@ -382,25 +382,25 @@
                <obj_property name="ElementShortName">csr_state_w[1:0]</obj_property>
                <obj_property name="ObjectShortName">csr_state_w[1:0]</obj_property>
             </wvobject>
-            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr_idle_action" type="logic">
-               <obj_property name="ElementShortName">csr_idle_action</obj_property>
-               <obj_property name="ObjectShortName">csr_idle_action</obj_property>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr_idle_action_w" type="logic">
+               <obj_property name="ElementShortName">csr_idle_action_w</obj_property>
+               <obj_property name="ObjectShortName">csr_idle_action_w</obj_property>
             </wvobject>
-            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr_start_action" type="logic">
-               <obj_property name="ElementShortName">csr_start_action</obj_property>
-               <obj_property name="ObjectShortName">csr_start_action</obj_property>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr_flush_action_w" type="logic">
+               <obj_property name="ElementShortName">csr_flush_action_w</obj_property>
+               <obj_property name="ObjectShortName">csr_flush_action_w</obj_property>
             </wvobject>
-            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr_wait_action" type="logic">
-               <obj_property name="ElementShortName">csr_wait_action</obj_property>
-               <obj_property name="ObjectShortName">csr_wait_action</obj_property>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr_wait_action_w" type="logic">
+               <obj_property name="ElementShortName">csr_wait_action_w</obj_property>
+               <obj_property name="ObjectShortName">csr_wait_action_w</obj_property>
             </wvobject>
-            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr_exec_action" type="logic">
-               <obj_property name="ElementShortName">csr_exec_action</obj_property>
-               <obj_property name="ObjectShortName">csr_exec_action</obj_property>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr_read_action_w" type="logic">
+               <obj_property name="ElementShortName">csr_read_action_w</obj_property>
+               <obj_property name="ObjectShortName">csr_read_action_w</obj_property>
             </wvobject>
-            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr_complete_action" type="logic">
-               <obj_property name="ElementShortName">csr_complete_action</obj_property>
-               <obj_property name="ObjectShortName">csr_complete_action</obj_property>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr_write_action_w" type="logic">
+               <obj_property name="ElementShortName">csr_write_action_w</obj_property>
+               <obj_property name="ObjectShortName">csr_write_action_w</obj_property>
             </wvobject>
          </wvobject>
          <wvobject fp_name="group1482" type="group">
@@ -566,6 +566,7 @@
          <wvobject fp_name="group228" type="group">
             <obj_property name="label">CSR</obj_property>
             <obj_property name="DisplayName">label</obj_property>
+            <obj_property name="isExpanded"></obj_property>
             <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr/retired_i" type="logic">
                <obj_property name="ElementShortName">retired_i</obj_property>
                <obj_property name="ObjectShortName">retired_i</obj_property>
@@ -573,6 +574,10 @@
             <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr/csr_read_addr_i" type="array">
                <obj_property name="ElementShortName">csr_read_addr_i[11:0]</obj_property>
                <obj_property name="ObjectShortName">csr_read_addr_i[11:0]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr/csr_read_enable_i" type="logic">
+               <obj_property name="ElementShortName">csr_read_enable_i</obj_property>
+               <obj_property name="ObjectShortName">csr_read_enable_i</obj_property>
             </wvobject>
             <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr/csr_read_data_o" type="array">
                <obj_property name="ElementShortName">csr_read_data_o[31:0]</obj_property>
@@ -646,7 +651,6 @@
          <wvobject fp_name="group1481" type="group">
             <obj_property name="label">Output</obj_property>
             <obj_property name="DisplayName">label</obj_property>
-            <obj_property name="isExpanded"></obj_property>
             <wvobject fp_name="/board_tb/board/cpu/cpu_id/pc_o" type="array">
                <obj_property name="ElementShortName">pc_o[31:0]</obj_property>
                <obj_property name="ObjectShortName">pc_o[31:0]</obj_property>

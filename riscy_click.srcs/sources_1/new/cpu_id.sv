@@ -154,6 +154,9 @@ end
 // output values from register file
 wire word_t ra_w;
 wire word_t rb_w;
+word_t wb_addr_w;
+word_t wb_data_w;
+logic  wb_enable_w;
 
 regfile regfile (
     .clk_i              (clk_i),
@@ -164,16 +167,19 @@ regfile regfile (
     .read2_addr_async_i (rs2_w),
     .read2_data_async_o (rb_w),
     // let the write-back stage drive the write signals
-    .write_addr_i       (wb_addr_i),
-    .write_data_i       (wb_data_i),
-    .write_enable_i     (wb_valid_i)
+    .write_addr_i       (wb_addr_w),
+    .write_data_i       (wb_data_w),
+    .write_enable_i     (wb_enable_w)
 );
+
 
 
 //
 // CSR File Access
 //
 
+csr_t  csr_read_addr_w;
+logic  csr_read_enable_w;
 word_t csr_read_data_w;
 csr_t  csr_write_addr_w;
 word_t csr_write_data_w;
@@ -184,7 +190,8 @@ cpu_csr csr (
     .reset_i            (reset_i),
     .retired_i          (~wb_empty_i),
     // read port
-    .csr_read_addr_i    (csr_w),
+    .csr_read_addr_i    (csr_read_addr_w),
+    .csr_read_enable_i  (csr_read_enable_w),
     .csr_read_data_o    (csr_read_data_w),
     // write port
     .csr_write_addr_i   (csr_write_addr_w),
@@ -325,40 +332,56 @@ end
 
 // CSR state machine
 typedef enum logic [1:0] {
-    CSR_STATE_IDLE = 2'b00,
-    CSR_STATE_WAIT = 2'b01,
-    CSR_STATE_EXEC = 2'b10
+    CSR_STATE_IDLE      = 2'b00,
+    CSR_STATE_FLUSHING  = 2'b01,
+    CSR_STATE_EXECUTING = 2'b10
 } csr_state_t;
 
 csr_state_t csr_state_r, csr_state_w;
-logic csr_idle_action;
-logic csr_start_action;
-logic csr_wait_action;
-logic csr_exec_action;
-logic csr_complete_action;
+logic csr_idle_action_w;
+logic csr_flush_action_w;
+logic csr_wait_action_w;
+logic csr_read_action_w;
+logic csr_write_action_w;
 
 always_comb begin
-    csr_idle_action     = (csr_state_r == CSR_STATE_IDLE) && ~cw_w.csr_used;
-    csr_start_action    = (csr_state_r == CSR_STATE_IDLE) &&  cw_w.csr_used;
-    csr_wait_action     = (csr_state_r == CSR_STATE_WAIT) && ~(ex_empty_i && ma_empty_i && wb_empty_i);
-    csr_exec_action     = (csr_state_r == CSR_STATE_WAIT) &&  (ex_empty_i && ma_empty_i && wb_empty_i);
-    csr_complete_action = (csr_state_r == CSR_STATE_EXEC);
+    csr_idle_action_w  = (csr_state_r == CSR_STATE_IDLE)     && ~cw_w.csr_used;
+    csr_flush_action_w = (csr_state_r == CSR_STATE_IDLE)     &&  cw_w.csr_used;
+    csr_wait_action_w  = (csr_state_r == CSR_STATE_FLUSHING) && ~(ex_empty_i && ma_empty_i && wb_empty_i);
+    csr_read_action_w  = (csr_state_r == CSR_STATE_FLUSHING) &&  (ex_empty_i && ma_empty_i && wb_empty_i);
+    csr_write_action_w = (csr_state_r == CSR_STATE_EXECUTING);
 end
 
 always_comb begin
-    unique if (csr_idle_action | csr_complete_action)
+    unique if (csr_idle_action_w | csr_write_action_w)
         csr_state_w = CSR_STATE_IDLE;
-    else if (csr_start_action | csr_wait_action)  
-        csr_state_w = CSR_STATE_WAIT;
-    else  
-        csr_state_w = CSR_STATE_EXEC;
+    else if (csr_flush_action_w | csr_wait_action_w)
+        csr_state_w = CSR_STATE_FLUSHING;
+    else
+        csr_state_w = CSR_STATE_EXECUTING;
 end
 
+// TODO: actually do the register writebacks lol...
 always_comb begin
+    // always read and write from the CSR specified in the instruction
+    csr_read_addr_w  <= csr_w;
     csr_write_addr_w <= csr_w;
+    
+    // read on read action unless there's nowhere to put it
+    csr_read_enable_w  = csr_read_action_w && rd_w != 5'b0;
    
     unique case (f3_w)
-    F3_CSRRW:  csr_write_data_w = ra_bypassed_w;
+    F3_CSRRW,  // the RW variations always write on exec action
+    F3_CSRRWI: csr_write_enable_w = csr_write_action_w;
+    F3_CSRRS,  // the Set/Clear variations write on exec action unless x0 is specified
+    F3_CSRRC:  csr_write_enable_w = csr_write_action_w && (rs1_w != 5'b0);
+    F3_CSRRSI, // the Set/Clear Immediate variations write on exec action unless the immediate value is 0
+    F3_CSRRCI: csr_write_enable_w = csr_write_action_w && (uimm_w != 32'b0);
+    default:   csr_write_enable_w = 1'b0;
+    endcase
+    
+    unique case (f3_w)
+    F3_CSRRW:  csr_write_data_w = ra_bypassed_w;                    // 
     F3_CSRRWI: csr_write_data_w = uimm_w;
     F3_CSRRS:  csr_write_data_w = csr_read_data_w | ra_bypassed_w;
     F3_CSRRSI: csr_write_data_w = csr_read_data_w | uimm_w;
@@ -366,8 +389,20 @@ always_comb begin
     F3_CSRRCI: csr_write_data_w = csr_read_data_w & ~uimm_w;
     default:   csr_write_data_w = 32'b0;
     endcase
-    
-    csr_write_enable_w = (csr_state_r == CSR_STATE_EXEC);
+end
+
+always_comb begin
+    // If CSR is writing, it owns the register file's write port
+    if (csr_write_action_w) begin
+        wb_addr_w   = rd_w;
+        wb_data_w   = csr_read_data_w;
+        wb_enable_w = csr_write_action_w && rd_w != 5'b0;
+    // Otherwise, it comes from the writeback stage
+    end else begin
+        wb_addr_w   = wb_addr_i;
+        wb_data_w   = wb_data_i;
+        wb_enable_w = wb_valid_i;
+    end  
 end
 
 always_ff @(posedge clk_i) begin
@@ -394,7 +429,7 @@ always_ff @(posedge clk_i) begin
     $fstrobe(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"alu_op1\": \"%0d\", \"alu_op2\": \"%0d\", \"alu_mode\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_dst\": \"%0d\", \"halt\": \"%0d\" },", $time, pc_o, ir_o, alu_op1_o, alu_op2_o, alu_mode_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_o, wb_valid_o, halt_o);
     
     // if a bubble is needed
-    if (data_hazard_w || csr_start_action || csr_wait_action || csr_exec_action || csr_complete_action) begin
+    if (data_hazard_w || csr_flush_action_w || csr_wait_action_w || csr_read_action_w || csr_write_action_w) begin
         // output a NOP (addi x0, x0, 0)
         pc_o       <= NOP_PC;
         ir_o       <= NOP_IR;

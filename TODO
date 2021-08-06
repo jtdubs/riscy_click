@@ -1,18 +1,16 @@
 TODO:
 - consider renaming hazard signals to just normal _async_o signals....
 
-Extensions worth implementing:
+Extensions:
 - A - Atomics
 - C - Compressed
 - M - Multiplication & Division.  Will be multi-cycle.  Look at Non-restoring Division on wikipedia.
-- CSRs
-- Counters
 
 Future:
-- Implement more of the Risc-V ISA
-- Increase VGA resolution to 1280x1024?
 - USB HID via PS/2 emulation would be awesome...
 - USB UART would be awesome...
+- Implement more of the Risc-V ISA
+- Increase VGA resolution to 1280x1024?
 - Command-line vivado usage???? Looks fairly awesome.  No more crazy directory structure.  Just src/*.sv ??
 - Allow for arbitrary-time memory access / stalls
 - Switch to mix of BRAM & DDR
