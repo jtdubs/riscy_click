@@ -188,7 +188,7 @@ logic  csr_write_enable_w;
 cpu_csr csr (
     .clk_i              (clk_i),
     .reset_i            (reset_i),
-    .retired_i          (~wb_empty_i),
+    .retired_i          (!wb_empty_i || csr_state_r == CSR_STATE_EXECUTING),
     // read port
     .csr_read_addr_i    (csr_read_addr_w),
     .csr_read_enable_i  (csr_read_enable_w),
