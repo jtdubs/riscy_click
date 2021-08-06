@@ -13,12 +13,12 @@ module cpu_ma
         input  wire logic       clk_i,             // clock
         input  wire logic       reset_i,           // reset_i
 
-        // data memory port
+        // data memory
         output      word_t      dmem_addr_o,       // address
         output      word_t      dmem_write_data_o, // write data
         output      logic [3:0] dmem_write_mask_o, // write enable
         
-        // pipeline input port
+        // pipeline input
         input  wire word_t      pc_i,              // program counter
         input  wire word_t      ir_i,              // instruction register
         input  wire word_t      ma_addr_i,         // memoricy access address
@@ -29,14 +29,14 @@ module cpu_ma
         input  wire word_t      wb_data_i,         // write-back data
         input  wire logic       wb_valid_i,        // write-back valid
         
-        // data hazard port
-        output      regaddr_t   ma_wb_addr_o,      // write-back address
-        output      word_t      ma_wb_data_o,      // write-back data
-        output      logic       ma_wb_ready_o,     // write-back ready
-        output      logic       ma_wb_valid_o,     // write-back valid
-        output      logic       ma_empty_o,
+        // async output
+        output      regaddr_t   wb_addr_async_o,   // write-back address
+        output      word_t      wb_data_async_o,   // write-back data
+        output      logic       wb_ready_async_o,  // write-back ready
+        output      logic       wb_valid_async_o,  // write-back valid
+        output      logic       empty_async_o,     // stage empty
 
-        // pipeline output port
+        // pipeline output
         output      word_t      pc_o,              // program counter
         output      word_t      ir_o,              // instruction register
         output      logic       load_o,            // is this a load instruction?
@@ -94,22 +94,22 @@ end
 
 
 //
-// Hazard Signals
+// Async Outputs
 //
 
 always_comb begin
-    $fstrobe(log_fd, "{ \"stage\": \"MA\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ma_wb_addr\": \"%0d\", \"ma_wb_data\": \"%0d\", \"ma_wb_valid\": \"%0d\" },", $time, pc_i, ma_wb_addr_o, ma_wb_data_o, ma_wb_valid_o);
+    $fstrobe(log_fd, "{ \"stage\": \"MA\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ma_wb_addr\": \"%0d\", \"ma_wb_data\": \"%0d\", \"ma_wb_valid\": \"%0d\" },", $time, pc_i, wb_addr_async_o, wb_data_async_o, wb_valid_async_o);
 
-    ma_wb_addr_o  = ir_i[11:7];
-    ma_wb_data_o  = wb_data_i;
-    ma_wb_ready_o = (wb_src_i != WB_SRC_MEM);
-    ma_wb_valid_o = wb_valid_i;
-    ma_empty_o    = pc_i == NOP_PC;
+    wb_addr_async_o  = ir_i[11:7];
+    wb_data_async_o  = wb_data_i;
+    wb_ready_async_o = (wb_src_i != WB_SRC_MEM);
+    wb_valid_async_o = wb_valid_i;
+    empty_async_o    = pc_i == NOP_PC;
 end  
 
 
 //
-// Pass-through Signals to WB stage
+// Pipeline Output
 //
 
 always_ff @(posedge clk_i) begin

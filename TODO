@@ -1,6 +1,4 @@
 TODO:
-- CSR instructions should tickle retired_i on the write action...
-- consider renaming hazard signals to just normal _async_o signals....
 - how can the ID stage be cleaned up??
 
 Extensions:

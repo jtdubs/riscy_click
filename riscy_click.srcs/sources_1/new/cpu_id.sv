@@ -10,53 +10,47 @@ module cpu_id
     import common::*;
     (
         // cpu signals
-        input  wire logic      clk_i,         // clock
-        input  wire logic      reset_i,       // reset_i
-        output      logic      halt_o,        // halt
+        input  wire logic      clk_i,               // clock
+        input  wire logic      reset_i,             // reset_i
+        output      logic      halt_o,              // halt
 
-        // pipeline input port
-        input  wire word_t     pc_i,          // program counter
-        input  wire word_t     ir_i,          // instruction register
+        // pipeline input
+        input  wire word_t     pc_i,                // program counter
+        input  wire word_t     ir_i,                // instruction register
         
-        // data hazard port
-        input  wire regaddr_t  ex_wb_addr_i,  // hazard write-back address
-        input  wire word_t     ex_wb_data_i,  // hazard write-back data
-        input  wire logic      ex_wb_ready_i, // hazard write-back data ready
-        input  wire logic      ex_wb_valid_i, // hazard write-back destination
-        input  wire regaddr_t  ma_wb_addr_i,  // hazard write-back address
-        input  wire word_t     ma_wb_data_i,  // hazard write-back data
-        input  wire logic      ma_wb_ready_i, // hazard write-back data ready
-        input  wire logic      ma_wb_valid_i, // hazard write-back destination
-        
-        // writeback port
-        input  wire regaddr_t  wb_addr_i,     // write-back address
-        input  wire word_t     wb_data_i,     // write-back data
-        input  wire logic      wb_valid_i,    // write-back destination
-        
-        // pipeline status port
-        input  wire logic      ex_empty_i,
-        input  wire logic      ma_empty_i,
-        input  wire logic      wb_empty_i,
+        // async input
+        input  wire regaddr_t  ex_wb_addr_async_i,  // ex stage write-back address
+        input  wire word_t     ex_wb_data_async_i,  // ex stage write-back data
+        input  wire logic      ex_wb_ready_async_i, // ex stage write-back data ready
+        input  wire logic      ex_wb_valid_async_i, // ex stage write-back valid
+        input  wire logic      ex_empty_async_i,    // ex stage empty
+        input  wire regaddr_t  ma_wb_addr_async_i,  // ma stage write-back address
+        input  wire word_t     ma_wb_data_async_i,  // ma stage write-back data
+        input  wire logic      ma_wb_ready_async_i, // ma stage write-back data ready
+        input  wire logic      ma_wb_valid_async_i, // ma stage write-back valid
+        input  wire logic      ma_empty_async_i,    // ma stage empty
+        input  wire regaddr_t  wb_addr_async_i,     // write-back address
+        input  wire word_t     wb_data_async_i,     // write-back data
+        input  wire logic      wb_valid_async_i,    // write-back valid
+        input  wire logic      wb_empty_async_i,    // wb stage empty
 
-        // backpressure port
-        output      logic      ready_async_o, // stage ready for new inputs
-        
-        // control flow port
-        output      word_t     jmp_addr_o,    // jump address
-        output      logic      jmp_valid_o,   // jump address valid
+        // async output
+        output      logic      ready_async_o,       // stage ready for new inputs
+        output      word_t     jmp_addr_async_o,    // jump address
+        output      logic      jmp_valid_async_o,   // jump address valid
 
-        // pipeline output port
-        output      word_t     pc_o,          // program counter
-        output      word_t     ir_o,          // instruction register
-        output      word_t     alu_op1_o,     // ALU operand 1
-        output      word_t     alu_op2_o,     // ALU operand 2
-        output      alu_mode_t alu_mode_o,    // ALU mode
-        output      ma_mode_t  ma_mode_o,     // memory access mode
-        output      ma_size_t  ma_size_o,     // memory access size
-        output      word_t     ma_data_o,     // memory access data (for store operations)
-        output      wb_src_t   wb_src_o,      // write-back source
-        output      word_t     wb_data_o,     // write-back data
-        output      logic      wb_valid_o     // write-back destination
+        // pipeline output
+        output      word_t     pc_o,                // program counter
+        output      word_t     ir_o,                // instruction register
+        output      word_t     alu_op1_o,           // ALU operand 1
+        output      word_t     alu_op2_o,           // ALU operand 2
+        output      alu_mode_t alu_mode_o,          // ALU mode
+        output      ma_mode_t  ma_mode_o,           // memory access mode
+        output      ma_size_t  ma_size_o,           // memory access size
+        output      word_t     ma_data_o,           // memory access data (for store operations)
+        output      wb_src_t   wb_src_o,            // write-back source
+        output      word_t     wb_data_async_o,     // write-back data
+        output      logic      wb_valid_async_o     // write-back destination
     );
 
 initial start_logging();
@@ -154,7 +148,7 @@ end
 // output values from register file
 wire word_t ra_w;
 wire word_t rb_w;
-word_t wb_addr_w;
+regaddr_t wb_addr_w;
 word_t wb_data_w;
 logic  wb_enable_w;
 
@@ -188,7 +182,7 @@ logic  csr_write_enable_w;
 cpu_csr csr (
     .clk_i              (clk_i),
     .reset_i            (reset_i),
-    .retired_i          (!wb_empty_i || csr_state_r == CSR_STATE_EXECUTING),
+    .retired_i          (!wb_empty_async_i || csr_state_r == CSR_STATE_EXECUTING),
     // read port
     .csr_read_addr_i    (csr_read_addr_w),
     .csr_read_enable_i  (csr_read_enable_w),
@@ -212,12 +206,12 @@ word_t rb_bypassed_w;
 always_comb begin
     priority if (rs1_w == 5'b00000)
         ra_bypassed_w = ra_w;
-    else if (ex_wb_valid_i && rs1_w == ex_wb_addr_i)
-        ra_bypassed_w = ex_wb_data_i;
-    else if (ma_wb_valid_i && rs1_w == ma_wb_addr_i)
-        ra_bypassed_w = ma_wb_data_i;
-    else if (wb_valid_i && rs1_w == wb_addr_i)
-        ra_bypassed_w = wb_data_i;
+    else if (ex_wb_valid_async_i && rs1_w == ex_wb_addr_async_i)
+        ra_bypassed_w = ex_wb_data_async_i;
+    else if (ma_wb_valid_async_i && rs1_w == ma_wb_addr_async_i)
+        ra_bypassed_w = ma_wb_data_async_i;
+    else if (wb_valid_async_i && rs1_w == wb_addr_async_i)
+        ra_bypassed_w = wb_data_async_i;
     else
         ra_bypassed_w = ra_w;
 end
@@ -226,12 +220,12 @@ end
 always_comb begin
     priority if (rs2_w == 5'b00000)
         rb_bypassed_w = rb_w;
-    else if (ex_wb_valid_i && rs2_w == ex_wb_addr_i)
-        rb_bypassed_w = ex_wb_data_i;
-    else if (ma_wb_valid_i && rs2_w == ma_wb_addr_i)
-        rb_bypassed_w = ma_wb_data_i;
-    else if (wb_valid_i && rs2_w == wb_addr_i)
-        rb_bypassed_w = wb_data_i;
+    else if (ex_wb_valid_async_i && rs2_w == ex_wb_addr_async_i)
+        rb_bypassed_w = ex_wb_data_async_i;
+    else if (ma_wb_valid_async_i && rs2_w == ma_wb_addr_async_i)
+        rb_bypassed_w = ma_wb_data_async_i;
+    else if (wb_valid_async_i && rs2_w == wb_addr_async_i)
+        rb_bypassed_w = wb_data_async_i;
     else
         rb_bypassed_w = rb_w;
 end
@@ -309,23 +303,23 @@ end
 logic data_hazard_w, ra_collision_w, rb_collision_w;
 
 always_comb begin
-    ra_collision_w = ra_used_w && ((ex_wb_valid_i && ex_wb_addr_i == rs1_w && !ex_wb_ready_i) || (ma_wb_valid_i && ma_wb_addr_i == rs1_w && !ma_wb_ready_i));
-    rb_collision_w = rb_used_w && ((ex_wb_valid_i && ex_wb_addr_i == rs2_w && !ex_wb_ready_i) || (ma_wb_valid_i && ma_wb_addr_i == rs2_w && !ma_wb_ready_i));
+    ra_collision_w = ra_used_w && ((ex_wb_valid_async_i && ex_wb_addr_async_i == rs1_w && !ex_wb_ready_async_i) || (ma_wb_valid_async_i && ma_wb_addr_async_i == rs1_w && !ma_wb_ready_async_i));
+    rb_collision_w = rb_used_w && ((ex_wb_valid_async_i && ex_wb_addr_async_i == rs2_w && !ex_wb_ready_async_i) || (ma_wb_valid_async_i && ma_wb_addr_async_i == rs2_w && !ma_wb_ready_async_i));
     data_hazard_w  = ra_collision_w || rb_collision_w;
 end
 
 
 // control flow
 always_comb begin
-    $fstrobe(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"jmp_valid\": \"%0d\", \"jmp_addr\": \"%0d\" },", $time, pc_i, jmp_valid_o, jmp_addr_o);
+    $fstrobe(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"jmp_valid\": \"%0d\", \"jmp_addr\": \"%0d\" },", $time, pc_i, jmp_valid_async_o, jmp_addr_async_o);
 
-    jmp_valid_o = jmp_valid_w;
-    jmp_addr_o  = jmp_addr_w;
+    jmp_valid_async_o = jmp_valid_w;
+    jmp_addr_async_o  = jmp_addr_w;
        
     if (reset_i) begin
         // set initial signal values
-        jmp_valid_o = 1'b0;
-        jmp_addr_o  = 32'h00000000;
+        jmp_valid_async_o = 1'b0;
+        jmp_addr_async_o  = 32'h00000000;
     end    
 end
 
@@ -347,8 +341,8 @@ logic csr_write_action_w;
 always_comb begin
     csr_idle_action_w  = (csr_state_r == CSR_STATE_IDLE)     && ~cw_w.csr_used;
     csr_flush_action_w = (csr_state_r == CSR_STATE_IDLE)     &&  cw_w.csr_used;
-    csr_wait_action_w  = (csr_state_r == CSR_STATE_FLUSHING) && ~(ex_empty_i && ma_empty_i && wb_empty_i);
-    csr_read_action_w  = (csr_state_r == CSR_STATE_FLUSHING) &&  (ex_empty_i && ma_empty_i && wb_empty_i);
+    csr_wait_action_w  = (csr_state_r == CSR_STATE_FLUSHING) && ~(ex_empty_async_i && ma_empty_async_i && wb_empty_async_i);
+    csr_read_action_w  = (csr_state_r == CSR_STATE_FLUSHING) &&  (ex_empty_async_i && ma_empty_async_i && wb_empty_async_i);
     csr_write_action_w = (csr_state_r == CSR_STATE_EXECUTING);
 end
 
@@ -399,9 +393,9 @@ always_comb begin
         wb_enable_w = csr_write_action_w && rd_w != 5'b0;
     // Otherwise, it comes from the writeback stage
     end else begin
-        wb_addr_w   = wb_addr_i;
-        wb_data_w   = wb_data_i;
-        wb_enable_w = wb_valid_i;
+        wb_addr_w   = wb_addr_async_i;
+        wb_data_w   = wb_data_async_i;
+        wb_enable_w = wb_valid_async_i;
     end  
 end
 
@@ -428,7 +422,7 @@ end
 
 // pipeline output
 always_ff @(posedge clk_i) begin
-    $fstrobe(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"alu_op1\": \"%0d\", \"alu_op2\": \"%0d\", \"alu_mode\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_dst\": \"%0d\", \"halt\": \"%0d\" },", $time, pc_o, ir_o, alu_op1_o, alu_op2_o, alu_mode_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_o, wb_valid_o, halt_o);
+    $fstrobe(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"alu_op1\": \"%0d\", \"alu_op2\": \"%0d\", \"alu_mode\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_dst\": \"%0d\", \"halt\": \"%0d\" },", $time, pc_o, ir_o, alu_op1_o, alu_op2_o, alu_mode_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_async_o, wb_valid_async_o, halt_o);
     
     // if a bubble is needed
     if (data_hazard_w || csr_flush_action_w || csr_wait_action_w || csr_read_action_w || csr_write_action_w) begin
@@ -442,8 +436,8 @@ always_ff @(posedge clk_i) begin
         ma_size_o  <= NOP_MA_SIZE;
         ma_data_o  <= 32'b0;
         wb_src_o   <= NOP_WB_SRC;
-        wb_data_o  <= 32'b0;
-        wb_valid_o <= NOP_WB_VALID;
+        wb_data_async_o  <= 32'b0;
+        wb_valid_async_o <= NOP_WB_VALID;
         halt_o     <= 1'b0;
     end else begin
         // otherwise, output decoded control signals
@@ -456,8 +450,8 @@ always_ff @(posedge clk_i) begin
         ma_size_o  <= cw_w.ma_size;
         ma_data_o  <= rb_bypassed_w;
         wb_src_o   <= cw_w.wb_src;
-        wb_data_o  <= pc_i + 4;
-        wb_valid_o <= wb_valid_w;
+        wb_data_async_o  <= pc_i + 4;
+        wb_valid_async_o <= wb_valid_w;
         halt_o     <= cw_w.halt;
     end
         
@@ -472,8 +466,8 @@ always_ff @(posedge clk_i) begin
         ma_size_o  <= NOP_MA_SIZE;
         ma_data_o  <= 32'b0;
         wb_src_o   <= NOP_WB_SRC;
-        wb_data_o  <= 32'b0;
-        wb_valid_o <= NOP_WB_VALID;
+        wb_data_async_o  <= 32'b0;
+        wb_valid_async_o <= NOP_WB_VALID;
         halt_o     <= 1'b0;
     end
 end
