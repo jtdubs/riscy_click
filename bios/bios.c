@@ -7,9 +7,12 @@ volatile unsigned int*  SWITCH     = (volatile unsigned int* )0xFF000004;
 void _start() {
     *DISPLAY = *SWITCH;
 
+    unsigned short ret = 0;
+    asm("rdinstret %0" : "=r"(ret));
+
     for (unsigned short y=0; y<30; y++) {
         for (unsigned short x=0; x<80; x++) {
-            VRAM_BASE[(y << 7) | x] = (unsigned char)(x + (y*80));
+            VRAM_BASE[(y << 7) | x] = (unsigned char)(ret + x + (y*80));
         }
     }
 

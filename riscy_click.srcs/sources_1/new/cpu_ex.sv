@@ -26,12 +26,14 @@ module cpu_ex
         input  wire word_t     wb_data_i,     // write-back data
         input  wire logic      wb_valid_i,    // write-back valid
         
-        // data hazard port
+        // status port
         output      regaddr_t  ex_wb_addr_o,  // write-back address
         output      word_t     ex_wb_data_o,  // write-back data
         output      logic      ex_wb_ready_o, // write-back data ready
         output      logic      ex_wb_valid_o, // write-back valid
+        output      logic      ex_empty_o,    // stage empty
         
+
 
         // pipeline output port
         output      word_t     pc_o,          // program counter
@@ -65,7 +67,7 @@ alu alu (
 
 
 //
-// Hazard Signals
+// Status Signals
 //
 
 always_comb begin
@@ -75,6 +77,7 @@ always_comb begin
     ex_wb_data_o  = (wb_src_i == WB_SRC_ALU) ? alu_result_w : wb_data_i;
     ex_wb_ready_o = (wb_src_i != WB_SRC_MEM);
     ex_wb_valid_o = wb_valid_i;
+    ex_empty_o    = pc_i == NOP_PC;
 end  
 
 

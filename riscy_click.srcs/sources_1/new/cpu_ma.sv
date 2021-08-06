@@ -34,6 +34,7 @@ module cpu_ma
         output      word_t      ma_wb_data_o,      // write-back data
         output      logic       ma_wb_ready_o,     // write-back ready
         output      logic       ma_wb_valid_o,     // write-back valid
+        output      logic       ma_empty_o,
 
         // pipeline output port
         output      word_t      pc_o,              // program counter
@@ -103,6 +104,7 @@ always_comb begin
     ma_wb_data_o  = wb_data_i;
     ma_wb_ready_o = (wb_src_i != WB_SRC_MEM);
     ma_wb_valid_o = wb_valid_i;
+    ma_empty_o    = pc_i == NOP_PC;
 end  
 
 

@@ -33,8 +33,10 @@ module cpu_id
         input  wire word_t     wb_data_i,     // write-back data
         input  wire logic      wb_valid_i,    // write-back destination
         
-        // csr port
-        input  wire logic      retired_i,     // did an instruction retire this cycle
+        // pipeline status port
+        input  wire logic      ex_empty_i,
+        input  wire logic      ma_empty_i,
+        input  wire logic      wb_empty_i,
 
         // backpressure port
         output      logic      ready_async_o, // stage ready for new inputs
@@ -180,7 +182,7 @@ logic  csr_write_enable_w;
 cpu_csr csr (
     .clk_i              (clk_i),
     .reset_i            (reset_i),
-    .retired_i          (retired_i),
+    .retired_i          (~wb_empty_i),
     // read port
     .csr_read_addr_i    (csr_w),
     .csr_read_data_o    (csr_read_data_w),
@@ -189,13 +191,6 @@ cpu_csr csr (
     .csr_write_data_i   (csr_write_data_w),
     .csr_write_enable_i (csr_write_enable_w)
 );
-
-always_comb begin
-    csr_write_addr_w = 12'b0;
-    csr_write_data_w = 32'b0;
-    csr_write_enable_w = 1'b0;
-end
-
 
 
 //
@@ -328,11 +323,64 @@ always_comb begin
 end
 
 
+// CSR state machine
+typedef enum logic [1:0] {
+    CSR_STATE_IDLE = 2'b00,
+    CSR_STATE_WAIT = 2'b01,
+    CSR_STATE_EXEC = 2'b10
+} csr_state_t;
+
+csr_state_t csr_state_r, csr_state_w;
+logic csr_idle_action;
+logic csr_start_action;
+logic csr_wait_action;
+logic csr_exec_action;
+logic csr_complete_action;
+
+always_comb begin
+    csr_idle_action     = (csr_state_r == CSR_STATE_IDLE) && ~cw_w.csr_used;
+    csr_start_action    = (csr_state_r == CSR_STATE_IDLE) &&  cw_w.csr_used;
+    csr_wait_action     = (csr_state_r == CSR_STATE_WAIT) && ~(ex_empty_i && ma_empty_i && wb_empty_i);
+    csr_exec_action     = (csr_state_r == CSR_STATE_WAIT) &&  (ex_empty_i && ma_empty_i && wb_empty_i);
+    csr_complete_action = (csr_state_r == CSR_STATE_EXEC);
+end
+
+always_comb begin
+    unique if (csr_idle_action | csr_complete_action)
+        csr_state_w = CSR_STATE_IDLE;
+    else if (csr_start_action | csr_wait_action)  
+        csr_state_w = CSR_STATE_WAIT;
+    else  
+        csr_state_w = CSR_STATE_EXEC;
+end
+
+always_comb begin
+    csr_write_addr_w <= csr_w;
+   
+    unique case (f3_w)
+    F3_CSRRW:  csr_write_data_w = ra_bypassed_w;
+    F3_CSRRWI: csr_write_data_w = uimm_w;
+    F3_CSRRS:  csr_write_data_w = csr_read_data_w | ra_bypassed_w;
+    F3_CSRRSI: csr_write_data_w = csr_read_data_w | uimm_w;
+    F3_CSRRC:  csr_write_data_w = csr_read_data_w & ~ra_bypassed_w;
+    F3_CSRRCI: csr_write_data_w = csr_read_data_w & ~uimm_w;
+    default:   csr_write_data_w = 32'b0;
+    endcase
+    
+    csr_write_enable_w = (csr_state_r == CSR_STATE_EXEC);
+end
+
+always_ff @(posedge clk_i) begin
+    csr_state_r <= csr_state_w;
+end
+
+
 // backpressure
 always_comb begin
     $fstrobe(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ready\": \"%0d\" },", $time, pc_i, ready_async_o);
 
-    ready_async_o = ~data_hazard_w;
+    // we only want a new instruction if we aren't dealing with a datac hazard, and we aren't going to be dealing with a CSR instruction
+    ready_async_o = ~data_hazard_w && (csr_state_w == CSR_STATE_IDLE);
           
     if (reset_i) begin
         // set initial signal values
@@ -346,7 +394,7 @@ always_ff @(posedge clk_i) begin
     $fstrobe(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"alu_op1\": \"%0d\", \"alu_op2\": \"%0d\", \"alu_mode\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_dst\": \"%0d\", \"halt\": \"%0d\" },", $time, pc_o, ir_o, alu_op1_o, alu_op2_o, alu_mode_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_o, wb_valid_o, halt_o);
     
     // if a bubble is needed
-    if (data_hazard_w) begin
+    if (data_hazard_w || csr_start_action || csr_wait_action || csr_exec_action || csr_complete_action) begin
         // output a NOP (addi x0, x0, 0)
         pc_o       <= NOP_PC;
         ir_o       <= NOP_IR;

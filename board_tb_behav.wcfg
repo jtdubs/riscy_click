@@ -12,13 +12,13 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="1,000.000 ns"></ZoomStartTime>
-      <ZoomEndTime time="3,220.060 ns"></ZoomEndTime>
-      <Cursor1Time time="1,409.113 ns"></Cursor1Time>
+      <ZoomStartTime time="1,059.440 ns"></ZoomStartTime>
+      <ZoomEndTime time="1,435.041 ns"></ZoomEndTime>
+      <Cursor1Time time="2,000.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="479"></NameColumnWidth>
-      <ValueColumnWidth column_width="185"></ValueColumnWidth>
+      <ValueColumnWidth column_width="179"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="4" />
    <wvobject fp_name="group184" type="group">
@@ -358,6 +358,51 @@
             <obj_property name="ElementShortName">data_hazard_w</obj_property>
             <obj_property name="ObjectShortName">data_hazard_w</obj_property>
          </wvobject>
+         <wvobject fp_name="group1943" type="group">
+            <obj_property name="label">CSR State Machine</obj_property>
+            <obj_property name="DisplayName">label</obj_property>
+            <obj_property name="isExpanded"></obj_property>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/ex_empty_i" type="logic">
+               <obj_property name="ElementShortName">ex_empty_i</obj_property>
+               <obj_property name="ObjectShortName">ex_empty_i</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/ma_empty_i" type="logic">
+               <obj_property name="ElementShortName">ma_empty_i</obj_property>
+               <obj_property name="ObjectShortName">ma_empty_i</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/wb_empty_i" type="logic">
+               <obj_property name="ElementShortName">wb_empty_i</obj_property>
+               <obj_property name="ObjectShortName">wb_empty_i</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr_state_r" type="array">
+               <obj_property name="ElementShortName">csr_state_r[1:0]</obj_property>
+               <obj_property name="ObjectShortName">csr_state_r[1:0]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr_state_w" type="array">
+               <obj_property name="ElementShortName">csr_state_w[1:0]</obj_property>
+               <obj_property name="ObjectShortName">csr_state_w[1:0]</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr_idle_action" type="logic">
+               <obj_property name="ElementShortName">csr_idle_action</obj_property>
+               <obj_property name="ObjectShortName">csr_idle_action</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr_start_action" type="logic">
+               <obj_property name="ElementShortName">csr_start_action</obj_property>
+               <obj_property name="ObjectShortName">csr_start_action</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr_wait_action" type="logic">
+               <obj_property name="ElementShortName">csr_wait_action</obj_property>
+               <obj_property name="ObjectShortName">csr_wait_action</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr_exec_action" type="logic">
+               <obj_property name="ElementShortName">csr_exec_action</obj_property>
+               <obj_property name="ObjectShortName">csr_exec_action</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/csr_complete_action" type="logic">
+               <obj_property name="ElementShortName">csr_complete_action</obj_property>
+               <obj_property name="ObjectShortName">csr_complete_action</obj_property>
+            </wvobject>
+         </wvobject>
          <wvobject fp_name="group1482" type="group">
             <obj_property name="label">Decode</obj_property>
             <obj_property name="DisplayName">label</obj_property>
@@ -573,7 +618,6 @@
          <wvobject fp_name="group1483" type="group">
             <obj_property name="label">Register Values</obj_property>
             <obj_property name="DisplayName">label</obj_property>
-            <obj_property name="isExpanded"></obj_property>
             <wvobject fp_name="/board_tb/board/cpu/cpu_id/ra_w" type="array">
                <obj_property name="ElementShortName">ra_w[31:0]</obj_property>
                <obj_property name="ObjectShortName">ra_w[31:0]</obj_property>
@@ -602,6 +646,11 @@
          <wvobject fp_name="group1481" type="group">
             <obj_property name="label">Output</obj_property>
             <obj_property name="DisplayName">label</obj_property>
+            <obj_property name="isExpanded"></obj_property>
+            <wvobject fp_name="/board_tb/board/cpu/cpu_id/pc_o" type="array">
+               <obj_property name="ElementShortName">pc_o[31:0]</obj_property>
+               <obj_property name="ObjectShortName">pc_o[31:0]</obj_property>
+            </wvobject>
             <wvobject fp_name="/board_tb/board/cpu/cpu_id/ir_o" type="array">
                <obj_property name="ElementShortName">ir_o[31:0]</obj_property>
                <obj_property name="ObjectShortName">ir_o[31:0]</obj_property>

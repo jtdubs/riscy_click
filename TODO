@@ -1,3 +1,6 @@
+TODO:
+- consider renaming hazard signals to just normal _async_o signals....
+
 Extensions worth implementing:
 - A - Atomics
 - C - Compressed

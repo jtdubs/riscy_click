@@ -28,7 +28,7 @@ module cpu_wb
         output      regaddr_t wb_addr_o,        // write-back address
         output      word_t    wb_data_o,        // write-back data
         output      logic     wb_valid_o,       // write-back valid
-        output      logic     retired_o
+        output      logic     empty_o
     );
 
 initial start_logging();
@@ -51,8 +51,8 @@ always_comb begin
         wb_data_o = wb_data_i;
     end
     
-    wb_addr_o <= ir_i[11:7];
-    wb_valid_o <= wb_valid_i;
+    wb_addr_o  = ir_i[11:7];
+    wb_valid_o = wb_valid_i;
     
     if (reset_i) begin
         wb_addr_o  = 5'b0;
@@ -65,7 +65,7 @@ end
 //
 // Retired Signal
 //
-always_comb retired_o = reset_i ? 1'b0 : (pc_i != NOP_PC);
+always_comb empty_o = reset_i || (pc_i == NOP_PC);
 
 
 //
