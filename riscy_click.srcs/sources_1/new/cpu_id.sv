@@ -406,6 +406,8 @@ always_comb begin
 end
 
 always_ff @(posedge clk_i) begin
+    $fdisplay(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"csr_addr\": \"%0d\", \"csr_state\": \"%0d\", \"csr_read_data\": \"%0d\", \"csr_write_data\": \"%0d\", \"csr_wb_addr\": \"%0d\", \"csr_wb_enable\": \"%0d\", \"csr_write_enable\": \"%0d\" },", $time, pc_i, csr_w, csr_state_r, csr_read_data_w, csr_write_data_w, wb_addr_w, wb_enable_w, csr_write_enable_w);
+    
     csr_state_r <= csr_state_w;
 end
 

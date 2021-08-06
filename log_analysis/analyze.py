@@ -40,6 +40,16 @@ def main(log_file="../riscy_click.sim/board_sim/behav/xsim/log.json", *args):
             # print("DECODE: {0}".format(e["pc"]))
             next(f for f in in_flight if f["pc"] == int(e["pc"]) and not "decode_time" in f).update({ "decode_time": int(e["time"]) })
 
+        if e["stage"] == "ID" and "csr_state" in e and e["csr_state"] == "1":
+            next(f for f in in_flight if f["pc"] == int(e["pc"]) and not "execute_time" in f).update({ "execute_time": int(e["time"]) })
+
+        if e["stage"] == "ID" and "csr_state" in e and e["csr_state"] == "2":
+            instr = next(f for f in in_flight if f["pc"] == int(e["pc"]) and not "writeback_time" in f)
+            instr.update({ "writeback_time": int(e["time"]), "writeback_valid": 0, "csr_wb_enable": int(e["csr_wb_enable"]), "csr_write_enable": int(e["csr_write_enable"]), "csr_addr": int(e["csr_addr"]), "csr_read_data": int(e["csr_read_data"]), "csr_write_data": int(e["csr_write_data"]), "csr_wb_addr": int(e["csr_wb_addr"])  })
+            in_flight.remove(instr)
+            retired.append(instr)
+
+
         # Execute
         if e["stage"] == "EX" and "ir" in e:
             # print("EXECUTE: {0}".format(e["pc"]))
@@ -76,25 +86,30 @@ def main(log_file="../riscy_click.sim/board_sim/behav/xsim/log.json", *args):
         }
         last_retirement = e["writeback_time"]
 
+        s["jump"] = ""
+        s["load"] = ""
+        s["store"] = ""
+        s["writeback"] = ""
+        s["csr_read"] = ""
+        s["csr_write"] = ""
+
         if "jmp_addr" in e:
             s["jump"] = "JUMP @{0:X}".format(e["jmp_addr"])
-        else:
-            s["jump"] = ""
 
         if "load_addr" in e:
             s["load"] = "@{0:X}".format(e["load_addr"])
-        else:
-            s["load"] = ""
 
         if "store_addr" in e:
             s["store"] = "@{0:X} = 0x{1:X} & {2:04b}".format(e["store_addr"], e["store_data"], e["store_mask"])
-        else:
-            s["store"] = ""
 
         if int(e["writeback_valid"] and e["writeback_addr"] != 0) == 1:
             s["writeback"] = "x{0} = 0x{1:X}".format(str(e["writeback_addr"]).ljust(2), e["writeback_data"])
-        else:
-            s["writeback"] = ""
+
+        if "csr_addr" in e:
+            if e["csr_wb_enable"]:
+                s["csr_read"] = "x{0} = 0x{1:X} [CSR:{2:X}]".format(str(e["csr_wb_addr"]).ljust(2), e["csr_read_data"], e["csr_addr"])
+            if e["csr_write_enable"]:
+                s["csr_write"] = "CSR:{0} = 0x{1:X}".format(str(e["csr_addr"]).ljust(3), e["csr_write_data"])
 
         summary.append(s)
 
@@ -109,6 +124,12 @@ def main(log_file="../riscy_click.sim/board_sim/behav/xsim/log.json", *args):
             a = "[{0}] {1}[{2}]: {3}".format(s["cycles"], s["pc"].rjust(8), s["ir"], s["jump"])
         elif (s["writeback"]):
             a = "[{0}] {1}[{2}]: {3}".format(s["cycles"], s["pc"].rjust(8), s["ir"], s["writeback"])
+        elif (s["csr_read"] and s["csr_write"]):
+            a = "[{0}] {1}[{2}]: {3} {4}".format(s["cycles"], s["pc"].rjust(8), s["ir"], s["csr_read"].ljust(24), s["csr_write"])
+        elif (s["csr_read"]):
+            a = "[{0}] {1}[{2}]: {3}".format(s["cycles"], s["pc"].rjust(8), s["ir"], s["csr_read"])
+        elif (s["csr_write"]):
+            a = "[{0}] {1}[{2}]: {3}".format(s["cycles"], s["pc"].rjust(8), s["ir"], s["csr_write"])
         elif (not s["jump"] and not s["store"] and not s["load"] and not s["writeback"]):
             a = "[{0}] {1}[{2}]: NOP".format(s["cycles"], s["pc"].rjust(8), s["ir"])
         else:
