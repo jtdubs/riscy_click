@@ -6,3 +6,4 @@
 /*.hw/
 /.undodir/
 updatemem.*
+/obj_dir/

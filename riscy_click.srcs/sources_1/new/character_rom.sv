@@ -17,6 +17,17 @@ module character_rom
     );
     
     
+`ifdef VERILATOR
+logic [31:0] rom [0:4095];
+
+initial begin
+    $readmemh(CONTENTS, rom);
+end
+
+always_ff @(posedge clk_i) begin
+    data_o <= reset_i ? 32'b0 : rom[addr_i];
+end
+`else
  xpm_memory_sprom #(
     // common parameters
     .AUTO_SLEEP_TIME(0),
@@ -56,5 +67,6 @@ character_sprom_inst (
     .injectdbiterra(1'b0),
     .injectsbiterra(1'b0)
 );
+`endif
 
 endmodule

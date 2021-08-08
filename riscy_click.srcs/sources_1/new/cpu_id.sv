@@ -87,7 +87,7 @@ always_comb begin
     imm_b_w = { {20{ir_i[31]}}, ir_i[7], ir_i[30:25], ir_i[11:8], 1'b0 };
     imm_u_w = { ir_i[31], ir_i[30:20], ir_i[19:12], 12'b0 };
     imm_j_w = { {12{ir_i[31]}}, ir_i[19:12], ir_i[20], ir_i[30:25], ir_i[24:21], 1'b0 };
-    uimm_w  = { 26'b0, ir_i[19:15] };
+    uimm_w  = { 27'b0, ir_i[19:15] };
     
     alu_mode7_w = alu_mode_t'({ f7_w[0], f7_w[5], f3_w });
     alu_mode3_w = alu_mode_t'({ 2'b0, f3_w });
@@ -248,6 +248,7 @@ word_t alu_op1_w;
 word_t alu_op2_w;
 
 always_comb begin
+    /* verilator lint_off CASEINCOMPLETE */
     unique case (cw_w.alu_op1)
     ALU_OP1_X:    alu_op1_w = 32'b0;
     ALU_OP1_RS1:  alu_op1_w = ra_bypassed_w;
@@ -256,6 +257,7 @@ always_comb begin
 end
 
 always_comb begin
+    /* verilator lint_off CASEINCOMPLETE */
     unique case (cw_w.alu_op2)
     ALU_OP2_X:    alu_op2_w = 32'b0;
     ALU_OP2_RS2:  alu_op2_w = rb_bypassed_w;
@@ -307,8 +309,8 @@ end
 // update CSR control signals
 always_comb begin
     // always read and write from the CSR specified in the instruction
-    csr_read_addr_w  <= csr_w;
-    csr_write_addr_w <= csr_w;
+    csr_read_addr_w  = csr_w;
+    csr_write_addr_w = csr_w;
     
     // read on read action unless there's nowhere to put it
     csr_read_enable_w  = csr_read_action_w && rd_w != 5'b0;
@@ -354,8 +356,12 @@ end
 
 // advance to next state
 always_ff @(posedge clk_i) begin
+`ifdef VERILATOR
+    $display("{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"csr_addr\": \"%0d\", \"csr_state\": \"%0d\", \"csr_read_data\": \"%0d\", \"csr_write_data\": \"%0d\", \"csr_wb_addr\": \"%0d\", \"csr_wb_enable\": \"%0d\", \"csr_write_enable\": \"%0d\" },", $time, pc_i, csr_w, csr_state_r, csr_read_data_w, csr_write_data_w, wb_addr_w, wb_enable_w, csr_write_enable_w);
+`else
     $fdisplay(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"csr_addr\": \"%0d\", \"csr_state\": \"%0d\", \"csr_read_data\": \"%0d\", \"csr_write_data\": \"%0d\", \"csr_wb_addr\": \"%0d\", \"csr_wb_enable\": \"%0d\", \"csr_write_enable\": \"%0d\" },", $time, pc_i, csr_w, csr_state_r, csr_read_data_w, csr_write_data_w, wb_addr_w, wb_enable_w, csr_write_enable_w);
-    
+`endif
+
     csr_state_r <= csr_state_w;
 end
 
@@ -365,7 +371,11 @@ end
 //
 
 always_comb begin
+`ifdef VERILATOR
+    $strobe("{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"jmp_valid\": \"%0d\", \"jmp_addr\": \"%0d\", \"ready\": \"%0d\" },", $time, pc_i, jmp_valid_async_o, jmp_addr_async_o, ready_async_o);
+`else
     $fstrobe(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"jmp_valid\": \"%0d\", \"jmp_addr\": \"%0d\", \"ready\": \"%0d\" },", $time, pc_i, jmp_valid_async_o, jmp_addr_async_o, ready_async_o);
+`endif
 
     // jump signals
     unique case (cw_w.pc_mode)
@@ -386,6 +396,7 @@ always_comb begin
         end
     PC_BRANCH:
         begin
+            /* verilator lint_off CASEINCOMPLETE */
             unique case (f3_w[2:1])
                 2'b00:  jmp_valid_async_o = (        ra_bypassed_w  ==         rb_bypassed_w);
                 2'b10:  jmp_valid_async_o = (signed'(ra_bypassed_w) <  signed'(rb_bypassed_w));
@@ -413,7 +424,11 @@ end
 //
 
 always_ff @(posedge clk_i) begin
+`ifdef VERILATOR
+    $strobe("{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"alu_op1\": \"%0d\", \"alu_op2\": \"%0d\", \"alu_mode\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_dst\": \"%0d\", \"halt\": \"%0d\" },", $time, pc_o, ir_o, alu_op1_o, alu_op2_o, alu_mode_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_async_o, wb_valid_async_o, halt_o);
+`else
     $fstrobe(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"alu_op1\": \"%0d\", \"alu_op2\": \"%0d\", \"alu_mode\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_dst\": \"%0d\", \"halt\": \"%0d\" },", $time, pc_o, ir_o, alu_op1_o, alu_op2_o, alu_mode_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_async_o, wb_valid_async_o, halt_o);
+`endif
     
     // if a bubble is needed
     if (data_hazard_w || csr_flush_action_w || csr_wait_action_w || csr_read_action_w || csr_write_action_w) begin

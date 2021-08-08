@@ -66,7 +66,11 @@ end
 // Pipeline Outputs
 //
 always_ff @(posedge clk_i) begin
+`ifdef VERILATOR
+    $strobe("{ \"stage\": \"IF\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\" },", $time, pc_o, ir_o);
+`else
     $fstrobe(log_fd, "{ \"stage\": \"IF\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\" },", $time, pc_o, ir_o);
+`endif
  
     if (jmp_valid_async_i || reset_i) begin
         // if jumping or resetting, output a NOP

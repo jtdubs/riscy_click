@@ -198,8 +198,8 @@ typedef struct packed {
 
 const word_t     NOP_PC       = 32'hFFFFFFFF;
 const word_t     NOP_IR       = 32'h00000013;
-const word_t     NOP_ALU_OP1  = ALU_OP1_X;
-const word_t     NOP_ALU_OP2  = ALU_OP2_X;
+const alu_op1_t  NOP_ALU_OP1  = ALU_OP1_X;
+const alu_op2_t  NOP_ALU_OP2  = ALU_OP2_X;
 const alu_mode_t NOP_ALU_MODE = ALU_X;
 const ma_mode_t  NOP_MA_MODE  = MA_X;
 const ma_size_t  NOP_MA_SIZE  = MA_SIZE_X;

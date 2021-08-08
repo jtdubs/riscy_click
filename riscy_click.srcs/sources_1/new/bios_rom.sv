@@ -20,6 +20,18 @@ module bios_rom
         output wire word_t read2_data_o
     );
 
+`ifdef VERILATOR
+logic [31:0] rom [0:1023];
+
+initial begin
+    $readmemh(CONTENTS, rom);
+end
+
+always_ff @(posedge clk_i) begin
+    read1_data_o <= reset_i ? 32'b0 : rom[read1_addr_i];
+    read2_data_o <= reset_i ? 32'b0 : rom[read2_addr_i];
+end
+`else
 // ROM primitive
 xpm_memory_dprom #(
     // common parameters
@@ -80,5 +92,6 @@ bios_dprom_inst (
     .injectdbiterrb(1'b0),
     .injectsbiterrb(1'b0)
 );
+`endif
 
 endmodule

@@ -13,6 +13,20 @@ module cpu_clk_gen
         output wire logic ready_async_o  // cpu clock ready
     );
 
+`ifdef VERILATOR
+logic [1:0] counter;
+
+initial counter = 2'b0;
+
+always_ff @(posedge clk_sys_i) begin
+    counter = counter + 1;
+end
+
+always_comb begin
+    clk_cpu_o = counter[0];
+    ready_async_o = 1'b1;
+end
+`else
 // internal signals
 wire logic clk_feedback_w;
 wire logic clk_cpu_w;
@@ -78,5 +92,6 @@ cpu_clk_buffer (
   .S0(1'b1),           // 1-bit input: Clock select for I0
   .S1(1'b0)            // 1-bit input: Clock select for I1
 );
+`endif
 
 endmodule

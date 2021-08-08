@@ -41,6 +41,7 @@ final stop_logging();
 
 always_comb begin
     if (load_i) begin
+        /* verilator lint_off CASEINCOMPLETE */
         unique case (ma_size_i)
         MA_SIZE_B:   wb_data_async_o = { {24{dmem_read_data_i[ 7]}},  dmem_read_data_i[ 7:0] };
         MA_SIZE_H:   wb_data_async_o = { {16{dmem_read_data_i[15]}},  dmem_read_data_i[15:0] };
@@ -69,7 +70,11 @@ end
 // Debug Logging
 //
 always_ff @(posedge clk_i) begin
+`ifdef VERILATOR
+    $display("{ \"stage\": \"WB\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"wb_addr\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\" },", $time, pc_i, ir_i, wb_addr_async_o, wb_data_async_o, wb_valid_async_o);
+`else
     $fdisplay(log_fd, "{ \"stage\": \"WB\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"wb_addr\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\" },", $time, pc_i, ir_i, wb_addr_async_o, wb_data_async_o, wb_valid_async_o);
+`endif
 end
 
 endmodule

@@ -54,13 +54,18 @@ final stop_logging();
 //
 
 always_comb begin
+`ifdef VERILATOR
+    $strobe("{ \"stage\": \"MA\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ma_mode\": \"%0d\", \"dmem_addr\": \"%0d\", \"dmem_write_data\": \"%0d\", \"dmem_write_mask\": \"%0d\" },", $time, pc_i, ma_mode_i, dmem_addr_o, dmem_write_data_o, dmem_write_mask_o);
+`else
     $fstrobe(log_fd, "{ \"stage\": \"MA\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ma_mode\": \"%0d\", \"dmem_addr\": \"%0d\", \"dmem_write_data\": \"%0d\", \"dmem_write_mask\": \"%0d\" },", $time, pc_i, ma_mode_i, dmem_addr_o, dmem_write_data_o, dmem_write_mask_o);
+`endif
 
     dmem_addr_o       = ma_addr_i;
     dmem_write_data_o = ma_data_i;
     dmem_write_mask_o = 4'b0000;
     
     if (ma_mode_i == MA_STORE) begin
+        /* verilator lint_off CASEINCOMPLETE */
         unique case (ma_size_i)
         MA_SIZE_B:
             begin
@@ -99,7 +104,11 @@ end
 //
 
 always_comb begin
+`ifdef VERILATOR
+    $strobe("{ \"stage\": \"MA\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ma_wb_addr\": \"%0d\", \"ma_wb_data\": \"%0d\", \"ma_wb_valid\": \"%0d\" },", $time, pc_i, wb_addr_async_o, wb_data_async_o, wb_valid_async_o);
+`else
     $fstrobe(log_fd, "{ \"stage\": \"MA\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ma_wb_addr\": \"%0d\", \"ma_wb_data\": \"%0d\", \"ma_wb_valid\": \"%0d\" },", $time, pc_i, wb_addr_async_o, wb_data_async_o, wb_valid_async_o);
+`endif
 
     wb_addr_async_o  = ir_i[11:7];
     wb_data_async_o  = wb_data_i;
@@ -114,7 +123,11 @@ end
 //
 
 always_ff @(posedge clk_i) begin
+`ifdef VERILATOR
+    $strobe("{ \"stage\": \"MA\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"load\": \"%0d\", \"ma_size\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\" },", $time, pc_o, ir_o, load_o, ma_size_o, wb_data_o, wb_valid_o);
+`else
     $fstrobe(log_fd, "{ \"stage\": \"MA\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"load\": \"%0d\", \"ma_size\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\" },", $time, pc_o, ir_o, load_o, ma_size_o, wb_data_o, wb_valid_o);
+`endif
 
     pc_o       <= pc_i;
     ir_o       <= ir_i;

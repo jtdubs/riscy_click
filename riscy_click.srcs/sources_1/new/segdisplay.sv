@@ -9,7 +9,7 @@ module segdisplay
     // Import Constants
     import common::*;
     #(
-        parameter int unsigned CLK_DIVISOR = 10000 // Clock ratio
+        parameter shortint unsigned CLK_DIVISOR = 10000 // Clock ratio
     )
     (
         // system clock domain
@@ -28,7 +28,7 @@ module segdisplay
         input  wire logic [3:0] write_mask_i
     );
 
-localparam int unsigned COUNTER_ROLLOVER = CLK_DIVISOR - 1;
+localparam shortint unsigned COUNTER_ROLLOVER = CLK_DIVISOR - 1;
 
 // Registers
 word_t       bus_value_r;

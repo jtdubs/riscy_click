@@ -28,6 +28,7 @@ always_comb alu_zero_async_o = (alu_result_async_o == 32'b0);
 
 // Result Logic
 always_comb begin
+    /* verilator lint_off CASEINCOMPLETE */
     unique case (alu_mode_async_i)
         ALU_ADD:   alu_result_async_o = alu_op1_async_i + alu_op2_async_i;
         ALU_SUB:   alu_result_async_o = alu_op1_async_i - alu_op2_async_i;
@@ -37,8 +38,8 @@ always_comb begin
         ALU_LSL:   alu_result_async_o = alu_op1_async_i <<  shamt_w;
         ALU_LSR:   alu_result_async_o = alu_op1_async_i >>  shamt_w;
         ALU_ASR:   alu_result_async_o = alu_op1_async_i >>> shamt_w;
-        ALU_SLT:   alu_result_async_o = (signed'(alu_op1_async_i) < signed'(alu_op2_async_i));
-        ALU_ULT:   alu_result_async_o = (        alu_op1_async_i  <         alu_op2_async_i);
+        ALU_SLT:   alu_result_async_o = (signed'(alu_op1_async_i) < signed'(alu_op2_async_i)) ? 32'b1 : 32'b0;
+        ALU_ULT:   alu_result_async_o = (        alu_op1_async_i  <         alu_op2_async_i)  ? 32'b1 : 32'b0;
         ALU_COPY1: alu_result_async_o = alu_op1_async_i;
         ALU_X:     alu_result_async_o = 32'b0;
     endcase
