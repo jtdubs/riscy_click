@@ -26,12 +26,78 @@ module cpu_csr
         input  wire word_t     csr_write_data_i,
         input  wire logic      csr_write_enable_i
     );
+    
+//
+// MSTATUS
+//
 
+// Status Structure
+typedef struct packed {
+    logic uie;
+    logic sie;
+    logic reserved_2;
+    logic mie;
+    logic upie;
+    logic spie;
+    logic reserved_6;
+    logic mpie;
+    logic spp;
+    logic [1:0] reserved_9;
+    logic [1:0] mpp;
+    logic [1:0] fs;
+    logic [1:0] xs;
+    logic mprv;
+    logic sum;
+    logic mxr;
+    logic tvm;
+    logic tw;
+    logic tsr;
+    logic [7:0] reserved_23;
+    logic sd;
+} status_t;
+
+status_t mstatus_r, mstatus_w;
+
+always_comb begin
+    mstatus_w = mstatus_r;
+end
+
+always_ff @(posedge clk_i) begin
+    mstatus_r <= mstatus_w;
+    
+    if (reset_i) begin
+        mstatus_r <= '{ 
+            uie:         1'b0,
+            sie:         1'b0,
+            reserved_2:  2'b0,
+            mie:         1'b0,
+            upie:        1'b0,
+            spie:        1'b0,
+            reserved_6:  1'b0,
+            mpie:        1'b1,
+            spp:         1'b1,
+            reserved_9:  2'b00,
+            mpp:         2'b00,
+            fs:          2'b00,
+            xs:          2'b00,
+            mprv:        1'b0,
+            sum:         1'b0,
+            mxr:         1'b0,
+            tvm:         1'b0,
+            tw:          1'b0,
+            tsr:         1'b0,
+            reserved_23: 8'b00000000,
+            sd:          1'b0
+        };
+    end
+end
 
 // Registers
 dword_t csr_cycle_r, csr_cycle_w;
 dword_t csr_time_r, csr_time_w;
 dword_t csr_instret_r, csr_instret_w;
+word_t csr_mtvec_r;
+word_t csr_mip_r, csr_mie_r;
 
 // Calculate next values
 always_comb begin
@@ -44,6 +110,29 @@ end
 always_ff @(posedge clk_i) begin
     if (csr_read_enable_i) begin
         unique case (csr_read_addr_i)
+        //                                  MXLEN=32           ZYXWVUTSRQPONMLKJIHGFEDCBA
+        CSR_MISA:      csr_read_data_o <= { 2'b01,   4'b0, 26'b00000000000000000100000001 };
+        //                                0 means non-commercial implementation
+        CSR_MVENDORID: csr_read_data_o <= 32'b0; 
+        //                                no assigned architecture ID
+        CSR_MARCHID:   csr_read_data_o <= 32'b0; 
+        //                                version 1
+        CSR_MIMPID:    csr_read_data_o <= 32'h0001;
+        //                                hardware thread #0
+        CSR_MHARTID:   csr_read_data_o <= 32'b0;
+        //                                machine status register
+        CSR_MSTATUS:   csr_read_data_o <= mstatus_r;
+        //                                machine trap-vector base-address
+        CSR_MTVEC:     csr_read_data_o <= csr_mtvec_r;
+        //                                machine exception delegation
+        CSR_MEDELEG:   csr_read_data_o <= 32'b0;
+        //                                machine interrupt delegation
+        CSR_MIDELEG:   csr_read_data_o <= 32'b0;
+        //                                machine interrupt pending
+        CSR_MIP:       csr_read_data_o <= csr_mip_r;
+        //                                machine interrupt enabled
+        CSR_MIE:       csr_read_data_o <= csr_mie_r;
+        
         CSR_CYCLE:    csr_read_data_o <= csr_cycle_r[31:0];
         CSR_TIME:     csr_read_data_o <= csr_time_r[31:0];
         CSR_INSTRET:  csr_read_data_o <= csr_instret_r[31:0];
@@ -66,6 +155,7 @@ always_ff @(posedge clk_i) begin
     if (csr_write_enable_i) begin
         /* verilator lint_off CASEINCOMPLETE */
         case (csr_write_addr_i)
+        CSR_MTVEC:    csr_mtvec_r   <= csr_write_data_i;
         CSR_CYCLE:    csr_cycle_r   <= { csr_cycle_w  [63:32], csr_write_data_i };
         CSR_TIME:     csr_time_r    <= { csr_time_w   [63:32], csr_write_data_i };
         CSR_INSTRET:  csr_instret_r <= { csr_instret_w[63:32], csr_write_data_i };
@@ -80,6 +170,7 @@ always_ff @(posedge clk_i) begin
     end
     
     if (reset_i) begin
+        csr_mtvec_r   <= 32'b0;
         csr_cycle_r   <= 64'b0;
         csr_time_r    <= 64'b0;
         csr_instret_r <= 64'b0;
