@@ -6,16 +6,16 @@ clean:
 	rm -f bios.o bios bios.dis bios.img bios.mem
 
 bios.o: bios.c
-	clang -O2 -c --target=riscv32 -march=rv32im bios.c -o bios.o
+	riscv32-unknown-elf-gcc -mabi=ilp32 -march=rv32i -O2 -c bios.c -o bios.o
 
 bios: bios.o
-	ld.lld bios.o -o bios --entry=_start --section-start=.text=0 --section-start=.sdata=300 --nostdlib
+	riscv32-unknown-elf-ld -e _start -nostdlib --section-start=.text=0 --section-start=.sdata=300 -o bios bios.o
 
 bios.dis: bios
-	llvm-objdump --disassemble-all bios -M no-aliases,numeric > bios.dis
+	riscv32-unknown-elf-objdump --disassemble-all bios -M no-aliases,numeric > bios.dis
 
 bios.img: bios
-	llvm-objcopy bios -O binary bios.img
+	riscv32-unknown-elf-objcopy bios -O binary bios.img
 
 bios.mem: bios.img
 	echo "@0000" > bios.mem
