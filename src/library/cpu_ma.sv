@@ -90,11 +90,7 @@ always_comb begin
         endcase
     end  
 
-`ifdef VERILATOR
-    $strobe("{ \"stage\": \"MA\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ma_mode\": \"%0d\", \"dmem_addr\": \"%0d\", \"dmem_write_data\": \"%0d\", \"dmem_write_mask\": \"%0d\" },", $time, pc_i, ma_mode_i, dmem_addr_o, dmem_write_data_o, dmem_write_mask_o);
-`else
-    $fstrobe(log_fd, "{ \"stage\": \"MA\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ma_mode\": \"%0d\", \"dmem_addr\": \"%0d\", \"dmem_write_data\": \"%0d\", \"dmem_write_mask\": \"%0d\" },", $time, pc_i, ma_mode_i, dmem_addr_o, dmem_write_data_o, dmem_write_mask_o);
-`endif
+    `log_strobe(("{ \"stage\": \"MA\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ma_mode\": \"%0d\", \"dmem_addr\": \"%0d\", \"dmem_write_data\": \"%0d\", \"dmem_write_mask\": \"%0d\" },", $time, pc_i, ma_mode_i, dmem_addr_o, dmem_write_data_o, dmem_write_mask_o));
 
 end 
 
@@ -111,11 +107,7 @@ always_comb begin
     wb_valid_async_o = wb_valid_i;
     empty_async_o    = pc_i == NOP_PC;
 
-`ifdef VERILATOR
-    $strobe("{ \"stage\": \"MA\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ma_wb_addr\": \"%0d\", \"ma_wb_data\": \"%0d\", \"ma_wb_valid\": \"%0d\" },", $time, pc_i, wb_addr_async_o, wb_data_async_o, wb_valid_async_o);
-`else
-    $fstrobe(log_fd, "{ \"stage\": \"MA\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ma_wb_addr\": \"%0d\", \"ma_wb_data\": \"%0d\", \"ma_wb_valid\": \"%0d\" },", $time, pc_i, wb_addr_async_o, wb_data_async_o, wb_valid_async_o);
-`endif
+    `log_strobe(("{ \"stage\": \"MA\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ma_wb_addr\": \"%0d\", \"ma_wb_data\": \"%0d\", \"ma_wb_valid\": \"%0d\" },", $time, pc_i, wb_addr_async_o, wb_data_async_o, wb_valid_async_o));
 
 end  
 
@@ -141,11 +133,7 @@ always_ff @(posedge clk_i) begin
         wb_valid_o <= NOP_WB_VALID;
     end
 
-`ifdef VERILATOR
-    $strobe("{ \"stage\": \"MA\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"load\": \"%0d\", \"ma_size\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\" },", $time, pc_o, ir_o, load_o, ma_size_o, wb_data_o, wb_valid_o);
-`else
-    $fstrobe(log_fd, "{ \"stage\": \"MA\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"load\": \"%0d\", \"ma_size\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\" },", $time, pc_o, ir_o, load_o, ma_size_o, wb_data_o, wb_valid_o);
-`endif
+    `log_strobe(("{ \"stage\": \"MA\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"load\": \"%0d\", \"ma_size\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\" },", $time, pc_o, ir_o, load_o, ma_size_o, wb_data_o, wb_valid_o));
 
 end
 

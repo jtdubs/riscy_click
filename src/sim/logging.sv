@@ -9,6 +9,20 @@ package logging;
 
 integer log_fd=0;
 
+`ifdef VERILATOR
+`define log_display(A) \
+    $display("%s", $sformatf A );
+
+`define log_strobe(A) \
+    $strobe("%s", $sformatf A );
+`else
+`define log_display(A) \
+    $fdisplay(log_fd, "%s", $sformatf A );
+
+`define log_strobe(A) \
+    $fstrobe(log_fd, "%s", $sformatf A );
+`endif
+
 function void start_logging;
     begin
 `ifdef VERILATOR

@@ -3,6 +3,9 @@
 
 package logging;
 
+`define log_display(A)
+`define log_display(A)
+
 function void start_logging;
     begin
     end
