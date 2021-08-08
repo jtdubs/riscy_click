@@ -31,7 +31,7 @@ endfunction
 
 function void stop_logging;
     begin
-        if (log_fd) begin
+        if (log_fd == 0) begin
 `ifdef VERILATOR
             $display("{}");
             $display("]");

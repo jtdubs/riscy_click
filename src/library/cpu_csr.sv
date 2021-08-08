@@ -69,7 +69,7 @@ always_ff @(posedge clk_i) begin
         mstatus_r <= '{ 
             uie:         1'b0,
             sie:         1'b0,
-            reserved_2:  2'b0,
+            reserved_2:  1'b0,
             mie:         1'b0,
             upie:        1'b0,
             spie:        1'b0,

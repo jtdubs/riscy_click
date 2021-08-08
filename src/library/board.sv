@@ -120,7 +120,7 @@ wire word_t      vram_read_data_w;
 
 // BIOS
 `ifdef VERILATOR
-bios_rom #(.CONTENTS("bios/bios.mem")) bios (
+bios_rom #(.CONTENTS("../roms/bios/bios.mem")) bios (
 `else
 bios_rom #(.CONTENTS("bios.mem")) bios (
 `endif

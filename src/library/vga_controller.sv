@@ -31,7 +31,7 @@ logic [31:0] crom_data_w;
 
 character_rom #(
 `ifdef VERILATOR
-    .CONTENTS("crom/crom.mem")
+    .CONTENTS("../roms/character_rom/crom.mem")
 `else
     .CONTENTS("crom.mem")
 `endif
