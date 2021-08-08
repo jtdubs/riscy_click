@@ -61,6 +61,5 @@ system_spram_inst (
     .injectdbiterra(1'b0),
     .injectsbiterra(1'b0)
 );
-`endif
 
 endmodule
