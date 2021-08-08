@@ -80,7 +80,7 @@ def main(*args):
     # print header
     print("@0000")
 
-    for c in chars.keys():
+    for c in sorted(chars.keys()):
         # print("'{0}' ({1}): {2}".format(chr(c), c, chars[c]))
 
         ch     = chars[c]
