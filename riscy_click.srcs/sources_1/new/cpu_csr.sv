@@ -64,6 +64,7 @@ end
 // Writes
 always_ff @(posedge clk_i) begin
     if (csr_write_enable_i) begin
+        /* verilator lint_off CASEINCOMPLETE */
         case (csr_write_addr_i)
         CSR_CYCLE:    csr_cycle_r   <= { csr_cycle_w  [63:32], csr_write_data_i };
         CSR_TIME:     csr_time_r    <= { csr_time_w   [63:32], csr_write_data_i };

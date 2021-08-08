@@ -298,9 +298,9 @@ end
 
 // determine next state
 always_comb begin
-    unique if (csr_idle_action_w | csr_write_action_w)
+    if (csr_idle_action_w || csr_write_action_w)
         csr_state_w = CSR_STATE_IDLE;
-    else if (csr_flush_action_w | csr_wait_action_w)
+    else if (csr_flush_action_w || csr_wait_action_w)
         csr_state_w = CSR_STATE_FLUSHING;
     else
         csr_state_w = CSR_STATE_EXECUTING;
@@ -371,12 +371,6 @@ end
 //
 
 always_comb begin
-`ifdef VERILATOR
-    $strobe("{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"jmp_valid\": \"%0d\", \"jmp_addr\": \"%0d\", \"ready\": \"%0d\" },", $time, pc_i, jmp_valid_async_o, jmp_addr_async_o, ready_async_o);
-`else
-    $fstrobe(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"jmp_valid\": \"%0d\", \"jmp_addr\": \"%0d\", \"ready\": \"%0d\" },", $time, pc_i, jmp_valid_async_o, jmp_addr_async_o, ready_async_o);
-`endif
-
     // jump signals
     unique case (cw_w.pc_mode)
     PC_NEXT:
@@ -416,6 +410,13 @@ always_comb begin
         jmp_addr_async_o  = 32'h00000000;
         ready_async_o = 1'b1;
     end    
+
+`ifdef VERILATOR
+    $strobe("{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"jmp_valid\": \"%0d\", \"jmp_addr\": \"%0d\", \"ready\": \"%0d\" },", $time, pc_i, jmp_valid_async_o, jmp_addr_async_o, ready_async_o);
+`else
+    $fstrobe(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"jmp_valid\": \"%0d\", \"jmp_addr\": \"%0d\", \"ready\": \"%0d\" },", $time, pc_i, jmp_valid_async_o, jmp_addr_async_o, ready_async_o);
+`endif
+
 end
 
 
@@ -424,12 +425,6 @@ end
 //
 
 always_ff @(posedge clk_i) begin
-`ifdef VERILATOR
-    $strobe("{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"alu_op1\": \"%0d\", \"alu_op2\": \"%0d\", \"alu_mode\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_dst\": \"%0d\", \"halt\": \"%0d\" },", $time, pc_o, ir_o, alu_op1_o, alu_op2_o, alu_mode_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_async_o, wb_valid_async_o, halt_o);
-`else
-    $fstrobe(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"alu_op1\": \"%0d\", \"alu_op2\": \"%0d\", \"alu_mode\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_dst\": \"%0d\", \"halt\": \"%0d\" },", $time, pc_o, ir_o, alu_op1_o, alu_op2_o, alu_mode_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_async_o, wb_valid_async_o, halt_o);
-`endif
-    
     // if a bubble is needed
     if (data_hazard_w || csr_flush_action_w || csr_wait_action_w || csr_read_action_w || csr_write_action_w) begin
         // output a NOP (addi x0, x0, 0)
@@ -476,6 +471,13 @@ always_ff @(posedge clk_i) begin
         wb_valid_async_o <= NOP_WB_VALID;
         halt_o     <= 1'b0;
     end
+
+`ifdef VERILATOR
+    $strobe("{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"alu_op1\": \"%0d\", \"alu_op2\": \"%0d\", \"alu_mode\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_dst\": \"%0d\", \"halt\": \"%0d\" },", $time, pc_o, ir_o, alu_op1_o, alu_op2_o, alu_mode_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_async_o, wb_valid_async_o, halt_o);
+`else
+    $fstrobe(log_fd, "{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"alu_op1\": \"%0d\", \"alu_op2\": \"%0d\", \"alu_mode\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_dst\": \"%0d\", \"halt\": \"%0d\" },", $time, pc_o, ir_o, alu_op1_o, alu_op2_o, alu_mode_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_async_o, wb_valid_async_o, halt_o);
+`endif
+    
 end
 
 endmodule

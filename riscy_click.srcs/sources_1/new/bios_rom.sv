@@ -28,8 +28,8 @@ initial begin
 end
 
 always_ff @(posedge clk_i) begin
-    read1_data_o <= reset_i ? 32'b0 : rom[read1_addr_i];
-    read2_data_o <= reset_i ? 32'b0 : rom[read2_addr_i];
+    read1_data_o <= reset_i ? 32'b0 : rom[read1_addr_i[11:2]];
+    read2_data_o <= reset_i ? 32'b0 : rom[read2_addr_i[11:2]];
 end
 `else
 // ROM primitive

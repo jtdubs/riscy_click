@@ -59,7 +59,7 @@ pixel_clk_gen pixel_clk_gen (
 //
 
 localparam integer RESET_CYCLES = 12;
-const logic [RESET_CYCLES-1:0] RESET_ONES = {RESET_CYCLES{1'b1}};
+localparam logic [RESET_CYCLES-1:0] RESET_ONES = {RESET_CYCLES{1'b1}};
 
 `ifdef INCL_CPU
 logic                    cpu_reset_r;

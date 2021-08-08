@@ -70,17 +70,18 @@ alu alu (
 //
 
 always_comb begin
+    wb_addr_async_o  = ir_i[11:7];
+    wb_data_async_o  = (wb_src_i == WB_SRC_ALU) ? alu_result_w : wb_data_i;
+    wb_ready_async_o = (wb_src_i != WB_SRC_MEM);
+    wb_valid_async_o = wb_valid_i;
+    empty_async_o    = pc_i == NOP_PC;
+
 `ifdef VERILATOR
     $strobe("{ \"stage\": \"EX\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ex_wb_addr\": \"%0d\", \"ex_wb_data\": \"%0d\", \"ex_wb_valid\": \"%0d\" },", $time, pc_i, wb_addr_async_o, wb_data_async_o, wb_valid_async_o);
 `else
     $fstrobe(log_fd, "{ \"stage\": \"EX\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ex_wb_addr\": \"%0d\", \"ex_wb_data\": \"%0d\", \"ex_wb_valid\": \"%0d\" },", $time, pc_i, wb_addr_async_o, wb_data_async_o, wb_valid_async_o);
 `endif
 
-    wb_addr_async_o  = ir_i[11:7];
-    wb_data_async_o  = (wb_src_i == WB_SRC_ALU) ? alu_result_w : wb_data_i;
-    wb_ready_async_o = (wb_src_i != WB_SRC_MEM);
-    wb_valid_async_o = wb_valid_i;
-    empty_async_o    = pc_i == NOP_PC;
 end  
 
 
@@ -89,12 +90,6 @@ end
 //
 
 always_ff @(posedge clk_i) begin
-`ifdef VERILATOR
-    $strobe("{ \"stage\": \"EX\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"ma_addr\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\" },", $time, pc_o, ir_o, ma_addr_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_o, wb_valid_o);
-`else
-    $fstrobe(log_fd, "{ \"stage\": \"EX\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"ma_addr\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\" },", $time, pc_o, ir_o, ma_addr_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_o, wb_valid_o);
-`endif
-
     pc_o       <= pc_i;
     ir_o       <= ir_i;
     ma_addr_o  <= alu_result_w;
@@ -116,6 +111,13 @@ always_ff @(posedge clk_i) begin
         wb_data_o  <= 32'b0;
         wb_valid_o <= NOP_WB_VALID; 
     end
+
+`ifdef VERILATOR
+    $strobe("{ \"stage\": \"EX\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"ma_addr\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\" },", $time, pc_o, ir_o, ma_addr_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_o, wb_valid_o);
+`else
+    $fstrobe(log_fd, "{ \"stage\": \"EX\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"ma_addr\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\" },", $time, pc_o, ir_o, ma_addr_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_o, wb_valid_o);
+`endif
+
 end
 
 endmodule

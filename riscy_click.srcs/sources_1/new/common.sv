@@ -24,82 +24,82 @@ typedef logic [11:0] csr_t;
 
 // Opcodes
 typedef logic [6:0] opcode_t;
-const opcode_t OP_LUI       = 7'b0110111; // Load Upper Immediate
-const opcode_t OP_AUIPC     = 7'b0010111; // Add Upper Immediate To PC
-const opcode_t OP_JAL       = 7'b1101111; // Jump And Link (use PC-ALU)
-const opcode_t OP_JALR      = 7'b1100111; // Jump and Link Register
-const opcode_t OP_BRANCH    = 7'b1100011; // Branch
-const opcode_t OP_LOAD      = 7'b0000011; // Load
-const opcode_t OP_STORE     = 7'b0100011; // Store
-const opcode_t OP_IMM       = 7'b0010011; // Integer Register-Immediate Instructions
-const opcode_t OP           = 7'b0110011; // Integer Register-Register Operations
-const opcode_t OP_MISC_MEM  = 7'b0001111; // Miscellaneous Memory Operations
-const opcode_t OP_SYSTEM    = 7'b1110011; // System Calls
+localparam opcode_t OP_LUI       = 7'b0110111; // Load Upper Immediate
+localparam opcode_t OP_AUIPC     = 7'b0010111; // Add Upper Immediate To PC
+localparam opcode_t OP_JAL       = 7'b1101111; // Jump And Link (use PC-ALU)
+localparam opcode_t OP_JALR      = 7'b1100111; // Jump and Link Register
+localparam opcode_t OP_BRANCH    = 7'b1100011; // Branch
+localparam opcode_t OP_LOAD      = 7'b0000011; // Load
+localparam opcode_t OP_STORE     = 7'b0100011; // Store
+localparam opcode_t OP_IMM       = 7'b0010011; // Integer Register-Immediate Instructions
+localparam opcode_t OP           = 7'b0110011; // Integer Register-Register Operations
+localparam opcode_t OP_MISC_MEM  = 7'b0001111; // Miscellaneous Memory Operations
+localparam opcode_t OP_SYSTEM    = 7'b1110011; // System Calls
 
 // Funct3
 typedef logic [2:0] funct3_t;
 
 // Funct3 (OP_BRANCH)
-const funct3_t F3_BEQ       = 3'b000;     // Branch if EQ
-const funct3_t F3_BNE       = 3'b001;     // Branch if NE
-const funct3_t F3_BLT       = 3'b100;     // Branch if LT (Signed)
-const funct3_t F3_BGE       = 3'b101;     // Branch if GE (Signed)
-const funct3_t F3_BLTU      = 3'b110;     // Branch if LT (Unsigned)
-const funct3_t F3_BGEU      = 3'b111;     // Branch if GE (Unsigned)
+localparam funct3_t F3_BEQ       = 3'b000;     // Branch if EQ
+localparam funct3_t F3_BNE       = 3'b001;     // Branch if NE
+localparam funct3_t F3_BLT       = 3'b100;     // Branch if LT (Signed)
+localparam funct3_t F3_BGE       = 3'b101;     // Branch if GE (Signed)
+localparam funct3_t F3_BLTU      = 3'b110;     // Branch if LT (Unsigned)
+localparam funct3_t F3_BGEU      = 3'b111;     // Branch if GE (Unsigned)
 
 // Funct3 (OP_LOAD)
-const funct3_t F3_LB        = 3'b000;     // Load Byte (Signed Extended)
-const funct3_t F3_LH        = 3'b001;     // Load Half-Word (Signed Extended)
-const funct3_t F3_LW        = 3'b010;     // Load Word
-const funct3_t F3_LBU       = 3'b100;     // Load Byte (Unsigned)
-const funct3_t F3_LHU       = 3'b101;     // Load Half-Word (Unsigned)
+localparam funct3_t F3_LB        = 3'b000;     // Load Byte (Signed Extended)
+localparam funct3_t F3_LH        = 3'b001;     // Load Half-Word (Signed Extended)
+localparam funct3_t F3_LW        = 3'b010;     // Load Word
+localparam funct3_t F3_LBU       = 3'b100;     // Load Byte (Unsigned)
+localparam funct3_t F3_LHU       = 3'b101;     // Load Half-Word (Unsigned)
 
 // Funct3 (OP_STORE)
-const funct3_t F3_SB        = 3'b000;     // Store Byte
-const funct3_t F3_SH        = 3'b001;     // Store Half-Word
-const funct3_t F3_SW        = 3'b010;     // Store Word
+localparam funct3_t F3_SB        = 3'b000;     // Store Byte
+localparam funct3_t F3_SH        = 3'b001;     // Store Half-Word
+localparam funct3_t F3_SW        = 3'b010;     // Store Word
 
 // Funct3 (OP_IMM and OP)
-const funct3_t F3_ADD_SUB   = 3'b000;     // Addition or Subtraction
-const funct3_t F3_SLT       = 3'b010;     // Signed Less-Than
-const funct3_t F3_SLTU      = 3'b011;     // Signed Less-Than(Upper)
-const funct3_t F3_XOR       = 3'b100;     // Binary XOR
-const funct3_t F3_OR        = 3'b110;     // Binary OR
-const funct3_t F3_AND       = 3'b111;     // Binary AND
-const funct3_t F3_SLL       = 3'b001;     // Shift Left Logical
-const funct3_t F3_SRL_SRA   = 3'b101;     // Shift Right Logical and Arithmetic
+localparam funct3_t F3_ADD_SUB   = 3'b000;     // Addition or Subtraction
+localparam funct3_t F3_SLT       = 3'b010;     // Signed Less-Than
+localparam funct3_t F3_SLTU      = 3'b011;     // Signed Less-Than(Upper)
+localparam funct3_t F3_XOR       = 3'b100;     // Binary XOR
+localparam funct3_t F3_OR        = 3'b110;     // Binary OR
+localparam funct3_t F3_AND       = 3'b111;     // Binary AND
+localparam funct3_t F3_SLL       = 3'b001;     // Shift Left Logical
+localparam funct3_t F3_SRL_SRA   = 3'b101;     // Shift Right Logical and Arithmetic
 
 // Funct3 (OP_MISC_MEM)
-const funct3_t F3_FENCE     = 3'b000;     // Fence
-const funct3_t F3_FENCEI    = 3'b001;     // Fence Immediate
+localparam funct3_t F3_FENCE     = 3'b000;     // Fence
+localparam funct3_t F3_FENCEI    = 3'b001;     // Fence Immediate
 
 // Funct3 (OP_SYSTEM)
-const funct3_t F3_PRIV      = 3'b000;     // Environment Call
-const funct3_t F3_CSRRW     = 3'b001;     // Atomic R/W CSR
-const funct3_t F3_CSRRS     = 3'b010;     // Atomic RSB CSR
-const funct3_t F3_CSRRC     = 3'b011;     // Atomic RC CSR
-const funct3_t F3_CSRRWI    = 3'b101;     // Atomic R/W Immedate CSR
-const funct3_t F3_CSRRSI    = 3'b110;     // Atomic RSB Immedate CSR
-const funct3_t F3_CSRRCI    = 3'b111;     // Atomic RC Immedate CSR
+localparam funct3_t F3_PRIV      = 3'b000;     // Environment Call
+localparam funct3_t F3_CSRRW     = 3'b001;     // Atomic R/W CSR
+localparam funct3_t F3_CSRRS     = 3'b010;     // Atomic RSB CSR
+localparam funct3_t F3_CSRRC     = 3'b011;     // Atomic RC CSR
+localparam funct3_t F3_CSRRWI    = 3'b101;     // Atomic R/W Immedate CSR
+localparam funct3_t F3_CSRRSI    = 3'b110;     // Atomic RSB Immedate CSR
+localparam funct3_t F3_CSRRCI    = 3'b111;     // Atomic RC Immedate CSR
 
 // Funct7
 typedef logic [6:0] funct7_t;
 
 // CSR
-const csr_t CSR_FFLAGS      = 12'h001;     // Floating-Point Accrued Exceptions
-const csr_t CSR_FRM         = 12'h002;     // Floating-Point Dynamic Rounding Mode
-const csr_t CSR_FCSR        = 12'h003;     // Floating-Point Control and Status Registers
-const csr_t CSR_CYCLE       = 12'hC00;     // Cycle Counter for RDCYCLE instruction
-const csr_t CSR_TIME        = 12'hC01;     // Timer for RDTIME instruction
-const csr_t CSR_INSTRET     = 12'hC02;     // Instructions-retired counter for RDINSTRET instruction
-const csr_t CSR_CYCLEH      = 12'hC80;     // Upper 32 bits of cycle, RV32I only
-const csr_t CSR_TIMEH       = 12'hC81;     // Upper 32 bits of time, RV32I only
-const csr_t CSR_INSTRETH    = 12'hC82;     // Upper 32 bits of instret, RV32I only
+localparam csr_t CSR_FFLAGS      = 12'h001;     // Floating-Point Accrued Exceptions
+localparam csr_t CSR_FRM         = 12'h002;     // Floating-Point Dynamic Rounding Mode
+localparam csr_t CSR_FCSR        = 12'h003;     // Floating-Point Control and Status Registers
+localparam csr_t CSR_CYCLE       = 12'hC00;     // Cycle Counter for RDCYCLE instruction
+localparam csr_t CSR_TIME        = 12'hC01;     // Timer for RDTIME instruction
+localparam csr_t CSR_INSTRET     = 12'hC02;     // Instructions-retired counter for RDINSTRET instruction
+localparam csr_t CSR_CYCLEH      = 12'hC80;     // Upper 32 bits of cycle, RV32I only
+localparam csr_t CSR_TIMEH       = 12'hC81;     // Upper 32 bits of time, RV32I only
+localparam csr_t CSR_INSTRETH    = 12'hC82;     // Upper 32 bits of instret, RV32I only
 
 // Funct12
 typedef logic [11:0] funct12_t;
-const funct12_t F12_ECALL   = 12'h000;     // Environment call
-const funct12_t F12_EBREAK  = 12'h001;     // Environment breakpoint
+localparam funct12_t F12_ECALL   = 12'h000;     // Environment call
+localparam funct12_t F12_EBREAK  = 12'h001;     // Environment breakpoint
 
 
 ///
@@ -162,7 +162,7 @@ typedef enum logic [2:0] {
     MA_SIZE_HU   = 3'b101      // Half-Word (Unsigned)
 } ma_size_t;
 
-const ma_size_t MA_SIZE_X = MA_SIZE_W;
+localparam ma_size_t MA_SIZE_X = MA_SIZE_W;
 
 // Write-Back Source
 typedef enum logic [1:0] {
@@ -196,16 +196,16 @@ typedef struct packed {
 // NOP
 //
 
-const word_t     NOP_PC       = 32'hFFFFFFFF;
-const word_t     NOP_IR       = 32'h00000013;
-const alu_op1_t  NOP_ALU_OP1  = ALU_OP1_X;
-const alu_op2_t  NOP_ALU_OP2  = ALU_OP2_X;
-const alu_mode_t NOP_ALU_MODE = ALU_X;
-const ma_mode_t  NOP_MA_MODE  = MA_X;
-const ma_size_t  NOP_MA_SIZE  = MA_SIZE_X;
-const word_t     NOP_MA_DATA  = 32'h00000000;
-const regaddr_t  NOP_WB_ADDR  = 5'b00000;
-const wb_src_t   NOP_WB_SRC   = WB_SRC_X;
-const logic      NOP_WB_VALID = 1'b0;
+localparam word_t     NOP_PC       = 32'hFFFFFFFF;
+localparam word_t     NOP_IR       = 32'h00000013;
+localparam alu_op1_t  NOP_ALU_OP1  = ALU_OP1_X;
+localparam alu_op2_t  NOP_ALU_OP2  = ALU_OP2_X;
+localparam alu_mode_t NOP_ALU_MODE = ALU_X;
+localparam ma_mode_t  NOP_MA_MODE  = MA_X;
+localparam ma_size_t  NOP_MA_SIZE  = MA_SIZE_X;
+localparam word_t     NOP_MA_DATA  = 32'h00000000;
+localparam regaddr_t  NOP_WB_ADDR  = 5'b00000;
+localparam wb_src_t   NOP_WB_SRC   = WB_SRC_X;
+localparam logic      NOP_WB_VALID = 1'b0;
 
 endpackage
