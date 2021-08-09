@@ -4,13 +4,12 @@ Extensions:
 - M - Multiplication & Division.  Will be multi-cycle.  Look at Non-restoring Division on wikipedia.
 
 Future:
-- Switch to use Vivado Hardware Server on PC so I can work entirely out of the Linux VM
+- I appear to have introduced a bug. I'm getting two if each character outputting...
 - Implement Machine Level ISA... at least enough to get interrupts working...
 - USB HID via PS/2 emulation would be awesome...
 - USB UART would be awesome...
 - Implement more of the Risc-V ISA
 - Increase VGA resolution to 1280x1024?
-- Command-line vivado usage???? Looks fairly awesome.  No more crazy directory structure.  Just src/*.sv ??
 - Allow for arbitrary-time memory access / stalls
 - Switch to mix of BRAM & DDR
 - Move to design with unified memory, instruction/data caches, memory controller
