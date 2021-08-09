@@ -1,9 +1,1 @@
-/*.runs/
-/*.cache/
-/*.sim/
-/*.gen/
-/*.ip_user_files/
-/*.hw/
-/.undodir/
-updatemem.*
-/obj_dir/
+.undodir/

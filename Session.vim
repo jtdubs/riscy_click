@@ -7,41 +7,63 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +1 riscy_click.srcs/sources_1/new/alu.sv
-badd +107 riscy_click.srcs/sources_1/new/board.sv
-badd +67 riscy_click.srcs/sources_1/new/consts.sv
-badd +123 riscy_click.srcs/sources_1/new/cpu.sv
-badd +21 riscy_click.srcs/sources_1/new/ctl.sv
-badd +50 riscy_click.srcs/sources_1/new/regfile.sv
-badd +121 riscy_click.srcs/sources_1/new/segdisplay.sv
-badd +1 riscy_click.srcs/sim_1/new/cpu_tb.sv
-badd +1 riscy_click.srcs/constrs_1/new/Nexys-A7-100T.xdc
-badd +29 TODO
-badd +15 bios/bios.dis
-badd +8 bios/bios.c
-badd +21 bios/Makefile
-badd +49 riscy_click.srcs/sources_1/new/cpu_if.sv
-badd +275 riscy_click.srcs/sources_1/new/cpu_id.sv
-badd +1 riscy_click.srcs/sources_1/new/cpu_ex.sv
-badd +13 riscy_click.srcs/sources_1/new/cpu_ma.sv
-badd +13 riscy_click.srcs/sources_1/new/cpu_wb.sv
-badd +8 bios/bios.coe
-badd +32 riscy_click.srcs/sources_1/new/icache.sv
-badd +268 riscy_click.srcs/cpu_if_sim/new/cpu_if_tb.sv
-badd +85 riscy_click.srcs/sources_1/new/skid_buffer.sv
-badd +34 riscy_click.srcs/sources_1/new/register.sv
-badd +45 riscy_click.srcs/skid_buffer_sim/new/skid_buffer_tb.sv
+badd +2 src/library/alu.sv
+badd +232 src/library/board.sv
+badd +1 src/library/common.sv
+badd +1 src/library/cpu.sv
+badd +1 src/library/cpu_csr.sv
+badd +1 src/library/cpu_ex.sv
+badd +280 src/library/cpu_id.sv
+badd +1 src/library/cpu_if.sv
+badd +1 src/library/cpu_ma.sv
+badd +1 src/library/cpu_wb.sv
+badd +1 src/library/regfile.sv
+badd +1 src/library/segdisplay.sv
+badd +1 src/library/vga_controller.sv
+badd +1 src/synth/bios_rom.sv
+badd +1 src/synth/character_rom.sv
+badd +1 src/synth/cpu_clk_gen.sv
+badd +1 src/synth/logging.sv
+badd +1 src/synth/pixel_clk_gen.sv
+badd +1 src/synth/system_ram.sv
+badd +1 src/synth/video_ram.sv
+badd +1 src/sim/bios_rom.sv
+badd +1 src/sim/character_rom.sv
+badd +1 src/sim/cpu_clk_gen.sv
+badd +18 src/sim/logging.sv
+badd +1 src/sim/pixel_clk_gen.sv
+badd +1 src/sim/system_ram.sv
+badd +1 src/sim/video_ram.sv
 argglobal
 %argdel
-$argadd riscy_click.srcs/sources_1/new/alu.sv
-$argadd riscy_click.srcs/sources_1/new/board.sv
-$argadd riscy_click.srcs/sources_1/new/consts.sv
-$argadd riscy_click.srcs/sources_1/new/cpu.sv
-$argadd riscy_click.srcs/sources_1/new/ctl.sv
-$argadd riscy_click.srcs/sources_1/new/regfile.sv
-$argadd riscy_click.srcs/sources_1/new/segdisplay.sv
-$argadd riscy_click.srcs/sim_1/new/cpu_tb.sv
-edit TODO
+$argadd src/library/alu.sv
+$argadd src/library/board.sv
+$argadd src/library/common.sv
+$argadd src/library/cpu.sv
+$argadd src/library/cpu_csr.sv
+$argadd src/library/cpu_ex.sv
+$argadd src/library/cpu_id.sv
+$argadd src/library/cpu_if.sv
+$argadd src/library/cpu_ma.sv
+$argadd src/library/cpu_wb.sv
+$argadd src/library/regfile.sv
+$argadd src/library/segdisplay.sv
+$argadd src/library/vga_controller.sv
+$argadd src/synth/bios_rom.sv
+$argadd src/synth/character_rom.sv
+$argadd src/synth/cpu_clk_gen.sv
+$argadd src/synth/logging.sv
+$argadd src/synth/pixel_clk_gen.sv
+$argadd src/synth/system_ram.sv
+$argadd src/synth/video_ram.sv
+$argadd src/sim/bios_rom.sv
+$argadd src/sim/character_rom.sv
+$argadd src/sim/cpu_clk_gen.sv
+$argadd src/sim/logging.sv
+$argadd src/sim/pixel_clk_gen.sv
+$argadd src/sim/system_ram.sv
+$argadd src/sim/video_ram.sv
+edit src/library/common.sv
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
@@ -51,7 +73,7 @@ set winheight=1
 set winminwidth=0
 set winwidth=1
 argglobal
-if bufexists("TODO") | buffer TODO | else | edit TODO | endif
+if bufexists("src/library/common.sv") | buffer src/library/common.sv | else | edit src/library/common.sv | endif
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -61,12 +83,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 24 - ((23 * winheight(0) + 26) / 53)
+let s:l = 1 - ((0 * winheight(0) + 16) / 33)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-24
-normal! 043|
+1
+normal! 0
 tabnext 1
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
