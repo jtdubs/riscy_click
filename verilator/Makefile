@@ -29,6 +29,9 @@ CPP_SOURCES =
 CPP_SOURCES += ./vgasim.cpp
 CPP_SOURCES += ./sim_main.cpp
 
+VLT_SOURCES =
+VLT_SOURCES = ./config.vlt
+
 CFLAGS =
 CFLAGS += `pkg-config gtkmm-3.0 --cflags`
 
@@ -48,7 +51,7 @@ VERILATOR_FLAGS += -LDFLAGS "$(LDFLAGS)"
 
 obj_dir/chipset: $(SV_SOURCES) $(CPP_SOURCES)
 	rm -Rf obj_dir
-	verilator $(VERILATOR_FLAGS) $(SV_SOURCES) $(CPP_SOURCES)
+	verilator $(VERILATOR_FLAGS) $(VLT_SOURCES) $(SV_SOURCES) $(CPP_SOURCES)
 	make -C obj_dir -f Vchipset.mk
 
 run: obj_dir/chipset

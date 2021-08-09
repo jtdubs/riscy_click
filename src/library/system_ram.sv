@@ -8,15 +8,11 @@ module system_ram
         input  wire logic       clk_i,
         input  wire logic       reset_i,
 
-        /* verilator lint_off UNUSED */
-
         // read/write port
         input  wire word_t      addr_i,
         input  wire word_t      write_data_i,
         input  wire logic [3:0] write_mask_i,
         output      word_t      read_data_o
-
-        /* verilator lint_on UNUSED */
     );
 
 `ifdef ENABLE_XILINX_PRIMITIVES

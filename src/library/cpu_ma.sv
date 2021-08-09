@@ -59,7 +59,6 @@ always_comb begin
     dmem_write_mask_o = 4'b0000;
 
     if (ma_mode_i == MA_STORE) begin
-        /* verilator lint_off CASEINCOMPLETE */
         unique case (ma_size_i)
         MA_SIZE_B:
             begin

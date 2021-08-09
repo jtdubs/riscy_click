@@ -17,7 +17,6 @@ module cpu_wb
         // data memory
         input  wire word_t    dmem_read_data_i, // memory data
 
-        /* verilator lint_off UNUSED */
         // pipeline inputs
         input  wire word_t    pc_i,             // program counter
         input  wire word_t    ir_i,             // instruction register
@@ -25,7 +24,6 @@ module cpu_wb
         input  wire ma_size_t ma_size_i,        // memory access size
         input  wire word_t    wb_data_i,        // write-back data
         input  wire logic     wb_valid_i,       // write-back valid
-        /* verilator lint_on UNUSED */
 
         // async outputs
         output      regaddr_t wb_addr_async_o,  // write-back address
@@ -43,7 +41,6 @@ final stop_logging();
 
 always_comb begin
     if (load_i) begin
-        /* verilator lint_off CASEINCOMPLETE */
         unique case (ma_size_i)
         MA_SIZE_B:   wb_data_async_o = { {24{dmem_read_data_i[ 7]}},  dmem_read_data_i[ 7:0] };
         MA_SIZE_H:   wb_data_async_o = { {16{dmem_read_data_i[15]}},  dmem_read_data_i[15:0] };

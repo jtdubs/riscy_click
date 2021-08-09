@@ -32,7 +32,6 @@ module board
 wire logic clk_cpu_w;
 wire logic clk_reset;
 
-/* verilator lint_off PINCONNECTEMPTY */
 cpu_clk_gen cpu_clk_gen (
     .clk_sys_i     (clk_sys_i),
     .reset_async_i (1'b0),
@@ -48,7 +47,6 @@ pixel_clk_gen pixel_clk_gen (
     .clk_pxl_o     (clk_pxl_w),
     .ready_async_o ()
 );
-/* verilator lint_on PINCONNECTEMPTY */
 
 
 //

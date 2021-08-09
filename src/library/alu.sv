@@ -24,7 +24,6 @@ always_comb shamt_w = alu_op2_async_i[4:0];
 
 // Result Logic
 always_comb begin
-    /* verilator lint_off CASEINCOMPLETE */
     unique case (alu_mode_async_i)
         ALU_ADD:   alu_result_async_o = alu_op1_async_i + alu_op2_async_i;
         ALU_SUB:   alu_result_async_o = alu_op1_async_i - alu_op2_async_i;

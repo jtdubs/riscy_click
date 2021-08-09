@@ -248,7 +248,6 @@ word_t alu_op1_w;
 word_t alu_op2_w;
 
 always_comb begin
-    /* verilator lint_off CASEINCOMPLETE */
     unique case (cw_w.alu_op1)
     ALU_OP1_X:    alu_op1_w = 32'b0;
     ALU_OP1_RS1:  alu_op1_w = ra_bypassed_w;
@@ -257,7 +256,6 @@ always_comb begin
 end
 
 always_comb begin
-    /* verilator lint_off CASEINCOMPLETE */
     unique case (cw_w.alu_op2)
     ALU_OP2_X:    alu_op2_w = 32'b0;
     ALU_OP2_RS2:  alu_op2_w = rb_bypassed_w;
@@ -386,7 +384,6 @@ always_comb begin
         end
     PC_BRANCH:
         begin
-            /* verilator lint_off CASEINCOMPLETE */
             unique case (f3_w[2:1])
                 2'b00:  jmp_valid_async_o = (        ra_bypassed_w  ==         rb_bypassed_w);
                 2'b10:  jmp_valid_async_o = (signed'(ra_bypassed_w) <  signed'(rb_bypassed_w));

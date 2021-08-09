@@ -17,8 +17,6 @@ typedef logic [4:0]  regaddr_t;
 // CSR Address
 typedef logic [11:0] csr_t;
 
-/* verilator lint_off UNUSED */
-
 ///
 /// Instruction Decoding
 ///

@@ -11,8 +11,6 @@ module bios_rom
         input  wire logic  clk_i,
         input  wire logic  reset_i,
 
-        /* verilator lint_off UNUSED */
-
         // read port a
         input  wire word_t read1_addr_i,
         output      word_t read1_data_o,
@@ -20,8 +18,6 @@ module bios_rom
         // read port b
         input  wire word_t read2_addr_i,
         output      word_t read2_data_o
-
-        /* verilator lint_on UNUSED */
     );
 
 `ifdef ENABLE_XILINX_PRIMITIVES
