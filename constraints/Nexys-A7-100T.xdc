@@ -1,21 +1,3 @@
-# Board Debugging
-set_property mark_debug true [get_nets {imem_addr_w[*]}]
-set_property mark_debug true [get_nets {imem_data_w[*]}]
-set_property mark_debug true [get_nets {dmem_addr_w[*]}]
-set_property mark_debug true [get_nets {dmem_read_data_w[*]}]
-set_property mark_debug true [get_nets {dmem_write_data_w[*]}]
-set_property mark_debug true [get_nets {dmem_write_mask_w[*]}]
-set_property mark_debug true [get_nets {cycle_counter_r[*]}]
-
-# CPU Debugging
-set_property MARK_DEBUG true [get_nets cpu/reset_i]
-set_property MARK_DEBUG true [get_nets cpu/halt_o]
-set_property mark_debug true [get_nets {cpu/if_pc_w[*]}]
-set_property mark_debug true [get_nets {cpu/if_ir_w[*]}]
-set_property mark_debug true [get_nets {cpu/id_ir_w[*]}]
-set_property mark_debug true [get_nets {cpu/ex_ir_w[*]}]
-set_property mark_debug true [get_nets {cpu/ma_ir_w[*]}]
-
 # Voltage properties
 set_property CFGBVS VCCO [current_design]
 set_property CONFIG_VOLTAGE 3.3 [current_design]
