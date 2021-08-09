@@ -7,7 +7,7 @@
 
 #include "sim_vga.h"
 
-GLuint vga_create(int width, int height)
+GLuint vga_create(size_t width, size_t height)
 {
     unsigned short *image_data = new unsigned short[width * height] { 0 };
     for (int i=0; i<width*height; i++)
@@ -29,18 +29,18 @@ GLuint vga_create(int width, int height)
     return texture_id;
 }
 
-void vga_write(int width, int height, GLuint texture, int x, int y, unsigned short value)
+void vga_write(size_t width, size_t height, GLuint texture, size_t x, size_t y, uint16_t value)
 {
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, 1, 1, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, &value);
 }
 
-void vga_draw(const char *str_id, int width, int height, GLuint texture) {
+void vga_draw(const char *str_id, size_t width, size_t height, GLuint texture) {
     ImGui::Image((void*)(intptr_t)texture, ImVec2(width*2, height*2));
 }
 
-void vga_tick(GLuint texture, bool hsync, bool vsync, int red, int green, int blue) {
-    static int x=0, y=0;
+void vga_tick(GLuint texture, bool hsync, bool vsync, uint8_t red, uint8_t green, uint8_t blue) {
+    static size_t x=0, y=0;
     static bool last_vsync = false, last_hsync = false;
 
     x = (hsync) ? x+1 : -48;
@@ -50,7 +50,6 @@ void vga_tick(GLuint texture, bool hsync, bool vsync, int red, int green, int bl
     last_vsync = vsync;
     last_hsync = hsync;
 
-    // printf("VGA Tick: (h=%i, v=%i) -> (x=%i, y=%i)\n", hsync, vsync, x, y);
     if (x < 640 && y < 480)
         vga_write(640, 480, texture, x, y, (red << 12) | (green << 8) | (blue << 4) | (0x0F << 0));
 }

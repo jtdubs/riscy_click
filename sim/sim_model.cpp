@@ -6,6 +6,7 @@
 #include <verilated.h>
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
+#include <cstdint>
 
 #include "verilator/Vchipset.h"
 #include "sim_vga.h"
@@ -14,12 +15,12 @@
 #include "sim_model.h"
 
 struct sim_model {
-    Vchipset*     chipset;
-    bool          reset;
-    bool          switches[16];
-    unsigned char segments[8];
-    GLuint        vga_texture;
-    unsigned long ncycles;
+    Vchipset* chipset;
+    bool      reset;
+    bool      switches[16];
+    uint8_t   segments[8];
+    GLuint    vga_texture;
+    uint64_t  ncycles;
 };
 
 sim_model_t* sim_create(int argc, char **argv) {
@@ -69,7 +70,7 @@ void sim_tick(sim_model_t* model) {
         dut->reset_async_i = model->reset;
 
         // update switches
-        unsigned short switch_async_i = 0;
+        uint16_t switch_async_i = 0;
         for (int i=0; i<16; i++)
             switch_async_i |= model->switches[15-i] << i;
         dut->switch_async_i = switch_async_i;

@@ -1,6 +1,8 @@
 #ifndef __SIM_MODEL_H
 #define __SIM_MODEL_H
 
+#include <cstdint>
+
 typedef struct sim_model sim_model_t;
 
 sim_model_t* sim_create(int argc, char **argv);
