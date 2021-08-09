@@ -121,7 +121,7 @@ void VGATick(GLuint texture, bool hsync, bool vsync, int red, int green, int blu
 
     // printf("VGA Tick: (h=%i, v=%i) -> (x=%i, y=%i)\n", hsync, vsync, x, y);
     if (x < 640 && y < 480)
-        VGAWrite(640, 480, texture, x, y, (red << 12) | (green << 8) | (blue << 4) | 0xFF);
+        VGAWrite(640, 480, texture, x, y, (red << 12) | (green << 8) | (blue << 4) | (0x0F << 0));
 }
 
 int main(int argc, char** argv)
@@ -140,7 +140,7 @@ int main(int argc, char** argv)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
     // Create window with graphics context
-    GLFWwindow* window = glfwCreateWindow(1280, 720, "Riscy Click", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(1280, 1280, "Riscy Click", NULL, NULL);
     if (window == NULL)
         return 1;
     glfwMakeContextCurrent(window);
