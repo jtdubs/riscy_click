@@ -12,7 +12,7 @@ module system_ram
         input  wire word_t      addr_i,
         input  wire word_t      write_data_i,
         input  wire logic [3:0] write_mask_i,
-        output wire word_t      read_data_o
+        output      word_t      read_data_o
     );
 
 logic [31:0] ram [0:1023];

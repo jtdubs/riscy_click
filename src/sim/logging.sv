@@ -3,17 +3,17 @@
 
 package logging;
 
-//
-// Debug Logging
-//
-
-integer log_fd=0;
-
 `define log_display(A) \
     $fdisplay(log_fd, "%s", $sformatf A );
 
 `define log_strobe(A) \
     $fstrobe(log_fd, "%s", $sformatf A );
+
+//
+// Debug Logging
+//
+
+integer log_fd=0;
 
 function void start_logging;
     begin
