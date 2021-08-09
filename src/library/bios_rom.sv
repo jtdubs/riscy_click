@@ -11,6 +11,8 @@ module bios_rom
         input  wire logic  clk_i,
         input  wire logic  reset_i,
 
+        /* verilator lint_off UNUSED */
+
         // read port a
         input  wire word_t read1_addr_i,
         output wire word_t read1_data_o,
@@ -18,7 +20,16 @@ module bios_rom
         // read port b
         input  wire word_t read2_addr_i,
         output wire word_t read2_data_o
+
+        /* verilator lint_on UNUSED */
     );
+
+`ifdef ENABLE_XILINX_PRIMITIVES
+
+//
+// Synthesizable Implementation
+//
+
 
 // ROM primitive
 xpm_memory_dprom #(
@@ -80,5 +91,25 @@ bios_dprom_inst (
     .injectdbiterrb(1'b0),
     .injectsbiterrb(1'b0)
 );
+
+`else
+
+//
+// Simulator Implmentation
+//
+
+
+logic [31:0] rom [0:1023];
+
+initial begin
+    $readmemh(CONTENTS, rom);
+end
+
+always_ff @(posedge clk_i) begin
+    read1_data_o <= reset_i ? 32'b0 : rom[read1_addr_i[11:2]];
+    read2_data_o <= reset_i ? 32'b0 : rom[read2_addr_i[11:2]];
+end
+
+`endif
 
 endmodule

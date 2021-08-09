@@ -17,6 +17,7 @@ typedef logic [4:0]  regaddr_t;
 // CSR Address
 typedef logic [11:0] csr_t;
 
+/* verilator lint_off UNUSED */
 
 ///
 /// Instruction Decoding
@@ -243,5 +244,7 @@ localparam word_t     NOP_MA_DATA  = 32'h00000000;
 localparam regaddr_t  NOP_WB_ADDR  = 5'b00000;
 localparam wb_src_t   NOP_WB_SRC   = WB_SRC_X;
 localparam logic      NOP_WB_VALID = 1'b0;
+
+/* verilator lint_on UNUSED */
 
 endpackage

@@ -14,17 +14,13 @@ module alu
         input  wire word_t     alu_op2_async_i,
 
         // Outputs
-        output      word_t     alu_result_async_o,
-        output      logic      alu_zero_async_o
+        output      word_t     alu_result_async_o
     );
 
 
 // Shift Amount
 logic [4:0] shamt_w;
 always_comb shamt_w = alu_op2_async_i[4:0];
-
-// Zero Logic
-always_comb alu_zero_async_o = (alu_result_async_o == 32'b0);
 
 // Result Logic
 always_comb begin

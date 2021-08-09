@@ -107,22 +107,16 @@ end
 
 
 // keep track of character location
-logic [6:0] x_char_index_w;
 logic [2:0] x_char_offset_w;
-logic [5:0] y_char_index_w;
-logic [3:0] y_char_offset_w;
 
 logic [6:0] x_lookahead_char_index_w;
-logic [2:0] x_lookahead_char_offset_w;
-logic [5:0] y_lookahead_char_index_w;
+logic [4:0] y_lookahead_char_index_w;
 logic [3:0] y_lookahead_char_offset_w;
 
 always_comb begin
-    { x_char_index_w, x_char_offset_w } = x_w;
-    { y_char_index_w, y_char_offset_w } = y_w;
-
-    { x_lookahead_char_index_w, x_lookahead_char_offset_w } = x_lookahead_w;
-    { y_lookahead_char_index_w, y_lookahead_char_offset_w } = y_lookahead_w;
+    x_char_offset_w = x_w[2:0];
+    x_lookahead_char_index_w = x_lookahead_w[9:3];
+    { y_lookahead_char_index_w, y_lookahead_char_offset_w } = y_lookahead_w[8:0];
 end
 
 

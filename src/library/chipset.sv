@@ -10,7 +10,6 @@ module chipset
     import common::*;
     (
         // Clocks
-        input  wire logic        clk_sys_i,      // 100MHz system clock
         input  wire logic        clk_cpu_i,      // 50MHz CPU clock
         input  wire logic        clk_pxl_i,      // 25.2MHz pixel clock
 

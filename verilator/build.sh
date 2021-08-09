@@ -1,17 +1,17 @@
 #!/bin/sh
 
 verilator \
-    --autoflush --trace --cc --build --exe \
+    --autoflush --trace --cc --build --exe -Wall \
     --clk clk_sys_i \
     --top chipset \
     ../src/library/common.sv \
-    ../src/sim/bios_rom.sv \
-    ../src/sim/character_rom.sv \
-    ../src/sim/cpu_clk_gen.sv \
-    ../src/sim/logging.sv \
-    ../src/sim/pixel_clk_gen.sv \
-    ../src/sim/system_ram.sv \
-    ../src/sim/video_ram.sv \
+    ../src/library/bios_rom.sv \
+    ../src/library/character_rom.sv \
+    ../src/library/cpu_clk_gen.sv \
+    ../src/library/logging.sv \
+    ../src/library/pixel_clk_gen.sv \
+    ../src/library/system_ram.sv \
+    ../src/library/video_ram.sv \
     ../src/library/cpu_if.sv \
     ../src/library/cpu_wb.sv \
     ../src/library/segdisplay.sv \

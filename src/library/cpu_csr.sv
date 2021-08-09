@@ -174,6 +174,8 @@ always_ff @(posedge clk_i) begin
         csr_cycle_r   <= 64'b0;
         csr_time_r    <= 64'b0;
         csr_instret_r <= 64'b0;
+        csr_mip_r     <= 32'b0;
+        csr_mie_r     <= 32'b0;
     end 
 end
 

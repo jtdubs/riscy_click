@@ -9,7 +9,6 @@ int main(int argc, char** argv, char** env) {
     Vchipset *dut = new Vchipset;
     dut->reset_async_i = 1;
     dut->switch_async_i = 0x1234;
-    dut->clk_sys_i = 1;
     dut->clk_cpu_i = 1;
     dut->clk_pxl_i = 1;
 
@@ -18,9 +17,8 @@ int main(int argc, char** argv, char** env) {
 
         ncycles++;
 
-        dut->clk_sys_i ^= 1;
-        if (ncycles % 2 == 0) dut->clk_cpu_i ^= 1;
-        if (ncycles % 4 == 0) dut->clk_pxl_i ^= 1;
+        dut->clk_cpu_i ^= 1;
+        if (ncycles % 2 == 0) dut->clk_pxl_i ^= 1;
         if (ncycles == 10) dut->reset_async_i = 0;
     }
 

@@ -20,20 +20,20 @@ badd +1 src/library/cpu_wb.sv
 badd +1 src/library/regfile.sv
 badd +1 src/library/segdisplay.sv
 badd +1 src/library/vga_controller.sv
-badd +1 src/synth/bios_rom.sv
-badd +1 src/synth/character_rom.sv
+badd +93 src/synth/bios_rom.sv
+badd +82 src/synth/character_rom.sv
 badd +1 src/synth/cpu_clk_gen.sv
 badd +1 src/synth/logging.sv
 badd +1 src/synth/pixel_clk_gen.sv
-badd +1 src/synth/system_ram.sv
-badd +1 src/synth/video_ram.sv
-badd +1 src/sim/bios_rom.sv
-badd +1 src/sim/character_rom.sv
-badd +1 src/sim/cpu_clk_gen.sv
-badd +18 src/sim/logging.sv
+badd +97 src/synth/system_ram.sv
+badd +24 src/synth/video_ram.sv
+badd +23 src/sim/bios_rom.sv
+badd +19 src/sim/character_rom.sv
+badd +6 src/sim/logging.sv
+badd +18 src/sim/system_ram.sv
+badd +26 src/sim/video_ram.sv
+badd +1 src/library/chipset.sv
 badd +1 src/sim/pixel_clk_gen.sv
-badd +1 src/sim/system_ram.sv
-badd +1 src/sim/video_ram.sv
 argglobal
 %argdel
 $argadd src/library/alu.sv
@@ -63,7 +63,7 @@ $argadd src/sim/logging.sv
 $argadd src/sim/pixel_clk_gen.sv
 $argadd src/sim/system_ram.sv
 $argadd src/sim/video_ram.sv
-edit src/library/common.sv
+edit src/synth/logging.sv
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
@@ -73,7 +73,7 @@ set winheight=1
 set winminwidth=0
 set winwidth=1
 argglobal
-if bufexists("src/library/common.sv") | buffer src/library/common.sv | else | edit src/library/common.sv | endif
+if bufexists("src/synth/logging.sv") | buffer src/synth/logging.sv | else | edit src/synth/logging.sv | endif
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -83,7 +83,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 16) / 33)
+let s:l = 1 - ((0 * winheight(0) + 23) / 46)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
