@@ -4,8 +4,8 @@ Extensions:
 - M - Multiplication & Division.  Will be multi-cycle.  Look at Non-restoring Division on wikipedia.
 
 Future:
+- Add reset button to imgui
 - Fix timestamps in verilator
-- IMGUI for board (VGA, switches, seven-segment display, reset button)
 - Implement Machine Level ISA... at least enough to get interrupts working...
 - USB HID via PS/2 emulation would be awesome...
 - USB UART would be awesome...
