@@ -47,7 +47,7 @@ GLuint CreateVGATexture(int width, int height)
 }
 
 void VGAOutput(const char *str_id, int width, int height, GLuint texture) {
-    ImGui::Image((void*)(intptr_t)texture, ImVec2(width, height));
+    ImGui::Image((void*)(intptr_t)texture, ImVec2(width*2, height*2));
 }
 
 void ToggleSwitch(const char *str_id, bool *v)
@@ -212,13 +212,16 @@ int main(int argc, char** argv)
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        {
-            ImGui::Begin("Riscy Click");
+        const ImGuiViewport *viewport = ImGui::GetMainViewport();
 
-            ImGui::Text("Display:");
+        {
+            ImGui::SetNextWindowPos(viewport->Pos);
+            ImGui::SetNextWindowSize(viewport->Size);
+
+            ImGui::Begin("Riscy Click", NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings);
+
             VGAOutput("vga", 640, 480, vga_texture);
 
-            ImGui::Text("Switches:");
             for (int i=0; i<16; i++) {
                 ImGui::PushID(i);
                 ToggleSwitch("switch", &switch_state[i]);
