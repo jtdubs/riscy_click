@@ -1,7 +1,9 @@
 #!/bin/sh
 
 verilator \
-    --autoflush --trace --cc --build --exe -Wall \
+    --autoflush --cc --exe -Wall --build \
+    --CFLAGS "$(pkg-config gtkmm-3.0 --cflags)" \
+    --LDFLAGS "$(pkg-config gtkmm-3.0 --libs)" \
     --clk clk_sys_i \
     --top chipset \
     ../src/library/common.sv \
@@ -25,4 +27,6 @@ verilator \
     ../src/library/vga_controller.sv \
     ../src/library/cpu_ma.sv \
     ../src/library/cpu.sv \
-    sim_main.cpp
+    sim_main.cpp \
+    vgasim.cpp \
+    image.cpp

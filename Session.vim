@@ -63,7 +63,7 @@ $argadd src/sim/logging.sv
 $argadd src/sim/pixel_clk_gen.sv
 $argadd src/sim/system_ram.sv
 $argadd src/sim/video_ram.sv
-edit src/synth/logging.sv
+edit src/library/vga_controller.sv
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
@@ -73,7 +73,7 @@ set winheight=1
 set winminwidth=0
 set winwidth=1
 argglobal
-if bufexists("src/synth/logging.sv") | buffer src/synth/logging.sv | else | edit src/synth/logging.sv | endif
+if bufexists("src/library/vga_controller.sv") | buffer src/library/vga_controller.sv | else | edit src/library/vga_controller.sv | endif
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -83,12 +83,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 23) / 46)
+let s:l = 92 - ((13 * winheight(0) + 17) / 34)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
-normal! 0
+92
+normal! 024|
 tabnext 1
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf

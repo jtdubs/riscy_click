@@ -53,12 +53,12 @@ always_comb begin
     x_w = x_r + 1;
     y_w = y_r;
 
-    if (x_w >= 10'd800) begin
+    if (x_w > 10'd799) begin
         x_w = x_w - 10'd800;
         y_w = y_r + 1;
     end
 
-    if (y_w >= 525)
+    if (y_w > 10'd524)
         y_w = 10'd0;
 end
 
@@ -67,12 +67,12 @@ always_comb begin
     x_lookahead_w = x_r + 8;
     y_lookahead_w = y_r;
 
-    if (x_lookahead_w >= 10'd800) begin
+    if (x_lookahead_w > 10'd799) begin
         x_lookahead_w = x_lookahead_w - 10'd800;
         y_lookahead_w = y_lookahead_w + 1;
     end
 
-    if (y_lookahead_w >= 525)
+    if (y_lookahead_w > 524)
         y_lookahead_w = 10'd0;
 end
 
@@ -100,9 +100,9 @@ always_comb begin
     //[490-491] - vsync
     //[492-524] - blank
 
-    display_area_w = (x_w <= 640) && (y_w <= 480);
-    hsync_w = (x_w >= 656) && (x_w <= 751);
-    vsync_w = (y_w >= 490) && (y_w <= 491);
+    display_area_w = (x_w < 640) && (y_w < 480);
+    hsync_w = (x_w >= 656) && (x_w < 752);
+    vsync_w = (y_w >= 490) && (y_w < 492);
 end
 
 
