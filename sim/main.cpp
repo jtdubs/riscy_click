@@ -3,9 +3,11 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include <stdio.h>
-
+#include <verilated.h>
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
+
+#include "verilator/Vchipset.h"
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -106,8 +108,27 @@ void ToggleSwitch(const char *str_id, bool *v)
         );
 }
 
-int main(int, char**)
+void VGATick(GLuint texture, bool hsync, bool vsync, int red, int green, int blue) {
+    static int x=0, y=0;
+    static bool last_vsync = false, last_hsync = false;
+
+    x = (hsync) ? x+1 : -48;
+    y = (vsync) ? y : -32;
+    if (last_hsync && !hsync) y++;
+
+    last_vsync = vsync;
+    last_hsync = hsync;
+
+    // printf("VGA Tick: (h=%i, v=%i) -> (x=%i, y=%i)\n", hsync, vsync, x, y);
+    if (x < 640 && y < 480)
+        VGAWrite(640, 480, texture, x, y, (red << 12) | (green << 8) | (blue << 4) | 0xFF);
+}
+
+int main(int argc, char** argv)
 {
+    // Init Verilator
+    Verilated::commandArgs(argc, argv);
+
     // Setup window
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
@@ -140,7 +161,6 @@ int main(int, char**)
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
-    //ImGui::StyleColorsClassic();
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -153,12 +173,39 @@ int main(int, char**)
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     bool switch_state[16] = { 0 };
     GLuint vga_texture = CreateVGATexture(640, 480);
+    unsigned long ncycles = 0;
+
+    // Chipset
+    Vchipset *dut = new Vchipset;
+    dut->reset_async_i = 1;
+    dut->switch_async_i = 0x1234;
+    dut->clk_cpu_i = 1;
+    dut->clk_pxl_i = 1;
 
     // Main loop
     while (!glfwWindowShouldClose(window))
     {
         // Poll and handle events (inputs, window resize, etc.)
         glfwPollEvents();
+
+        // Update DUT
+        for (int i=0; i<100000; i++)
+        {
+            dut->eval();
+
+            ncycles++;
+            dut->clk_cpu_i ^= 1;
+            if (ncycles % 2 == 0) { dut->clk_pxl_i ^= 1; }
+            if (ncycles == 10) dut->reset_async_i = 0; 
+
+            unsigned short switch_async_i = 0;
+            for (int i=0; i<16; i++)
+                switch_async_i |= switch_state[i] << i;
+            dut->switch_async_i = switch_async_i;
+
+            if (ncycles % 4 == 0)
+                VGATick(vga_texture, dut->vga_hsync_o, dut->vga_vsync_o, dut->vga_red_o, dut->vga_green_o, dut->vga_blue_o);
+        }
 
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
@@ -195,6 +242,10 @@ int main(int, char**)
 
         glfwSwapBuffers(window);
     }
+
+    // Cleanup DUT
+    dut->final();
+    delete dut;
 
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
