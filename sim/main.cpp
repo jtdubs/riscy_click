@@ -12,25 +12,98 @@ static void glfw_error_callback(int error, const char* description)
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
+void VGAWrite(int width, int height, GLuint texture, int x, int y, unsigned short value)
+{
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, 1, 1, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, &value);
+}
+
+GLuint CreateVGATexture(int width, int height)
+{
+    unsigned short *image_data = new unsigned short[width * height] { 0 };
+    for (int i=0; i<width*height; i++)
+        image_data[i] = 0xFFFF;
+
+    GLuint texture_id;
+    glGenTextures(1, &texture_id);
+    glBindTexture(GL_TEXTURE_2D, texture_id);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, image_data);
+
+    delete [] image_data;
+
+    for (int y=10; y<20; y++)
+        for (int x=10; x<20; x++)
+            VGAWrite(width, height, texture_id, x, y, 0xFF0F);
+
+    return texture_id;
+}
+
+void VGAOutput(const char *str_id, int width, int height, GLuint texture) {
+    ImGui::Image((void*)(intptr_t)texture, ImVec2(width, height));
+}
+
 void ToggleSwitch(const char *str_id, bool *v)
 {
     ImVec4* colors = ImGui::GetStyle().Colors;
     ImVec2 p = ImGui::GetCursorScreenPos();
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
-    float height = ImGui::GetFrameHeight();
-    float width = height * 1.55f;
-    float radius = height * 0.50f;
+    float height = ImGui::GetFrameHeight() * 1.55f;
+    float width = ImGui::GetFrameHeight() * 1.00f;
+    float margin = width * 0.1f;
 
     if (ImGui::InvisibleButton(str_id, ImVec2(width, height)))
         *v = !*v;
 
     if (ImGui::IsItemHovered())
-        draw_list->AddRectFilled(p, ImVec2(p.x + width, p.y + height), ImGui::GetColorU32(*v ? colors[ImGuiCol_ButtonActive] : ImVec4(0.78f, 0.78f, 0.78f, 1.0f)), height * 0.5f);
+        draw_list->AddRectFilled(p,
+            ImVec2(
+                p.x + width,
+                p.y + height
+            ),
+            ImGui::GetColorU32(*v ? colors[ImGuiCol_ButtonActive] : ImVec4(0.60f, 0.60f, 0.60f, 1.0f)),
+            width * 0.1f
+        );
     else
-        draw_list->AddRectFilled(p, ImVec2(p.x + width, p.y + height), ImGui::GetColorU32(*v ? colors[ImGuiCol_Button] : ImVec4(0.85f, 0.85f, 0.85f, 1.0f)), height * 0.50f);
+        draw_list->AddRectFilled(p,
+            ImVec2(
+                p.x + width,
+                p.y + height
+            ),
+            ImGui::GetColorU32(*v ? colors[ImGuiCol_Button] : ImVec4(0.75f, 0.75f, 0.75f, 1.0f)),
+            width * 0.1f
+        );
 
-    draw_list->AddCircleFilled(ImVec2(p.x + radius + (*v ? 1 : 0) * (width - radius * 2.0f), p.y + radius), radius - 1.5f, IM_COL32(255, 255, 255, 255));
+    if (*v)
+        draw_list->AddRectFilled(
+            ImVec2(
+                p.x + margin,
+                p.y + margin
+            ),
+            ImVec2(
+                p.x + width - margin,
+                p.y + (height / 2) - margin
+            ),
+            IM_COL32(255, 255, 255, 255)
+        );
+    else
+        draw_list->AddRectFilled(
+            ImVec2(
+                p.x + margin,
+                p.y + (height / 2) + margin
+            ),
+            ImVec2(
+                p.x + width - margin,
+                p.y + height - margin
+            ),
+            IM_COL32(255, 255, 255, 255)
+        );
 }
 
 int main(int, char**)
@@ -74,17 +147,12 @@ int main(int, char**)
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     // Load Fonts
-    //io.Fonts->AddFontDefault();
     io.Fonts->AddFontFromFileTTF("../roms/character_rom/NotoSansMono-Regular.ttf", 32.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
-    //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
-    //IM_ASSERT(font != NULL);
 
     // Our state
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     bool switch_state[16] = { 0 };
+    GLuint vga_texture = CreateVGATexture(640, 480);
 
     // Main loop
     while (!glfwWindowShouldClose(window))
@@ -99,6 +167,9 @@ int main(int, char**)
 
         {
             ImGui::Begin("Riscy Click");
+
+            ImGui::Text("Display:");
+            VGAOutput("vga", 640, 480, vga_texture);
 
             ImGui::Text("Switches:");
             for (int i=0; i<16; i++) {
