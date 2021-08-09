@@ -108,6 +108,38 @@ void ToggleSwitch(const char *str_id, bool *v)
         );
 }
 
+void SevenSegmentDigit(const char* str_id, unsigned char s)
+{
+    static int seg_x_start[] = { 1, 4, 4, 1, 0, 0, 1 };
+    static int seg_x_end[]   = { 4, 5, 5, 4, 1, 1, 4 };
+    static int seg_y_start[] = { 8, 5, 1, 0, 1, 5, 4 };
+    static int seg_y_end[]   = { 9, 8, 4, 1, 4, 8, 5 };
+
+    ImVec4* colors = ImGui::GetStyle().Colors;
+    ImVec2 p = ImGui::GetCursorScreenPos();
+    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+    float height = ImGui::GetFrameHeight() * 1.55f;
+    float width = ImGui::GetFrameHeight() * 1.00f;
+
+
+    ImGui::InvisibleButton(str_id, ImVec2(width, height));
+
+    for (int i=0; i<7; i++) {
+        draw_list->AddRectFilled(
+            ImVec2(
+                p.x + (width  * seg_x_start[i]/5.0f),
+                p.y + (height * (9-seg_y_start[i])/9.0f)
+            ),
+            ImVec2(
+                p.x + (width  * seg_x_end[i]/5.0f),
+                p.y + (height * (9-seg_y_end[i])/9.0f)
+            ),
+            (((s >> i) & 1) == 0) ? IM_COL32(255, 0, 0, 255) : IM_COL32(92, 92, 92, 92)
+        );
+    }
+}
+
 void VGATick(GLuint texture, bool hsync, bool vsync, int red, int green, int blue) {
     static int x=0, y=0;
     static bool last_vsync = false, last_hsync = false;
@@ -122,6 +154,13 @@ void VGATick(GLuint texture, bool hsync, bool vsync, int red, int green, int blu
     // printf("VGA Tick: (h=%i, v=%i) -> (x=%i, y=%i)\n", hsync, vsync, x, y);
     if (x < 640 && y < 480)
         VGAWrite(640, 480, texture, x, y, (red << 12) | (green << 8) | (blue << 4) | (0x0F << 0));
+}
+
+void SegmentTick(unsigned char* s, int anode, int cathode)
+{
+    for (int i=0; i<8; i++)
+        if (((anode >> i) & 0x01) == 0)
+            s[i] = cathode;
 }
 
 int main(int argc, char** argv)
@@ -172,13 +211,14 @@ int main(int argc, char** argv)
     // Our state
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     bool switch_state[16] = { 0 };
+    unsigned char segment_state[8] = { 0 };
     GLuint vga_texture = CreateVGATexture(640, 480);
     unsigned long ncycles = 0;
 
     // Chipset
     Vchipset *dut = new Vchipset;
     dut->reset_async_i = 1;
-    dut->switch_async_i = 0x1234;
+    dut->switch_async_i = 0x0000;
     dut->clk_cpu_i = 1;
     dut->clk_pxl_i = 1;
 
@@ -193,16 +233,26 @@ int main(int argc, char** argv)
         {
             dut->eval();
 
+            // next cycle
             ncycles++;
+
+            // update clocks
             dut->clk_cpu_i ^= 1;
             if (ncycles % 2 == 0) { dut->clk_pxl_i ^= 1; }
+
+            // lower reset after 10 half-cycles
             if (ncycles == 10) dut->reset_async_i = 0; 
 
+            // update switches
             unsigned short switch_async_i = 0;
             for (int i=0; i<16; i++)
-                switch_async_i |= switch_state[i] << i;
+                switch_async_i |= switch_state[15-i] << i;
             dut->switch_async_i = switch_async_i;
 
+            // update seven segment display
+            SegmentTick(segment_state, dut->dsp_anode_o, dut->dsp_cathode_o);
+
+            // update VGA
             if (ncycles % 4 == 0)
                 VGATick(vga_texture, dut->vga_hsync_o, dut->vga_vsync_o, dut->vga_red_o, dut->vga_green_o, dut->vga_blue_o);
         }
@@ -222,7 +272,17 @@ int main(int argc, char** argv)
 
             VGAOutput("vga", 640, 480, vga_texture);
 
-            for (int i=0; i<16; i++) {
+            for (int i=7; i>=0; i--)
+            {
+                ImGui::PushID(i);
+                SevenSegmentDigit("segment", segment_state[i]);
+                ImGui::PopID();
+                if (i != 0)
+                    ImGui::SameLine();
+            }
+
+            for (int i=0; i<16; i++)
+            {
                 ImGui::PushID(i);
                 ToggleSwitch("switch", &switch_state[i]);
                 ImGui::PopID();
@@ -230,7 +290,7 @@ int main(int argc, char** argv)
                     ImGui::SameLine();
             }
 
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+            ImGui::Text("Application average %.4f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
             ImGui::End();
         }
 
