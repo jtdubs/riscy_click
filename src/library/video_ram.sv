@@ -11,13 +11,13 @@ module video_ram
         input  wire word_t       cpu_addr_i,
         input  wire word_t       cpu_write_data_i,
         input  wire logic [ 3:0] cpu_write_mask_i,
-        output wire word_t       cpu_read_data_o,
+        output      word_t       cpu_read_data_o,
 
         // vga controller interface
         input  wire logic        clk_pxl_i,
         input  wire logic        pxl_reset_i,
         input  wire logic [11:0] pxl_addr_i,
-        output wire logic [ 7:0] pxl_data_o
+        output      logic [ 7:0] pxl_data_o
     );
 
 `ifdef ENABLE_XILINX_PRIMITIVES

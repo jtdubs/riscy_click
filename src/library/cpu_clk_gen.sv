@@ -9,8 +9,8 @@ module cpu_clk_gen
         input  wire logic reset_async_i, // reset
 
         // cpu clock output
-        output wire logic clk_cpu_o,     // 50MHz cpu clock
-        output wire logic ready_async_o  // cpu clock ready
+        output      logic clk_cpu_o,     // 50MHz cpu clock
+        output      logic ready_async_o  // cpu clock ready
     );
 
 `ifdef ENABLE_XILINX_PRIMITIVES
@@ -91,15 +91,18 @@ cpu_clk_buffer (
 // Simulator Implementation
 //
 
-logic counter_r;
+logic [1:0] counter_r = 2'b00;
 
-always_comb ready_async_o = 1'b1;
+always_comb begin
+    ready_async_o = 1'b1;
+    clk_cpu_o = counter_r[0];
+end
 
 always_ff @(posedge clk_sys_i) begin
-    counter_r <= ~counter_r;
+    counter_r <= counter_r + 1;
 
-    if (counter_r) begin
-        clk_pxl_o <= ~clk_pxl_o;
+    if (reset_async_i) begin
+        counter_r <= 2'b00;
     end
 end
 

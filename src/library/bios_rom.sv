@@ -15,11 +15,11 @@ module bios_rom
 
         // read port a
         input  wire word_t read1_addr_i,
-        output wire word_t read1_data_o,
+        output      word_t read1_data_o,
 
         // read port b
         input  wire word_t read2_addr_i,
-        output wire word_t read2_data_o
+        output      word_t read2_data_o
 
         /* verilator lint_on UNUSED */
     );

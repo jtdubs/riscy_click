@@ -9,8 +9,8 @@ module pixel_clk_gen
         input  wire logic reset_async_i, // reset
 
         // cpu clock output
-        output wire logic clk_pxl_o,     // 25.2MHz VGA pixel clock
-        output wire logic ready_async_o  // cpu clock ready
+        output      logic clk_pxl_o,     // 25.2MHz VGA pixel clock
+        output      logic ready_async_o  // cpu clock ready
     );
 
 `ifdef ENABLE_XILINX_PRIMITIVES
@@ -100,15 +100,18 @@ pixel_clk_buffer (
 // Simulator Implementation
 //
 
-logic [1:0] counter_r;
+logic [1:0] counter_r = 2'b00;
 
-always_comb ready_async_o = 1'b1;
+always_comb begin
+    ready_async_o = 1'b1;
+    clk_pxl_o = counter_r[1];
+end
 
 always_ff @(posedge clk_sys_i) begin
     counter_r <= counter_r + 1;
 
-    if (counter_r[1]) begin
-        clk_pxl_o <= ~clk_pxl_o;
+    if (reset_async_i) begin
+        counter_r <= 2'b00;
     end
 end
 

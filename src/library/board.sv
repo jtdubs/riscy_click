@@ -30,6 +30,7 @@ module board
 //
 
 wire logic clk_cpu_w;
+wire logic clk_reset;
 
 /* verilator lint_off PINCONNECTEMPTY */
 cpu_clk_gen cpu_clk_gen (

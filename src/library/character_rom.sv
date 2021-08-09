@@ -13,7 +13,7 @@ module character_rom
 
         // port
         input  wire logic [11:0] addr_i,
-        output wire logic [31:0] data_o
+        output      logic [31:0] data_o
     );
 
 `ifdef ENABLE_XILINX_PRIMITIVES
