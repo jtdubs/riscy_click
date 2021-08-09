@@ -1,6 +1,6 @@
 #!/bin/sh
 
-verilator --cc --build --exe \
+verilator --autoflush --clk clk_sys_i --trace --cc --build --exe \
     ../src/tb/board_tb.sv \
     ../src/library/common.sv \
     ../src/sim/bios_rom.sv \
