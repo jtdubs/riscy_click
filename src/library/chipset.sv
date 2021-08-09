@@ -101,11 +101,7 @@ wire word_t      vram_read_data_w;
 //
 
 // BIOS
-`ifdef VERILATOR
-bios_rom #(.CONTENTS("../roms/bios/bios.mem")) bios (
-`else
 bios_rom #(.CONTENTS("bios.mem")) bios (
-`endif
     .clk_i        (clk_cpu_i),
     .reset_i      (1'b0),
     .read1_addr_i (imem_addr_w),

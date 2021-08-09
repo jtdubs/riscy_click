@@ -30,11 +30,7 @@ logic [11:0] crom_addr_w;
 logic [31:0] crom_data_w;
 
 character_rom #(
-`ifdef VERILATOR
-    .CONTENTS("../roms/character_rom/crom.mem")
-`else
     .CONTENTS("crom.mem")
-`endif
 )
 crom_inst (
     .clk_i(clk_pxl_i),
