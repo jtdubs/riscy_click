@@ -15,6 +15,7 @@
 
 struct sim_model {
     Vchipset*     chipset;
+    bool          reset;
     bool          switches[16];
     unsigned char segments[8];
     GLuint        vga_texture;
@@ -26,10 +27,11 @@ sim_model_t* sim_create(int argc, char **argv) {
     Verilated::commandArgs(argc, argv);
 
     sim_model_t *model = new sim_model_t();
+    model->reset = true;
 
     // Create Chipset
     model->chipset = new Vchipset;
-    model->chipset->reset_async_i = 1;
+    model->chipset->reset_async_i = model->reset?1:0;
     model->chipset->switch_async_i = 0x0000;
     model->chipset->clk_cpu_i = 1;
     model->chipset->clk_pxl_i = 1;
@@ -63,7 +65,8 @@ void sim_tick(sim_model_t* model) {
         if (model->ncycles % 2 == 0) { dut->clk_pxl_i ^= 1; }
 
         // lower reset after 10 half-cycles
-        if (model->ncycles == 10) dut->reset_async_i = 0; 
+        if (model->ncycles == 10) model->reset = 0; 
+        dut->reset_async_i = model->reset;
 
         // update switches
         unsigned short switch_async_i = 0;
@@ -100,4 +103,6 @@ void sim_draw(sim_model_t* model) {
         if (i < 15)
             ImGui::SameLine();
     }
+
+    ImGui::Checkbox("Reset", &model->reset);
 }
