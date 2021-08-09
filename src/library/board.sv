@@ -9,14 +9,15 @@ module board
     // Import Constants
     import common::*;
     (
-        input  wire logic clk_sys_i,             // 100MHz system clock
-        input  wire logic reset_async_i,         // reset (async)
-        output wire logic halt_o,                // halt
+        // Inputs
+        input  wire logic        clk_sys_i,      // 100MHz system clock
+        input  wire logic        reset_async_i,  // reset (async)
+        input  wire logic [15:0] switch_async_i, // hardware switch bank (async)
 
-        // I/O
+        // Outputs
         output wire logic [ 7:0] dsp_anode_o,    // seven segment display anodes
         output wire logic [ 7:0] dsp_cathode_o,  // seven segment display cathodes
-        input  wire logic [15:0] switch_async_i, // hardware switch bank (async)
+        output wire logic        halt_o,         // halt
         output wire logic [ 3:0] vga_red_o,
         output wire logic [ 3:0] vga_green_o,
         output wire logic [ 3:0] vga_blue_o,
@@ -48,201 +49,23 @@ pixel_clk_gen pixel_clk_gen (
 
 
 //
-// Clocked Resets
+// Chipset
 //
 
-localparam integer RESET_CYCLES = 12;
-localparam logic [RESET_CYCLES-1:0] RESET_ONES = {RESET_CYCLES{1'b1}};
-
-logic                    cpu_reset_r;
-logic [RESET_CYCLES-1:0] cpu_reset_chain_r;
-
-always_ff @(posedge clk_cpu_w) begin
-    if (reset_async_i)
-        // if resetting, fill the chain with ones
-        { cpu_reset_r, cpu_reset_chain_r } <= { 1'b1, RESET_ONES };
-    else
-        // otherwise, start shifting out the ones
-        { cpu_reset_r, cpu_reset_chain_r } <= { cpu_reset_chain_r, 1'b0 };
-end
-
-logic                    pxl_reset_r;
-logic [RESET_CYCLES-1:0] pxl_reset_chain_r;
-
-always_ff @(posedge clk_pxl_w) begin
-    if (reset_async_i)
-        // if resetting, fill the chain with ones
-        { pxl_reset_r, pxl_reset_chain_r } <= { 1'b1, RESET_ONES };
-    else
-        // otherwise, start shifting out the ones
-        { pxl_reset_r, pxl_reset_chain_r } <= { pxl_reset_chain_r, 1'b0 };
-end
-
-//
-// Clock in Switch States
-//
-
-logic [15:0] switch_r;
-
-always_ff @(posedge clk_cpu_w) begin
-    switch_r <= switch_async_i;
-end
-
-
-//
-// Memory Signals
-//
-
-// Instruction Memory
-wire word_t      imem_addr_w;
-wire word_t      imem_data_w;
-
-// Data Memory
-wire word_t      dmem_addr_w;
-     word_t      dmem_read_data_w;
-wire word_t      dmem_write_data_w;
-wire logic [3:0] dmem_write_mask_w;
-
-// Write Masks
-     logic [3:0] dsp_write_mask_w;
-     logic [3:0] ram_write_mask_w;
-     logic [3:0] vram_write_mask_w;
-
-// Device
-wire word_t      dsp_read_data_w;
-wire word_t      bios_read_data_w;
-wire word_t      ram_read_data_w;
-wire word_t      vram_read_data_w;
-
-//
-// Devices
-//
-
-// BIOS
-`ifdef VERILATOR
-bios_rom #(.CONTENTS("../roms/bios/bios.mem")) bios (
-`else
-bios_rom #(.CONTENTS("bios.mem")) bios (
-`endif
-    .clk_i        (clk_cpu_w),
-    .reset_i      (1'b0),
-    .read1_addr_i (imem_addr_w),
-    .read1_data_o (imem_data_w),
-    .read2_addr_i (dmem_addr_w),
-    .read2_data_o (bios_read_data_w)
+chipset chipset (
+    .clk_sys_i      (clk_sys_i),
+    .clk_cpu_i      (clk_cpu_w),
+    .clk_pxl_i      (clk_pxl_w),
+    .reset_async_i  (reset_async_i),
+    .switch_async_i (switch_async_i),
+    .halt_o         (halt_o),
+    .dsp_anode_o    (dsp_anode_o),
+    .dsp_cathode_o  (dsp_cathode_o),
+    .vga_red_o      (vga_red_o),
+    .vga_green_o    (vga_green_o),
+    .vga_blue_o     (vga_blue_o),
+    .vga_hsync_o    (vga_hsync_o),
+    .vga_vsync_o    (vga_vsync_o)
 );
-
-// RAM
-system_ram ram (
-    .clk_i        (clk_cpu_w),
-    .reset_i      (1'b0),
-    .addr_i       (dmem_addr_w),
-    .write_data_i (dmem_write_data_w),
-    .write_mask_i (ram_write_mask_w),
-    .read_data_o  (ram_read_data_w)
-);
-
-// Display
-segdisplay #(.CLK_DIVISOR(50000)) disp (
-    .clk_i         (clk_cpu_w),
-    .reset_i       (cpu_reset_r),
-    .dsp_anode_o   (dsp_anode_o),
-    .dsp_cathode_o (dsp_cathode_o),
-    .read_data_o   (dsp_read_data_w),
-    .write_data_i  (dmem_write_data_w),
-    .write_mask_i  (dsp_write_mask_w)
-);
-
-logic [11:0] vga_vram_addr_w;
-logic [ 7:0] vga_vram_data_w;
-
-video_ram vram (
-    // cpu port
-    .clk_cpu_i        (clk_cpu_w),
-    .cpu_reset_i      (cpu_reset_r),
-    .cpu_addr_i       (dmem_addr_w),
-    .cpu_write_data_i (dmem_write_data_w),
-    .cpu_write_mask_i (vram_write_mask_w),
-    .cpu_read_data_o  (vram_read_data_w),
-    
-    // vga port
-    .clk_pxl_i        (clk_pxl_w),
-    .pxl_reset_i      (pxl_reset_r),
-    .pxl_addr_i       (vga_vram_addr_w),
-    .pxl_data_o       (vga_vram_data_w)
-);
-
-// VGA
-vga_controller vga (
-    .clk_pxl_i   (clk_pxl_w),
-    .reset_i     (pxl_reset_r),
-    .vram_addr_o (vga_vram_addr_w),
-    .vram_data_i (vga_vram_data_w),
-    .vga_red_o   (vga_red_o),
-    .vga_green_o (vga_green_o),
-    .vga_blue_o  (vga_blue_o),
-    .vga_hsync_o (vga_hsync_o),
-    .vga_vsync_o (vga_vsync_o)
-);
-
-
-//
-// Address decoding
-//
-// Memory map:
-// 00000000 - 0FFFFFFF: BIOS
-// 10000000 - 1FFFFFFF: RAM
-// 20000000 - 2FFFFFFF: Video RAM
-// 30000000 - FEFFFFFF: UNMAPPED
-// FF000000:            Seven Segment Display
-// FF000004:            Switch Bank
-// FF000008 - FFFFFFFF: UNMAPPED
-//
-word_t dmem_read_addr_r;
-
-always_ff @(posedge clk_cpu_w) begin
-    dmem_read_addr_r <= cpu_reset_r ? 32'h00000000 : dmem_addr_w;
-end
-
-always_comb begin
-    ram_write_mask_w  = (dmem_addr_w[31:28] == 4'h1)         ? dmem_write_mask_w : 4'b0000;
-    dsp_write_mask_w  = (dmem_addr_w        == 32'hFF000000) ? dmem_write_mask_w : 4'b0000;
-    vram_write_mask_w = (dmem_addr_w[31:28] == 4'h2)         ? dmem_write_mask_w : 4'b0000;
-
-    casez (dmem_read_addr_r)
-    32'h0???????: begin dmem_read_data_w = bios_read_data_w;     end
-    32'h1???????: begin dmem_read_data_w = ram_read_data_w;      end
-    32'h2???????: begin dmem_read_data_w = vram_read_data_w;     end
-    32'hFF000000: begin dmem_read_data_w = dsp_read_data_w;      end
-    32'hFF000004: begin dmem_read_data_w = { 16'h00, switch_r }; end
-    default:      begin dmem_read_data_w = 32'h00000000;         end
-    endcase
-end
-
-//
-// CPU
-//
-
-cpu cpu (
-    .clk_i             (clk_cpu_w),
-    .reset_i           (cpu_reset_r),
-    .halt_o            (halt_o),
-    .imem_addr_o       (imem_addr_w),
-    .imem_data_i       (imem_data_w),
-    .dmem_addr_o       (dmem_addr_w),
-    .dmem_read_data_i  (dmem_read_data_w),
-    .dmem_write_data_o (dmem_write_data_w),
-    .dmem_write_mask_o (dmem_write_mask_w)
-);
-
-//
-// Debug Counter
-//
-
-(* KEEP = "TRUE" *) word_t cycle_counter_r;
-
-always_ff @(posedge clk_cpu_w) begin
-    cycle_counter_r <= cpu_reset_r ? 32'h00000000 : (cycle_counter_r + 1);
-end
 
 endmodule

@@ -1,7 +1,9 @@
 #!/bin/sh
 
-verilator --autoflush --clk clk_sys_i --trace --cc --build --exe \
-    ../src/tb/board_tb.sv \
+verilator \
+    --autoflush --trace --cc --build --exe \
+    --clk clk_sys_i \
+    --top chipset \
     ../src/library/common.sv \
     ../src/sim/bios_rom.sv \
     ../src/sim/character_rom.sv \
@@ -15,6 +17,7 @@ verilator --autoflush --clk clk_sys_i --trace --cc --build --exe \
     ../src/library/segdisplay.sv \
     ../src/library/cpu_csr.sv \
     ../src/library/board.sv \
+    ../src/library/chipset.sv \
     ../src/library/alu.sv \
     ../src/library/regfile.sv \
     ../src/library/cpu_ex.sv \

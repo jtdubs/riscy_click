@@ -4,3 +4,6 @@
 /*.gen/
 /*.ip_user_files/
 /*.hw/
+*.jou
+*.log
+*.str
