@@ -8,6 +8,7 @@ TODO:
         - Decode should confirm address is read/executable, otherwise trap
         - Memory access should confirm address is read/write as appropriate
         - Test new CSRs
+        - Expose chip select along with rwx.  Can use it externally to drive the dmem mux...
         - MTIME and MTIMECMP memory mapped registers??
     - Instructions
         - ECALL & EBREAK
