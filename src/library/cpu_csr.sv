@@ -96,33 +96,33 @@ localparam csr_t CSR_HPMCOUNTER31H  = 12'hC9F; // Not Implemented
 //
 
 typedef struct packed {
-    logic       uie;
-    logic       sie;
+    logic       reserved_0;
+    logic       sie           // ZERO: S-mode interrupt enable
     logic       reserved_2;
-    logic       mie;
-    logic       upie;
-    logic       spie;
-    logic       reserved_6;
-    logic       mpie;
-    logic       spp;
+    logic       mie;          // TODO: M-mode interrupt enable
+    logic       reserved_4;
+    logic       spie;         // ZERO: S-mode prior interrupt enable
+    logic       ube;          // ZERO: U-mode data endian (0=little-endian, 1=big-endian),
+    logic       mpie;         // TODO: M-mode prior interrupt enable
+    logic       spp;          // ZERO: S-mode prior privilege level
     logic [1:0] reserved_9;
-    logic [1:0] mpp;
-    logic [1:0] fs;
-    logic [1:0] xs;
-    logic       mprv;
-    logic       sum;
-    logic       mxr;
-    logic       tvm;
-    logic       tw;
-    logic       tsr;
+    logic [1:0] mpp;          // ZERO: M-mode prior privilege level
+    logic [1:0] fs;           // ZERO: FPU State
+    logic [1:0] xs;           // ZERO: FPU State
+    logic       mprv;         // ZERO: Modify Privilege (0=current, 1=prior)
+    logic       sum;          // ZERO: Supervisor User Memory (N/A)
+    logic       mxr;          // ZERO: Make eXecutable Reader (0=r^x, 1=r|x)
+    logic       tvm;          // ZERO: Trap Virtual Memory
+    logic       tw;           // ZERO: Timeout Wait
+    logic       tsr;          // ZERO: Trap SRET
     logic [7:0] reserved_23;
-    logic       sd;
+    logic       sd;           // ZERO: FPU State
 } status_t;
 
 typedef struct packed {
     logic        reserved_0;
-    logic        sbe;
-    logic        mbe;
+    logic        sbe;         // ZERO: S-mode data endian (0=little-endian, 1=big-endian)
+    logic        mbe;         // ZERO: M-mode data endian (0=little-endian, 1=big-endian)
     logic [28:0] reserved_6;
 } statush_t;
 
@@ -147,9 +147,13 @@ typedef struct packed {
 // CSR Registers
 //
 
-status_t mstatus_r;
+// Counters
 dword_t  mcycle_r,   mcycle_w;
 dword_t  minstret_r, minstret_w;
+dword_t  time_r,     time_w;
+
+// Non-Counters
+status_t mstatus_r;
 mtvec_t  mtvec_r;
 word_t   mcountinhibit_r;
 word_t   mscratch_r;
@@ -160,7 +164,6 @@ word_t   mtval2_r;
 word_t   mtinst_r;
 word_t   mip_r;
 word_t   mie_r;
-dword_t  time_r,     time_w;
 
 
 //

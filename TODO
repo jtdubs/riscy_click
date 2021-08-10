@@ -1,19 +1,35 @@
-Extensions:
-- A - Atomics
-- C - Compressed
-- M - Multiplication & Division.  Will be multi-cycle.  Look at Non-restoring Division on wikipedia.
-
-Future:
-- Halt / Finish indicator in Sim ui
-- Implement Machine Level ISA... at least enough to get interrupts working...
-- Check out Debug extension
-- USB HID via PS/2 emulation would be awesome...
-- USB UART would be awesome...
-- Implement more of the Risc-V ISA
-- Increase VGA resolution to 1280x1024?
-- Allow for arbitrary-time memory access / stalls
-- Switch to mix of BRAM & DDR
-- Move to design with unified memory, instruction/data caches, memory controller
+TODO:
+- Sim UI
+    - Halt output
+    - Finish output
+    - External Interrupt input
+- Machine Level ISA
+    - CSR
+        - Status CSR
+        - MIE/MIP CSR
+        - MTrap & MRet inputs to CSR that causes 1 to shift in or out of { IE, PIE }
+        - MTIME and MTIMECMP memory mapped registers??
+        - Physical Memory Attributes
+    - Instructions
+        - ECALL & EBREAK
+        - MRET
+        - WFI
+    - Chipset
+        - External interrupts
+- Debug Extension
+- Peripherals
+    - PS/2
+    - UART
+- ISA Extensions
+    - A - Atomics
+    - C - Compressed
+    - M - Multiplication & Division (multi-cycle)
+- VGA
+    - 1280x1024
+- Memory
+    - Allow for memory stalls
+    - Add instruction & data cache
+    - Add memory controller and DDR
 
 Reference:
 http://fpgacpu.ca/fpga/index.html
