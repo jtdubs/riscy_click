@@ -50,12 +50,12 @@ localparam csr_t CSR_MSTATUSH       = 12'h310;
 
 // Machine Trap Handling
 localparam csr_t CSR_MSCRATCH       = 12'h340; // Implemented
-localparam csr_t CSR_MEPC           = 12'h341;
-localparam csr_t CSR_MCAUSE         = 12'h342;
-localparam csr_t CSR_MTVAL          = 12'h343;
+localparam csr_t CSR_MEPC           = 12'h341; // Implemented
+localparam csr_t CSR_MCAUSE         = 12'h342; // Implemented
+localparam csr_t CSR_MTVAL          = 12'h343; // Implemented
 localparam csr_t CSR_MIP            = 12'h344;
-localparam csr_t CSR_MTINST         = 12'h34A;
-localparam csr_t CSR_MTVAL2         = 12'h34B;
+localparam csr_t CSR_MTINST         = 12'h34A; // Implemented
+localparam csr_t CSR_MTVAL2         = 12'h34B; // Implemented
 
 // Machine Memory Protection
 localparam csr_t CSR_PMPCFG0        = 12'h3A0;
@@ -80,12 +80,12 @@ localparam csr_t CSR_MHPMEVENT31    = 12'h33F; // Not Implemented
 
 // Unprivileged Counters/Timers
 localparam csr_t CSR_CYCLE          = 12'hC00; // Implemented
-localparam csr_t CSR_TIME           = 12'hC01;
+localparam csr_t CSR_TIME           = 12'hC01; // Implemented
 localparam csr_t CSR_INSTRET        = 12'hC02; // Implemented
 localparam csr_t CSR_HPMCOUNTER3    = 12'hC03; // Not Implemented
 localparam csr_t CSR_HPMCOUNTER31   = 12'hC1F; // Not Implemented
 localparam csr_t CSR_CYCLEH         = 12'hC80; // Implemented
-localparam csr_t CSR_TIMEH          = 12'hC81;
+localparam csr_t CSR_TIMEH          = 12'hC81; // Implemented
 localparam csr_t CSR_INSTRETH       = 12'hC82; // Implemented
 localparam csr_t CSR_HPMCOUNTER3H   = 12'hC83; // Not Implemented
 localparam csr_t CSR_HPMCOUNTER31H  = 12'hC9F; // Not Implemented
@@ -137,6 +137,11 @@ typedef struct packed {
     logic [29:0] base;
 } mtvec_t;
 
+typedef struct packed {
+    logic [30:0] exception_code;
+    logic        is_interrupt;
+} mcause_t;
+
 
 //
 // CSR Registers
@@ -148,10 +153,14 @@ dword_t  minstret_r, minstret_w;
 mtvec_t  mtvec_r;
 word_t   mcountinhibit_r;
 word_t   mscratch_r;
-
+word_t   mepc_r;
+mcause_t mcause_r;
+word_t   mtval_r;
+word_t   mtval2_r;
+word_t   mtinst_r;
 word_t   mip_r;
 word_t   mie_r;
-dword_t  time_r,    time_w;
+dword_t  time_r,     time_w;
 
 
 //
@@ -182,6 +191,17 @@ localparam dword_t MCYCLE_DEFAULT        = 64'b0;
 localparam dword_t MINSTRET_DEFAULT      = 64'b0;
 localparam word_t  MCOUNTINHIBIT_DEFAULT = 32'b0;
 localparam word_t  MSCRATCH_DEFAULT      = 32'b0;
+localparam word_t  MEPC_DEFAULT          = 32'b0;
+localparam word_t  MTVAL_DEFAULT         = 32'b0;
+localparam word_t  MTVAL2_DEFAULT        = 32'b0;
+localparam word_t  MTINST_DEFAULT        = 32'b0;
+localparam dword_t TIME_DEFAULT          = 64'b0;
+
+localparam mcause_t MCAUSE_DEFAULT = '{
+    exception_code: 31'b0,
+    is_interrupt:   1'b0
+};
+
 
 always_ff @(posedge clk_i) begin
     if (reset_i) begin
@@ -237,6 +257,16 @@ always_ff @(posedge clk_i) begin
         CSR_MCOUNTINHIBIT: csr_read_data_o <= mcountinhibit_r;
         //                                    scratch
         CSR_MSCRATCH:      csr_read_data_o <= mscratch_r;
+        //                                    exception cause
+        CSR_MCAUSE:        csr_read_data_o <= mcause_r;
+        //                                    exception program counter
+        CSR_MEPC:          csr_read_data_o <= mepc_r;
+        //                                    exception value
+        CSR_MTVAL:         csr_read_data_o <= mtval_r;
+        //                                    exception value
+        CSR_MTVAL2:        csr_read_data_o <= mtval2_r;
+        //                                    exception value
+        CSR_MTINST:        csr_read_data_o <= mtinst_r;
         //                                    machine interrupt pending
         CSR_MIP:           csr_read_data_o <= mip_r;
         //                                    machine interrupt enabled
@@ -279,6 +309,11 @@ always_ff @(posedge clk_i) begin
         CSR_MTVEC:          mtvec_r         <= csr_write_data_i;
         CSR_MCOUNTINHIBIT:  mcountinhibit_r <= csr_write_data_i;
         CSR_MSCRATCH:       mscratch_r      <= csr_write_data_i;
+        CSR_MCAUSE:         mcause_r        <= csr_write_data_i;
+        CSR_MTVAL:          mtval_r         <= csr_write_data_i;
+        CSR_MTVAL2:         mtval2_r        <= csr_write_data_i;
+        CSR_MTINST:         mtinst_r        <= csr_write_data_i;
+        CSR_MEPC:           mepc_r          <= csr_write_data_i;
         CSR_CYCLE:          mcycle_r        <= { mcycle_w  [63:32], csr_write_data_i };
         CSR_TIME:           time_r          <= { time_w    [63:32], csr_write_data_i };
         CSR_INSTRET:        minstret_r      <= { minstret_w[63:32], csr_write_data_i };
@@ -296,9 +331,14 @@ always_ff @(posedge clk_i) begin
         mtvec_r         <= MTVEC_DEFAULT;
         mcountinhibit_r <= MCOUNTINHIBIT_DEFAULT;
         mcycle_r        <= MCYCLE_DEFAULT;
-        time_r          <= 64'b0;
+        time_r          <= TIME_DEFAULT;
         minstret_r      <= MINSTRET_DEFAULT;
         mscratch_r      <= MSCRATCH_DEFAULT;
+        mcause_r        <= MCAUSE_DEFAULT;
+        mepc_r          <= MEPC_DEFAULT;
+        mtval_r         <= MTVAL_DEFAULT;
+        mtval2_r        <= MTVAL2_DEFAULT;
+        mtinst_r        <= MTINST_DEFAULT;
         mip_r           <= 32'b0;
         mie_r           <= 32'b0;
     end 
