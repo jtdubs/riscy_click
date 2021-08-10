@@ -26,7 +26,7 @@ class riscy_click(pluginTemplate):
 
         config = kwargs.get('config')
 
-        self.dut_exe = os.path.join(config['PATH'] if 'PATH' in config else "","riscy_click")
+        self.dut_exe = "./run_test.sh"
         self.num_jobs = str(config['jobs'] if 'jobs' in config else 1)
         if config is None:
             print("Please enter input file paths in configuration.")
@@ -39,6 +39,7 @@ class riscy_click(pluginTemplate):
         return sclass
 
     def initialise(self, suite, work_dir, archtest_env):
+        print("PWD: ", os.environ["PWD"])
         if shutil.which(self.dut_exe) is None:
             logger.error(self.dut_exe+' Not Found')
             logger.error('Please install Executable for riscy_click to proceed further')
@@ -85,7 +86,7 @@ class riscy_click(pluginTemplate):
             test_dir = testentry['work_dir']
 
             elf = 'dut.elf'
-            
+
             execute = "@cd "+testentry['work_dir']+";"
 
             cmd = self.compile_cmd.format(testentry['isa'].lower(), self.xlen) + ' ' + test + ' -o ' + elf
