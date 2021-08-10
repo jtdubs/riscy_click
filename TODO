@@ -5,7 +5,8 @@ TODO:
     - External Interrupt input
 - Machine Level ISA
     - CSR
-        - Provide mechanism to take an address and return RWX flags from matching PMP entry
+        - Decode should confirm address is read/executable, otherwise trap
+        - Memory access should confirm address is read/write as appropriate
         - Test new CSRs
         - MIE/MIP CSR
         - MTIME and MTIMECMP memory mapped registers??

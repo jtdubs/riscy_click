@@ -201,7 +201,11 @@ cpu_csr csr (
     .csr_read_data_o    (csr_read_data_w),
     .csr_write_addr_i   (csr_write_addr_w),
     .csr_write_data_i   (csr_write_data_w),
-    .csr_write_enable_i (csr_write_enable_w)
+    .csr_write_enable_i (csr_write_enable_w),
+    .lookup1_addr       (32'b0),
+    .lookup1_rwx        (),
+    .lookup2_addr       (32'b0),
+    .lookup2_rwx        ()
 );
 
 

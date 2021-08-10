@@ -10,23 +10,31 @@ module cpu_csr
     import common::*;
     (
         // cpu signals
-        input  wire logic      clk_i,         // clock
-        input  wire logic      reset_i,       // reset_i
+        input  wire logic       clk_i,         // clock
+        input  wire logic       reset_i,       // reset_i
 
         // control port
-        input  wire logic      retired_i,     // did an instruction retire this cycle
-        input  wire logic      mtrap_i,       // is the current instruction an mtrap
-        input  wire logic      mret_i,        // is the current instruction an mret
+        input  wire logic       retired_i,     // did an instruction retire this cycle
+        input  wire logic       mtrap_i,       // is the current instruction an mtrap
+        input  wire logic       mret_i,        // is the current instruction an mret
 
-        // read port
-        input  wire csr_t      csr_read_addr_i,
-        input  wire logic      csr_read_enable_i,
-        output      word_t     csr_read_data_o,
+        // CSR read port
+        input  wire csr_t       csr_read_addr_i,
+        input  wire logic       csr_read_enable_i,
+        output      word_t      csr_read_data_o,
 
-        // write port
-        input  wire csr_t      csr_write_addr_i,
-        input  wire word_t     csr_write_data_i,
-        input  wire logic      csr_write_enable_i
+        // CSR write port
+        input  wire csr_t       csr_write_addr_i,
+        input  wire word_t      csr_write_data_i,
+        input  wire logic       csr_write_enable_i,
+
+        // PMP lookup port 1
+        input  wire word_t      lookup1_addr,
+        output wire logic [2:0] lookup1_rwx,
+
+        // PMP lookup port 2
+        input  wire word_t      lookup2_addr,
+        output wire logic [2:0] lookup2_rwx
     );
 
 
@@ -172,7 +180,7 @@ localparam logic [2:0] X = 3'b100;
 // PMP Config
 //
 
-localparam pmp_entry_t [8:0] PMP_CONFIG = '{
+localparam pmp_entry_t [0:8] PMP_CONFIG = '{
     // [00000000, 00001000) - BIOS
     '{ { 32'h00000000 >> 2 }, '{ rwx: R|X, locked: 1'b1, matching_mode: PMPCFG_A_NAPOT, default: '0 } },
     '{ { 32'h00001000 >> 2 }, '{           locked: 1'b1, matching_mode: PMPCFG_A_OFF,   default: '0 } },
@@ -194,6 +202,53 @@ localparam pmp_entry_t [8:0] PMP_CONFIG = '{
     // [FF00000C, FFFFFFFF] - UNUSED 
     '{ { 32'hFFFFFFFF >> 2 }, '{           locked: 1'b1, matching_mode: PMPCFG_A_TOR,   default: '0 } }
 };
+
+
+//
+// PMP Lookup
+//
+
+always_comb begin
+    priority if (lookup1_addr < PMP_CONFIG[1].addr)
+        lookup1_rwx = PMP_CONFIG[0].cfg.rwx;
+    else if (lookup1_addr < PMP_CONFIG[2].addr)
+        lookup1_rwx = PMP_CONFIG[1].cfg.rwx;
+    else if (lookup1_addr < PMP_CONFIG[3].addr)
+        lookup1_rwx = PMP_CONFIG[2].cfg.rwx;
+    else if (lookup1_addr < PMP_CONFIG[4].addr)
+        lookup1_rwx = PMP_CONFIG[3].cfg.rwx;
+    else if (lookup1_addr < PMP_CONFIG[5].addr)
+        lookup1_rwx = PMP_CONFIG[4].cfg.rwx;
+    else if (lookup1_addr < PMP_CONFIG[6].addr)
+        lookup1_rwx = PMP_CONFIG[5].cfg.rwx;
+    else if (lookup1_addr == PMP_CONFIG[6].addr)
+        lookup1_rwx = PMP_CONFIG[6].cfg.rwx;
+    else if (lookup1_addr == PMP_CONFIG[7].addr)
+        lookup1_rwx = PMP_CONFIG[7].cfg.rwx;
+    else
+        lookup1_rwx = PMP_CONFIG[8].cfg.rwx;
+end
+
+always_comb begin
+    priority if (lookup2_addr < PMP_CONFIG[1].addr)
+        lookup2_rwx = PMP_CONFIG[0].cfg.rwx;
+    else if (lookup2_addr < PMP_CONFIG[2].addr)
+        lookup2_rwx = PMP_CONFIG[1].cfg.rwx;
+    else if (lookup2_addr < PMP_CONFIG[3].addr)
+        lookup2_rwx = PMP_CONFIG[2].cfg.rwx;
+    else if (lookup2_addr < PMP_CONFIG[4].addr)
+        lookup2_rwx = PMP_CONFIG[3].cfg.rwx;
+    else if (lookup2_addr < PMP_CONFIG[5].addr)
+        lookup2_rwx = PMP_CONFIG[4].cfg.rwx;
+    else if (lookup2_addr < PMP_CONFIG[6].addr)
+        lookup2_rwx = PMP_CONFIG[5].cfg.rwx;
+    else if (lookup2_addr == PMP_CONFIG[6].addr)
+        lookup2_rwx = PMP_CONFIG[6].cfg.rwx;
+    else if (lookup2_addr == PMP_CONFIG[7].addr)
+        lookup2_rwx = PMP_CONFIG[7].cfg.rwx;
+    else
+        lookup2_rwx = PMP_CONFIG[8].cfg.rwx;
+end
 
 
 //
@@ -337,8 +392,9 @@ always_ff @(posedge clk_i) begin
         CSR_MINSTRETH,
         CSR_INSTRETH:      csr_read_data_o <= minstret_r[63:32];
         //                                    memory config
-        (CSR_PMPCFG0+0):   csr_read_data_o <= { PMP_CONFIG[0].cfg, PMP_CONFIG[1].cfg, PMP_CONFIG[2].cfg, PMP_CONFIG[3].cfg };
-        (CSR_PMPCFG0+1):   csr_read_data_o <= { PMP_CONFIG[4].cfg, PMP_CONFIG[5].cfg, PMP_CONFIG[6].cfg, PMP_CONFIG[7].cfg };
+        (CSR_PMPCFG0+0):   csr_read_data_o <= { PMP_CONFIG[3].cfg, PMP_CONFIG[2].cfg, PMP_CONFIG[1].cfg, PMP_CONFIG[0].cfg };
+        (CSR_PMPCFG0+1):   csr_read_data_o <= { PMP_CONFIG[7].cfg, PMP_CONFIG[6].cfg, PMP_CONFIG[5].cfg, PMP_CONFIG[4].cfg };
+        (CSR_PMPCFG0+2):   csr_read_data_o <= { 8'b0,              8'b0,              8'b0,              PMP_CONFIG[8].cfg };
         //                                    memory address
         (CSR_PMPADDR0+0):  csr_read_data_o <= PMP_CONFIG[0].addr;
         (CSR_PMPADDR0+1):  csr_read_data_o <= PMP_CONFIG[1].addr;
