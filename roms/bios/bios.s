@@ -48,7 +48,7 @@ seg_loop:
     sw x16, 0(x15)
     jal x0, seg_loop
 
-.section .sdata, "a"
+.section .rodata
 .align 4
 
 .globl BIOS_BASE

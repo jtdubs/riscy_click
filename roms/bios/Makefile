@@ -18,7 +18,7 @@ LDFLAGS =
 LDFLAGS += -e _start
 LDFLAGS += -nostdlib
 LDFLAGS += -section-start=.text=0
-LDFLAGS += -section-start=.sdata=300
+LDFLAGS += -section-start=.rodata=300
 
 all: $(TARGETS)
 
