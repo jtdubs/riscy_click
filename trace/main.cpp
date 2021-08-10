@@ -11,7 +11,7 @@ int main(int argc, char** argv)
 
     uint64_t ncycles = 0;
 
-    while (ncycles < 100000) {
+    while (ncycles < 100000 && !Verilated::gotFinish() && (dut->reset_async_i || !dut->halt_o)) {
         dut->eval();
 
         ncycles++;

@@ -58,6 +58,12 @@ $(EXE): $(SV_SOURCES) $(VLT_SOURCES) $(CXX_SOURCES)
 
 all: $(EXE)
 
+log.json: $(EXE)
+	./chipset
+
+analyze: log.json
+	../utils/log_analysis/analyze.py log.json
+
 clean:
 	rm -f $(EXE) $(OBJS)
 	rm -Rf $(VERILATOR_DIR)
