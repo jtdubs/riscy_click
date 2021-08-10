@@ -1,7 +1,5 @@
 CXX_SOURCES =
 CXX_SOURCES += $(wildcard *.cpp)
-CXX_SOURCES += $(wildcard imgui/*.cpp)
-CXX_SOURCES += $(wildcard imgui/*.c)
 
 SV_SOURCES =
 SV_SOURCES += ../src/library/logging.sv
@@ -30,16 +28,7 @@ VLT_SOURCES =
 VLT_SOURCES = ./config.vlt
 
 CXXFLAGS =
-CXXFLAGS += -I../imgui -I../imgui/GL
 CXXFLAGS += -g -Wall -Wformat
-CXXFLAGS += -std=c++20
-CXXFLAGS += -DIMGUI_IMPL_OPENGL_LOADER_GL3W
-CXXFLAGS += `pkg-config --cflags glfw3`
-
-LIBS =
-LIBS += -lGL
-LIBS += -lpthread
-LIBS += `pkg-config --static --libs glfw3`
 
 VERILATOR = verilator
 VERILATOR_DIR = verilator
@@ -54,7 +43,7 @@ VERILATOR_FLAGS += --top $(VERILATOR_TOP)
 VERILATOR_FLAGS += --Mdir $(VERILATOR_DIR)
 VERILATOR_FLAGS += -o chipset
 VERILATOR_FLAGS += --CFLAGS "$(CXXFLAGS)"
-VERILATOR_FLAGS += --LDFLAGS "$(LIBS)"
+VERILATOR_FLAGS += +define+ENABLE_LOGGING=1
 VERILATOR_LIB = $(VERILATOR_DIR)/V$(VERILATOR_TOP)__ALL.a
 
 EXE = $(VERILATOR_TOP)

@@ -66,7 +66,7 @@ end
 // Pipeline Outputs
 //
 always_ff @(posedge clk_i) begin
-    `log_strobe(("{ \"stage\": \"IF\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\" },", $time, pc_o, ir_o));
+    `log_strobe(("{ \"stage\": \"IF\", \"reset\": \"%0d\", \"pc\": \"%0d\", \"ir\": \"%0d\" },", reset_i, pc_o, ir_o));
  
     if (jmp_valid_async_i || reset_i) begin
         // if jumping or resetting, output a NOP

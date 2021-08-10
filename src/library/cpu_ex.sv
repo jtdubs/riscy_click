@@ -74,7 +74,7 @@ always_comb begin
     wb_valid_async_o = wb_valid_i;
     empty_async_o    = pc_i == NOP_PC;
 
-    `log_strobe(("{ \"stage\": \"EX\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ex_wb_addr\": \"%0d\", \"ex_wb_data\": \"%0d\", \"ex_wb_valid\": \"%0d\" },", $time, pc_i, wb_addr_async_o, wb_data_async_o, wb_valid_async_o));
+    `log_strobe(("{ \"stage\": \"EX\", \"pc\": \"%0d\", \"ex_wb_addr\": \"%0d\", \"ex_wb_data\": \"%0d\", \"ex_wb_valid\": \"%0d\" },", pc_i, wb_addr_async_o, wb_data_async_o, wb_valid_async_o));
 
 end  
 
@@ -106,7 +106,7 @@ always_ff @(posedge clk_i) begin
         wb_valid_o <= NOP_WB_VALID; 
     end
 
-    `log_strobe(("{ \"stage\": \"EX\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"ma_addr\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\" },", $time, pc_o, ir_o, ma_addr_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_o, wb_valid_o));
+    `log_strobe(("{ \"stage\": \"EX\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"ma_addr\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\" },", pc_o, ir_o, ma_addr_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_o, wb_valid_o));
 
 end
 

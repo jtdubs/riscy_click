@@ -62,6 +62,7 @@ void sim_destroy(sim_model_t* model) {
 
     // Cleanup DUT
     model->chipset->final();
+
     delete model->chipset;
     delete model;
 }

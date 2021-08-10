@@ -69,7 +69,7 @@ end
 // Debug Logging
 //
 always_ff @(posedge clk_i) begin
-    `log_display(("{ \"stage\": \"WB\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"wb_addr\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\" },", $time, pc_i, ir_i, wb_addr_async_o, wb_data_async_o, wb_valid_async_o));
+    `log_display(("{ \"stage\": \"WB\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"wb_addr\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\" },", pc_i, ir_i, wb_addr_async_o, wb_data_async_o, wb_valid_async_o));
 end
 
 endmodule

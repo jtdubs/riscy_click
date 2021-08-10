@@ -354,7 +354,7 @@ end
 
 // advance to next state
 always_ff @(posedge clk_i) begin
-    `log_display(("{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"csr_addr\": \"%0d\", \"csr_state\": \"%0d\", \"csr_read_data\": \"%0d\", \"csr_write_data\": \"%0d\", \"csr_wb_addr\": \"%0d\", \"csr_wb_enable\": \"%0d\", \"csr_write_enable\": \"%0d\" },", $time, pc_i, csr_w, csr_state_r, csr_read_data_w, csr_write_data_w, wb_addr_w, wb_enable_w, csr_write_enable_w));
+    `log_display(("{ \"stage\": \"ID\", \"pc\": \"%0d\", \"csr_addr\": \"%0d\", \"csr_state\": \"%0d\", \"csr_read_data\": \"%0d\", \"csr_write_data\": \"%0d\", \"csr_wb_addr\": \"%0d\", \"csr_wb_enable\": \"%0d\", \"csr_write_enable\": \"%0d\" },", pc_i, csr_w, csr_state_r, csr_read_data_w, csr_write_data_w, wb_addr_w, wb_enable_w, csr_write_enable_w));
 
     csr_state_r <= csr_state_w;
 end
@@ -404,7 +404,7 @@ always_comb begin
         ready_async_o = 1'b1;
     end
 
-    `log_strobe(("{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"jmp_valid\": \"%0d\", \"jmp_addr\": \"%0d\", \"ready\": \"%0d\" },", $time, pc_i, jmp_valid_async_o, jmp_addr_async_o, ready_async_o));
+    `log_strobe(("{ \"stage\": \"ID\", \"pc\": \"%0d\", \"jmp_valid\": \"%0d\", \"jmp_addr\": \"%0d\", \"ready\": \"%0d\" },", pc_i, jmp_valid_async_o, jmp_addr_async_o, ready_async_o));
 
 end
 
@@ -461,7 +461,7 @@ always_ff @(posedge clk_i) begin
         halt_o     <= 1'b0;
     end
 
-    `log_strobe(("{ \"stage\": \"ID\", \"time\": \"%0t\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"alu_op1\": \"%0d\", \"alu_op2\": \"%0d\", \"alu_mode\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_dst\": \"%0d\", \"halt\": \"%0d\" },", $time, pc_o, ir_o, alu_op1_o, alu_op2_o, alu_mode_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_async_o, wb_valid_async_o, halt_o));
+    `log_strobe(("{ \"stage\": \"ID\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"alu_op1\": \"%0d\", \"alu_op2\": \"%0d\", \"alu_mode\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_dst\": \"%0d\", \"halt\": \"%0d\" },", pc_o, ir_o, alu_op1_o, alu_op2_o, alu_mode_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_async_o, wb_valid_async_o, halt_o));
 
 end
 
