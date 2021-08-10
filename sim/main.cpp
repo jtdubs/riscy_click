@@ -68,9 +68,6 @@ int main(int argc, char** argv)
         // Poll and handle events (inputs, window resize, etc.)
         glfwPollEvents();
 
-        // Update Model
-        sim_tick(model);
-
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -84,9 +81,8 @@ int main(int argc, char** argv)
             ImGui::Begin("Riscy Click", NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings);
 
             // Draw Model
-            sim_draw(model);
+            sim_draw(model, ImGui::GetIO().DeltaTime);
 
-            ImGui::Text("Application average %.4f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
             ImGui::End();
         }
 

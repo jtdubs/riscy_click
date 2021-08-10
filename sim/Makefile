@@ -32,11 +32,13 @@ VLT_SOURCES = ./config.vlt
 CXXFLAGS =
 CXXFLAGS += -I../imgui -I../imgui/GL
 CXXFLAGS += -g -Wall -Wformat
+CXXFLAGS += -std=c++20
 CXXFLAGS += -DIMGUI_IMPL_OPENGL_LOADER_GL3W
 CXXFLAGS += `pkg-config --cflags glfw3`
 
 LIBS =
 LIBS += -lGL
+LIBS += -lpthread
 LIBS += `pkg-config --static --libs glfw3`
 
 VERILATOR = verilator

@@ -7,6 +7,7 @@
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
 #include <cstdint>
+#include <thread>
 
 #include "verilator/Vchipset.h"
 #include "sim_vga.h"
@@ -15,12 +16,15 @@
 #include "sim_model.h"
 
 struct sim_model {
-    Vchipset* chipset;
-    bool      reset;
-    bool      switches[16];
-    uint8_t   segments[8];
-    GLuint    vga_texture;
-    uint64_t  ncycles;
+    Vchipset*    chipset;
+    std::thread  tick_thread;
+    bool         thread_exit;
+    bool         reset;
+    bool         switches[16];
+    uint8_t      segments[8];
+    GLuint       vga_texture;
+    uint16_t*    vga_buffer;
+    uint64_t     ncycles;
 };
 
 sim_model_t* sim_create(int argc, char **argv) {
@@ -28,7 +32,8 @@ sim_model_t* sim_create(int argc, char **argv) {
     Verilated::commandArgs(argc, argv);
 
     sim_model_t *model = new sim_model_t();
-    model->reset = true;
+    model->reset       = true;
+    model->vga_buffer  = new uint16_t[640*480];
 
     // Create Chipset
     model->chipset = new Vchipset;
@@ -40,10 +45,21 @@ sim_model_t* sim_create(int argc, char **argv) {
     // Create VGA Texture
     model->vga_texture = vga_create(640, 480);
 
+    // Create Tick Thread
+    model->tick_thread = std::thread([](sim_model_t *model) {
+        while (! model->thread_exit) {
+            sim_tick(model);
+        }
+    }, model);
+
     return model;
 }
 
 void sim_destroy(sim_model_t* model) {
+    // Join thread
+    model->thread_exit = true;
+    model->tick_thread.join();
+
     // Cleanup DUT
     model->chipset->final();
     delete model->chipset;
@@ -80,12 +96,15 @@ void sim_tick(sim_model_t* model) {
 
         // update VGA every pixel clock cycle
         if (model->ncycles % 4 == 0)
-            vga_tick(model->vga_texture, dut->vga_hsync_o, dut->vga_vsync_o, dut->vga_red_o, dut->vga_green_o, dut->vga_blue_o);
+            vga_tick(model->vga_buffer, dut->vga_hsync_o, dut->vga_vsync_o, dut->vga_red_o, dut->vga_green_o, dut->vga_blue_o);
     }
 }
 
-void sim_draw(sim_model_t* model) {
-    vga_draw("vga", 640, 480, model->vga_texture);
+void sim_draw(sim_model_t* model, float secondsElapsed) {
+    static uint64_t last_ncycles = 0;
+
+    vga_write(model->vga_texture, model->vga_buffer);
+    vga_draw("vga", model->vga_texture);
 
     for (int i=7; i>=0; i--)
     {
@@ -106,4 +125,12 @@ void sim_draw(sim_model_t* model) {
     }
 
     ImGui::Checkbox("Reset", &model->reset);
+
+    uint64_t this_ncycles = model->ncycles;
+    uint64_t cyclesElapsed = this_ncycles - last_ncycles;
+    last_ncycles = this_ncycles;
+    float mhz = ((float)cyclesElapsed) / (secondsElapsed * 2000000.0f);
+    float rate = (mhz * 100.0f) / 50.0f;
+
+    ImGui::Text("Simulation Speed: %3.03fMHz (%2.0f%)", mhz, rate);
 }

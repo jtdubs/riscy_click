@@ -29,19 +29,21 @@ GLuint vga_create(size_t width, size_t height)
     return texture_id;
 }
 
-void vga_write(size_t width, size_t height, GLuint texture, size_t x, size_t y, uint16_t value)
+void vga_write(GLuint texture, uint16_t *buffer)
 {
     glBindTexture(GL_TEXTURE_2D, texture);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, 1, 1, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, &value);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 640, 480, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, buffer);
 }
 
-void vga_draw(const char *str_id, size_t width, size_t height, GLuint texture) {
-    ImGui::Image((void*)(intptr_t)texture, ImVec2(width*2, height*2));
+void vga_draw(const char *str_id, GLuint texture) {
+    ImGui::Image((void*)(intptr_t)texture, ImVec2(640*2, 480*2));
 }
 
-void vga_tick(GLuint texture, bool hsync, bool vsync, uint8_t red, uint8_t green, uint8_t blue) {
+bool vga_tick(uint16_t *buffer, bool hsync, bool vsync, uint8_t red, uint8_t green, uint8_t blue) {
     static size_t x=0, y=0;
     static bool last_vsync = false, last_hsync = false;
+
+    bool scanline_ready = false;
 
     x = (hsync) ? x+1 : -48;
     y = (vsync) ? y : -32;
@@ -51,5 +53,7 @@ void vga_tick(GLuint texture, bool hsync, bool vsync, uint8_t red, uint8_t green
     last_hsync = hsync;
 
     if (x < 640 && y < 480)
-        vga_write(640, 480, texture, x, y, (red << 12) | (green << 8) | (blue << 4) | (0x0F << 0));
+        buffer[y*640+x] = (red << 12) | (green << 8) | (blue << 4) | (0x0F << 0);
+
+    return scanline_ready;
 }
