@@ -8,7 +8,6 @@ TODO:
         - Decode should confirm address is read/executable, otherwise trap
         - Memory access should confirm address is read/write as appropriate
         - Test new CSRs
-        - MIE/MIP CSR
         - MTIME and MTIMECMP memory mapped registers??
     - Instructions
         - ECALL & EBREAK

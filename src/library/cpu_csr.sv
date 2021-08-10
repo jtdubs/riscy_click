@@ -53,7 +53,7 @@ localparam csr_t CSR_MSTATUS        = 12'h300; // Implemented
 localparam csr_t CSR_MISA           = 12'h301; // Implemented
 localparam csr_t CSR_MEDELEG        = 12'h302; // Not Applicable
 localparam csr_t CSR_MIDELEG        = 12'h303; // Not Applicable
-localparam csr_t CSR_MIE            = 12'h304; // TODO
+localparam csr_t CSR_MIE            = 12'h304; // Implemented
 localparam csr_t CSR_MTVEC          = 12'h305; // Implemented
 localparam csr_t CSR_MCOUNTEREN     = 12'h306; // Not Applicable
 localparam csr_t CSR_MSTATUSH       = 12'h310; // Implemented
@@ -63,7 +63,7 @@ localparam csr_t CSR_MSCRATCH       = 12'h340; // Implemented
 localparam csr_t CSR_MEPC           = 12'h341; // Implemented
 localparam csr_t CSR_MCAUSE         = 12'h342; // Implemented
 localparam csr_t CSR_MTVAL          = 12'h343; // Implemented
-localparam csr_t CSR_MIP            = 12'h344; // TODO
+localparam csr_t CSR_MIP            = 12'h344; // Implemented
 localparam csr_t CSR_MTINST         = 12'h34A; // Implemented
 localparam csr_t CSR_MTVAL2         = 12'h34B; // Implemented
 
@@ -175,6 +175,23 @@ localparam logic [2:0] R = 3'b001;
 localparam logic [2:0] W = 3'b010;
 localparam logic [2:0] X = 3'b100;
 
+typedef struct packed {
+    logic        reserved_0;
+    logic        ssi;         // System software interrupt
+    logic        reserved_2;
+    logic        msi;         // Machine software interrupt
+    logic        reserved_3;
+    logic        sti;         // System timer interrupt
+    logic        reserved_6;
+    logic        mti;         // Machine timer interrupt
+    logic        reserved_8;
+    logic        sei;         // System external interrupt
+    logic        reserved_10;
+    logic        mei;         // Machine external interrupt
+    logic [ 3:0] reserved_12;
+    logic [15:0] reserved_16;
+} mi_t;
+
 
 //
 // PMP Config
@@ -256,24 +273,27 @@ end
 //
 
 // Counters
-dword_t  mcycle_r,   mcycle_w;
-dword_t  minstret_r, minstret_w;
-dword_t  time_r,     time_w;
+dword_t  mcycle_r,   mcycle_w;            // cycle counter
+dword_t  minstret_r, minstret_w;          // retired instruction counter
+dword_t  time_r,     time_w;              // time counter
 
 // Non-Counters
-mtvec_t  mtvec_r;
-word_t   mcountinhibit_r;
-word_t   mscratch_r;
-word_t   mepc_r;
-mcause_t mcause_r;
-word_t   mtval_r;
-word_t   mtval2_r;
-word_t   mtinst_r;
-word_t   mip_r;
-word_t   mie_r;
-logic    mstatus_mie_r,  mstatus_mie_w;
-logic    mstatus_mpie_r, mstatus_mpie_w;
-
+mtvec_t  mtvec_r;                         // trap vector
+word_t   mcountinhibit_r;                 // counter inhibitor
+word_t   mscratch_r;                      // scratch buffer
+word_t   mepc_r;                          // exception program counter
+mcause_t mcause_r;                        // exception cause
+word_t   mtval_r;                         // exception val
+word_t   mtval2_r;                        // exception val2
+word_t   mtinst_r;                        // exception instruction
+logic    mstatus_mie_r,  mstatus_mie_w;   // global interrupt enabled
+logic    mstatus_mpie_r, mstatus_mpie_w;  // global interrupt enabled (prior)
+logic    meip_r;                          // machine external interrupt pending
+logic    mtip_r;                          // machine timer interrupt pending
+logic    msip_r;                          // machine software interrupt pending
+logic    meie_r;                          // machine external interrupt enabled
+logic    mtie_r;                          // machine timer interrupt enabled
+logic    msie_r;                          // machine software interrupt enabled
 
 //
 // Updates
@@ -320,8 +340,6 @@ localparam word_t  MTVAL_DEFAULT         = 32'b0;
 localparam word_t  MTVAL2_DEFAULT        = 32'b0;
 localparam word_t  MTINST_DEFAULT        = 32'b0;
 localparam dword_t TIME_DEFAULT          = 64'b0;
-localparam logic   MSTATUS_MIE_DEFAULT   = 1'b0;
-localparam logic   MSTATUS_MPIE_DEFAULT  = 1'b0;
 
 localparam mcause_t MCAUSE_DEFAULT = '{
     exception_code: 31'b0,
@@ -338,6 +356,22 @@ always_comb mstatus_o = '{
     mie:         mstatus_mie_r,
     mpie:        mstatus_mpie_r,
     default:     '0
+};
+
+mi_t mie_o;
+always_comb mie_o = '{
+    mei:     meie_r,
+    mti:     mtie_r,
+    msi:     msie_r,
+    default: '0
+};
+
+mi_t mip_o;
+always_comb mip_o = '{
+    mei:     meip_r,
+    mti:     mtip_r,
+    msi:     msip_r,
+    default: '0
 };
 
 always_ff @(posedge clk_i) begin
@@ -372,9 +406,9 @@ always_ff @(posedge clk_i) begin
         //                                    exception value
         CSR_MTINST:        csr_read_data_o <= mtinst_r;
         //                                    machine interrupt pending
-        CSR_MIP:           csr_read_data_o <= mip_r;
+        CSR_MIP:           csr_read_data_o <= mip_o;
         //                                    machine interrupt enabled
-        CSR_MIE:           csr_read_data_o <= mie_r;
+        CSR_MIE:           csr_read_data_o <= mie_o;
         //                                    cycle counter
         CSR_MCYCLE,
         CSR_CYCLE:         csr_read_data_o <= mcycle_r[31:0];
@@ -425,6 +459,9 @@ end
 mstatus_t mstatus_i;
 always_comb mstatus_i = mstatus_t'(csr_write_data_i);
 
+mi_t mie_i;
+always_comb mie_i = mi_t'(csr_write_data_i[15:0]);
+
 always_ff @(posedge clk_i) begin
     if (csr_write_enable_i) begin
         case (csr_write_addr_i)
@@ -447,6 +484,12 @@ always_ff @(posedge clk_i) begin
         CSR_CYCLEH:         mcycle_r        <= { csr_write_data_i, mcycle_w   [31:0] };
         CSR_TIMEH:          time_r          <= { csr_write_data_i, time_w     [31:0] };
         CSR_INSTRETH:       minstret_r      <= { csr_write_data_i, minstret_w [31:0] };
+        CSR_MIE:
+            begin
+                meie_r <= mie_i.mei;
+                mtie_r <= mie_i.mti;
+                msie_r <= mie_i.msi;
+            end
         endcase
     end else begin
         mcycle_r       <= mcycle_w;
@@ -462,16 +505,18 @@ always_ff @(posedge clk_i) begin
         mcycle_r        <= MCYCLE_DEFAULT;
         time_r          <= TIME_DEFAULT;
         minstret_r      <= MINSTRET_DEFAULT;
-        mstatus_mie_r   <= MSTATUS_MIE_DEFAULT;
-        mstatus_mpie_r  <= MSTATUS_MPIE_DEFAULT;
         mscratch_r      <= MSCRATCH_DEFAULT;
         mcause_r        <= MCAUSE_DEFAULT;
         mepc_r          <= MEPC_DEFAULT;
         mtval_r         <= MTVAL_DEFAULT;
         mtval2_r        <= MTVAL2_DEFAULT;
         mtinst_r        <= MTINST_DEFAULT;
-        mip_r           <= 32'b0;
-        mie_r           <= 32'b0;
+        meie_r          <= 1'b0;
+        mtie_r          <= 1'b0;
+        msie_r          <= 1'b0;
+        meip_r          <= 1'b0;
+        mtip_r          <= 1'b0;
+        msip_r          <= 1'b0;
     end 
 end
 
