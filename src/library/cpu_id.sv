@@ -194,6 +194,8 @@ cpu_csr csr (
     .clk_i              (clk_i),
     .reset_i            (reset_i),
     .retired_i          (retired_w),
+    .mtrap_i            (1'b0),
+    .mret_i             (1'b0),
     .csr_read_addr_i    (csr_read_addr_w),
     .csr_read_enable_i  (csr_read_enable_w),
     .csr_read_data_o    (csr_read_data_w),

@@ -15,6 +15,8 @@ module cpu_csr
 
         // control port
         input  wire logic      retired_i,     // did an instruction retire this cycle
+        input  wire logic      mtrap_i,       // is the current instruction an mtrap
+        input  wire logic      mret_i,        // is the current instruction an mret
 
         // read port
         input  wire csr_t      csr_read_addr_i,
@@ -39,29 +41,29 @@ localparam csr_t CSR_MIMPID         = 12'hF13; // Implemented
 localparam csr_t CSR_MHARTID        = 12'hF14; // Implemented
 
 // Machine Trap Setup
-localparam csr_t CSR_MSTATUS        = 12'h300;
+localparam csr_t CSR_MSTATUS        = 12'h300; // Implemented
 localparam csr_t CSR_MISA           = 12'h301; // Implemented
 localparam csr_t CSR_MEDELEG        = 12'h302; // Not Applicable
 localparam csr_t CSR_MIDELEG        = 12'h303; // Not Applicable
-localparam csr_t CSR_MIE            = 12'h304;
+localparam csr_t CSR_MIE            = 12'h304; // TODO
 localparam csr_t CSR_MTVEC          = 12'h305; // Implemented
 localparam csr_t CSR_MCOUNTEREN     = 12'h306; // Not Applicable
-localparam csr_t CSR_MSTATUSH       = 12'h310;
+localparam csr_t CSR_MSTATUSH       = 12'h310; // Implemented
 
 // Machine Trap Handling
 localparam csr_t CSR_MSCRATCH       = 12'h340; // Implemented
 localparam csr_t CSR_MEPC           = 12'h341; // Implemented
 localparam csr_t CSR_MCAUSE         = 12'h342; // Implemented
 localparam csr_t CSR_MTVAL          = 12'h343; // Implemented
-localparam csr_t CSR_MIP            = 12'h344;
+localparam csr_t CSR_MIP            = 12'h344; // TODO
 localparam csr_t CSR_MTINST         = 12'h34A; // Implemented
 localparam csr_t CSR_MTVAL2         = 12'h34B; // Implemented
 
 // Machine Memory Protection
-localparam csr_t CSR_PMPCFG0        = 12'h3A0;
-localparam csr_t CSR_PMPCFG15       = 12'h3AF;
-localparam csr_t CSR_PMPADDR0       = 12'h3B0;
-localparam csr_t CSR_PMPADDR63      = 12'h3EF;
+localparam csr_t CSR_PMPCFG0        = 12'h3A0; // TODO
+localparam csr_t CSR_PMPCFG15       = 12'h3AF; // TODO
+localparam csr_t CSR_PMPADDR0       = 12'h3B0; // TODO
+localparam csr_t CSR_PMPADDR63      = 12'h3EF; // TODO
 
 // Machine Counters/Timers
 localparam csr_t CSR_MCYCLE         = 12'hB00; // Implemented
@@ -97,34 +99,34 @@ localparam csr_t CSR_HPMCOUNTER31H  = 12'hC9F; // Not Implemented
 
 typedef struct packed {
     logic       reserved_0;
-    logic       sie           // ZERO: S-mode interrupt enable
+    logic       sie;          // S-mode interrupt enable
     logic       reserved_2;
-    logic       mie;          // TODO: M-mode interrupt enable
+    logic       mie;          // M-mode interrupt enable
     logic       reserved_4;
-    logic       spie;         // ZERO: S-mode prior interrupt enable
-    logic       ube;          // ZERO: U-mode data endian (0=little-endian, 1=big-endian),
-    logic       mpie;         // TODO: M-mode prior interrupt enable
-    logic       spp;          // ZERO: S-mode prior privilege level
+    logic       spie;         // S-mode prior interrupt enable
+    logic       ube;          // U-mode data endian (0=little-endian, 1=big-endian),
+    logic       mpie;         // M-mode prior interrupt enable
+    logic       spp;          // S-mode prior privilege level
     logic [1:0] reserved_9;
-    logic [1:0] mpp;          // ZERO: M-mode prior privilege level
-    logic [1:0] fs;           // ZERO: FPU State
-    logic [1:0] xs;           // ZERO: FPU State
-    logic       mprv;         // ZERO: Modify Privilege (0=current, 1=prior)
-    logic       sum;          // ZERO: Supervisor User Memory (N/A)
-    logic       mxr;          // ZERO: Make eXecutable Reader (0=r^x, 1=r|x)
-    logic       tvm;          // ZERO: Trap Virtual Memory
-    logic       tw;           // ZERO: Timeout Wait
-    logic       tsr;          // ZERO: Trap SRET
+    logic [1:0] mpp;          // M-mode prior privilege level
+    logic [1:0] fs;           // FPU State
+    logic [1:0] xs;           // FPU State
+    logic       mprv;         // Modify Privilege (0=current, 1=prior)
+    logic       sum;          // Supervisor User Memory (N/A)
+    logic       mxr;          // Make eXecutable Reader (0=r^x, 1=r|x)
+    logic       tvm;          // Trap Virtual Memory
+    logic       tw;           // Timeout Wait
+    logic       tsr;          // Trap SRET
     logic [7:0] reserved_23;
-    logic       sd;           // ZERO: FPU State
-} status_t;
+    logic       sd;           // FPU State
+} mstatus_t;
 
 typedef struct packed {
     logic        reserved_0;
     logic        sbe;         // ZERO: S-mode data endian (0=little-endian, 1=big-endian)
     logic        mbe;         // ZERO: M-mode data endian (0=little-endian, 1=big-endian)
     logic [28:0] reserved_6;
-} statush_t;
+} mstatush_t;
 
 typedef enum logic {
     MTVEC_MODE_DIRECT   = 1'b0,
@@ -153,7 +155,6 @@ dword_t  minstret_r, minstret_w;
 dword_t  time_r,     time_w;
 
 // Non-Counters
-status_t mstatus_r;
 mtvec_t  mtvec_r;
 word_t   mcountinhibit_r;
 word_t   mscratch_r;
@@ -164,10 +165,12 @@ word_t   mtval2_r;
 word_t   mtinst_r;
 word_t   mip_r;
 word_t   mie_r;
+logic    mstatus_mie_r,  mstatus_mie_w;
+logic    mstatus_mpie_r, mstatus_mpie_w;
 
 
 //
-// Counter Updates
+// Updates
 //
 
 always_comb begin
@@ -177,6 +180,18 @@ always_comb begin
 
     if (mcountinhibit_r[0]) mcycle_w   = mcycle_r;
     if (mcountinhibit_r[2]) minstret_w = minstret_r;
+end
+
+always_comb begin
+    priority if (mtrap_i)
+        // on trap, disable interrupts and save previous value
+        { mstatus_mie_w, mstatus_mpie_w } = { 1'b0,           mstatus_mie_r  };
+    else if (mret_i)
+        // on ret, restore previous value
+        { mstatus_mie_w, mstatus_mpie_w } = { mstatus_mpie_r, 1'b1           };
+    else
+        // otherwise, no change
+        { mstatus_mie_w, mstatus_mpie_w } = { mstatus_mie_r,  mstatus_mpie_r };
 end
 
 
@@ -199,6 +214,8 @@ localparam word_t  MTVAL_DEFAULT         = 32'b0;
 localparam word_t  MTVAL2_DEFAULT        = 32'b0;
 localparam word_t  MTINST_DEFAULT        = 32'b0;
 localparam dword_t TIME_DEFAULT          = 64'b0;
+localparam logic   MSTATUS_MIE_DEFAULT   = 1'b0;
+localparam logic   MSTATUS_MPIE_DEFAULT  = 1'b0;
 
 localparam mcause_t MCAUSE_DEFAULT = '{
     exception_code: 31'b0,
@@ -206,38 +223,16 @@ localparam mcause_t MCAUSE_DEFAULT = '{
 };
 
 
-always_ff @(posedge clk_i) begin
-    if (reset_i) begin
-        mstatus_r <= '{ 
-            uie:         1'b0,
-            sie:         1'b0,
-            reserved_2:  1'b0,
-            mie:         1'b0,
-            upie:        1'b0,
-            spie:        1'b0,
-            reserved_6:  1'b0,
-            mpie:        1'b1,
-            spp:         1'b1,
-            reserved_9:  2'b00,
-            mpp:         2'b00,
-            fs:          2'b00,
-            xs:          2'b00,
-            mprv:        1'b0,
-            sum:         1'b0,
-            mxr:         1'b0,
-            tvm:         1'b0,
-            tw:          1'b0,
-            tsr:         1'b0,
-            reserved_23: 8'b00000000,
-            sd:          1'b0
-        };
-    end
-end
-
-
 //
 // CSR Reads
 //
+
+mstatus_t mstatus_o;
+always_comb mstatus_o = '{
+    mie:         mstatus_mie_r,
+    mpie:        mstatus_mpie_r,
+    default:     '0
+};
 
 always_ff @(posedge clk_i) begin
     if (csr_read_enable_i) begin
@@ -253,7 +248,7 @@ always_ff @(posedge clk_i) begin
         //                                    hardware thread #0
         CSR_MHARTID:       csr_read_data_o <= 32'b0;
         //                                    machine status
-        CSR_MSTATUS:       csr_read_data_o <= mstatus_r;
+        CSR_MSTATUS:       csr_read_data_o <= mstatus_o;
         //                                    machine trap-vector base-address
         CSR_MTVEC:         csr_read_data_o <= mtvec_r;
         //                                    counter inhibit
@@ -306,6 +301,9 @@ end
 // CSR Writes
 //
 
+mstatus_t mstatus_i;
+always_comb mstatus_i = mstatus_t'(csr_write_data_i);
+
 always_ff @(posedge clk_i) begin
     if (csr_write_enable_i) begin
         case (csr_write_addr_i)
@@ -317,6 +315,11 @@ always_ff @(posedge clk_i) begin
         CSR_MTVAL2:         mtval2_r        <= csr_write_data_i;
         CSR_MTINST:         mtinst_r        <= csr_write_data_i;
         CSR_MEPC:           mepc_r          <= csr_write_data_i;
+        CSR_MSTATUS:
+            begin
+                mstatus_mie_r  <= mstatus_i.mie;
+                mstatus_mpie_r <= mstatus_i.mpie;
+            end
         CSR_CYCLE:          mcycle_r        <= { mcycle_w  [63:32], csr_write_data_i };
         CSR_TIME:           time_r          <= { time_w    [63:32], csr_write_data_i };
         CSR_INSTRET:        minstret_r      <= { minstret_w[63:32], csr_write_data_i };
@@ -325,9 +328,11 @@ always_ff @(posedge clk_i) begin
         CSR_INSTRETH:       minstret_r      <= { csr_write_data_i, minstret_w [31:0] };
         endcase
     end else begin
-        mcycle_r   <= mcycle_w;
-        time_r     <= time_w;
-        minstret_r <= minstret_w;
+        mcycle_r       <= mcycle_w;
+        time_r         <= time_w;
+        minstret_r     <= minstret_w;
+        mstatus_mie_r  <= mstatus_mie_w;
+        mstatus_mpie_r <= mstatus_mpie_w;
     end
 
     if (reset_i) begin
@@ -336,6 +341,8 @@ always_ff @(posedge clk_i) begin
         mcycle_r        <= MCYCLE_DEFAULT;
         time_r          <= TIME_DEFAULT;
         minstret_r      <= MINSTRET_DEFAULT;
+        mstatus_mie_r   <= MSTATUS_MIE_DEFAULT;
+        mstatus_mpie_r  <= MSTATUS_MPIE_DEFAULT;
         mscratch_r      <= MSCRATCH_DEFAULT;
         mcause_r        <= MCAUSE_DEFAULT;
         mepc_r          <= MEPC_DEFAULT;
