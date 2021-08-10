@@ -84,53 +84,6 @@ localparam funct3_t F3_CSRRCI    = 3'b111;     // Atomic RC Immedate CSR
 // Funct7
 typedef logic [6:0] funct7_t;
 
-// CSR
-localparam csr_t CSR_MVENDORID      = 12'hF11;
-localparam csr_t CSR_MARCHID        = 12'hF12;
-localparam csr_t CSR_MIMPID         = 12'hF13;
-localparam csr_t CSR_MHARTID        = 12'hF14;
-localparam csr_t CSR_MSTATUS        = 12'h300;
-localparam csr_t CSR_MISA           = 12'h301;
-localparam csr_t CSR_MEDELEG        = 12'h302;
-localparam csr_t CSR_MIDELEG        = 12'h303;
-localparam csr_t CSR_MIE            = 12'h304;
-localparam csr_t CSR_MTVEC          = 12'h305;
-localparam csr_t CSR_MCOUNTEREN     = 12'h306;
-localparam csr_t CSR_MSCRATCH       = 12'h340;
-localparam csr_t CSR_MEPC           = 12'h341;
-localparam csr_t CSR_MCAUSE         = 12'h342;
-localparam csr_t CSR_MTVAL          = 12'h343;
-localparam csr_t CSR_MIP            = 12'h344;
-localparam csr_t CSR_PMPCFG0        = 12'h3A0;
-localparam csr_t CSR_PMPCFG1        = 12'h3A1;
-localparam csr_t CSR_PMPCFG2        = 12'h3A2;
-localparam csr_t CSR_PMPCFG3        = 12'h3A3;
-localparam csr_t CSR_PMPADDR0       = 12'h3B0;
-// ...
-localparam csr_t CSR_PMPADDR15      = 12'h3BF;
-localparam csr_t CSR_MCYCLE         = 12'hB00;
-localparam csr_t CSR_MTIME          = 12'hB01;
-localparam csr_t CSR_MINSTRET       = 12'hB02;
-localparam csr_t CSR_MHPMCOUNTER3   = 12'hB03;
-// ...
-localparam csr_t CSR_MHPMCOUNTER31  = 12'hB8F;
-localparam csr_t CSR_MCYCLEH        = 12'hB80;
-localparam csr_t CSR_MTIMEH         = 12'hB81;
-localparam csr_t CSR_MINSTRETH      = 12'hB82;
-localparam csr_t CSR_MHPMCOUNTER3H  = 12'hB83;
-// ...
-localparam csr_t CSR_MHPMCOUNTER31H = 12'hB9F;
-localparam csr_t CSR_MCOUNTINHIBIT  = 12'h320;
-localparam csr_t CSR_MHPMEVENT3     = 12'h323;
-// ...
-localparam csr_t CSR_MHPMEVENT31    = 12'h33F;
-localparam csr_t CSR_CYCLE          = 12'hC00;
-localparam csr_t CSR_TIME           = 12'hC01;
-localparam csr_t CSR_INSTRET        = 12'hC02;
-localparam csr_t CSR_CYCLEH         = 12'hC80;
-localparam csr_t CSR_TIMEH          = 12'hC81;
-localparam csr_t CSR_INSTRETH       = 12'hC82;
-
 // Funct12
 typedef logic [11:0] funct12_t;
 localparam funct12_t F12_ECALL   = 12'h000;     // Environment call
