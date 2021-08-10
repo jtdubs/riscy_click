@@ -33,7 +33,6 @@ function void start_logging;
                 $display("ERROR: unable to open log.json");
                 $finish;
             end
-            $fdisplay(log_fd, "[");
         end
 `endif
     end
@@ -43,8 +42,6 @@ function void stop_logging;
     begin
 `ifdef ENABLE_LOGGING
         if (log_fd == 0) begin
-            $fdisplay(log_fd, "{}");
-            $fdisplay(log_fd, "]");
             $fclose(log_fd);
             log_fd = 0;
         end
