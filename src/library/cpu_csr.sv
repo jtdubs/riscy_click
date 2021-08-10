@@ -60,10 +60,10 @@ localparam csr_t CSR_MTINST         = 12'h34A; // Implemented
 localparam csr_t CSR_MTVAL2         = 12'h34B; // Implemented
 
 // Machine Memory Protection
-localparam csr_t CSR_PMPCFG0        = 12'h3A0; // TODO
-localparam csr_t CSR_PMPCFG15       = 12'h3AF; // TODO
-localparam csr_t CSR_PMPADDR0       = 12'h3B0; // TODO
-localparam csr_t CSR_PMPADDR63      = 12'h3EF; // TODO
+localparam csr_t CSR_PMPCFG0        = 12'h3A0; // Implemented
+localparam csr_t CSR_PMPCFG15       = 12'h3AF; // Implemented
+localparam csr_t CSR_PMPADDR0       = 12'h3B0; // Implemented
+localparam csr_t CSR_PMPADDR63      = 12'h3EF; // Implemented
 
 // Machine Counters/Timers
 localparam csr_t CSR_MCYCLE         = 12'hB00; // Implemented
@@ -143,6 +143,57 @@ typedef struct packed {
     logic [30:0] exception_code;
     logic        is_interrupt;
 } mcause_t;
+
+typedef enum logic [1:0] {
+    PMPCFG_A_OFF =   2'b00, // Null Region
+    PMPCFG_A_TOR   = 2'b01, // Top of Range
+    PMPCFG_A_NA4   = 2'b10, // Naturally Aligned Four-Byte Region
+    PMPCFG_A_NAPOT = 2'b11  // Naturally Aligned Power-of-Two Region
+} matching_mode_t;
+
+typedef struct packed {
+    logic [2:0]     rwx;
+    matching_mode_t matching_mode;
+    logic [1:0]     reserved_5;
+    logic           locked;
+} pmpcfg_t;
+
+typedef struct packed {
+    word_t   addr;
+    pmpcfg_t cfg;
+} pmp_entry_t;
+
+localparam logic [2:0] R = 3'b001;
+localparam logic [2:0] W = 3'b010;
+localparam logic [2:0] X = 3'b100;
+
+
+//
+// PMP Config
+//
+
+localparam pmp_entry_t [8:0] PMP_CONFIG = '{
+    // [00000000, 00001000) - BIOS
+    '{ { 32'h00000000 >> 2 }, '{ rwx: R|X, locked: 1'b1, matching_mode: PMPCFG_A_NAPOT, default: '0 } },
+    '{ { 32'h00001000 >> 2 }, '{           locked: 1'b1, matching_mode: PMPCFG_A_OFF,   default: '0 } },
+
+    // [10000000, 10001000) - System RAM
+    '{ { 32'h10000000 >> 2 }, '{ rwx: R|W, locked: 1'b1, matching_mode: PMPCFG_A_NAPOT, default: '0 } },
+    '{ { 32'h10001000 >> 2 }, '{           locked: 1'b1, matching_mode: PMPCFG_A_OFF,   default: '0 } },
+
+    // [20000000, 20001000) - Video RAM
+    '{ { 32'h20000000 >> 2 }, '{ rwx: R|W, locked: 1'b1, matching_mode: PMPCFG_A_NAPOT, default: '0 } },
+    '{ { 32'h20001000 >> 2 }, '{           locked: 1'b1, matching_mode: PMPCFG_A_OFF,   default: '0 } },
+
+    //  FF000004            - Seven Segment Display
+    '{ { 32'hFF000004 >> 2 }, '{ rwx: R|W, locked: 1'b1, matching_mode: PMPCFG_A_NA4,   default: '0 } },
+        //
+    //  FF000008            - Switch Bank
+    '{ { 32'hFF000008 >> 2 }, '{ rwx: R,   locked: 1'b1, matching_mode: PMPCFG_A_NA4,   default: '0 } },
+
+    // [FF00000C, FFFFFFFF] - UNUSED 
+    '{ { 32'hFFFFFFFF >> 2 }, '{           locked: 1'b1, matching_mode: PMPCFG_A_TOR,   default: '0 } }
+};
 
 
 //
@@ -285,6 +336,20 @@ always_ff @(posedge clk_i) begin
         //                                    retired instruction counter (upper half)
         CSR_MINSTRETH,
         CSR_INSTRETH:      csr_read_data_o <= minstret_r[63:32];
+        //                                    memory config
+        (CSR_PMPCFG0+0):   csr_read_data_o <= { PMP_CONFIG[0].cfg, PMP_CONFIG[1].cfg, PMP_CONFIG[2].cfg, PMP_CONFIG[3].cfg };
+        (CSR_PMPCFG0+1):   csr_read_data_o <= { PMP_CONFIG[4].cfg, PMP_CONFIG[5].cfg, PMP_CONFIG[6].cfg, PMP_CONFIG[7].cfg };
+        //                                    memory address
+        (CSR_PMPADDR0+0):  csr_read_data_o <= PMP_CONFIG[0].addr;
+        (CSR_PMPADDR0+1):  csr_read_data_o <= PMP_CONFIG[1].addr;
+        (CSR_PMPADDR0+2):  csr_read_data_o <= PMP_CONFIG[2].addr;
+        (CSR_PMPADDR0+3):  csr_read_data_o <= PMP_CONFIG[3].addr;
+        (CSR_PMPADDR0+4):  csr_read_data_o <= PMP_CONFIG[4].addr;
+        (CSR_PMPADDR0+5):  csr_read_data_o <= PMP_CONFIG[5].addr;
+        (CSR_PMPADDR0+6):  csr_read_data_o <= PMP_CONFIG[6].addr;
+        (CSR_PMPADDR0+7):  csr_read_data_o <= PMP_CONFIG[7].addr;
+        (CSR_PMPADDR0+8):  csr_read_data_o <= PMP_CONFIG[8].addr;
+
         default:           csr_read_data_o <= 32'b0;
         endcase
     end else begin
