@@ -1,22 +1,45 @@
-.PHONY: all clean update_bios update_crom
+.PHONY: all clean
 
-all: bios.mem bios.dis
+SOURCES = bios.s
+TARGETS = bios.mem bios.dis
+
+CC = riscv32-unknown-elf-gcc
+LD = riscv32-unknown-elf-ld
+OBJDUMP = riscv32-unknown-elf-objdump
+OBJCOPY = riscv32-unknown-elf-objcopy
+
+CFLAGS =
+CFLAGS += -mabi=ilp32
+CFLAGS += -march=rv32i
+CFLAGS += -O2
+CFLAGS += -c
+
+LDFLAGS =
+LDFLAGS += -e _start
+LDFLAGS += -nostdlib
+LDFLAGS += -section-start=.text=0
+LDFLAGS += -section-start=.sdata=300
+
+all: $(TARGETS)
 
 clean:
-	rm -f bios.o bios bios.dis bios.img bios.mem
+	rm -f *.o *.elf *.dis *.img *.mem
 
-bios.o: bios.c
-	riscv32-unknown-elf-gcc -mabi=ilp32 -march=rv32i -O2 -c bios.c -o bios.o
+%.o: %.s
+	$(CC) $(CFLAGS) -o $@ $^
 
-bios: bios.o
-	riscv32-unknown-elf-ld -e _start -nostdlib --section-start=.text=0 --section-start=.sdata=300 -o bios bios.o
+%.o: %.c
+	$(CC) $(CFLAGS) -o $@ $^
 
-bios.dis: bios
-	riscv32-unknown-elf-objdump --disassemble-all bios -M no-aliases,numeric > bios.dis
+%.elf: %.o
+	$(LD) $(LDFLAGS) -o $@ $^
 
-bios.img: bios
-	riscv32-unknown-elf-objcopy bios -O binary bios.img
+%.dis: %.elf
+	$(OBJDUMP) --disassemble-all $^ -M no-aliases,numeric > $@
 
-bios.mem: bios.img
-	echo "@0000" > bios.mem
-	hexdump -v -e '/4 "%08X" "\n"' bios.img >> bios.mem
+%.img: %.elf
+	$(OBJCOPY) $^ -O binary $@
+
+%.mem: %.img
+	echo "@0000" > $@
+	hexdump -v -e '/4 "%08X" "\n"' $^ >> $@
