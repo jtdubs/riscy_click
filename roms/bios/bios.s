@@ -1,4 +1,5 @@
 .text
+.align 4
 .globl  _start
 
 _start:
@@ -18,12 +19,14 @@ _start:
     addi x11, x0, 0 # x=0
 
 vram_loop:
-    # char = (y * 64) + x
+    # char = (y * 80) + x
     slli x12, x10, 6
-    add x12, x12, x10
+    slli x8, x10, 4
+    add x12, x12, x8
+    add x12, x12, x11
 
     # addr = (y << 7) + x
-    addi x13, x10, 7
+    slli x13, x10, 7
     add x13, x13, x11
     add x13, x13, x4
 
@@ -45,9 +48,8 @@ seg_loop:
     sw x16, 0(x15)
     jal x0, seg_loop
 
-
+.section .sdata, "a"
 .align 4
-.section .sdata
 
 .globl BIOS_BASE
 BIOS_BASE:
