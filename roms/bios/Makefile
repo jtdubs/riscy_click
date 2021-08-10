@@ -1,7 +1,7 @@
 .PHONY: all clean
 
 SOURCES = bios.s
-TARGETS = bios.mem bios.dis
+TARGETS = bios.mem bios.dis bios.elf bios.img
 
 CC = riscv32-unknown-elf-gcc
 LD = riscv32-unknown-elf-ld

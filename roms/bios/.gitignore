@@ -7,3 +7,4 @@ bios
 *.mem
 *.jou
 *.log
+*.elf

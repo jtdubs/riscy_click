@@ -1,59 +1,70 @@
 .text
-
-.global _start
+.globl  _start
 
 _start:
+    # set up constants
     lw x14, SWITCH
     lw x15, DISPLAY
-    lw x14, 0(x14)
-    sw x14, 0(x15)
-    csrrs x28, instret, x0
-    lui x6, 0x1
-    slli x28, x28, 0x10
-    srli x28, x28, 0x10
+    lw x4,  VRAM_BASE
+    lw x5,  RAM_BASE
+    addi x6, x0, 80
+    addi x7, x0, 30
+
+    # update display from switch
+    lw x16, 0(x14)
+    sw x16, 0(x15)
+
+    addi x10, x0, 0 # y=0
+    addi x11, x0, 0 # x=0
+
+vram_loop:
+    # char = (y * 64) + x
+    slli x12, x10, 6
+    add x12, x12, x10
+
+    # addr = (y << 7) + x
+    addi x13, x10, 7
+    add x13, x13, x11
+    add x13, x13, x4
+
+    # VRAM[addr] = char
+    sb x12, (x13)
+
+    # horizontal loop
+    addi x11, x11, 1
+    bne  x11, x6, vram_loop
+
+    # vertial loop
     addi x11, x0, 0
-    addi x10, x0, 0
-    addi x16, x0, 80
-    addi x6, x6, -256
-    addi x15, x0, 0
-    lw x14, VRAM_BASE
-    or x12, x10, x15
-    add x13, x11, x15
-    add x14, x14, x12
-    andi x13, x13, 255
-    sb x13, 0(x14)
-    addi x15, x15, 1
-    bne x15, x16, 34
-    addi x11, x11, 80
-    addi x10, x10, 128
-    andi x11, x11, 255
-    bne x10, x6, 30
-    csrrs x15, instret, x0
-    lw x12, RAM_BASE
-    slli x15, x15, 0x10
-    srli x15, x15, 0x10
-    sub x15, x15, x28
-    lw x13, SWITCH
-    lw x14, DISPLAY
-    sw x15, 0(x12)
-    lw x15, 0(x13)
-    sw x15, 0(x14)
-    jal x0, 84
+    addi x10, x10, 1
+    bne x10, x7, vram_loop
 
-.section .sdata
+seg_loop:
+    # update display from switch
+    lw x16, 0(x14)
+    sw x16, 0(x15)
+    jal x0, seg_loop
+
+
 .align 4
+.section .sdata
 
+.globl BIOS_BASE
 BIOS_BASE:
-.dword 0x00000000
+.word 0x00000000
 
+.globl RAM_BASE
 RAM_BASE:
-.dword 0x10000000
+.word 0x10000000
 
+.globl VRAM_BASE
 VRAM_BASE:
-.dword 0x20000000
+.word 0x20000000
 
+.globl DISPLAY
 DISPLAY:
-.dword 0xFF000000
+.word 0xFF000000
 
+.globl SWITCH
 SWITCH:
-.dword 0xFF000004
+.word 0xFF000004
