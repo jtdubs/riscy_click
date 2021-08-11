@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-module keyboard_tb ();
+module ps2_rx_tb ();
 
      logic       clk_i;
      logic       reset_i;
@@ -10,7 +10,7 @@ module keyboard_tb ();
 wire logic       ready_o;
 wire logic [7:0] scancode_o;
 
-keyboard keyboard (.*);
+ps2_rx ps2_rx (.*);
 
 // clk_i
 initial begin
@@ -27,7 +27,7 @@ initial begin
     @(posedge clk_i) reset_i = 0;
 end
 
-// keyboard input simulator
+// ps2_rx input simulator
 localparam logic [10:0] INPUT_VECTOR = 11'b11001100110;
 
 integer i;

@@ -17,7 +17,7 @@ module video_ram
         input  wire logic        clk_pxl_i,
         input  wire logic        pxl_reset_i,
         input  wire logic [11:0] pxl_addr_i,
-        output      logic [ 7:0] pxl_data_o
+        output      byte_t       pxl_data_o
     );
 
 `ifdef ENABLE_XILINX_PRIMITIVES
@@ -104,7 +104,7 @@ video_tdpram_inst (
 // Simulator Implementation
 //
 
-logic [7:0] ram [0:4095];
+byte_t ram [0:4095];
 
 integer i;
 initial begin

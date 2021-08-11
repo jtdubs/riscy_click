@@ -14,7 +14,7 @@ module vga_controller
 
         // video ram interface
         output      logic [11:0] vram_addr_o,
-        input  wire logic [ 7:0] vram_data_i,
+        input  wire byte_t       vram_data_i,
 
         // vga output
         output      logic [ 3:0] vga_red_o,

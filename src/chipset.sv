@@ -134,7 +134,7 @@ segdisplay #(.CLK_DIVISOR(50000)) disp (
 );
 
 logic [11:0] vga_vram_addr_w;
-logic [ 7:0] vga_vram_data_w;
+byte_t       vga_vram_data_w;
 
 video_ram vram (
     // cpu port
