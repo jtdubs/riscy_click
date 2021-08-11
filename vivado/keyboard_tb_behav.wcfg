@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="keyboard_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="common" />
+            <top_module name="glbl" />
+            <top_module name="keyboard_tb" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0.000000 us"></ZoomStartTime>
+      <ZoomEndTime time="438.200001 us"></ZoomEndTime>
+      <Cursor1Time time="201.000000 us"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="307"></NameColumnWidth>
+      <ValueColumnWidth column_width="142"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="24" />
+   <wvobject fp_name="/keyboard_tb/keyboard/clk_i" type="logic">
+      <obj_property name="ElementShortName">clk_i</obj_property>
+      <obj_property name="ObjectShortName">clk_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/keyboard_tb/keyboard/reset_i" type="logic">
+      <obj_property name="ElementShortName">reset_i</obj_property>
+      <obj_property name="ObjectShortName">reset_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/keyboard_tb/keyboard/clk_kbd_async_i" type="logic">
+      <obj_property name="ElementShortName">clk_kbd_async_i</obj_property>
+      <obj_property name="ObjectShortName">clk_kbd_async_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/keyboard_tb/keyboard/kbd_data_async_i" type="logic">
+      <obj_property name="ElementShortName">kbd_data_async_i</obj_property>
+      <obj_property name="ObjectShortName">kbd_data_async_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/keyboard_tb/keyboard/ready_o" type="logic">
+      <obj_property name="ElementShortName">ready_o</obj_property>
+      <obj_property name="ObjectShortName">ready_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/keyboard_tb/keyboard/scancode_o" type="array">
+      <obj_property name="ElementShortName">scancode_o[7:0]</obj_property>
+      <obj_property name="ObjectShortName">scancode_o[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/keyboard_tb/keyboard/clk_kbd_r" type="array">
+      <obj_property name="ElementShortName">clk_kbd_r[1:0]</obj_property>
+      <obj_property name="ObjectShortName">clk_kbd_r[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/keyboard_tb/keyboard/kbd_data_r" type="logic">
+      <obj_property name="ElementShortName">kbd_data_r</obj_property>
+      <obj_property name="ObjectShortName">kbd_data_r</obj_property>
+   </wvobject>
+   <wvobject fp_name="/keyboard_tb/keyboard/falling_edge_w" type="logic">
+      <obj_property name="ElementShortName">falling_edge_w</obj_property>
+      <obj_property name="ObjectShortName">falling_edge_w</obj_property>
+   </wvobject>
+   <wvobject fp_name="/keyboard_tb/keyboard/kbd_state_w" type="array">
+      <obj_property name="ElementShortName">kbd_state_w[31:0]</obj_property>
+      <obj_property name="ObjectShortName">kbd_state_w[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/keyboard_tb/keyboard/kbd_state_r" type="array">
+      <obj_property name="ElementShortName">kbd_state_r[31:0]</obj_property>
+      <obj_property name="ObjectShortName">kbd_state_r[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/keyboard_tb/keyboard/bits_r" type="array">
+      <obj_property name="ElementShortName">bits_r[3:0]</obj_property>
+      <obj_property name="ObjectShortName">bits_r[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/keyboard_tb/keyboard/scancode_r" type="array">
+      <obj_property name="ElementShortName">scancode_r[7:0]</obj_property>
+      <obj_property name="ObjectShortName">scancode_r[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/keyboard_tb/keyboard/parity_r" type="logic">
+      <obj_property name="ElementShortName">parity_r</obj_property>
+      <obj_property name="ObjectShortName">parity_r</obj_property>
+   </wvobject>
+   <wvobject fp_name="/keyboard_tb/keyboard/parity_w" type="logic">
+      <obj_property name="ElementShortName">parity_w</obj_property>
+      <obj_property name="ObjectShortName">parity_w</obj_property>
+   </wvobject>
+   <wvobject fp_name="/keyboard_tb/keyboard/stop_valid_w" type="logic">
+      <obj_property name="ElementShortName">stop_valid_w</obj_property>
+      <obj_property name="ObjectShortName">stop_valid_w</obj_property>
+   </wvobject>
+   <wvobject fp_name="/keyboard_tb/keyboard/idle_w" type="logic">
+      <obj_property name="ElementShortName">idle_w</obj_property>
+      <obj_property name="ObjectShortName">idle_w</obj_property>
+   </wvobject>
+   <wvobject fp_name="/keyboard_tb/keyboard/start_w" type="logic">
+      <obj_property name="ElementShortName">start_w</obj_property>
+      <obj_property name="ObjectShortName">start_w</obj_property>
+   </wvobject>
+   <wvobject fp_name="/keyboard_tb/keyboard/recv_w" type="logic">
+      <obj_property name="ElementShortName">recv_w</obj_property>
+      <obj_property name="ObjectShortName">recv_w</obj_property>
+   </wvobject>
+   <wvobject fp_name="/keyboard_tb/keyboard/check_w" type="logic">
+      <obj_property name="ElementShortName">check_w</obj_property>
+      <obj_property name="ObjectShortName">check_w</obj_property>
+   </wvobject>
+   <wvobject fp_name="/keyboard_tb/keyboard/pass_w" type="logic">
+      <obj_property name="ElementShortName">pass_w</obj_property>
+      <obj_property name="ObjectShortName">pass_w</obj_property>
+   </wvobject>
+   <wvobject fp_name="/keyboard_tb/keyboard/fail_w" type="logic">
+      <obj_property name="ElementShortName">fail_w</obj_property>
+      <obj_property name="ObjectShortName">fail_w</obj_property>
+   </wvobject>
+   <wvobject fp_name="/keyboard_tb/keyboard/key_w" type="logic">
+      <obj_property name="ElementShortName">key_w</obj_property>
+      <obj_property name="ObjectShortName">key_w</obj_property>
+   </wvobject>
+   <wvobject fp_name="/keyboard_tb/keyboard/abort_w" type="logic">
+      <obj_property name="ElementShortName">abort_w</obj_property>
+      <obj_property name="ObjectShortName">abort_w</obj_property>
+   </wvobject>
+</wave_config>

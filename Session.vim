@@ -2,35 +2,35 @@ let SessionLoad = 1
 let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
 let v:this_session=expand("<sfile>:p")
 silent only
-cd ~/dev/riscy_click
+cd /mnt/d/dev/riscy_click
 if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +0 constraints/Nexys-A7-100T.xdc
-badd +0 roms/bios/bios.c
-badd +0 src/alu.sv
-badd +0 src/bios_rom.sv
-badd +0 src/board.sv
-badd +0 src/character_rom.sv
-badd +0 src/chipset.sv
-badd +0 src/common.sv
-badd +0 src/cpu.sv
-badd +0 src/cpu_clk_gen.sv
-badd +0 src/cpu_csr.sv
-badd +0 src/cpu_ex.sv
-badd +0 src/cpu_id.sv
-badd +0 src/cpu_if.sv
-badd +0 src/cpu_ma.sv
-badd +0 src/cpu_wb.sv
-badd +0 src/keyboard.sv
-badd +0 src/logging.sv
-badd +0 src/pixel_clk_gen.sv
-badd +0 src/regfile.sv
-badd +0 src/segdisplay.sv
-badd +0 src/system_ram.sv
-badd +0 src/vga_controller.sv
-badd +0 src/video_ram.sv
+badd +1 constraints/Nexys-A7-100T.xdc
+badd +1 roms/bios/bios.c
+badd +1 src/alu.sv
+badd +1 src/bios_rom.sv
+badd +1 src/board.sv
+badd +1 src/character_rom.sv
+badd +1 src/chipset.sv
+badd +1 src/common.sv
+badd +1 src/cpu.sv
+badd +1 src/cpu_clk_gen.sv
+badd +1 src/cpu_csr.sv
+badd +1 src/cpu_ex.sv
+badd +1 src/cpu_id.sv
+badd +1 src/cpu_if.sv
+badd +1 src/cpu_ma.sv
+badd +1 src/cpu_wb.sv
+badd +1 src/keyboard.sv
+badd +1 src/logging.sv
+badd +1 src/pixel_clk_gen.sv
+badd +1 src/regfile.sv
+badd +1 src/segdisplay.sv
+badd +1 src/system_ram.sv
+badd +1 src/vga_controller.sv
+badd +1 src/video_ram.sv
 argglobal
 %argdel
 $argadd constraints/Nexys-A7-100T.xdc
@@ -76,7 +76,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 24) / 48)
+let s:l = 1 - ((0 * winheight(0) + 27) / 54)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
