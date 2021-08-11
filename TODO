@@ -3,6 +3,16 @@ TODO:
     - Keyboard controller
     - Interrupt controller
     - WFI instruction
+    - Idea:
+        - Keyboard controller shifts bytes into an internal 32-bit buffer
+        - Keyboard controller pushes words into a FIFO when command is complete:
+            - Key down: XX
+            - Extended key down: E0 XX
+            - Key up: FF XX
+            - Extended key up: FF EO XX
+        - FIFO non-empty and FIFO full indicators become external interrupts
+        - FIFO output is memory mapped
+        - CPU can choose to enable interrupt and have a keyboard handler, or leave it off and poll
 - Sim UI
     - Halt output
     - Finish output
