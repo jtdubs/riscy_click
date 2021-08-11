@@ -388,7 +388,7 @@ always_ff @(posedge clk_i) begin
         mstatus_mpie_r <= mstatus_mpie_w;
     end
 
-    unique if (mtrap_i)
+    if (mtrap_i)
         mepc_r   <= pc_i;
     else if (mret_i)
         mepc_r   <= 32'b0;

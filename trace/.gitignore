@@ -1,3 +1,5 @@
 verilator/
 chipset
 *.json
+*.log
+*.txt
