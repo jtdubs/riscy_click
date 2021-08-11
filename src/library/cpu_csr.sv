@@ -231,7 +231,6 @@ always_ff @(posedge clk_i) begin
     end
 
     if (reset_i) begin
-        mepc_r   <= MEPC_DEFAULT;
         mcause_r <= MCAUSE_DEFAULT;
         mtval_r  <= MTVAL_DEFAULT;
         mtval2_r <= MTVAL2_DEFAULT;
@@ -401,7 +400,6 @@ always_ff @(posedge clk_i) begin
         time_r          <= TIME_DEFAULT;
         minstret_r      <= MINSTRET_DEFAULT;
         mscratch_r      <= MSCRATCH_DEFAULT;
-        mcause_r        <= MCAUSE_DEFAULT;
         meie_r          <= 1'b0;
         mtie_r          <= 1'b0;
         msie_r          <= 1'b0;
