@@ -8,8 +8,8 @@
 
 .text
 .align 4
-.globl  _start
 
+.globl _start
 _start:
     jal csr_test
 
@@ -59,19 +59,21 @@ seg_loop:
     j seg_loop
 
 csr_test:
-    csrr t0, pmpcfg0
-    csrr t0, pmpcfg1
-    csrr t0, pmpcfg2
-    csrr t0, pmpaddr0
-    csrr t0, pmpaddr1
-    csrr t0, pmpaddr2
-    csrr t0, pmpaddr3
-    csrr t0, pmpaddr4
-    csrr t0, pmpaddr5
-    csrr t0, pmpaddr6
-    csrr t0, pmpaddr7
-    csrr t0, pmpaddr8
-    csrr t0, pmpaddr9
+    la t0, _trap_handler
+    srli t0, t0, 2
+    csrw mtvec, t0
+    nop
     ebreak
+    nop
     ret
 
+.globl _trap_handler
+_trap_handler:
+    nop
+    nop
+    csrr t0, mepc
+    addi t0, t0, 4
+    csrw mepc, t0
+    nop
+    nop
+    mret
