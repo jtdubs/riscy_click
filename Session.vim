@@ -7,19 +7,19 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +2 src/library/alu.sv
-badd +232 src/library/board.sv
-badd +1 src/library/common.sv
-badd +1 src/library/cpu.sv
-badd +45 src/library/cpu_csr.sv
-badd +1 src/library/cpu_ex.sv
-badd +280 src/library/cpu_id.sv
-badd +1 src/library/cpu_if.sv
-badd +1 src/library/cpu_ma.sv
-badd +1 src/library/cpu_wb.sv
-badd +1 src/library/regfile.sv
-badd +1 src/library/segdisplay.sv
-badd +87 src/library/vga_controller.sv
+badd +2 src/alu.sv
+badd +232 src/board.sv
+badd +1 src/common.sv
+badd +1 src/cpu.sv
+badd +45 src/cpu_csr.sv
+badd +1 src/cpu_ex.sv
+badd +280 src/cpu_id.sv
+badd +1 src/cpu_if.sv
+badd +1 src/cpu_ma.sv
+badd +1 src/cpu_wb.sv
+badd +1 src/regfile.sv
+badd +1 src/segdisplay.sv
+badd +87 src/vga_controller.sv
 badd +93 src/synth/bios_rom.sv
 badd +82 src/synth/character_rom.sv
 badd +1 src/synth/cpu_clk_gen.sv
@@ -32,24 +32,24 @@ badd +19 src/sim/character_rom.sv
 badd +6 src/sim/logging.sv
 badd +18 src/sim/system_ram.sv
 badd +26 src/sim/video_ram.sv
-badd +1 src/library/chipset.sv
+badd +1 src/chipset.sv
 badd +1 src/sim/pixel_clk_gen.sv
 badd +0 utils/log_analysis/analyze.py
 argglobal
 %argdel
-$argadd src/library/alu.sv
-$argadd src/library/board.sv
-$argadd src/library/common.sv
-$argadd src/library/cpu.sv
-$argadd src/library/cpu_csr.sv
-$argadd src/library/cpu_ex.sv
-$argadd src/library/cpu_id.sv
-$argadd src/library/cpu_if.sv
-$argadd src/library/cpu_ma.sv
-$argadd src/library/cpu_wb.sv
-$argadd src/library/regfile.sv
-$argadd src/library/segdisplay.sv
-$argadd src/library/vga_controller.sv
+$argadd src/alu.sv
+$argadd src/board.sv
+$argadd src/common.sv
+$argadd src/cpu.sv
+$argadd src/cpu_csr.sv
+$argadd src/cpu_ex.sv
+$argadd src/cpu_id.sv
+$argadd src/cpu_if.sv
+$argadd src/cpu_ma.sv
+$argadd src/cpu_wb.sv
+$argadd src/regfile.sv
+$argadd src/segdisplay.sv
+$argadd src/vga_controller.sv
 $argadd src/synth/bios_rom.sv
 $argadd src/synth/character_rom.sv
 $argadd src/synth/cpu_clk_gen.sv

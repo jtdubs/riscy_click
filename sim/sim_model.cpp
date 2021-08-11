@@ -133,5 +133,5 @@ void sim_draw(sim_model_t* model, float secondsElapsed) {
     float mhz = ((float)cyclesElapsed) / (secondsElapsed * 2000000.0f);
     float rate = (mhz * 100.0f) / 50.0f;
 
-    ImGui::Text("Simulation Speed: %3.03fMHz (%2.0f%)", mhz, rate);
+    ImGui::Text("Simulation Speed: %3.03fMHz (%2.0f%%)", mhz, rate);
 }
