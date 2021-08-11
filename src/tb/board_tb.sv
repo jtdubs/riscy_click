@@ -25,7 +25,7 @@ end
 // reset_i pulse
 initial begin
     reset_async_i = 1;
-    #50 reset_async_i = 0;
+    #10000 reset_async_i = 0;
 end
 
 // switches
