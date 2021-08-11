@@ -10,8 +10,8 @@ set shortmess=aoO
 badd +2 src/alu.sv
 badd +232 src/board.sv
 badd +1 src/common.sv
-badd +1 src/cpu.sv
-badd +45 src/cpu_csr.sv
+badd +13 src/cpu.sv
+badd +16 src/cpu_csr.sv
 badd +1 src/cpu_ex.sv
 badd +280 src/cpu_id.sv
 badd +1 src/cpu_if.sv
@@ -32,9 +32,9 @@ badd +19 src/sim/character_rom.sv
 badd +6 src/sim/logging.sv
 badd +18 src/sim/system_ram.sv
 badd +26 src/sim/video_ram.sv
-badd +1 src/chipset.sv
+badd +222 src/chipset.sv
 badd +1 src/sim/pixel_clk_gen.sv
-badd +0 utils/log_analysis/analyze.py
+badd +72 utils/log_analysis/analyze.py
 argglobal
 %argdel
 $argadd src/alu.sv
@@ -64,7 +64,7 @@ $argadd src/sim/logging.sv
 $argadd src/sim/pixel_clk_gen.sv
 $argadd src/sim/system_ram.sv
 $argadd src/sim/video_ram.sv
-edit utils/log_analysis/analyze.py
+edit src/chipset.sv
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
@@ -74,7 +74,7 @@ set winheight=1
 set winminwidth=0
 set winwidth=1
 argglobal
-if bufexists("utils/log_analysis/analyze.py") | buffer utils/log_analysis/analyze.py | else | edit utils/log_analysis/analyze.py | endif
+if bufexists("src/chipset.sv") | buffer src/chipset.sv | else | edit src/chipset.sv | endif
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -84,12 +84,13 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 154 - ((16 * winheight(0) + 12) / 24)
+let s:l = 1 - ((0 * winheight(0) + 26) / 53)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-154
+1
 normal! 0
+lcd ~/dev/riscy_click
 tabnext 1
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf

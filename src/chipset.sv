@@ -60,6 +60,7 @@ always_ff @(posedge clk_pxl_i) begin
         { pxl_reset_r, pxl_reset_chain_r } <= { pxl_reset_chain_r, 1'b0 };
 end
 
+
 //
 // Clock in Switch States
 //
@@ -95,6 +96,7 @@ wire word_t      dsp_read_data_w;
 wire word_t      bios_read_data_w;
 wire word_t      ram_read_data_w;
 wire word_t      vram_read_data_w;
+
 
 //
 // Devices
@@ -142,7 +144,7 @@ video_ram vram (
     .cpu_write_data_i (dmem_write_data_w),
     .cpu_write_mask_i (vram_write_mask_w),
     .cpu_read_data_o  (vram_read_data_w),
-    
+
     // vga port
     .clk_pxl_i        (clk_pxl_i),
     .pxl_reset_i      (pxl_reset_r),
@@ -196,6 +198,7 @@ always_comb begin
     default:      begin dmem_read_data_w = 32'h00000000;         end
     endcase
 end
+
 
 //
 // CPU

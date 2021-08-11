@@ -30,11 +30,11 @@ module cpu
 //
 
 
-wire word_t if_pc_w;
-wire word_t if_ir_w;
-wire word_t id_jmp_addr_async_w;
-wire logic  id_jmp_valid_async_w;
-wire logic  id_ready_async_w;
+wire word_t     if_pc_w;
+wire word_t     if_ir_w;
+wire word_t     id_jmp_addr_async_w;
+wire logic      id_jmp_valid_async_w;
+wire logic      id_ready_async_w;
 wire word_t     id_pc_w;
 wire word_t     id_ir_w;
 wire word_t     id_alu_op1_w;
@@ -46,15 +46,15 @@ wire word_t     id_ma_data_w;
 wire wb_src_t   id_wb_src_w;
 wire word_t     id_wb_data_w;
 wire logic      id_wb_valid_w;
-wire word_t    ex_pc_w;
-wire word_t    ex_ir_w;
-wire word_t    ex_ma_addr_w;
-wire ma_mode_t ex_ma_mode_w;
-wire ma_size_t ex_ma_size_w;
-wire word_t    ex_ma_data_w;
-wire wb_src_t  ex_wb_src_w;
-wire word_t    ex_wb_data_w;
-wire logic     ex_wb_valid_w;
+wire word_t     ex_pc_w;
+wire word_t     ex_ir_w;
+wire word_t     ex_ma_addr_w;
+wire ma_mode_t  ex_ma_mode_w;
+wire ma_size_t  ex_ma_size_w;
+wire word_t     ex_ma_data_w;
+wire wb_src_t   ex_wb_src_w;
+wire word_t     ex_wb_data_w;
+wire logic      ex_wb_valid_w;
 wire regaddr_t  ex_wb_addr_async_w;
 wire word_t     ex_wb_data_async_w;
 wire logic      ex_wb_ready_async_w;
@@ -65,12 +65,12 @@ wire word_t     ma_wb_data_async_w;
 wire logic      ma_wb_ready_async_w;
 wire logic      ma_wb_valid_async_w;
 wire logic      ma_empty_async_w;
-wire word_t    ma_pc_w;
-wire word_t    ma_ir_w;
-wire logic     ma_load_w;
-wire word_t    ma_wb_data_w;
-wire logic     ma_wb_valid_w;
-wire ma_size_t ma_size_w;
+wire word_t     ma_pc_w;
+wire word_t     ma_ir_w;
+wire logic      ma_load_w;
+wire word_t     ma_wb_data_w;
+wire logic      ma_wb_valid_w;
+wire ma_size_t  ma_size_w;
 wire regaddr_t  wb_addr_async_w;
 wire word_t     wb_data_async_w;
 wire logic      wb_valid_async_w;
@@ -131,7 +131,7 @@ cpu_id cpu_id (
     .wb_valid_async_o    (id_wb_valid_w)
 );
 
-// Execute    
+// Execute
 cpu_ex cpu_ex (
     .clk_i            (clk_i),
     .reset_i          (reset_i),
@@ -163,8 +163,6 @@ cpu_ex cpu_ex (
 );
 
 // Memory Access
-
-        
 cpu_ma cpu_ma (
     .clk_i             (clk_i),
     .reset_i           (reset_i),
