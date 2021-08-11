@@ -3,14 +3,17 @@
 
 module board_tb ();
 
-logic clk_sys_i;
-logic reset_async_i;
-wire logic halt_o;
+     logic        clk_sys_i;
+     logic        reset_async_i;
+     logic [15:0] switch_async_i;
+wire logic        halt_o;
 wire logic [ 7:0] dsp_anode_o;
 wire logic [ 7:0] dsp_cathode_o;
-logic [15:0] switch_async_i;
-logic [3:0] vga_red_o, vga_green_o, vga_blue_o;
-logic vga_hsync_o, vga_vsync_o;
+wire logic [ 3:0] vga_red_o;
+wire logic [ 3:0] vga_green_o;
+wire logic [ 3:0] vga_blue_o;
+wire logic        vga_hsync_o;
+wire logic        vga_vsync_o;
 
 board board (.*);
 

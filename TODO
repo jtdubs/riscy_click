@@ -1,8 +1,12 @@
 TODO:
+- Keyboard
+    - Keyboard controller
+    - Interrupt controller
+    - WFI instruction
 - Sim UI
     - Halt output
     - Finish output
-    - External Interrupt input
+- Debug Extension
 - Machine Level ISA
     - CSR
         - Decode should confirm address is read/executable, otherwise trap
@@ -11,9 +15,6 @@ TODO:
         - MTIME and MTIMECMP memory mapped registers??
     - Instructions
         - WFI
-    - Chipset
-        - External interrupts
-- Debug Extension
 - Peripherals
     - PS/2
     - UART
