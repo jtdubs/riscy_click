@@ -11,6 +11,8 @@
 .globl  _start
 
 _start:
+    jal csr_test
+
     # set up constants
     li s1, SWITCH
     li s2, DISPLAY
@@ -55,3 +57,21 @@ seg_loop:
     lw t0, 0(s1)
     sw t0, 0(s2)
     j seg_loop
+
+csr_test:
+    csrr t0, pmpcfg0
+    csrr t0, pmpcfg1
+    csrr t0, pmpcfg2
+    csrr t0, pmpaddr0
+    csrr t0, pmpaddr1
+    csrr t0, pmpaddr2
+    csrr t0, pmpaddr3
+    csrr t0, pmpaddr4
+    csrr t0, pmpaddr5
+    csrr t0, pmpaddr6
+    csrr t0, pmpaddr7
+    csrr t0, pmpaddr8
+    csrr t0, pmpaddr9
+    ebreak
+    ret
+

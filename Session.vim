@@ -11,7 +11,7 @@ badd +2 src/library/alu.sv
 badd +232 src/library/board.sv
 badd +1 src/library/common.sv
 badd +1 src/library/cpu.sv
-badd +1 src/library/cpu_csr.sv
+badd +45 src/library/cpu_csr.sv
 badd +1 src/library/cpu_ex.sv
 badd +280 src/library/cpu_id.sv
 badd +1 src/library/cpu_if.sv
@@ -19,7 +19,7 @@ badd +1 src/library/cpu_ma.sv
 badd +1 src/library/cpu_wb.sv
 badd +1 src/library/regfile.sv
 badd +1 src/library/segdisplay.sv
-badd +1 src/library/vga_controller.sv
+badd +87 src/library/vga_controller.sv
 badd +93 src/synth/bios_rom.sv
 badd +82 src/synth/character_rom.sv
 badd +1 src/synth/cpu_clk_gen.sv
@@ -34,6 +34,7 @@ badd +18 src/sim/system_ram.sv
 badd +26 src/sim/video_ram.sv
 badd +1 src/library/chipset.sv
 badd +1 src/sim/pixel_clk_gen.sv
+badd +0 utils/log_analysis/analyze.py
 argglobal
 %argdel
 $argadd src/library/alu.sv
@@ -63,7 +64,7 @@ $argadd src/sim/logging.sv
 $argadd src/sim/pixel_clk_gen.sv
 $argadd src/sim/system_ram.sv
 $argadd src/sim/video_ram.sv
-edit src/library/vga_controller.sv
+edit utils/log_analysis/analyze.py
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
@@ -73,7 +74,7 @@ set winheight=1
 set winminwidth=0
 set winwidth=1
 argglobal
-if bufexists("src/library/vga_controller.sv") | buffer src/library/vga_controller.sv | else | edit src/library/vga_controller.sv | endif
+if bufexists("utils/log_analysis/analyze.py") | buffer utils/log_analysis/analyze.py | else | edit utils/log_analysis/analyze.py | endif
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -83,12 +84,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 87 - ((26 * winheight(0) + 41) / 82)
+let s:l = 154 - ((16 * winheight(0) + 12) / 24)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-87
-normal! 04|
+154
+normal! 0
 tabnext 1
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
