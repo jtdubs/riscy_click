@@ -21,7 +21,7 @@ module cpu_csr
         input  wire mcause_t    mcause_i,      // trap cause
         input  wire logic       mtrap_i,       // is trap needed
         input  wire logic       mret_i,        // is trap return needed
-        output wire word_t      trap_addr_o,   // trap addr to jump to
+        output      word_t      trap_addr_o,   // trap addr to jump to
 
         // CSR read port
         input  wire csr_t       csr_read_addr_i,
@@ -35,11 +35,11 @@ module cpu_csr
 
         // PMP lookup port 1
         input  wire word_t      lookup1_addr,
-        output wire logic [2:0] lookup1_rwx,
+        output      logic [2:0] lookup1_rwx,
 
         // PMP lookup port 2
         input  wire word_t      lookup2_addr,
-        output wire logic [2:0] lookup2_rwx
+        output      logic [2:0] lookup2_rwx
     );
 
 
