@@ -71,7 +71,6 @@ ps2_state_t ps2_state_r, ps2_state_w;
 logic [3:0] bits_r;
 byte_t      data_r;
 logic       parity_r, parity_w;
-logic       stop_valid_w;
 
 // transitions
 logic idle_w;

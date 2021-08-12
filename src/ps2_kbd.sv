@@ -5,7 +5,7 @@
 /// Keyboard Controller
 ///
 
-module ps2_rx
+module ps2_kbd
     // Import Constants
     import common::*;
     (
@@ -17,15 +17,9 @@ module ps2_rx
         input  wire logic       valid_i,
 
         // Keyboard Output
-        output      kbd_event_l event_o,
+        output      kbd_event_t event_o,
         output      logic       valid_o
     );
-
-typedef struct packed {
-    byte_t scancode;
-    logic  extended;
-    logic  is_break;
-} kbd_event_t;
 
 logic extended_r;
 logic is_break_r;
@@ -47,7 +41,9 @@ always_ff @(posedge clk_i) begin
     end
 
     if (reset_i) begin
-        event_r <= '{ default: '0 };
+        extended_r <= 1'b0;
+        is_break_r <= 1'b0;
+        event_o <= '{ default: '0 };
     end
 end
 

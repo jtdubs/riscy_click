@@ -3,117 +3,117 @@
    <wave_state>
    </wave_state>
    <db_ref_list>
-      <db_ref path="ps2_tb_behav.wdb" id="1">
+      <db_ref path="ps2_rx_tb_behav.wdb" id="1">
          <top_modules>
             <top_module name="common" />
             <top_module name="glbl" />
-            <top_module name="ps2_tb" />
+            <top_module name="ps2_rx_tb" />
          </top_modules>
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0.000000 us"></ZoomStartTime>
-      <ZoomEndTime time="438.200001 us"></ZoomEndTime>
-      <Cursor1Time time="201.000000 us"></Cursor1Time>
+      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="418.601 ns"></ZoomEndTime>
+      <Cursor1Time time="0.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="307"></NameColumnWidth>
-      <ValueColumnWidth column_width="142"></ValueColumnWidth>
+      <ValueColumnWidth column_width="136"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="24" />
-   <wvobject fp_name="/ps2_tb/ps2/clk_i" type="logic">
+   <wvobject fp_name="/ps2_rx_tb/ps2_rx/clk_i" type="logic">
       <obj_property name="ElementShortName">clk_i</obj_property>
       <obj_property name="ObjectShortName">clk_i</obj_property>
    </wvobject>
-   <wvobject fp_name="/ps2_tb/ps2/reset_i" type="logic">
+   <wvobject fp_name="/ps2_rx_tb/ps2_rx/reset_i" type="logic">
       <obj_property name="ElementShortName">reset_i</obj_property>
       <obj_property name="ObjectShortName">reset_i</obj_property>
    </wvobject>
-   <wvobject fp_name="/ps2_tb/ps2/clk_kbd_async_i" type="logic">
-      <obj_property name="ElementShortName">clk_kbd_async_i</obj_property>
-      <obj_property name="ObjectShortName">clk_kbd_async_i</obj_property>
+   <wvobject fp_name="/ps2_rx_tb/ps2_rx/clk_ps2_async_i" type="logic">
+      <obj_property name="ElementShortName">clk_ps2_async_i</obj_property>
+      <obj_property name="ObjectShortName">clk_ps2_async_i</obj_property>
    </wvobject>
-   <wvobject fp_name="/ps2_tb/ps2/kbd_data_async_i" type="logic">
-      <obj_property name="ElementShortName">kbd_data_async_i</obj_property>
-      <obj_property name="ObjectShortName">kbd_data_async_i</obj_property>
+   <wvobject fp_name="/ps2_rx_tb/ps2_rx/ps2_data_async_i" type="logic">
+      <obj_property name="ElementShortName">ps2_data_async_i</obj_property>
+      <obj_property name="ObjectShortName">ps2_data_async_i</obj_property>
    </wvobject>
-   <wvobject fp_name="/ps2_tb/ps2/ready_o" type="logic">
-      <obj_property name="ElementShortName">ready_o</obj_property>
-      <obj_property name="ObjectShortName">ready_o</obj_property>
+   <wvobject fp_name="/ps2_rx_tb/ps2_rx/data_o" type="array">
+      <obj_property name="ElementShortName">data_o[7:0]</obj_property>
+      <obj_property name="ObjectShortName">data_o[7:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/ps2_tb/ps2/scancode_o" type="array">
-      <obj_property name="ElementShortName">scancode_o[7:0]</obj_property>
-      <obj_property name="ObjectShortName">scancode_o[7:0]</obj_property>
+   <wvobject fp_name="/ps2_rx_tb/ps2_rx/valid_o" type="logic">
+      <obj_property name="ElementShortName">valid_o</obj_property>
+      <obj_property name="ObjectShortName">valid_o</obj_property>
    </wvobject>
-   <wvobject fp_name="/ps2_tb/ps2/clk_kbd_r" type="array">
-      <obj_property name="ElementShortName">clk_kbd_r[1:0]</obj_property>
-      <obj_property name="ObjectShortName">clk_kbd_r[1:0]</obj_property>
+   <wvobject fp_name="/ps2_rx_tb/ps2_rx/clk_ps2_r" type="array">
+      <obj_property name="ElementShortName">clk_ps2_r[1:0]</obj_property>
+      <obj_property name="ObjectShortName">clk_ps2_r[1:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/ps2_tb/ps2/kbd_data_r" type="logic">
-      <obj_property name="ElementShortName">kbd_data_r</obj_property>
-      <obj_property name="ObjectShortName">kbd_data_r</obj_property>
+   <wvobject fp_name="/ps2_rx_tb/ps2_rx/ps2_data_r" type="logic">
+      <obj_property name="ElementShortName">ps2_data_r</obj_property>
+      <obj_property name="ObjectShortName">ps2_data_r</obj_property>
    </wvobject>
-   <wvobject fp_name="/ps2_tb/ps2/falling_edge_w" type="logic">
+   <wvobject fp_name="/ps2_rx_tb/ps2_rx/falling_edge_w" type="logic">
       <obj_property name="ElementShortName">falling_edge_w</obj_property>
       <obj_property name="ObjectShortName">falling_edge_w</obj_property>
    </wvobject>
-   <wvobject fp_name="/ps2_tb/ps2/kbd_state_w" type="array">
-      <obj_property name="ElementShortName">kbd_state_w[31:0]</obj_property>
-      <obj_property name="ObjectShortName">kbd_state_w[31:0]</obj_property>
+   <wvobject fp_name="/ps2_rx_tb/ps2_rx/ps2_state_r" type="array">
+      <obj_property name="ElementShortName">ps2_state_r[31:0]</obj_property>
+      <obj_property name="ObjectShortName">ps2_state_r[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/ps2_tb/ps2/kbd_state_r" type="array">
-      <obj_property name="ElementShortName">kbd_state_r[31:0]</obj_property>
-      <obj_property name="ObjectShortName">kbd_state_r[31:0]</obj_property>
+   <wvobject fp_name="/ps2_rx_tb/ps2_rx/ps2_state_w" type="array">
+      <obj_property name="ElementShortName">ps2_state_w[31:0]</obj_property>
+      <obj_property name="ObjectShortName">ps2_state_w[31:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/ps2_tb/ps2/bits_r" type="array">
+   <wvobject fp_name="/ps2_rx_tb/ps2_rx/bits_r" type="array">
       <obj_property name="ElementShortName">bits_r[3:0]</obj_property>
       <obj_property name="ObjectShortName">bits_r[3:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/ps2_tb/ps2/scancode_r" type="array">
-      <obj_property name="ElementShortName">scancode_r[7:0]</obj_property>
-      <obj_property name="ObjectShortName">scancode_r[7:0]</obj_property>
+   <wvobject fp_name="/ps2_rx_tb/ps2_rx/data_r" type="array">
+      <obj_property name="ElementShortName">data_r[7:0]</obj_property>
+      <obj_property name="ObjectShortName">data_r[7:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/ps2_tb/ps2/parity_r" type="logic">
+   <wvobject fp_name="/ps2_rx_tb/ps2_rx/parity_r" type="logic">
       <obj_property name="ElementShortName">parity_r</obj_property>
       <obj_property name="ObjectShortName">parity_r</obj_property>
    </wvobject>
-   <wvobject fp_name="/ps2_tb/ps2/parity_w" type="logic">
+   <wvobject fp_name="/ps2_rx_tb/ps2_rx/parity_w" type="logic">
       <obj_property name="ElementShortName">parity_w</obj_property>
       <obj_property name="ObjectShortName">parity_w</obj_property>
    </wvobject>
-   <wvobject fp_name="/ps2_tb/ps2/stop_valid_w" type="logic">
+   <wvobject fp_name="/ps2_rx_tb/ps2_rx/stop_valid_w" type="logic">
       <obj_property name="ElementShortName">stop_valid_w</obj_property>
       <obj_property name="ObjectShortName">stop_valid_w</obj_property>
    </wvobject>
-   <wvobject fp_name="/ps2_tb/ps2/idle_w" type="logic">
+   <wvobject fp_name="/ps2_rx_tb/ps2_rx/idle_w" type="logic">
       <obj_property name="ElementShortName">idle_w</obj_property>
       <obj_property name="ObjectShortName">idle_w</obj_property>
    </wvobject>
-   <wvobject fp_name="/ps2_tb/ps2/start_w" type="logic">
+   <wvobject fp_name="/ps2_rx_tb/ps2_rx/start_w" type="logic">
       <obj_property name="ElementShortName">start_w</obj_property>
       <obj_property name="ObjectShortName">start_w</obj_property>
    </wvobject>
-   <wvobject fp_name="/ps2_tb/ps2/recv_w" type="logic">
+   <wvobject fp_name="/ps2_rx_tb/ps2_rx/recv_w" type="logic">
       <obj_property name="ElementShortName">recv_w</obj_property>
       <obj_property name="ObjectShortName">recv_w</obj_property>
    </wvobject>
-   <wvobject fp_name="/ps2_tb/ps2/check_w" type="logic">
+   <wvobject fp_name="/ps2_rx_tb/ps2_rx/check_w" type="logic">
       <obj_property name="ElementShortName">check_w</obj_property>
       <obj_property name="ObjectShortName">check_w</obj_property>
    </wvobject>
-   <wvobject fp_name="/ps2_tb/ps2/pass_w" type="logic">
+   <wvobject fp_name="/ps2_rx_tb/ps2_rx/pass_w" type="logic">
       <obj_property name="ElementShortName">pass_w</obj_property>
       <obj_property name="ObjectShortName">pass_w</obj_property>
    </wvobject>
-   <wvobject fp_name="/ps2_tb/ps2/fail_w" type="logic">
+   <wvobject fp_name="/ps2_rx_tb/ps2_rx/fail_w" type="logic">
       <obj_property name="ElementShortName">fail_w</obj_property>
       <obj_property name="ObjectShortName">fail_w</obj_property>
    </wvobject>
-   <wvobject fp_name="/ps2_tb/ps2/key_w" type="logic">
+   <wvobject fp_name="/ps2_rx_tb/ps2_rx/key_w" type="logic">
       <obj_property name="ElementShortName">key_w</obj_property>
       <obj_property name="ObjectShortName">key_w</obj_property>
    </wvobject>
-   <wvobject fp_name="/ps2_tb/ps2/abort_w" type="logic">
+   <wvobject fp_name="/ps2_rx_tb/ps2_rx/abort_w" type="logic">
       <obj_property name="ElementShortName">abort_w</obj_property>
       <obj_property name="ObjectShortName">abort_w</obj_property>
    </wvobject>

@@ -385,4 +385,15 @@ typedef struct packed {
     logic [15:0] reserved_16;
 } mi_t;
 
+
+//
+// Keyboard Events
+//
+
+typedef struct packed {
+    byte_t scancode;
+    logic  extended;
+    logic  is_break;
+} kbd_event_t;
+
 endpackage
