@@ -1,5 +1,6 @@
 `verilator_config
 
+lint_off -rule UNUSED          -file "../src/chipset.sv"
 lint_off -rule UNUSED          -file "../src/common.sv"
 lint_off -rule UNUSED          -file "../src/bios_rom.sv"
 lint_off -rule UNUSED          -file "../src/system_ram.sv"

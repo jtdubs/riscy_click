@@ -98,7 +98,7 @@ always_comb parity_w = (parity_r + ps2_data_r);
 
 // determine next state
 always_comb begin
-    unique if (idle_w || fail_w || key_w || abort_w)
+    if (idle_w || fail_w || key_w || abort_w)
         ps2_state_w = IDLE;
     else if (start_w || recv_w)
         ps2_state_w = DATA;
