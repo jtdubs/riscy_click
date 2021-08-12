@@ -1,6 +1,10 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
+// Was:
+// - 54 cells
+// - 63 nets
+
 ///
 /// Keyboard Controller
 ///
@@ -120,24 +124,19 @@ end
 
 // take transition actions
 always_ff @(posedge clk_i) begin
-    valid_o  <= 1'b0;
+    data_o   <= data_r;
+    valid_o  <= key_w;
+
+    priority if (start_w) begin
+        bits_r   <= 1'b0;
+        parity_r <= 1'b0;
+    end else if (falling_edge_w) begin
+        bits_r   <= bits_r + 1;
+        parity_r <= parity_w;
+    end
 
     if (recv_w || check_w) begin
-        bits_r   <= bits_r + 1;
         data_r   <= { ps2_data_r, data_r[7:1] };
-        parity_r <= parity_w;
-        data_o   <= 8'b0;
-    end else if (fail_w || abort_w) begin
-        bits_r   <= 4'b0;
-        data_r   <= 8'b0;
-        parity_r <= 1'b0;
-        data_o   <= 8'b0;
-    end else if (key_w) begin
-        bits_r   <= 4'b0;
-        data_r   <= 8'b0;
-        parity_r <= 1'b0;
-        data_o   <= data_r;
-        valid_o  <= 1'b1;
     end
 
     if (reset_i) begin

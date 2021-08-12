@@ -62,7 +62,7 @@ always_comb begin
     end
 
     empty_async_o = reset_i || (pc_i == NOP_PC);
-end 
+end
 
 
 //
