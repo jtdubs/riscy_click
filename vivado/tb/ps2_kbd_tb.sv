@@ -47,36 +47,37 @@ initial begin
     @(posedge clk_i) reset_i = 0;
 end
 
-task make_ps2_packet (input logic [7:0] data, output logic [10:0] ps2_data)
+
+// ps2 signal driving
+function logic [10:0] make_ps2_packet (input logic [7:0] data);
 begin
     integer i;
-    logic parity = 1;
+    logic parity;
+    parity = 1;
     for (i=0; i<8; i++)
         parity = parity ^ data[i];
-    ps2_data = { 1'b0, data, parity, 1'b1 };
+    make_ps2_packet = { 1'b1, parity, data, 1'b0 };
 end
-endtask
+endfunction
 
-task send_ps2_packet (input logic [7:0] data, output logic ps2_data, output logic ps2_clk)
+task automatic send_ps2_packet (input logic [7:0] data);
 begin
     integer i;
-    logic [11:0] packet = make_ps2_packet(data);
+    logic [10:0] packet = make_ps2_packet(data);
     for (i=0; i<11; i++) begin
-        ps2_data = INPUT_VECTOR[i][j];
+        ps2_data_async_i = packet[i];
         #200;
-        ps2_clk  = 1'b0;
+        ps2_clk_async_i  = 1'b0;
         #1000;
-        ps2_clk  = 1'b1;
+        ps2_clk_async_i  = 1'b1;
         #800;
     end
 end
 endtask
 
-// ps2_rx input simulator
-localparam logic [7:0] KEYSTROKES [12:0]  = { 8'h33, 3'h24, 8'h4B 8'h4B 8'h44, 8'h41, 8'h29, 8'h1D 8'h44, 8'h2D, 8'h4B, 8'h23, 8'h5A }
+localparam logic [7:0] KEYSTROKES [0:12] = { 8'h33, 3'h24, 8'h4B, 8'h4B, 8'h44, 8'h41, 8'h29, 8'h1D, 8'h44, 8'h2D, 8'h4B, 8'h23, 8'h5A };
 
-integer i, j;
-logic [10:0] packet;
+integer i;
 initial begin
     ps2_clk_async_i  = 1'b1;
     ps2_data_async_i = 1'b0;
@@ -85,11 +86,11 @@ initial begin
 
     forever begin
         for (i=0; i<13; i++) begin
-            packet = send_ps2_packet(KEYSTROKES[i], ps2_data_async_i, ps2_clk_async_i);
+            send_ps2_packet(KEYSTROKES[i]);
             #4000;
-            packet = send_ps2_packet(8'hF0,         ps2_data_async_i, ps2_clk_async_i);
+            send_ps2_packet(8'hF0);
             #2000;
-            packet = send_ps2_packet(KEYSTROKES[i], ps2_data_async_i, ps2_clk_async_i);
+            send_ps2_packet(KEYSTROKES[i]);
         end
     end
 end

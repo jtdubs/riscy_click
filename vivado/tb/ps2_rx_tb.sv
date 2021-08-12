@@ -29,26 +29,27 @@ initial begin
     @(posedge clk_i) reset_i = 0;
 end
 
-task make_ps2_packet (input logic [7:0] data, output logic [10:0] ps2_data)
+// ps2 signal driving
+function logic [10:0] make_ps2_packet (input logic [7:0] data);
 begin
     integer i;
     logic parity = 1;
     for (i=0; i<8; i++)
         parity = parity ^ data[i];
-    ps2_data = { 1'b0, data, parity, 1'b1 };
+    make_ps2_packet = { 1'b1, parity, data, 1'b0 };
 end
-endtask
+endfunction
 
-task send_ps2_packet (input logic [7:0] data, output logic ps2_data, output logic ps2_clk)
+task automatic send_ps2_packet (input logic [7:0] data);
 begin
     integer i;
-    logic [11:0] packet = make_ps2_packet(data);
+    logic [10:0] packet = make_ps2_packet(data);
     for (i=0; i<11; i++) begin
-        ps2_data = INPUT_VECTOR[i][j];
+        ps2_data_async_i = packet[i];
         #200;
-        ps2_clk  = 1'b0;
+        ps2_clk_async_i  = 1'b0;
         #1000;
-        ps2_clk  = 1'b1;
+        ps2_clk_async_i  = 1'b1;
         #800;
     end
 end
@@ -62,7 +63,7 @@ initial begin
     #400;
 
     forever begin
-        send_ps2_packet(8'h76, ps2_data_async_i, ps2_clk_async_i);
+        send_ps2_packet(8'h76);
         #10000;
     end
 end

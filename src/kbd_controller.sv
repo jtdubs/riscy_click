@@ -52,8 +52,8 @@ ps2_kbd ps2_kbd (
 );
 
 fifo #(
-    .WIDTH(10),
-    .DEPTH(32)
+    .DATA_WIDTH(10),
+    .ADDR_WIDTH(5)
 ) fifo (
     .clk_i               (clk_i),
     .reset_i             (reset_i),

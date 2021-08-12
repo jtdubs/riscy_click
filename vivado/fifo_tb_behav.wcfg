@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="fifo_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="common" />
+            <top_module name="fifo_tb" />
+            <top_module name="glbl" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="999,983 ps"></ZoomStartTime>
+      <ZoomEndTime time="1,000,006 ps"></ZoomEndTime>
+      <Cursor1Time time="1,000,000 ps"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="307"></NameColumnWidth>
+      <ValueColumnWidth column_width="124"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="24" />
+   <wvobject fp_name="/fifo_tb/fifo/clk_i" type="logic">
+      <obj_property name="ElementShortName">clk_i</obj_property>
+      <obj_property name="ObjectShortName">clk_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_tb/fifo/reset_i" type="logic">
+      <obj_property name="ElementShortName">reset_i</obj_property>
+      <obj_property name="ObjectShortName">reset_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_tb/fifo/write_data_i" type="array">
+      <obj_property name="ElementShortName">write_data_i[15:0]</obj_property>
+      <obj_property name="ObjectShortName">write_data_i[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_tb/fifo/write_enable_i" type="logic">
+      <obj_property name="ElementShortName">write_enable_i</obj_property>
+      <obj_property name="ObjectShortName">write_enable_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_tb/fifo/read_enable_i" type="logic">
+      <obj_property name="ElementShortName">read_enable_i</obj_property>
+      <obj_property name="ObjectShortName">read_enable_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_tb/fifo/read_data_o" type="array">
+      <obj_property name="ElementShortName">read_data_o[15:0]</obj_property>
+      <obj_property name="ObjectShortName">read_data_o[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_tb/fifo/read_valid_o" type="logic">
+      <obj_property name="ElementShortName">read_valid_o</obj_property>
+      <obj_property name="ObjectShortName">read_valid_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_tb/fifo/fifo_empty_o" type="logic">
+      <obj_property name="ElementShortName">fifo_empty_o</obj_property>
+      <obj_property name="ObjectShortName">fifo_empty_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_tb/fifo/fifo_almost_empty_o" type="logic">
+      <obj_property name="ElementShortName">fifo_almost_empty_o</obj_property>
+      <obj_property name="ObjectShortName">fifo_almost_empty_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_tb/fifo/fifo_almost_full_o" type="logic">
+      <obj_property name="ElementShortName">fifo_almost_full_o</obj_property>
+      <obj_property name="ObjectShortName">fifo_almost_full_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_tb/fifo/fifo_full_o" type="logic">
+      <obj_property name="ElementShortName">fifo_full_o</obj_property>
+      <obj_property name="ObjectShortName">fifo_full_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_tb/fifo/data_r" type="array">
+      <obj_property name="ElementShortName">data_r[30:0][15:0]</obj_property>
+      <obj_property name="ObjectShortName">data_r[30:0][15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_tb/fifo/read_ptr_r" type="array">
+      <obj_property name="ElementShortName">read_ptr_r[4:0]</obj_property>
+      <obj_property name="ObjectShortName">read_ptr_r[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_tb/fifo/write_ptr_r" type="array">
+      <obj_property name="ElementShortName">write_ptr_r[4:0]</obj_property>
+      <obj_property name="ObjectShortName">write_ptr_r[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_tb/fifo/write_ptr_w" type="array">
+      <obj_property name="ElementShortName">write_ptr_w[4:0]</obj_property>
+      <obj_property name="ObjectShortName">write_ptr_w[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_tb/fifo/read_ptr_w" type="array">
+      <obj_property name="ElementShortName">read_ptr_w[4:0]</obj_property>
+      <obj_property name="ObjectShortName">read_ptr_w[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_tb/fifo/count_w" type="array">
+      <obj_property name="ElementShortName">count_w[4:0]</obj_property>
+      <obj_property name="ObjectShortName">count_w[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_tb/fifo/DATA_WIDTH" type="array">
+      <obj_property name="ElementShortName">DATA_WIDTH[15:0]</obj_property>
+      <obj_property name="ObjectShortName">DATA_WIDTH[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_tb/fifo/ADDR_WIDTH" type="array">
+      <obj_property name="ElementShortName">ADDR_WIDTH[15:0]</obj_property>
+      <obj_property name="ObjectShortName">ADDR_WIDTH[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_tb/fifo/ALMOST_EMPTY_MARGIN" type="array">
+      <obj_property name="ElementShortName">ALMOST_EMPTY_MARGIN[15:0]</obj_property>
+      <obj_property name="ObjectShortName">ALMOST_EMPTY_MARGIN[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_tb/fifo/ALMOST_FULL_MARGIN" type="array">
+      <obj_property name="ElementShortName">ALMOST_FULL_MARGIN[15:0]</obj_property>
+      <obj_property name="ObjectShortName">ALMOST_FULL_MARGIN[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_tb/fifo/CAPACITY" type="array">
+      <obj_property name="ElementShortName">CAPACITY[4:0]</obj_property>
+      <obj_property name="ObjectShortName">CAPACITY[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_tb/fifo/ALMOST_EMPTY_COUNT" type="array">
+      <obj_property name="ElementShortName">ALMOST_EMPTY_COUNT[4:0]</obj_property>
+      <obj_property name="ObjectShortName">ALMOST_EMPTY_COUNT[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/fifo_tb/fifo/ALMOST_FULL_COUNT" type="array">
+      <obj_property name="ElementShortName">ALMOST_FULL_COUNT[4:0]</obj_property>
+      <obj_property name="ObjectShortName">ALMOST_FULL_COUNT[4:0]</obj_property>
+   </wvobject>
+</wave_config>
