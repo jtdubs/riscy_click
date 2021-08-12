@@ -1,12 +1,13 @@
 TODO:
 - Keyboard
     - Translate scancodes to keycodes using ROM
+    - Update BIOS to handle keycodes and update display...
     - FIFO signals become external interrupts
     - WFI instruction
+    - Update BIOS to use interrupts to handle keyboard input
 - Sim UI
     - Halt output
     - Finish output
-    - Figure out how to plumb the keyboard into this...
 - Debug Extension
 - Machine Level ISA
     - CSR
@@ -14,8 +15,6 @@ TODO:
         - Memory access should confirm address is read/write as appropriate
         - Expose chip select along with rwx.  Can use it externally to drive the dmem mux...
         - MTIME and MTIMECMP memory mapped registers??
-    - Instructions
-        - WFI
 - Peripherals
     - UART
 - ISA Extensions
