@@ -1,18 +1,36 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-module ps2_rx_tb
+module ps2_kbd_tb
     import common::*;
     ();
 
-     logic  clk_i;
-     logic  reset_i;
-     logic  clk_ps2_async_i;
-     logic  ps2_data_async_i;
-wire byte_t data_o;
-wire logic  valid_o;
+     logic       clk_i;
+     logic       reset_i;
+     logic       clk_ps2_async_i;
+     logic       ps2_data_async_i;
+wire byte_t      data_w;
+wire logic       valid_w;
+wire kbd_event_t event_o;
+wire logic       valid_o;
 
-ps2_rx ps2_rx (.*);
+ps2_rx ps2_rx (
+    .clk_i(clk_i),
+    .reset_i(reset_i),
+    .clk_ps2_async_i(clk_ps2_async_i),
+    .ps2_data_async_i(ps2_data_async_i),
+    .data_o(data_w),
+    .valid_o(valid_w)
+);
+
+ps2_kbd ps2_kbd (
+    .clk_i(clk_i),
+    .reset_i(reset_i),
+    .data_i(data_w),
+    .valid_i(valid_w),
+    .event_o(event_o),
+    .valid_o(valid_o)
+);
 
 // clk_i
 initial begin

@@ -12,11 +12,11 @@ module ps2_rx
         input  wire logic  clk_i,
         input  wire logic  reset_i,
 
-        // Keyboard Input
+        // PS2 Input
         input  wire logic  clk_ps2_async_i,
         input  wire logic  ps2_data_async_i,
 
-        // Keyboard Output
+        // PS2 Output
         output      byte_t data_o,
         output      logic  valid_o
     );
@@ -121,18 +121,18 @@ end
 
 // take transition actions
 always_ff @(posedge clk_i) begin
+    valid_o  <= 1'b0;
+
     if (recv_w || check_w) begin
         bits_r   <= bits_r + 1;
         data_r   <= { data_r[6:0], ps2_data_r };
         parity_r <= parity_w;
         data_o   <= 8'b0;
-        valid_o  <= 1'b0;
     end else if (fail_w || abort_w) begin
         bits_r   <= 4'b0;
         data_r   <= 8'b0;
         parity_r <= 1'b0;
         data_o   <= 8'b0;
-        valid_o  <= 1'b0;
     end else if (key_w) begin
         bits_r   <= 4'b0;
         data_r   <= 8'b0;
