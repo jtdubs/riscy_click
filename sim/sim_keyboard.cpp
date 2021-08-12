@@ -46,7 +46,7 @@ void key_tick(sim_keyboard_t* keyboard, unsigned char *ps2_clk, unsigned char *p
             parity ^= (data >> i) & 1;
         keyboard->current_word = (data << 1) | (parity << 9) | (1 << 10);
         keyboard->current_bit = 0;
-        printf("START: data=%i, parity=%i, word=%i\n", data, parity, keyboard->current_word);
+        // printf("START: data=%i, parity=%i, word=%i\n", data, parity, keyboard->current_word);
     }
 
 
@@ -54,7 +54,7 @@ void key_tick(sim_keyboard_t* keyboard, unsigned char *ps2_clk, unsigned char *p
         *ps2_clk = *ps2_clk ? 0 : 1;
         if (! *ps2_clk) {
             *ps2_data = (keyboard->current_word >> keyboard->current_bit) & 1;
-            printf("Clocking out: %i\n", *ps2_data);
+            // printf("Clocking out: %i\n", *ps2_data);
             keyboard->current_bit++;
         }
     } else if (keyboard->current_bit == 11) {

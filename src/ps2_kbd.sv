@@ -9,16 +9,16 @@ module ps2_kbd
     // Import Constants
     import common::*;
     (
-        input  wire logic       clk_i,
-        input  wire logic       reset_i,
+        input  wire logic           clk_i,
+        input  wire logic           reset_i,
 
         // PS2 Input
-        input  wire byte_t      data_i,
-        input  wire logic       valid_i,
+        input  wire byte_t          data_i,
+        input  wire logic           valid_i,
 
         // Keyboard Output
-        output      kbd_event_t event_o,
-        output      logic       valid_o
+        output      ps2_kbd_event_t event_o,
+        output      logic           valid_o
     );
 
 logic extended_r;

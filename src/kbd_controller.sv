@@ -24,14 +24,10 @@ module kbd_controller
     );
 
 
-//
-// Keyboard Controller
-//
 
+// PS2 RX
 byte_t      ps2_data_w;
 logic       ps2_valid_w;
-kbd_event_t kbd_event_w;
-logic       kbd_valid_w;
 
 ps2_rx ps2_rx (
     .clk_i            (clk_i),
@@ -42,23 +38,48 @@ ps2_rx ps2_rx (
     .valid_o          (ps2_valid_w)
 );
 
+
+// Keyboard
+ps2_kbd_event_t ps2_kbd_event_w;
+logic           ps2_kbd_valid_w;
+
 ps2_kbd ps2_kbd (
     .clk_i            (clk_i),
     .reset_i          (reset_i),
     .data_i           (ps2_data_w),
     .valid_i          (ps2_valid_w),
-    .event_o          (kbd_event_w),
-    .valid_o          (kbd_valid_w)
+    .event_o          (ps2_kbd_event_w),
+    .valid_o          (ps2_kbd_valid_w)
 );
 
+
+// Keycode Translation ROM
+logic           is_break_w;
+byte_t          vk_w;
+logic           vk_valid_w;
+
+keycode_rom #(.CONTENTS("krom.mem")) krom (
+    .clk_i   (clk_i),
+    .reset_i (reset_i),
+    .addr_i  (ps2_kbd_event_w[8:0]),
+    .data_o  (vk_w)
+);
+
+always_ff @(posedge clk_i) begin
+    is_break_w  <= ps2_kbd_event_w.is_break;
+    vk_valid_w  <= ps2_kbd_valid_w;
+end
+
+
+// Buffer
 fifo #(
-    .DATA_WIDTH(10),
+    .DATA_WIDTH(9),
     .ADDR_WIDTH(5)
 ) fifo (
     .clk_i               (clk_i),
     .reset_i             (reset_i),
-    .write_data_i        (kbd_event_w),
-    .write_enable_i      (kbd_valid_w),
+    .write_data_i        ({ is_break_w, vk_w }),
+    .write_enable_i      (vk_valid_w),
     .read_enable_i       (read_enable_i),
     .read_data_o         (read_data_o),
     .read_valid_o        (read_valid_o),

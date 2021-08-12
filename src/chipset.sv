@@ -218,7 +218,7 @@ always_comb begin
     32'h2???????: begin dmem_read_data_w = vram_read_data_w;     end
     32'hFF000000: begin dmem_read_data_w = dsp_read_data_w;      end
     32'hFF000004: begin dmem_read_data_w = { 16'h00, switch_r }; end
-    32'hFF000008: begin dmem_read_data_w = { 15'b0, kbd_valid_w, 6'b0, kbd_event_w }; end
+    32'hFF000008: begin dmem_read_data_w = { 15'b0, kbd_valid_w, 7'b0, kbd_event_w }; end
     default:      begin dmem_read_data_w = 32'h00000000;         end
     endcase
 end
