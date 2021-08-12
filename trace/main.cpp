@@ -1,9 +1,17 @@
 #include <verilated.h>
+#include <GLFW/glfw3.h>
 #include "verilator/Vchipset.h"
+#include "sim_keyboard.h"
 
 int main(int argc, char** argv)
 {
     Verilated::commandArgs(argc, argv);
+
+    sim_keyboard_t *kbd = key_create();
+    key_make(kbd, GLFW_KEY_DOWN);
+    key_make(kbd, GLFW_KEY_DOWN);
+    key_make(kbd, GLFW_KEY_DOWN);
+    key_make(kbd, GLFW_KEY_DOWN);
 
     Vchipset *dut = new Vchipset;
     dut->switch_async_i = 0x1234;
@@ -11,7 +19,7 @@ int main(int argc, char** argv)
 
     uint64_t ncycles = 0;
 
-    while (ncycles < 100000 && !Verilated::gotFinish() && (dut->reset_async_i || !dut->halt_o)) {
+    while (ncycles < 1000 && !Verilated::gotFinish() && (dut->reset_async_i || !dut->halt_o)) {
         dut->eval();
 
         ncycles++;
@@ -22,6 +30,9 @@ int main(int argc, char** argv)
 
         // lower reset after 10 half-cycles
         if (ncycles == 10) dut->reset_async_i = 0;
+
+        // run ps2 at an absurd rate
+        if (ncycles % 2 == 0) key_tick(kbd, &dut->ps2_clk_async_i, &dut->ps2_data_async_i);
     }
 
     dut->final();

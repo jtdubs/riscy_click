@@ -7,6 +7,7 @@ SV_SOURCES += ../src/common.sv
 SV_SOURCES += ../src/system_ram.sv
 SV_SOURCES += ../src/video_ram.sv
 SV_SOURCES += ../src/character_rom.sv
+SV_SOURCES += ../src/keycode_rom.sv
 SV_SOURCES += ../src/bios_rom.sv
 SV_SOURCES += ../src/segdisplay.sv
 SV_SOURCES += ../src/vga_controller.sv
@@ -53,6 +54,7 @@ VERILATOR_LIB = $(VERILATOR_DIR)/V$(VERILATOR_TOP)__ALL.a
 ROMS =
 ROMS += bios.mem
 ROMS += crom.mem
+ROMS += krom.mem
 
 EXE = $(VERILATOR_TOP)
 
@@ -71,10 +73,13 @@ log.json: $(EXE)
 	./$(EXE)
 
 bios.mem: ../roms/bios/bios.mem
-	- ln -sf $^ $@
+	ln -sf $^ $@
 
 crom.mem: ../roms/character_rom/crom.mem
-	- ln -sf $^ $@
+	ln -sf $^ $@
+
+krom.mem: ../roms/keycode/krom.mem
+	ln -sf $^ $@
 
 $(EXE): $(SV_SOURCES) $(VLT_SOURCES) $(CXX_SOURCES) $(ROMS)
 	rm -Rf $(VERILATOR_DIR)

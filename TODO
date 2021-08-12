@@ -1,6 +1,6 @@
 TODO:
 - Keyboard
-    - Translate scancodes to keycodes using ROM
+    # - Translate scancodes to keycodes using ROM
     - Update BIOS to handle keycodes and update display...
     - FIFO signals become external interrupts
     - WFI instruction
