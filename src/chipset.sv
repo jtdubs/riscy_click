@@ -67,27 +67,17 @@ end
 // Keyboard Controller
 //
 
-byte_t      ps2_data_w;
-logic       ps2_valid_w;
 kbd_event_t kbd_event_w;
 logic       kbd_valid_w;
 
-ps2_rx ps2_rx (
+kbd_controller kbd (
     .clk_i            (cpu_clk_i),
     .reset_i          (cpu_reset_r),
     .ps2_clk_async_i  (ps2_clk_async_i),
     .ps2_data_async_i (ps2_data_async_i),
-    .data_o           (ps2_data_w),
-    .valid_o          (ps2_valid_w)
-);
-
-ps2_kbd ps2_kbd (
-    .clk_i            (cpu_clk_i),
-    .reset_i          (cpu_reset_r),
-    .data_i           (ps2_data_w),
-    .valid_i          (ps2_valid_w),
-    .event_o          (kbd_event_w),
-    .valid_o          (kbd_valid_w)
+    .read_enable_i    (1'b1),
+    .read_data_o      (kbd_event_w),
+    .read_valid_o     (kbd_valid_w)
 );
 
 
@@ -245,15 +235,5 @@ cpu cpu (
     .dmem_write_data_o (dmem_write_data_w),
     .dmem_write_mask_o (dmem_write_mask_w)
 );
-
-//
-// Debug Counter
-//
-
-(* KEEP = "TRUE" *) word_t cycle_counter_r;
-
-always_ff @(posedge cpu_clk_i) begin
-    cycle_counter_r <= cpu_reset_r ? 32'h00000000 : (cycle_counter_r + 1);
-end
 
 endmodule

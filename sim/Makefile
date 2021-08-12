@@ -24,6 +24,7 @@ SV_SOURCES += ../src/cpu_ma.sv
 SV_SOURCES += ../src/cpu.sv
 SV_SOURCES += ../src/ps2_rx.sv
 SV_SOURCES += ../src/ps2_kbd.sv
+SV_SOURCES += ../src/kbd_controller.sv
 SV_SOURCES += ../src/board.sv
 SV_SOURCES += ../src/cpu_clk_gen.sv
 SV_SOURCES += ../src/pixel_clk_gen.sv
