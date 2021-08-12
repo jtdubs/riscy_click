@@ -157,19 +157,19 @@ mcause_t mcause_w;
 always_comb begin
     mtrap_w  = 1'b0;
     mret_w   = 1'b0;
-    mcause_w = '{ 31'b0, 1'b0 };
+    mcause_w = '{ 1'b0, 31'b0 };
 
     if (cw_w.priv) begin
         case (f12_w)
         F12_ECALL:
             begin
                 mtrap_w  = 1'b1;
-                mcause_w = '{ ECALL_M,        1'b0 };
+                mcause_w = '{ 1'b0, ECALL_M        };
             end
         F12_EBREAK:
             begin
                 mtrap_w  = 1'b1;
-                mcause_w = '{ EXC_BREAKPOINT, 1'b0 };
+                mcause_w = '{ 1'b0, EXC_BREAKPOINT };
             end
         F12_MRET,
         F12_SRET:

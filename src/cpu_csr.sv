@@ -49,25 +49,25 @@ module cpu_csr
 
 localparam pmp_entry_t [0:8] PMP_CONFIG = '{
     // [00000000, 00001000) - BIOS
-    '{ { 32'h00000000 >> 2 }, '{ rwx: R|X, locked: 1'b1, matching_mode: PMPCFG_A_NAPOT, default: '0 } },
-    '{ { 32'h00001000 >> 2 }, '{           locked: 1'b1, matching_mode: PMPCFG_A_OFF,   default: '0 } },
+    '{ (32'h00000000 >> 2), '{ rwx: R|X, locked: 1'b1, matching_mode: PMPCFG_A_NAPOT, default: '0 } },
+    '{ (32'h00001000 >> 2), '{           locked: 1'b1, matching_mode: PMPCFG_A_OFF,   default: '0 } },
 
     // [10000000, 10001000) - System RAM
-    '{ { 32'h10000000 >> 2 }, '{ rwx: R|W, locked: 1'b1, matching_mode: PMPCFG_A_NAPOT, default: '0 } },
-    '{ { 32'h10001000 >> 2 }, '{           locked: 1'b1, matching_mode: PMPCFG_A_OFF,   default: '0 } },
+    '{ (32'h10000000 >> 2), '{ rwx: R|W, locked: 1'b1, matching_mode: PMPCFG_A_NAPOT, default: '0 } },
+    '{ (32'h10001000 >> 2), '{           locked: 1'b1, matching_mode: PMPCFG_A_OFF,   default: '0 } },
 
     // [20000000, 20001000) - Video RAM
-    '{ { 32'h20000000 >> 2 }, '{ rwx: R|W, locked: 1'b1, matching_mode: PMPCFG_A_NAPOT, default: '0 } },
-    '{ { 32'h20001000 >> 2 }, '{           locked: 1'b1, matching_mode: PMPCFG_A_OFF,   default: '0 } },
+    '{ (32'h20000000 >> 2), '{ rwx: R|W, locked: 1'b1, matching_mode: PMPCFG_A_NAPOT, default: '0 } },
+    '{ (32'h20001000 >> 2), '{           locked: 1'b1, matching_mode: PMPCFG_A_OFF,   default: '0 } },
 
     //  FF000004            - Seven Segment Display
-    '{ { 32'hFF000004 >> 2 }, '{ rwx: R|W, locked: 1'b1, matching_mode: PMPCFG_A_NA4,   default: '0 } },
+    '{ (32'hFF000004 >> 2), '{ rwx: R|W, locked: 1'b1, matching_mode: PMPCFG_A_NA4,   default: '0 } },
         //
     //  FF000008            - Switch Bank
-    '{ { 32'hFF000008 >> 2 }, '{ rwx: R,   locked: 1'b1, matching_mode: PMPCFG_A_NA4,   default: '0 } },
+    '{ (32'hFF000008 >> 2), '{ rwx: R,   locked: 1'b1, matching_mode: PMPCFG_A_NA4,   default: '0 } },
 
     // [FF00000C, FFFFFFFF] - UNUSED 
-    '{ { 32'hFFFFFFFF >> 2 }, '{           locked: 1'b1, matching_mode: PMPCFG_A_TOR,   default: '0 } }
+    '{ (32'hFFFFFFFF >> 2), '{           locked: 1'b1, matching_mode: PMPCFG_A_TOR,   default: '0 } }
 };
 
 
@@ -151,9 +151,9 @@ logic    msie_r;                          // machine software interrupt enabled
 //
 
 localparam mtvec_t MTVEC_DEFAULT = '{
-    mode:       MTVEC_MODE_DIRECT,
+    base:       30'b0,
     reserved_1: 1'b0,
-    base:       30'b0
+    mode:       MTVEC_MODE_DIRECT
 };
 
 localparam dword_t MCYCLE_DEFAULT        = 64'b0;
@@ -167,8 +167,8 @@ localparam word_t  MTINST_DEFAULT        = 32'b0;
 localparam dword_t TIME_DEFAULT          = 64'b0;
 
 localparam mcause_t MCAUSE_DEFAULT = '{
-    exception_code: 31'b0,
-    is_interrupt:   1'b0
+    is_interrupt:   1'b0,
+    exception_code: 31'b0
 };
 
 

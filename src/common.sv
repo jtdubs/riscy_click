@@ -360,8 +360,8 @@ typedef struct packed {
 } pmpcfg_t;
 
 typedef struct packed {
-    pmpcfg_t cfg;
     word_t   addr;
+    pmpcfg_t cfg;
 } pmp_entry_t;
 
 localparam logic [2:0] R = 3'b001;

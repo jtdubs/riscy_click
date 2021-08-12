@@ -35,7 +35,7 @@ always_ff @(posedge clk_i) begin
         else begin
             extended_r <= 1'b0;
             is_break_r <= 1'b0;
-            event_o    <= '{ data_i, extended_r, is_break_r };
+            event_o    <= '{ is_break_r, extended_r, data_i };
             valid_o    <= 1'b1;
         end
     end
