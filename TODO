@@ -1,12 +1,14 @@
 TODO:
+- Consider renaming all the clock signals to sys_clk rather than clk_sys, for example.
+
 - Keyboard
     - Keyboard controller
     - Interrupt controller
     - WFI instruction
     - Idea:
-        - PS2 RX :: PS2 Bitstream -> PS2 Validated Bytes
-        - PS2 Kbd :: PS2 Validated Bytes -> Key Events { break, extended, scancode }
-        - ROM :: { extended, scancode } -> Virtual Key Code
+        # - PS2 RX :: PS2 Bitstream -> PS2 Validated Bytes
+        # - PS2 Kbd :: PS2 Validated Bytes -> Key Events { break, extended, scancode }
+        # - ROM :: { extended, scancode } -> Virtual Key Code
         - FIFO holds 16 { break, Virtual Key Code }
         - FIFO non-empty and FIFO full indicators become external interrupts
         - FIFO output is memory mapped
@@ -24,7 +26,6 @@ TODO:
     - Instructions
         - WFI
 - Peripherals
-    - PS/2
     - UART
 - ISA Extensions
     - A - Atomics

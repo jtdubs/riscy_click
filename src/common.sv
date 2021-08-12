@@ -299,34 +299,34 @@ localparam exc_t EXC_PAGE_FAULT_STORE = 31'd15;
 //
 
 typedef struct packed {
-    logic       reserved_0;
-    logic       sie;          // S-mode interrupt enable
-    logic       reserved_2;
-    logic       mie;          // M-mode interrupt enable
-    logic       reserved_4;
-    logic       spie;         // S-mode prior interrupt enable
-    logic       ube;          // U-mode data endian (0=little-endian, 1=big-endian),
-    logic       mpie;         // M-mode prior interrupt enable
-    logic       spp;          // S-mode prior privilege level
-    logic [1:0] reserved_9;
-    logic [1:0] mpp;          // M-mode prior privilege level
-    logic [1:0] fs;           // FPU State
-    logic [1:0] xs;           // FPU State
-    logic       mprv;         // Modify Privilege (0=current, 1=prior)
-    logic       sum;          // Supervisor User Memory (N/A)
-    logic       mxr;          // Make eXecutable Reader (0=r^x, 1=r|x)
-    logic       tvm;          // Trap Virtual Memory
-    logic       tw;           // Timeout Wait
-    logic       tsr;          // Trap SRET
-    logic [7:0] reserved_23;
     logic       sd;           // FPU State
+    logic [7:0] reserved_23;
+    logic       tsr;          // Trap SRET
+    logic       tw;           // Timeout Wait
+    logic       tvm;          // Trap Virtual Memory
+    logic       mxr;          // Make eXecutable Reader (0=r^x, 1=r|x)
+    logic       sum;          // Supervisor User Memory (N/A)
+    logic       mprv;         // Modify Privilege (0=current, 1=prior)
+    logic [1:0] xs;           // FPU State
+    logic [1:0] fs;           // FPU State
+    logic [1:0] mpp;          // M-mode prior privilege level
+    logic [1:0] reserved_9;
+    logic       spp;          // S-mode prior privilege level
+    logic       mpie;         // M-mode prior interrupt enable
+    logic       ube;          // U-mode data endian (0=little-endian, 1=big-endian),
+    logic       spie;         // S-mode prior interrupt enable
+    logic       reserved_4;
+    logic       mie;          // M-mode interrupt enable
+    logic       reserved_2;
+    logic       sie;          // S-mode interrupt enable
+    logic       reserved_0;
 } mstatus_t;
 
 typedef struct packed {
-    logic        reserved_0;
-    logic        sbe;         // ZERO: S-mode data endian (0=little-endian, 1=big-endian)
-    logic        mbe;         // ZERO: M-mode data endian (0=little-endian, 1=big-endian)
     logic [28:0] reserved_6;
+    logic        mbe;         // ZERO: M-mode data endian (0=little-endian, 1=big-endian)
+    logic        sbe;         // ZERO: S-mode data endian (0=little-endian, 1=big-endian)
+    logic        reserved_0;
 } mstatush_t;
 
 typedef enum logic {
@@ -335,14 +335,14 @@ typedef enum logic {
 } mtvec_mode_t;
 
 typedef struct packed {
-    mtvec_mode_t mode;
-    logic        reserved_1;
     logic [29:0] base;
+    logic        reserved_1;
+    mtvec_mode_t mode;
 } mtvec_t;
 
 typedef struct packed {
-    logic [30:0] exception_code;
     logic        is_interrupt;
+    logic [30:0] exception_code;
 } mcause_t;
 
 typedef enum logic [1:0] {
@@ -353,15 +353,15 @@ typedef enum logic [1:0] {
 } matching_mode_t;
 
 typedef struct packed {
-    logic [2:0]     rwx;
-    matching_mode_t matching_mode;
-    logic [1:0]     reserved_5;
     logic           locked;
+    logic [1:0]     reserved_5;
+    matching_mode_t matching_mode;
+    logic [2:0]     rwx;
 } pmpcfg_t;
 
 typedef struct packed {
-    word_t   addr;
     pmpcfg_t cfg;
+    word_t   addr;
 } pmp_entry_t;
 
 localparam logic [2:0] R = 3'b001;
@@ -369,20 +369,20 @@ localparam logic [2:0] W = 3'b010;
 localparam logic [2:0] X = 3'b100;
 
 typedef struct packed {
-    logic        reserved_0;
-    logic        ssi;         // System software interrupt
-    logic        reserved_2;
-    logic        msi;         // Machine software interrupt
-    logic        reserved_3;
-    logic        sti;         // System timer interrupt
-    logic        reserved_6;
-    logic        mti;         // Machine timer interrupt
-    logic        reserved_8;
-    logic        sei;         // System external interrupt
-    logic        reserved_10;
-    logic        mei;         // Machine external interrupt
-    logic [ 3:0] reserved_12;
     logic [15:0] reserved_16;
+    logic [ 3:0] reserved_12;
+    logic        mei;         // Machine external interrupt
+    logic        reserved_10;
+    logic        sei;         // System external interrupt
+    logic        reserved_8;
+    logic        mti;         // Machine timer interrupt
+    logic        reserved_6;
+    logic        sti;         // System timer interrupt
+    logic        reserved_3;
+    logic        msi;         // Machine software interrupt
+    logic        reserved_2;
+    logic        ssi;         // System software interrupt
+    logic        reserved_0;
 } mi_t;
 
 
@@ -391,9 +391,9 @@ typedef struct packed {
 //
 
 typedef struct packed {
-    byte_t scancode;
-    logic  extended;
     logic  is_break;
+    logic  extended;
+    byte_t scancode;
 } kbd_event_t;
 
 endpackage

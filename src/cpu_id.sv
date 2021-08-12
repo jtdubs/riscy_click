@@ -150,6 +150,10 @@ end
 // Privileged Operations
 //
 
+logic    mtrap_w;
+logic    mret_w;
+mcause_t mcause_w;
+
 always_comb begin
     mtrap_w  = 1'b0;
     mret_w   = 1'b0;
@@ -224,9 +228,6 @@ word_t   csr_read_data_w;
 csr_t    csr_write_addr_w;
 word_t   csr_write_data_w;
 logic    csr_write_enable_w;
-logic    mtrap_w;
-logic    mret_w;
-mcause_t mcause_w;
 word_t   trap_addr_w;
 
 cpu_csr csr (

@@ -10,22 +10,24 @@ module chipset
     import common::*;
     (
         // Clocks
-        input  wire logic        clk_cpu_i,      // 50MHz CPU clock
-        input  wire logic        clk_pxl_i,      // 25.2MHz pixel clock
+        input  wire logic        clk_cpu_i,        // 50MHz CPU clock
+        input  wire logic        clk_pxl_i,        // 25.2MHz pixel clock
+        input  wire logic        ps2_clk_async_i,  // PS2 HID clock (async)
+        input  wire logic        ps2_data_async_i, // PS2 HID data (async)
 
         // Inputs
-        input  wire logic        reset_async_i,  // async reset input
-        input  wire logic [15:0] switch_async_i, // async hardware switch bank input
+        input  wire logic        reset_async_i,    // async reset input
+        input  wire logic [15:0] switch_async_i,   // async hardware switch bank input
 
         // Outputs
-        output wire logic        halt_o,         // halt output
-        output wire logic [ 7:0] dsp_anode_o,    // seven segment display anodes output
-        output wire logic [ 7:0] dsp_cathode_o,  // seven segment display cathodes output
-        output wire logic [ 3:0] vga_red_o,      // vga red output
-        output wire logic [ 3:0] vga_green_o,    // vga green output
-        output wire logic [ 3:0] vga_blue_o,     // vga blue output
-        output wire logic        vga_hsync_o,    // vga horizontal sync output
-        output wire logic        vga_vsync_o     // vga vertical sync output
+        output wire logic        halt_o,           // halt output
+        output wire logic [ 7:0] dsp_anode_o,      // seven segment display anodes output
+        output wire logic [ 7:0] dsp_cathode_o,    // seven segment display cathodes output
+        output wire logic [ 3:0] vga_red_o,        // vga red output
+        output wire logic [ 3:0] vga_green_o,      // vga green output
+        output wire logic [ 3:0] vga_blue_o,       // vga blue output
+        output wire logic        vga_hsync_o,      // vga horizontal sync output
+        output wire logic        vga_vsync_o       // vga vertical sync output
     );
 
 
@@ -59,6 +61,34 @@ always_ff @(posedge clk_pxl_i) begin
         // otherwise, start shifting out the ones
         { pxl_reset_r, pxl_reset_chain_r } <= { pxl_reset_chain_r, 1'b0 };
 end
+
+
+//
+// Keyboard Controller
+//
+
+byte_t      ps2_data_w;
+logic       ps2_valid_w;
+kbd_event_t kbd_event_w;
+logic       kbd_valid_w;
+
+ps2_rx ps2_rx (
+    .clk_i            (clk_cpu_i),
+    .reset_i          (cpu_reset_r),
+    .clk_ps2_async_i  (ps2_clk_async_i),
+    .ps2_data_async_i (ps2_data_async_i),
+    .data_o           (ps2_data_w),
+    .valid_o          (ps2_valid_w)
+);
+
+ps2_kbd ps2_kbd (
+    .clk_i            (clk_cpu_i),
+    .reset_i          (cpu_reset_r),
+    .data_i           (ps2_data_w),
+    .valid_i          (ps2_valid_w),
+    .event_o          (kbd_event_w),
+    .valid_o          (kbd_valid_w)
+);
 
 
 //
@@ -129,8 +159,8 @@ segdisplay #(.CLK_DIVISOR(50000)) disp (
     .dsp_anode_o   (dsp_anode_o),
     .dsp_cathode_o (dsp_cathode_o),
     .read_data_o   (dsp_read_data_w),
-    .write_data_i  (dmem_write_data_w),
-    .write_mask_i  (dsp_write_mask_w)
+    .write_data_i  ({ 22'b0, kbd_event_w }), // dmem_write_data_w),
+    .write_mask_i  ({4{kbd_valid_w}})        //   dsp_write_mask_w)
 );
 
 logic [11:0] vga_vram_addr_w;

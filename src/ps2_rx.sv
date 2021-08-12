@@ -59,7 +59,7 @@ end
 //   |                                              |
 //   |-----------------key,abort--------------------|
 
-typedef enum {
+typedef enum logic [1:0] {
     IDLE   = 2'b00,
     DATA   = 2'b01,
     PARITY = 2'b10,
@@ -124,7 +124,7 @@ always_ff @(posedge clk_i) begin
 
     if (recv_w || check_w) begin
         bits_r   <= bits_r + 1;
-        data_r   <= { data_r[6:0], ps2_data_r };
+        data_r   <= { ps2_data_r, data_r[7:1] };
         parity_r <= parity_w;
         data_o   <= 8'b0;
     end else if (fail_w || abort_w) begin

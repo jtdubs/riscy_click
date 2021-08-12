@@ -60,7 +60,6 @@ seg_loop:
 
 csr_test:
     la t0, _trap_handler
-    srli t0, t0, 2
     csrw mtvec, t0
     nop
     ebreak
