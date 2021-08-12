@@ -9,7 +9,7 @@ module vga_controller
     // Import Constants
     import common::*;
     (
-        input  wire logic        clk_pxl_i, // 100MHz system clock
+        input  wire logic        clk_i,     // 25.2MHz pixel clock
         input  wire logic        reset_i,   // reset
 
         // video ram interface
@@ -33,7 +33,7 @@ character_rom #(
     .CONTENTS("crom.mem")
 )
 crom_inst (
-    .clk_i(clk_pxl_i),
+    .clk_i(clk_i),
     .reset_i(reset_i),
     .addr_i(crom_addr_w),
     .data_o(crom_data_w)
@@ -72,7 +72,7 @@ always_comb begin
         y_lookahead_w = 10'd0;
 end
 
-always_ff @(posedge clk_pxl_i) begin
+always_ff @(posedge clk_i) begin
     x_r <= reset_i ? 10'd799 : x_w;
     y_r <= reset_i ? 10'd524 : y_w;
 end
@@ -125,7 +125,7 @@ always_comb begin
     char_row_w  = crom_data_w;
 end
 
-always_ff @(posedge clk_pxl_i) begin
+always_ff @(posedge clk_i) begin
     if (x_char_offset_w == 3'b111)
         char_row_r <= char_row_w;
 
@@ -150,7 +150,7 @@ always_comb begin
     endcase
 end
 
-always_ff @(posedge clk_pxl_i) begin
+always_ff @(posedge clk_i) begin
     vga_hsync_o <= !hsync_w;
     vga_vsync_o <= !vsync_w;
     vga_red_o   <= display_area_w ? rgb_w : 4'b0000;

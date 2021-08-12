@@ -13,7 +13,7 @@ module ps2_rx
         input  wire logic  reset_i,
 
         // PS2 Input
-        input  wire logic  clk_ps2_async_i,
+        input  wire logic  ps2_clk_async_i,
         input  wire logic  ps2_data_async_i,
 
         // PS2 Output
@@ -26,11 +26,11 @@ module ps2_rx
 // Clock in PS2 signals
 //
 
-logic [1:0] clk_ps2_r;
+logic [1:0] ps2_clk_r;
 logic ps2_data_r;
 
 always_ff @(posedge clk_i) begin
-    clk_ps2_r  <= { clk_ps2_r[0], clk_ps2_async_i };
+    ps2_clk_r  <= { ps2_clk_r[0], ps2_clk_async_i };
     ps2_data_r <= ps2_data_async_i;
 end
 
@@ -43,7 +43,7 @@ logic falling_edge_w;
 
 // falling edge detection
 always_comb begin
-    falling_edge_w = clk_ps2_r[1] && !clk_ps2_r[0];
+    falling_edge_w = ps2_clk_r[1] && !ps2_clk_r[0];
 end
 
 

@@ -5,11 +5,11 @@ module cpu_clk_gen
     // Import Constants
     import common::*;
     (
-        input  wire logic clk_sys_i,     // 100MHz system clock
+        input  wire logic sys_clk_i,     // 100MHz system clock
         input  wire logic reset_async_i, // reset
 
         // cpu clock output
-        output      logic clk_cpu_o,     // 50MHz cpu clock
+        output      logic cpu_clk_o,     // 50MHz cpu clock
         output      logic ready_async_o  // cpu clock ready
     );
 
@@ -21,7 +21,7 @@ module cpu_clk_gen
 
 // internal signals
 wire logic clk_feedback_w;
-wire logic clk_cpu_w;
+wire logic cpu_clk_w;
 
 // PLL Module
 PLLE2_BASE #(
@@ -52,7 +52,7 @@ PLLE2_BASE #(
   .STARTUP_WAIT("TRUE")
 )
 cpu_clk_pll (
-  .CLKOUT0(clk_cpu_w),
+  .CLKOUT0(cpu_clk_w),
   .CLKOUT1(),
   .CLKOUT2(),
   .CLKOUT3(),
@@ -60,7 +60,7 @@ cpu_clk_pll (
   .CLKOUT5(),
   .CLKFBOUT(clk_feedback_w),
   .LOCKED(ready_async_o),
-  .CLKIN1(clk_sys_i),
+  .CLKIN1(sys_clk_i),
   .PWRDWN(1'b0),
   .RST(reset_async_i),
   .CLKFBIN(clk_feedback_w)
@@ -74,10 +74,10 @@ BUFGCTRL #(
   .SIM_DEVICE("7SERIES")
 )
 cpu_clk_buffer (
-  .O(clk_cpu_o),       // 1-bit output: Clock output
+  .O(cpu_clk_o),       // 1-bit output: Clock output
   .CE0(ready_async_o), // 1-bit input: Clock enable input for I0
   .CE1(1'b0),          // 1-bit input: Clock enable input for I1
-  .I0(clk_cpu_w),      // 1-bit input: Primary clock
+  .I0(cpu_clk_w),      // 1-bit input: Primary clock
   .I1(1'b0),           // 1-bit input: Secondary clock
   .IGNORE0(1'b0),      // 1-bit input: Clock ignore input for I0
   .IGNORE1(1'b1),      // 1-bit input: Clock ignore input for I1
@@ -95,10 +95,10 @@ logic [1:0] counter_r = 2'b00;
 
 always_comb begin
     ready_async_o = 1'b1;
-    clk_cpu_o = counter_r[0];
+    cpu_clk_o = counter_r[0];
 end
 
-always_ff @(posedge clk_sys_i) begin
+always_ff @(posedge sys_clk_i) begin
     counter_r <= counter_r + 1;
 
     if (reset_async_i) begin

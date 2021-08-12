@@ -17,8 +17,8 @@ int main(int argc, char** argv)
         ncycles++;
 
         // update clocks
-        dut->clk_cpu_i ^= 1;
-        if (ncycles % 2 == 0) { dut->clk_pxl_i ^= 1; }
+        dut->cpu_clk_i ^= 1;
+        if (ncycles % 2 == 0) { dut->pxl_clk_i ^= 1; }
 
         // lower reset after 10 half-cycles
         if (ncycles == 10) dut->reset_async_i = 0;

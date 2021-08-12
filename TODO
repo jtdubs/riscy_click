@@ -1,6 +1,4 @@
 TODO:
-- Consider renaming all the clock signals to sys_clk rather than clk_sys, for example.
-
 - Keyboard
     - Keyboard controller
     - Interrupt controller

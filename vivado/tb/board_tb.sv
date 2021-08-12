@@ -3,7 +3,7 @@
 
 module board_tb ();
 
-     logic        clk_sys_i;
+     logic        sys_clk_i;
      logic        reset_async_i;
      logic [15:0] switch_async_i;
      logic        ps2_clk_async_i;
@@ -21,9 +21,9 @@ board board (.*);
 
 // clock generator
 initial begin
-    clk_sys_i = 1;
+    sys_clk_i = 1;
     forever begin
-        #5 clk_sys_i = ~clk_sys_i;
+        #5 sys_clk_i = ~sys_clk_i;
     end
 end
 

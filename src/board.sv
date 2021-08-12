@@ -10,7 +10,7 @@ module board
     import common::*;
     (
         // Inputs
-        input  wire logic        clk_sys_i,        // 100MHz system clock
+        input  wire logic        sys_clk_i,        // 100MHz system clock
         input  wire logic        reset_async_i,    // reset (async)
         input  wire logic [15:0] switch_async_i,   // hardware switch bank (async)
         input  wire logic        ps2_clk_async_i,  // PS2 HID clock (async)
@@ -31,22 +31,22 @@ module board
 // Clocks
 //
 
-wire logic clk_cpu_w;
+wire logic cpu_clk_w;
 wire logic clk_reset;
 
 cpu_clk_gen cpu_clk_gen (
-    .clk_sys_i     (clk_sys_i),
+    .sys_clk_i     (sys_clk_i),
     .reset_async_i (1'b0),
-    .clk_cpu_o     (clk_cpu_w),
+    .cpu_clk_o     (cpu_clk_w),
     .ready_async_o ()
 );
 
-wire logic clk_pxl_w;
+wire logic pxl_clk_w;
 
 pixel_clk_gen pixel_clk_gen (
-    .clk_sys_i     (clk_sys_i),
+    .sys_clk_i     (sys_clk_i),
     .reset_async_i (1'b0),
-    .clk_pxl_o     (clk_pxl_w),
+    .pxl_clk_o     (pxl_clk_w),
     .ready_async_o ()
 );
 
@@ -56,8 +56,8 @@ pixel_clk_gen pixel_clk_gen (
 //
 
 chipset chipset (
-    .clk_cpu_i        (clk_cpu_w),
-    .clk_pxl_i        (clk_pxl_w),
+    .cpu_clk_i        (cpu_clk_w),
+    .pxl_clk_i        (pxl_clk_w),
     .reset_async_i    (reset_async_i),
     .ps2_clk_async_i  (ps2_clk_async_i),
     .ps2_data_async_i (ps2_data_async_i),

@@ -10,8 +10,8 @@ module chipset
     import common::*;
     (
         // Clocks
-        input  wire logic        clk_cpu_i,        // 50MHz CPU clock
-        input  wire logic        clk_pxl_i,        // 25.2MHz pixel clock
+        input  wire logic        cpu_clk_i,        // 50MHz CPU clock
+        input  wire logic        pxl_clk_i,        // 25.2MHz pixel clock
         input  wire logic        ps2_clk_async_i,  // PS2 HID clock (async)
         input  wire logic        ps2_data_async_i, // PS2 HID data (async)
 
@@ -41,7 +41,7 @@ localparam logic [RESET_CYCLES-1:0] RESET_ONES = {RESET_CYCLES{1'b1}};
 logic                    cpu_reset_r;
 logic [RESET_CYCLES-1:0] cpu_reset_chain_r;
 
-always_ff @(posedge clk_cpu_i) begin
+always_ff @(posedge cpu_clk_i) begin
     if (reset_async_i)
         // if resetting, fill the chain with ones
         { cpu_reset_r, cpu_reset_chain_r } <= { 1'b1, RESET_ONES };
@@ -53,7 +53,7 @@ end
 logic                    pxl_reset_r;
 logic [RESET_CYCLES-1:0] pxl_reset_chain_r;
 
-always_ff @(posedge clk_pxl_i) begin
+always_ff @(posedge pxl_clk_i) begin
     if (reset_async_i)
         // if resetting, fill the chain with ones
         { pxl_reset_r, pxl_reset_chain_r } <= { 1'b1, RESET_ONES };
@@ -73,16 +73,16 @@ kbd_event_t kbd_event_w;
 logic       kbd_valid_w;
 
 ps2_rx ps2_rx (
-    .clk_i            (clk_cpu_i),
+    .clk_i            (cpu_clk_i),
     .reset_i          (cpu_reset_r),
-    .clk_ps2_async_i  (ps2_clk_async_i),
+    .ps2_clk_async_i  (ps2_clk_async_i),
     .ps2_data_async_i (ps2_data_async_i),
     .data_o           (ps2_data_w),
     .valid_o          (ps2_valid_w)
 );
 
 ps2_kbd ps2_kbd (
-    .clk_i            (clk_cpu_i),
+    .clk_i            (cpu_clk_i),
     .reset_i          (cpu_reset_r),
     .data_i           (ps2_data_w),
     .valid_i          (ps2_valid_w),
@@ -97,7 +97,7 @@ ps2_kbd ps2_kbd (
 
 logic [15:0] switch_r;
 
-always_ff @(posedge clk_cpu_i) begin
+always_ff @(posedge cpu_clk_i) begin
     switch_r <= switch_async_i;
 end
 
@@ -134,7 +134,7 @@ wire word_t      vram_read_data_w;
 
 // BIOS
 bios_rom #(.CONTENTS("bios.mem")) bios (
-    .clk_i        (clk_cpu_i),
+    .clk_i        (cpu_clk_i),
     .reset_i      (1'b0),
     .read1_addr_i (imem_addr_w),
     .read1_data_o (imem_data_w),
@@ -144,7 +144,7 @@ bios_rom #(.CONTENTS("bios.mem")) bios (
 
 // RAM
 system_ram ram (
-    .clk_i        (clk_cpu_i),
+    .clk_i        (cpu_clk_i),
     .reset_i      (1'b0),
     .addr_i       (dmem_addr_w),
     .write_data_i (dmem_write_data_w),
@@ -154,7 +154,7 @@ system_ram ram (
 
 // Display
 segdisplay #(.CLK_DIVISOR(50000)) disp (
-    .clk_i         (clk_cpu_i),
+    .clk_i         (cpu_clk_i),
     .reset_i       (cpu_reset_r),
     .dsp_anode_o   (dsp_anode_o),
     .dsp_cathode_o (dsp_cathode_o),
@@ -168,7 +168,7 @@ byte_t       vga_vram_data_w;
 
 video_ram vram (
     // cpu port
-    .clk_cpu_i        (clk_cpu_i),
+    .cpu_clk_i        (cpu_clk_i),
     .cpu_reset_i      (cpu_reset_r),
     .cpu_addr_i       (dmem_addr_w),
     .cpu_write_data_i (dmem_write_data_w),
@@ -176,7 +176,7 @@ video_ram vram (
     .cpu_read_data_o  (vram_read_data_w),
 
     // vga port
-    .clk_pxl_i        (clk_pxl_i),
+    .pxl_clk_i        (pxl_clk_i),
     .pxl_reset_i      (pxl_reset_r),
     .pxl_addr_i       (vga_vram_addr_w),
     .pxl_data_o       (vga_vram_data_w)
@@ -184,7 +184,7 @@ video_ram vram (
 
 // VGA
 vga_controller vga (
-    .clk_pxl_i   (clk_pxl_i),
+    .clk_i       (pxl_clk_i),
     .reset_i     (pxl_reset_r),
     .vram_addr_o (vga_vram_addr_w),
     .vram_data_i (vga_vram_data_w),
@@ -210,7 +210,7 @@ vga_controller vga (
 //
 word_t dmem_read_addr_r;
 
-always_ff @(posedge clk_cpu_i) begin
+always_ff @(posedge cpu_clk_i) begin
     dmem_read_addr_r <= cpu_reset_r ? 32'h00000000 : dmem_addr_w;
 end
 
@@ -235,7 +235,7 @@ end
 //
 
 cpu cpu (
-    .clk_i             (clk_cpu_i),
+    .clk_i             (cpu_clk_i),
     .reset_i           (cpu_reset_r),
     .halt_o            (halt_o),
     .imem_addr_o       (imem_addr_w),
@@ -252,7 +252,7 @@ cpu cpu (
 
 (* KEEP = "TRUE" *) word_t cycle_counter_r;
 
-always_ff @(posedge clk_cpu_i) begin
+always_ff @(posedge cpu_clk_i) begin
     cycle_counter_r <= cpu_reset_r ? 32'h00000000 : (cycle_counter_r + 1);
 end
 

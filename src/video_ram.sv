@@ -6,7 +6,7 @@ module video_ram
     import common::*;
     (
         // cpu interface
-        input  wire logic        clk_cpu_i,
+        input  wire logic        cpu_clk_i,
         input  wire logic        cpu_reset_i,
         input  wire word_t       cpu_addr_i,
         input  wire word_t       cpu_write_data_i,
@@ -14,7 +14,7 @@ module video_ram
         output      word_t       cpu_read_data_o,
 
         // vga controller interface
-        input  wire logic        clk_pxl_i,
+        input  wire logic        pxl_clk_i,
         input  wire logic        pxl_reset_i,
         input  wire logic [11:0] pxl_addr_i,
         output      byte_t       pxl_data_o
@@ -70,7 +70,7 @@ video_tdpram_inst (
     .sleep(1'b0),
 
     // port a
-    .clka(clk_cpu_i),
+    .clka(cpu_clk_i),
     .addra(cpu_addr_i[11:2]),
     .douta(cpu_read_data_o),
     .dina(cpu_write_data_i),
@@ -84,7 +84,7 @@ video_tdpram_inst (
     .injectsbiterra(1'b0),
 
     // port b
-    .clkb(clk_pxl_i),
+    .clkb(pxl_clk_i),
     .addrb(pxl_addr_i),
     .doutb(pxl_data_o),
     .dinb(8'b0),
@@ -113,7 +113,7 @@ initial begin
     end
 end
 
-always_ff @(posedge clk_cpu_i) begin
+always_ff @(posedge cpu_clk_i) begin
     cpu_read_data_o <= cpu_reset_i ? 32'b0 : { ram[cpu_addr_i+3], ram[cpu_addr_i+2], ram[cpu_addr_i+1], ram[cpu_addr_i+0] };
 
     if (cpu_write_mask_i[0]) ram[cpu_addr_i+0] <= cpu_write_data_i[ 7: 0];
@@ -122,7 +122,7 @@ always_ff @(posedge clk_cpu_i) begin
     if (cpu_write_mask_i[3]) ram[cpu_addr_i+3] <= cpu_write_data_i[31:24];
 end
 
-always_ff @(posedge clk_pxl_i) begin
+always_ff @(posedge pxl_clk_i) begin
     pxl_data_o <= pxl_reset_i ? 8'b0 : ram[pxl_addr_i];
 end
 

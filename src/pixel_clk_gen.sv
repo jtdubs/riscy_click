@@ -5,11 +5,11 @@ module pixel_clk_gen
     // Import Constants
     import common::*;
     (
-        input  wire logic clk_sys_i,     // 100MHz system clock
+        input  wire logic sys_clk_i,     // 100MHz system clock
         input  wire logic reset_async_i, // reset
 
         // cpu clock output
-        output      logic clk_pxl_o,     // 25.2MHz VGA pixel clock
+        output      logic pxl_clk_o,     // 25.2MHz VGA pixel clock
         output      logic ready_async_o  // cpu clock ready
     );
 
@@ -21,7 +21,7 @@ module pixel_clk_gen
 
 // internal signals
 wire logic clk_feedback_w;
-wire logic clk_pxl_w;
+wire logic pxl_clk_w;
 
 MMCME2_BASE #(
   .BANDWIDTH("OPTIMIZED"),
@@ -55,7 +55,7 @@ MMCME2_BASE #(
   .STARTUP_WAIT("TRUE")
 )
 pixel_clk_mmcm (
-  .CLKOUT0(clk_pxl_w),
+  .CLKOUT0(pxl_clk_w),
   .CLKOUT0B(),
   .CLKOUT1(),
   .CLKOUT1B(),
@@ -69,7 +69,7 @@ pixel_clk_mmcm (
   .CLKFBOUT(clk_feedback_w),
   .CLKFBOUTB(),
   .LOCKED(ready_async_o),
-  .CLKIN1(clk_sys_i),
+  .CLKIN1(sys_clk_i),
   .PWRDWN(1'b0),
   .RST(reset_async_i),
   .CLKFBIN(clk_feedback_w)
@@ -83,10 +83,10 @@ BUFGCTRL #(
   .SIM_DEVICE("7SERIES")
 )
 pixel_clk_buffer (
-  .O(clk_pxl_o),       // 1-bit output: Clock output
+  .O(pxl_clk_o),       // 1-bit output: Clock output
   .CE0(ready_async_o), // 1-bit input: Clock enable input for I0
   .CE1(1'b0),          // 1-bit input: Clock enable input for I1
-  .I0(clk_pxl_w),      // 1-bit input: Primary clock
+  .I0(pxl_clk_w),      // 1-bit input: Primary clock
   .I1(1'b0),           // 1-bit input: Secondary clock
   .IGNORE0(1'b0),      // 1-bit input: Clock ignore input for I0
   .IGNORE1(1'b1),      // 1-bit input: Clock ignore input for I1
@@ -104,10 +104,10 @@ logic [1:0] counter_r = 2'b00;
 
 always_comb begin
     ready_async_o = 1'b1;
-    clk_pxl_o = counter_r[1];
+    pxl_clk_o = counter_r[1];
 end
 
-always_ff @(posedge clk_sys_i) begin
+always_ff @(posedge sys_clk_i) begin
     counter_r <= counter_r + 1;
 
     if (reset_async_i) begin

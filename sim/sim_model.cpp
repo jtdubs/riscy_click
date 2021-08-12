@@ -39,8 +39,8 @@ sim_model_t* sim_create(int argc, char **argv) {
     model->chipset = new Vchipset;
     model->chipset->reset_async_i = model->reset?1:0;
     model->chipset->switch_async_i = 0x0000;
-    model->chipset->clk_cpu_i = 1;
-    model->chipset->clk_pxl_i = 1;
+    model->chipset->cpu_clk_i = 1;
+    model->chipset->pxl_clk_i = 1;
 
     // Create VGA Texture
     model->vga_texture = vga_create(640, 480);
@@ -79,8 +79,8 @@ void sim_tick(sim_model_t* model) {
         model->ncycles++;
 
         // update clocks
-        dut->clk_cpu_i ^= 1;
-        if (model->ncycles % 2 == 0) { dut->clk_pxl_i ^= 1; }
+        dut->cpu_clk_i ^= 1;
+        if (model->ncycles % 2 == 0) { dut->pxl_clk_i ^= 1; }
 
         // lower reset after 10 half-cycles
         if (model->ncycles == 10) model->reset = 0; 
