@@ -13,18 +13,20 @@
 #include "sim_vga.h"
 #include "sim_segdisplay.h"
 #include "sim_switch.h"
+#include "sim_keyboard.h"
 #include "sim_model.h"
 
 struct sim_model {
-    Vchipset*    chipset;
-    std::thread  tick_thread;
-    bool         thread_exit;
-    bool         reset;
-    bool         switches[16];
-    uint8_t      segments[8];
-    GLuint       vga_texture;
-    uint16_t*    vga_buffer;
-    uint64_t     ncycles;
+    Vchipset*       chipset;
+    std::thread     tick_thread;
+    bool            thread_exit;
+    bool            reset;
+    bool            switches[16];
+    uint8_t         segments[8];
+    GLuint          vga_texture;
+    uint16_t*       vga_buffer;
+    uint64_t        ncycles;
+    sim_keyboard_t *keyboard;
 };
 
 sim_model_t* sim_create(int argc, char **argv) {
@@ -34,6 +36,7 @@ sim_model_t* sim_create(int argc, char **argv) {
     sim_model_t *model = new sim_model_t();
     model->reset       = true;
     model->vga_buffer  = new uint16_t[640*480];
+    model->keyboard    = key_create();
 
     // Create Chipset
     model->chipset = new Vchipset;
@@ -60,45 +63,49 @@ void sim_destroy(sim_model_t* model) {
     model->thread_exit = true;
     model->tick_thread.join();
 
+    // Cleanup Components
+    key_destroy(model->keyboard);
+
     // Cleanup DUT
     model->chipset->final();
-
     delete model->chipset;
+
     delete model;
 }
 
 void sim_tick(sim_model_t* model) {
-    for (int i=0; i<100000; i++)
-    {
-        Vchipset *dut = model->chipset;
+    Vchipset *dut = model->chipset;
 
-        // update chipset
-        dut->eval();
+    // update chipset
+    dut->eval();
 
-        // next cycle
-        model->ncycles++;
+    // next cycle
+    model->ncycles++;
 
-        // update clocks
-        dut->cpu_clk_i ^= 1;
-        if (model->ncycles % 2 == 0) { dut->pxl_clk_i ^= 1; }
+    // update clocks
+    dut->cpu_clk_i ^= 1;
+    if (model->ncycles % 2 == 0) { dut->pxl_clk_i ^= 1; }
 
-        // lower reset after 10 half-cycles
-        if (model->ncycles == 10) model->reset = 0; 
-        dut->reset_async_i = model->reset;
+    // lower reset after 10 half-cycles
+    if (model->ncycles == 10) model->reset = 0; 
+    dut->reset_async_i = model->reset;
 
-        // update switches
-        uint16_t switch_async_i = 0;
-        for (int i=0; i<16; i++)
-            switch_async_i |= model->switches[15-i] << i;
-        dut->switch_async_i = switch_async_i;
+    // update switches
+    uint16_t switch_async_i = 0;
+    for (int i=0; i<16; i++)
+        switch_async_i |= model->switches[15-i] << i;
+    dut->switch_async_i = switch_async_i;
 
-        // update seven segment display
-        seg_tick(model->segments, dut->dsp_anode_o, dut->dsp_cathode_o);
+    // update seven segment display
+    seg_tick(model->segments, dut->dsp_anode_o, dut->dsp_cathode_o);
 
-        // update VGA every pixel clock cycle
-        if (model->ncycles % 4 == 0)
-            vga_tick(model->vga_buffer, dut->vga_hsync_o, dut->vga_vsync_o, dut->vga_red_o, dut->vga_green_o, dut->vga_blue_o);
-    }
+    // update VGA every pixel clock cycle
+    if (model->ncycles % 4 == 0)
+        vga_tick(model->vga_buffer, dut->vga_hsync_o, dut->vga_vsync_o, dut->vga_red_o, dut->vga_green_o, dut->vga_blue_o);
+
+    // update PS2 every 100k cycles
+    if (model->ncycles % 100000 == 0)
+        key_tick(model->keyboard, &dut->ps2_clk_async_i, &dut->ps2_data_async_i);
 }
 
 void sim_draw(sim_model_t* model, float secondsElapsed) {
@@ -134,4 +141,12 @@ void sim_draw(sim_model_t* model, float secondsElapsed) {
     float rate = (mhz * 100.0f) / 50.0f;
 
     ImGui::Text("Simulation Speed: %3.03fMHz (%2.0f%%)", mhz, rate);
+}
+
+void sim_on_key_make(sim_model_t* model, int key) {
+    key_make(model->keyboard, key);
+}
+
+void sim_on_key_break(sim_model_t* model, int key) {
+    key_break(model->keyboard, key);
 }

@@ -9,6 +9,23 @@
 
 #include "sim_model.h"
 
+static sim_model_t *g_model = NULL;
+
+static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    switch (action) {
+    case GLFW_PRESS:
+        sim_on_key_make(g_model, key);
+        break;
+    case GLFW_RELEASE:
+        sim_on_key_break(g_model, key);
+        break;
+    default:
+        break;
+    }
+}
+
+
 static void glfw_error_callback(int error, const char* description)
 {
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
@@ -41,6 +58,9 @@ int main(int argc, char** argv)
         return 1;
     }
 
+    // keyboard callback
+    glfwSetKeyCallback(window, glfw_key_callback);
+
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -60,7 +80,7 @@ int main(int argc, char** argv)
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     // Create Model
-    sim_model_t *model = sim_create(argc, argv);
+    g_model = sim_create(argc, argv);
 
     // Main loop
     while (!glfwWindowShouldClose(window))
@@ -81,7 +101,7 @@ int main(int argc, char** argv)
             ImGui::Begin("Riscy Click", NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings);
 
             // Draw Model
-            sim_draw(model, ImGui::GetIO().DeltaTime);
+            sim_draw(g_model, ImGui::GetIO().DeltaTime);
 
             ImGui::End();
         }
@@ -99,7 +119,7 @@ int main(int argc, char** argv)
     }
 
     // Cleanup Model
-    sim_destroy(model);
+    sim_destroy(g_model);
 
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
