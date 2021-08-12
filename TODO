@@ -1,19 +1,12 @@
 TODO:
 - Keyboard
-    - Keyboard controller
-    - Interrupt controller
+    - Translate scancodes to keycodes using ROM
+    - FIFO signals become external interrupts
     - WFI instruction
-    - Idea:
-        # - PS2 RX :: PS2 Bitstream -> PS2 Validated Bytes
-        # - PS2 Kbd :: PS2 Validated Bytes -> Key Events { break, extended, scancode }
-        # - ROM :: { extended, scancode } -> Virtual Key Code
-        # - FIFO holds 16 { break, Virtual Key Code }
-        - FIFO non-empty and FIFO full indicators become external interrupts
-        # - FIFO output is memory mapped
-        - CPU can choose to enable interrupt and have a keyboard handler, or leave it off and poll
 - Sim UI
     - Halt output
     - Finish output
+    - Figure out how to plumb the keyboard into this...
 - Debug Extension
 - Machine Level ISA
     - CSR
