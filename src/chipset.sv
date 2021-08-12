@@ -69,13 +69,14 @@ end
 
 kbd_event_t kbd_event_w;
 logic       kbd_valid_w;
+logic       kbd_read_enable_w;
 
 kbd_controller kbd (
     .clk_i            (cpu_clk_i),
     .reset_i          (cpu_reset_r),
     .ps2_clk_async_i  (ps2_clk_async_i),
     .ps2_data_async_i (ps2_data_async_i),
-    .read_enable_i    (1'b1),
+    .read_enable_i    (kbd_read_enable_w),
     .read_data_o      (kbd_event_w),
     .read_valid_o     (kbd_valid_w)
 );
@@ -149,8 +150,8 @@ segdisplay #(.CLK_DIVISOR(50000)) disp (
     .dsp_anode_o   (dsp_anode_o),
     .dsp_cathode_o (dsp_cathode_o),
     .read_data_o   (dsp_read_data_w),
-    .write_data_i  ({ 22'b0, kbd_event_w }), // dmem_write_data_w),
-    .write_mask_i  ({4{kbd_valid_w}})        //   dsp_write_mask_w)
+    .write_data_i  (dmem_write_data_w),
+    .write_mask_i  (dsp_write_mask_w)
 );
 
 logic [11:0] vga_vram_addr_w;
@@ -196,7 +197,8 @@ vga_controller vga (
 // 30000000 - FEFFFFFF: UNMAPPED
 // FF000000:            Seven Segment Display
 // FF000004:            Switch Bank
-// FF000008 - FFFFFFFF: UNMAPPED
+// FF000008:            Keyboard FIFO
+// FF00000C - FFFFFFFF: UNMAPPED
 //
 word_t dmem_read_addr_r;
 
@@ -207,6 +209,7 @@ end
 always_comb begin
     ram_write_mask_w  = (dmem_addr_w[31:28] == 4'h1)         ? dmem_write_mask_w : 4'b0000;
     dsp_write_mask_w  = (dmem_addr_w        == 32'hFF000000) ? dmem_write_mask_w : 4'b0000;
+    kbd_read_enable_w = (dmem_addr_w        == 32'hFF000008);
     vram_write_mask_w = (dmem_addr_w[31:28] == 4'h2)         ? dmem_write_mask_w : 4'b0000;
 
     casez (dmem_read_addr_r)
@@ -215,6 +218,7 @@ always_comb begin
     32'h2???????: begin dmem_read_data_w = vram_read_data_w;     end
     32'hFF000000: begin dmem_read_data_w = dsp_read_data_w;      end
     32'hFF000004: begin dmem_read_data_w = { 16'h00, switch_r }; end
+    32'hFF000008: begin dmem_read_data_w = { 15'b0, kbd_valid_w, 6'b0, kbd_event_w }; end
     default:      begin dmem_read_data_w = 32'h00000000;         end
     endcase
 end

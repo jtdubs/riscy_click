@@ -38,10 +38,52 @@ initial begin
     switch_async_i = 16'h9999;
 end
 
-// ps2
+// ps2 signal driving
+function logic [10:0] make_ps2_packet (input logic [7:0] data);
+begin
+    integer i;
+    logic parity;
+    parity = 1;
+    for (i=0; i<8; i++)
+        parity = parity ^ data[i];
+    make_ps2_packet = { 1'b1, parity, data, 1'b0 };
+end
+endfunction
+
+task automatic send_ps2_packet (input logic [7:0] data);
+begin
+    integer i;
+    logic [10:0] packet = make_ps2_packet(data);
+    for (i=0; i<11; i++) begin
+        ps2_data_async_i = packet[i];
+        #200;
+        ps2_clk_async_i  = 1'b0;
+        #1000;
+        ps2_clk_async_i  = 1'b1;
+        #800;
+    end
+end
+endtask
+
+localparam logic [7:0] KEYSTROKES [0:12] = { 8'h33, 3'h24, 8'h4B, 8'h4B, 8'h44, 8'h41, 8'h29, 8'h1D, 8'h44, 8'h2D, 8'h4B, 8'h23, 8'h5A };
+
+integer i;
 initial begin
     ps2_clk_async_i  = 1'b1;
     ps2_data_async_i = 1'b0;
+
+    @(negedge reset_async_i);
+    #400;
+
+    forever begin
+        for (i=0; i<13; i++) begin
+            send_ps2_packet(KEYSTROKES[i]);
+            #4000;
+            send_ps2_packet(8'hF0);
+            #2000;
+            send_ps2_packet(KEYSTROKES[i]);
+        end
+    end
 end
 
 endmodule
