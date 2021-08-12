@@ -1,13 +1,10 @@
 TODO:
 - Keyboard
-    # - Translate scancodes to keycodes using ROM
-    - Update BIOS to handle keycodes and update display...
     - FIFO signals become external interrupts
     - WFI instruction
     - Update BIOS to use interrupts to handle keyboard input
-- Sim UI
-    - Halt output
-    - Finish output
+    - .inc and .h file with keycodes
+    - Make BIOS a blend of C and ASM
 - Debug Extension
 - Machine Level ISA
     - CSR
@@ -27,6 +24,10 @@ TODO:
     - Allow for memory stalls
     - Add instruction & data cache
     - Add memory controller and DDR
+- CPU
+    - Change stage breakdown or increase stages to up clock speed
+- Verilog
+    - Look for simplification to improve efficiency
 
 Reference:
 http://fpgacpu.ca/fpga/index.html
