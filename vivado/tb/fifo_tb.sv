@@ -61,7 +61,7 @@ end
 // read port
 integer d;
 initial begin
-    clk_ps2_async_i  = 1'b1;
+    ps2_clk_async_i  = 1'b1;
     ps2_data_async_i = 1'b0;
 
     #600;

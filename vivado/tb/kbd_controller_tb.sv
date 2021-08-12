@@ -73,18 +73,18 @@ localparam logic [7:0] KEYSTROKES [12:0]  = { 8'h33, 3'h24, 8'h4B 8'h4B 8'h44, 8
 integer i, j;
 logic [10:0] packet;
 initial begin
-    clk_ps2_async_i  = 1'b1;
+    ps2_clk_async_i  = 1'b1;
     ps2_data_async_i = 1'b0;
 
     #400;
 
     forever begin
         for (i=0; i<13; i++) begin
-            packet = send_ps2_packet(KEYSTROKES[i]);
+            packet = send_ps2_packet(KEYSTROKES[i], ps2_data_async_i, ps2_clk_async_i);
             #4000;
-            packet = send_ps2_packet(8'hF0);
+            packet = send_ps2_packet(8'hF0,         ps2_data_async_i, ps2_clk_async_i);
             #2000;
-            packet = send_ps2_packet(KEYSTROKES[i]);
+            packet = send_ps2_packet(KEYSTROKES[i], ps2_data_async_i, ps2_clk_async_i);
         end
     end
 end

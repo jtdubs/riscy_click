@@ -7,7 +7,7 @@ module ps2_rx_tb
 
      logic  clk_i;
      logic  reset_i;
-     logic  clk_ps2_async_i;
+     logic  ps2_clk_async_i;
      logic  ps2_data_async_i;
 wire byte_t data_o;
 wire logic  valid_o;
@@ -29,26 +29,40 @@ initial begin
     @(posedge clk_i) reset_i = 0;
 end
 
-// ps2_rx input simulator
-localparam logic [10:0] INPUT_VECTOR = 11'b11001100110;
+task make_ps2_packet (input logic [7:0] data, output logic [10:0] ps2_data)
+begin
+    integer i;
+    logic parity = 1;
+    for (i=0; i<8; i++)
+        parity = parity ^ data[i];
+    ps2_data = { 1'b0, data, parity, 1'b1 };
+end
+endtask
+
+task send_ps2_packet (input logic [7:0] data, output logic ps2_data, output logic ps2_clk)
+begin
+    integer i;
+    logic [11:0] packet = make_ps2_packet(data);
+    for (i=0; i<11; i++) begin
+        ps2_data = INPUT_VECTOR[i][j];
+        #200;
+        ps2_clk  = 1'b0;
+        #1000;
+        ps2_clk  = 1'b1;
+        #800;
+    end
+end
+endtask
 
 integer i;
 initial begin
-    clk_ps2_async_i  = 1'b1;
+    ps2_clk_async_i  = 1'b1;
     ps2_data_async_i = 1'b0;
 
     #400;
 
     forever begin
-        for (i=0; i<11; i++) begin
-            #800;
-            ps2_data_async_i = INPUT_VECTOR[i];
-            #200;
-            clk_ps2_async_i  = 1'b0;
-            #1000;
-            clk_ps2_async_i  = 1'b1;
-        end
-
+        send_ps2_packet(8'h76, ps2_data_async_i, ps2_clk_async_i);
         #10000;
     end
 end
