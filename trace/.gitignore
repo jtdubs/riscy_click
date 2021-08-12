@@ -3,3 +3,4 @@ chipset
 *.json
 *.log
 *.txt
+*.mem

@@ -59,18 +59,31 @@ VERILATOR_FLAGS += --CFLAGS "$(CXXFLAGS)"
 VERILATOR_FLAGS += --LDFLAGS "$(LIBS)"
 VERILATOR_LIB = $(VERILATOR_DIR)/V$(VERILATOR_TOP)__ALL.a
 
+ROMS =
+ROMS += bios.mem
+ROMS += crom.mem
+
 EXE = $(VERILATOR_TOP)
 
 OBJS = $(addsuffix .o, $(basename $(notdir $(SOURCES))))
 
-$(EXE): $(SV_SOURCES) $(VLT_SOURCES) $(CXX_SOURCES)
+all: $(EXE)
+
+clean:
+	rm -f $(EXE) $(OBJS) $(ROMS)
+	rm -Rf $(VERILATOR_DIR)
+
+run: $(EXE)
+	./$(EXE)
+
+bios.mem: ../roms/bios/bios.mem
+	- ln -sf $^ $@
+
+crom.mem: ../roms/character_rom/crom.mem
+	- ln -sf $^ $@
+
+$(EXE): $(SV_SOURCES) $(VLT_SOURCES) $(CXX_SOURCES) $(ROMS)
 	rm -Rf $(VERILATOR_DIR)
 	$(VERILATOR) $(VERILATOR_FLAGS) $(VLT_SOURCES) $(SV_SOURCES) $(CXX_SOURCES)
 	$(MAKE) -C $(VERILATOR_DIR) -f V$(VERILATOR_TOP).mk
 	cp $(VERILATOR)/$(EXE) $(EXE)
-
-all: $(EXE)
-
-clean:
-	rm -f $(EXE) $(OBJS)
-	rm -Rf $(VERILATOR_DIR)

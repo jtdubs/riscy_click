@@ -1,5 +1,7 @@
-*.o
-chipset_sim
-imgui.ini
 verilator/
 chipset
+*.json
+*.log
+*.txt
+*.mem
+*.ini
