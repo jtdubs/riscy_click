@@ -30,26 +30,26 @@ module regfile
     );
 
 // Memory
-word_t lc_mem [31:0];
+word_t mem_r [31:0];
 
 // Initialize with Zeroes
 integer i;
 initial begin
     for (i=0; i<32; i=i+1) begin
-        lc_mem[i] = 32'b0;
+        mem_r[i] = 32'b0;
     end
 end
 
 // Read Ports
 always_comb begin
-    read1_data_async_o = lc_mem[read1_addr_async_i];
-    read2_data_async_o = lc_mem[read2_addr_async_i];
+    read1_data_async_o = mem_r[read1_addr_async_i];
+    read2_data_async_o = mem_r[read2_addr_async_i];
 end
 
 // Write Port
 always_ff @(posedge clk_i) begin
     if (write_enable_i && write_addr_i != 5'b00000) begin
-        lc_mem[write_addr_i] <= write_data_i;
+        mem_r[write_addr_i] <= write_data_i;
     end
 end
 
