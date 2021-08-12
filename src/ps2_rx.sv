@@ -128,7 +128,7 @@ always_ff @(posedge clk_i) begin
     valid_o  <= key_w;
 
     priority if (start_w) begin
-        bits_r   <= 1'b0;
+        bits_r   <= 4'b0;
         parity_r <= 1'b0;
     end else if (falling_edge_w) begin
         bits_r   <= bits_r + 1;
