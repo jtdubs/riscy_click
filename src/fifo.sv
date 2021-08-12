@@ -42,7 +42,7 @@ typedef logic [(ADDR_WIDTH-1):0] addr_t;
 
 localparam addr_t CAPACITY = addr_t'((1 << ADDR_WIDTH) - 1);
 localparam addr_t ALMOST_EMPTY_COUNT = addr_t'(ALMOST_EMPTY_MARGIN);
-localparam addr_t ALMOST_FULL_COUNT  = addr_t'(CAPACITY - ALMOST_FULL_MARGIN);
+localparam addr_t ALMOST_FULL_COUNT  = addr_t'(CAPACITY - addr_t'(ALMOST_FULL_MARGIN));
 
 // variables
 data_t data_r [CAPACITY:0];
@@ -59,7 +59,7 @@ always_comb begin
     end else begin
         write_ptr_w = write_ptr_r;
     end
-    
+
     if (read_enable_i && !fifo_empty_o) begin
         read_ptr_w = read_ptr_r + 1;
     end else begin
@@ -82,14 +82,14 @@ always_ff @(posedge clk_i) begin
 
     if (write_enable_i && !fifo_full_o)
         data_r[write_ptr_r] <= write_data_i;
-        
+
     if (read_enable_i && !fifo_empty_o) begin
         read_data_o  <= data_r[read_ptr_r];
         read_valid_o <= 1'b1;
     end else begin
         read_data_o  <= '0;
         read_valid_o <= 1'b0;
-    end  
+    end
 
     if (reset_i) begin
         read_data_o         <= '0;
