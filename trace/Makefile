@@ -22,6 +22,7 @@ SV_SOURCES += ../src/cpu_ma.sv
 SV_SOURCES += ../src/cpu.sv
 SV_SOURCES += ../src/ps2_rx.sv
 SV_SOURCES += ../src/ps2_kbd.sv
+SV_SOURCES += ../src/kbd_controller.sv
 SV_SOURCES += ../src/board.sv
 SV_SOURCES += ../src/cpu_clk_gen.sv
 SV_SOURCES += ../src/pixel_clk_gen.sv
@@ -75,7 +76,7 @@ bios.mem: ../roms/bios/bios.mem
 crom.mem: ../roms/character_rom/crom.mem
 	- ln -sf $^ $@
 
-$(EXE): $(SV_SOURCES) $(VLT_SOURCES) $(CXX_SOURCES)
+$(EXE): $(SV_SOURCES) $(VLT_SOURCES) $(CXX_SOURCES) $(ROMS)
 	rm -Rf $(VERILATOR_DIR)
 	$(VERILATOR) $(VERILATOR_FLAGS) $(VLT_SOURCES) $(SV_SOURCES) $(CXX_SOURCES)
 	$(MAKE) -C $(VERILATOR_DIR) -f V$(VERILATOR_TOP).mk

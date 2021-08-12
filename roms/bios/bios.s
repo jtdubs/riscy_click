@@ -5,6 +5,7 @@
 .equ VRAM_BASE, 0x20000000
 .equ DISPLAY,   0xFF000000
 .equ SWITCH,    0xFF000004
+.equ KBD,       0xFF000008
 
 .text
 .align 4
@@ -21,10 +22,7 @@ _start:
     li s5, 80
     li s6, 30
 
-    # update display from switch
-    lw t0, 0(s1)
-    sw t0, 0(s2)
-
+vram_loop_setup:
     li s10, 0 # y=0
     li s11, 0 # x=0
 
@@ -52,11 +50,17 @@ vram_loop:
     addi s10, s10, 1
     bne s10, s6, vram_loop
 
-seg_loop:
-    # update display from switch
+kbd_setup:
+    li s1, KBD
+    li t2, 0x10000
+
+kbd_loop:
+    # update display from keyboard
     lw t0, 0(s1)
+    and t1, t0, t2
+    beqz t1, kbd_loop
     sw t0, 0(s2)
-    j seg_loop
+    j kbd_loop
 
 csr_test:
     la t0, _trap_handler
