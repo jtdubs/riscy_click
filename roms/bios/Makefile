@@ -1,9 +1,15 @@
 .PHONY: all clean
 
-SOURCES = entry.s main.c
-TARGET = bios
+ASM_SOURCES = $(wildcard *.s)
+CXX_SOURCES = $(wildcard *.c)
+LINK_SCRIPT = bios.ld
 
-OBJECTS = $(SOURCES:=.o)
+TARGET = bios
+ELF_TARGET = $(TARGET).elf
+DIS_TARGET = $(TARGET).dis
+MEM_TARGET = $(TARGET).mem
+
+OBJECTS = $(ASM_SOURCES:.s=.o) $(CXX_SOURCES:.c=.o)
 
 CC = riscv32-unknown-elf-gcc
 LD = riscv32-unknown-elf-ld
@@ -13,18 +19,21 @@ OBJCOPY = riscv32-unknown-elf-objcopy
 CFLAGS =
 CFLAGS += -mabi=ilp32
 CFLAGS += -march=rv32i
+CFLAGS += -nostartfiles
+CFLAGS += -nodefaultlibs
 CFLAGS += -O2
+CFLAGS += -Wall
+CFLAGS += -pedantic
 CFLAGS += -c
 
 LDFLAGS =
 LDFLAGS += -e _start
 LDFLAGS += -nostdlib
-LDFLAGS += -section-start=.text=0
-LDFLAGS += -section-start=.rodata=300
 
-all: $(TARGET)
+all: $(ELF_TARGET) $(DIS_TARGET) $(MEM_TARGET)
 
-$(TARGET): $(OBJECTS)
+$(ELF_TARGET): $(OBJECTS)
+	$(LD) $(LDFLAGS) -T $(LINK_SCRIPT) -o $@ $^
 
 clean:
 	rm -f *.o *.elf *.dis *.img *.mem
@@ -34,9 +43,6 @@ clean:
 
 %.o: %.c
 	$(CC) $(CFLAGS) -o $@ $^
-
-%.elf: %.o
-	$(LD) $(LDFLAGS) -o $@ $^
 
 %.dis: %.elf
 	$(OBJDUMP) --disassemble-all $^ -M no-aliases,numeric > $@

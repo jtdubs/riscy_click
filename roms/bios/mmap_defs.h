@@ -7,9 +7,9 @@
 #define REGION_SWITCH      0xFF000004
 #define REGION_KEYBOARD    0xFF000008
 
-unsigned long *PTR_BIOS        = (unsigned long *)REGION_BIOS;
-unsigned long *PTR_RAM         = (unsigned long *)REGION_RAM;
-unsigned long *PTR_FRAMEBUFFER = (unsigned long *)REGION_FRAMEBUFFER;
-unsigned long *PTR_DISPLAY     = (unsigned long *)REGION_DISPLAY;
-unsigned long *PTR_SWITCH      = (unsigned long *)REGION_SWITCH;
-unsigned long *PTR_KEYBOARD    = (unsigned long *)REGION_KEYBOARD;
+unsigned long * const PTR_BIOS        = (unsigned long *)REGION_BIOS;
+unsigned long * const PTR_RAM         = (unsigned long *)REGION_RAM;
+unsigned long * const PTR_FRAMEBUFFER = (unsigned long *)REGION_FRAMEBUFFER;
+unsigned long * const PTR_DISPLAY     = (unsigned long *)REGION_DISPLAY;
+unsigned long * const PTR_SWITCH      = (unsigned long *)REGION_SWITCH;
+unsigned long * const PTR_KEYBOARD    = (unsigned long *)REGION_KEYBOARD;
