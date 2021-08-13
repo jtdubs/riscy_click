@@ -21,6 +21,7 @@ CFLAGS += -mabi=ilp32
 CFLAGS += -march=rv32i
 CFLAGS += -nostartfiles
 CFLAGS += -nodefaultlibs
+CFLAGS += -ffreestanding
 CFLAGS += -O2
 CFLAGS += -Wall
 CFLAGS += -pedantic
