@@ -1,7 +1,9 @@
 .PHONY: all clean
 
-SOURCES = bios.s
-TARGETS = bios.mem bios.dis bios.elf bios.img
+SOURCES = entry.s main.c
+TARGET = bios
+
+OBJECTS = $(SOURCES:=.o)
 
 CC = riscv32-unknown-elf-gcc
 LD = riscv32-unknown-elf-ld
@@ -20,7 +22,9 @@ LDFLAGS += -nostdlib
 LDFLAGS += -section-start=.text=0
 LDFLAGS += -section-start=.rodata=300
 
-all: $(TARGETS)
+all: $(TARGET)
+
+$(TARGET): $(OBJECTS)
 
 clean:
 	rm -f *.o *.elf *.dis *.img *.mem
