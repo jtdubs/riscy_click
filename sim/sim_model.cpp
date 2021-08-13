@@ -103,8 +103,8 @@ void sim_tick(sim_model_t* model) {
     if (model->ncycles % 4 == 0)
         vga_tick(model->vga_buffer, dut->vga_hsync_o, dut->vga_vsync_o, dut->vga_red_o, dut->vga_green_o, dut->vga_blue_o);
 
-    // update PS2 every 100k cycles
-    if (model->ncycles % 100000 == 0)
+    // update PS2 every 100 cycles (100x faster than a real PS/2 port....)
+    if (model->ncycles % 100 == 0)
         key_tick(model->keyboard, &dut->ps2_clk_async_i, &dut->ps2_data_async_i);
 }
 

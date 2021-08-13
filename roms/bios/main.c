@@ -1,39 +1,40 @@
 #include "mmap.h"
 #include "keyboard.h"
+#include "display.h"
+#include "segment.h"
 
 #include <stdint.h>
 
 int main() {
-    // zero out the framebuffer
-    for (uint8_t y=0; y<30; y++)
-        for (uint8_t x=0; x<80; x++)
-            PTR_FRAMEBUFFER[y << 7 | x] = 'X';
+    dsp_clear('.');
 
     // main loop
     uint8_t x = 0;
     uint8_t y = 0;
 
     for (;;) {
-        PTR_FRAMEBUFFER[(y << 7) | x] = '*';
+        dsp_write(x, y, '*');
 
-        uint32_t c = *PTR_KEYBOARD;
+        kbd_event_t ev = kbd_read();
 
-        // skip invalid data
-        if ((c & 0x10000) == 0)
+        if (! kbd_is_valid(ev))
             continue;
 
-        // update seven segment display
-        *PTR_DISPLAY = c;
+        seg_write(ev);
 
-        // skip breaks
-        if ((c & 0x100) == 0x100)
+        if (kbd_is_break(ev))
             continue;
 
-        switch (c & 0xFF) {
+        switch (kbd_to_key(ev)) {
         case KEY_UP:    y--; break;
         case KEY_DOWN:  y++; break;
         case KEY_LEFT:  x--; break;
         case KEY_RIGHT: x++; break;
+        case KEY_ESC:
+            dsp_clear('.');
+            x=0;
+            y=0;
+            break;
         }
     }
 }
