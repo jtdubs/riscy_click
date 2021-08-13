@@ -1,8 +1,7 @@
-#include "mmap_defs.h"
-#include "type_defs.h"
-#include "vk_defs.h"
+#include "mmap.h"
+#include "keyboard.h"
 
-// static uint8_t x, y;
+#include <stdint.h>
 
 int main() {
     // zero out the framebuffer
@@ -13,6 +12,7 @@ int main() {
     // main loop
     uint8_t x = 0;
     uint8_t y = 0;
+
     for (;;) {
         PTR_FRAMEBUFFER[(y << 7) | x] = '*';
 

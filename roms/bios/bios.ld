@@ -18,27 +18,28 @@ MEMORY
 SECTIONS
 {
     . = ROM_ADDRESS;
+    PROVIDE(__rom_start = .);
 
     .text : {
         . = ALIGN(4);
         PROVIDE(__text_start = .);
         start.o (.text);
-        *       (.text);
-        *       (.srodata);
-        *       (.rodata);
+        *       (.text .text.*);
+        *       (.srodata .srodata.*);
+        *       (.rodata .rodata.*);
         . = ALIGN(4);
         PROVIDE(__text_end = .);
     } > rom
 
     . = RAM_ADDRESS;
-
+    PROVIDE(__ram_start = .);
     PROVIDE(__global_pointer = .);
 
     .data : {
         . = ALIGN(4);
         PROVIDE(__copy_start = .);
-        * (.sdata);
-        * (.data);
+        * (.sdata .sdata.*);
+        * (.data .data.*);
         . = ALIGN(4);
         PROVIDE(__copy_end = .);
     } > ram AT > rom
@@ -48,8 +49,8 @@ SECTIONS
     .bss (NOLOAD) : {
         . = ALIGN(4);
         PROVIDE(__zero_start = .);
-        * (.sbss);
-        * (.bss);
+        * (.sbss .sbss.*);
+        * (.bss .bss.*);
         . = ALIGN(4);
         PROVIDE(__zero_end = .);
     } > ram
