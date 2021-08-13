@@ -96,15 +96,14 @@ always_comb begin
     //[490-491] - vsync
     //[492-524] - blank
 
-    display_area_w = (x_w < 640) && (y_w < 480);
-    hsync_w = (x_w >= 656) && (x_w < 752);
-    vsync_w = (y_w >= 490) && (y_w < 492);
+    display_area_w = (x_w <  640) && (y_w < 480);
+    hsync_w        = (x_w >= 656) && (x_w < 752);
+    vsync_w        = (y_w >= 490) && (y_w < 492);
 end
 
 
 // keep track of character location
 logic [2:0] x_char_offset_w;
-
 logic [6:0] x_lookahead_char_index_w;
 logic [4:0] y_lookahead_char_index_w;
 logic [3:0] y_lookahead_char_offset_w;
@@ -117,17 +116,21 @@ end
 
 
 // keep track of character row
-logic [31:0] char_row_r, char_row_w;
+logic [31:0] char_row_r;
 
 always_comb begin
+    // framebuffer lookup based lookahead
     vram_addr_o = { y_lookahead_char_index_w[4:0], x_lookahead_char_index_w };
+    // character ROM lookup based on character in framebuffer, and what row
+    // of the character we will be drawwing
     crom_addr_w = { vram_data_i, y_lookahead_char_offset_w };
-    char_row_w  = crom_data_w;
 end
 
+// latch in new character row on character boundaries
 always_ff @(posedge clk_i) begin
+    // if on 7th pixel of character, next pixel will be the next character
     if (x_char_offset_w == 3'b111)
-        char_row_r <= char_row_w;
+        char_row_r <= crom_data_w;
 
     if (reset_i)
         char_row_r <= 32'b0;
@@ -138,6 +141,7 @@ end
 logic [3:0] rgb_w;
 
 always_comb begin
+    // character nibbles are 4-bit grayscale values for each pixel
     unique case (x_char_offset_w)
     0: rgb_w = char_row_r[31:28];
     1: rgb_w = char_row_r[27:24];

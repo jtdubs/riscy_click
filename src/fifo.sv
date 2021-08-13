@@ -18,29 +18,29 @@ module fifo
         parameter shortint ALMOST_FULL_MARGIN  = 2
     )
     (
-        input  wire logic               clk_i,
-        input  wire logic               reset_i,
+        input  wire logic                    clk_i,
+        input  wire logic                    reset_i,
 
         // write port
         input  wire logic [(DATA_WIDTH-1):0] write_data_i,
-        input  wire logic               write_enable_i,
+        input  wire logic                    write_enable_i,
 
         // read port
-        input  wire logic               read_enable_i,
+        input  wire logic                    read_enable_i,
         output      logic [(DATA_WIDTH-1):0] read_data_o,
-        output      logic               read_valid_o,
+        output      logic                    read_valid_o,
 
         // fifo status
-        output      logic               fifo_empty_o,
-        output      logic               fifo_almost_empty_o,
-        output      logic               fifo_almost_full_o,
-        output      logic               fifo_full_o
+        output      logic                    fifo_empty_o,
+        output      logic                    fifo_almost_empty_o,
+        output      logic                    fifo_almost_full_o,
+        output      logic                    fifo_full_o
     );
 
 typedef logic [(DATA_WIDTH-1):0] data_t;
 typedef logic [(ADDR_WIDTH-1):0] addr_t;
 
-localparam addr_t CAPACITY = addr_t'((1 << ADDR_WIDTH) - 1);
+localparam addr_t CAPACITY           = addr_t'((1 << ADDR_WIDTH) - 1);
 localparam addr_t ALMOST_EMPTY_COUNT = addr_t'(ALMOST_EMPTY_MARGIN);
 localparam addr_t ALMOST_FULL_COUNT  = addr_t'(CAPACITY - addr_t'(ALMOST_FULL_MARGIN));
 

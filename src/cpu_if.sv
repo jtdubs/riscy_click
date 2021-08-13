@@ -42,19 +42,19 @@ word_t pc_i, pc_w;
 // choose next PC value
 always_comb begin
     priority if (reset_i)
-        pc_w = 32'h0;      // zero on reset
+        pc_w = 32'h0;            // zero on reset
     else if (halt_i)
-        pc_w = pc_i;       // no change on halt  
+        pc_w = pc_i;             // no change on halt
     else if (jmp_valid_async_i)
         pc_w = jmp_addr_async_i; // respect jumps
     else if (~ready_async_i)
-        pc_w = pc_i;       // no change on backpressure
+        pc_w = pc_i;             // no change on backpressure
     else
-        pc_w = pc_i + 4;   // otherwise keep advancing
+        pc_w = pc_i + 4;         // otherwise keep advancing
 end
 
 // always request the IR corresponding to the next PC value
-always_comb imem_addr_o = pc_w; 
+always_comb imem_addr_o = pc_w;
 
 // update pipeline input to match the address we are requesting from imem
 always_ff @(posedge clk_i) begin
