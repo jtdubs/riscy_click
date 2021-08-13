@@ -3,8 +3,6 @@ TODO:
     - FIFO signals become external interrupts
     - WFI instruction
     - Update BIOS to use interrupts to handle keyboard input
-    - .inc and .h file with keycodes
-    - Make BIOS a blend of C and ASM
 - Machine Level ISA
     - CSR
         - Decode should confirm address is read/executable, otherwise trap
