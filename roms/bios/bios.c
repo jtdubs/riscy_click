@@ -14,7 +14,7 @@ int main() {
     uint8_t x = 0;
     uint8_t y = 0;
     for (;;) {
-        PTR_FRAMEBUFFER[(y << 7) | x] = ' ';
+        PTR_FRAMEBUFFER[(y << 7) | x] = '*';
 
         uint32_t c = *PTR_KEYBOARD;
 
@@ -29,7 +29,7 @@ int main() {
         if ((c & 0x100) == 0x100)
             continue;
 
-        switch (c) {
+        switch (c & 0xFF) {
         case KEY_UP:    y--; break;
         case KEY_DOWN:  y++; break;
         case KEY_LEFT:  x--; break;
