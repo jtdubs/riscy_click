@@ -26,8 +26,11 @@ setup_traps:
 
     # set pointers
 set_pointers:
+    .option push
+    .option norelax
+    la gp, __global_pointer$
+    .option pop
     la sp, __stack_end
-    la gp, __global_pointer
 
     # copy r/w data to RAM
 copy_start:

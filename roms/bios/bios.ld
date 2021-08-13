@@ -33,7 +33,7 @@ SECTIONS
 
     . = RAM_ADDRESS;
     PROVIDE(__ram_start = .);
-    PROVIDE(__global_pointer = .);
+    PROVIDE(__global_pointer$ = .);
 
     .data : {
         . = ALIGN(4);

@@ -45,7 +45,7 @@ clean:
 	$(CC) $(CFLAGS) -o $@ $^
 
 %.dis: %.elf
-	$(OBJDUMP) --disassemble-all $^ -M no-aliases,numeric > $@
+	$(OBJDUMP) --disassemble-all $^ > $@
 
 %.img: %.elf
 	$(OBJCOPY) $^ -O binary $@

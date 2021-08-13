@@ -23,8 +23,6 @@ TODO:
     - Add memory controller and DDR
 - CPU
     - Change stage breakdown or increase stages to up clock speed
-- Verilog
-    - Look for simplification to improve efficiency
 
 Reference:
 http://fpgacpu.ca/fpga/index.html
