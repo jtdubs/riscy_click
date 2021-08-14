@@ -17,21 +17,22 @@ module cpu_csr
         input  wire logic       retired_i,     // did an instruction retire this cycle
 
         // trap port
-        input  wire word_t      pc_i,          // program counter
+        input  wire word_t      trap_pc_i,     // program counter
         input  wire mcause_t    mcause_i,      // trap cause
         input  wire logic       mtrap_i,       // is trap needed
         input  wire logic       mret_i,        // is trap return needed
         output      word_t      trap_addr_o,   // trap addr to jump to
+        output      logic       trap_valid_o,  // trap addr to jump to
 
         // CSR read port
-        input  wire csr_t       csr_read_addr_i,
-        input  wire logic       csr_read_enable_i,
-        output      word_t      csr_read_data_o,
+        input  wire csr_t       read_addr_i,
+        input  wire logic       read_enable_i,
+        output      word_t      read_data_o,
 
         // CSR write port
-        input  wire csr_t       csr_write_addr_i,
-        input  wire word_t      csr_write_data_i,
-        input  wire logic       csr_write_enable_i,
+        input  wire csr_t       write_addr_i,
+        input  wire word_t      write_data_i,
+        input  wire logic       write_enable_i,
 
         // PMP lookup port 1
         input  wire word_t      lookup1_addr,
@@ -205,7 +206,8 @@ end
 
 // determine trap address
 always_comb begin
-    trap_addr_o = 32'b0;
+    trap_addr_o  = 32'b0;
+    trap_valid_o = mtrap_i || mret_i;
 
     if (mtrap_i) begin
         case (mtvec_r.mode)
@@ -267,79 +269,79 @@ always_comb mip_o = '{
 };
 
 always_ff @(posedge clk_i) begin
-    if (csr_read_enable_i) begin
-        unique case (csr_read_addr_i)
-        //                                      MXLEN=32           ZYXWVUTSRQPONMLKJIHGFEDCBA
-        CSR_MISA:          csr_read_data_o <= { 2'b01,   4'b0, 26'b00000000000000000100000000 };
+    if (read_enable_i) begin
+        unique case (read_addr_i)
+        //                                  MXLEN=32           ZYXWVUTSRQPONMLKJIHGFEDCBA
+        CSR_MISA:          read_data_o <= { 2'b01,   4'b0, 26'b00000000000000000100000000 };
         //                                    0 means non-commercial implementation
-        CSR_MVENDORID:     csr_read_data_o <= 32'b0; 
+        CSR_MVENDORID:     read_data_o <= 32'b0; 
         //                                    no assigned architecture ID
-        CSR_MARCHID:       csr_read_data_o <= 32'b0; 
+        CSR_MARCHID:       read_data_o <= 32'b0; 
         //                                    version 1
-        CSR_MIMPID:        csr_read_data_o <= 32'h0001;
+        CSR_MIMPID:        read_data_o <= 32'h0001;
         //                                    hardware thread #0
-        CSR_MHARTID:       csr_read_data_o <= 32'b0;
+        CSR_MHARTID:       read_data_o <= 32'b0;
         //                                    machine status
-        CSR_MSTATUS:       csr_read_data_o <= mstatus_o;
+        CSR_MSTATUS:       read_data_o <= mstatus_o;
         //                                    machine trap-vector base-address
-        CSR_MTVEC:         csr_read_data_o <= mtvec_r;
+        CSR_MTVEC:         read_data_o <= mtvec_r;
         //                                    counter inhibit
-        CSR_MCOUNTINHIBIT: csr_read_data_o <= mcountinhibit_r;
+        CSR_MCOUNTINHIBIT: read_data_o <= mcountinhibit_r;
         //                                    scratch
-        CSR_MSCRATCH:      csr_read_data_o <= mscratch_r;
+        CSR_MSCRATCH:      read_data_o <= mscratch_r;
         //                                    exception cause
-        CSR_MCAUSE:        csr_read_data_o <= mcause_r;
+        CSR_MCAUSE:        read_data_o <= mcause_r;
         //                                    exception program counter
-        CSR_MEPC:          csr_read_data_o <= mepc_r;
+        CSR_MEPC:          read_data_o <= mepc_r;
         //                                    exception value
-        CSR_MTVAL:         csr_read_data_o <= mtval_r;
+        CSR_MTVAL:         read_data_o <= mtval_r;
         //                                    exception value
-        CSR_MTVAL2:        csr_read_data_o <= mtval2_r;
+        CSR_MTVAL2:        read_data_o <= mtval2_r;
         //                                    exception value
-        CSR_MTINST:        csr_read_data_o <= mtinst_r;
+        CSR_MTINST:        read_data_o <= mtinst_r;
         //                                    machine interrupt pending
-        CSR_MIP:           csr_read_data_o <= mip_o;
+        CSR_MIP:           read_data_o <= mip_o;
         //                                    machine interrupt enabled
-        CSR_MIE:           csr_read_data_o <= mie_o;
+        CSR_MIE:           read_data_o <= mie_o;
         //                                    cycle counter
         CSR_MCYCLE,
-        CSR_CYCLE:         csr_read_data_o <= mcycle_r[31:0];
+        CSR_CYCLE:         read_data_o <= mcycle_r[31:0];
         //                                    realtime counter
-        CSR_TIME:          csr_read_data_o <= time_r[31:0];
+        CSR_TIME:          read_data_o <= time_r[31:0];
         //                                    retired instruction counter
         CSR_MINSTRET,
-        CSR_INSTRET:       csr_read_data_o <= minstret_r[31:0];
+        CSR_INSTRET:       read_data_o <= minstret_r[31:0];
         //                                    cycle counter (upper half)
         CSR_MCYCLEH,
-        CSR_CYCLEH:        csr_read_data_o <= mcycle_r[63:32];
+        CSR_CYCLEH:        read_data_o <= mcycle_r[63:32];
         //                                    realtime counter (upper half)
-        CSR_TIMEH:         csr_read_data_o <= time_r[63:32];
+        CSR_TIMEH:         read_data_o <= time_r[63:32];
         //                                    retired instruction counter (upper half)
         CSR_MINSTRETH,
-        CSR_INSTRETH:      csr_read_data_o <= minstret_r[63:32];
+        CSR_INSTRETH:      read_data_o <= minstret_r[63:32];
         //                                    memory config
-        (CSR_PMPCFG0+0):   csr_read_data_o <= { PMP_CONFIG[3].cfg, PMP_CONFIG[2].cfg, PMP_CONFIG[1].cfg, PMP_CONFIG[0].cfg };
-        (CSR_PMPCFG0+1):   csr_read_data_o <= { PMP_CONFIG[7].cfg, PMP_CONFIG[6].cfg, PMP_CONFIG[5].cfg, PMP_CONFIG[4].cfg };
-        (CSR_PMPCFG0+2):   csr_read_data_o <= { 8'b0,              8'b0,              8'b0,              PMP_CONFIG[8].cfg };
+        (CSR_PMPCFG0+0):   read_data_o <= { PMP_CONFIG[3].cfg, PMP_CONFIG[2].cfg, PMP_CONFIG[1].cfg, PMP_CONFIG[0].cfg };
+        (CSR_PMPCFG0+1):   read_data_o <= { PMP_CONFIG[7].cfg, PMP_CONFIG[6].cfg, PMP_CONFIG[5].cfg, PMP_CONFIG[4].cfg };
+        (CSR_PMPCFG0+2):   read_data_o <= { 8'b0,              8'b0,              8'b0,              PMP_CONFIG[8].cfg };
         //                                    memory address
-        (CSR_PMPADDR0+0):  csr_read_data_o <= PMP_CONFIG[0].addr;
-        (CSR_PMPADDR0+1):  csr_read_data_o <= PMP_CONFIG[1].addr;
-        (CSR_PMPADDR0+2):  csr_read_data_o <= PMP_CONFIG[2].addr;
-        (CSR_PMPADDR0+3):  csr_read_data_o <= PMP_CONFIG[3].addr;
-        (CSR_PMPADDR0+4):  csr_read_data_o <= PMP_CONFIG[4].addr;
-        (CSR_PMPADDR0+5):  csr_read_data_o <= PMP_CONFIG[5].addr;
-        (CSR_PMPADDR0+6):  csr_read_data_o <= PMP_CONFIG[6].addr;
-        (CSR_PMPADDR0+7):  csr_read_data_o <= PMP_CONFIG[7].addr;
-        (CSR_PMPADDR0+8):  csr_read_data_o <= PMP_CONFIG[8].addr;
+        (CSR_PMPADDR0+0):  read_data_o <= PMP_CONFIG[0].addr;
+        (CSR_PMPADDR0+1):  read_data_o <= PMP_CONFIG[1].addr;
+        (CSR_PMPADDR0+2):  read_data_o <= PMP_CONFIG[2].addr;
+        (CSR_PMPADDR0+3):  read_data_o <= PMP_CONFIG[3].addr;
+        (CSR_PMPADDR0+4):  read_data_o <= PMP_CONFIG[4].addr;
+        (CSR_PMPADDR0+5):  read_data_o <= PMP_CONFIG[5].addr;
+        (CSR_PMPADDR0+6):  read_data_o <= PMP_CONFIG[6].addr;
+        (CSR_PMPADDR0+7):  read_data_o <= PMP_CONFIG[7].addr;
+        (CSR_PMPADDR0+8):  read_data_o <= PMP_CONFIG[8].addr;
 
-        default:           csr_read_data_o <= 32'b0;
+        default:           read_data_o <= 32'b0;
         endcase
     end else begin
-        csr_read_data_o <= 32'b0;
+        read_data_o <= 32'b0;
     end
 
     if (reset_i) begin
-        csr_read_data_o <= 32'b0;
+        read_data_o <= 32'b0;
     end
 end
 
@@ -349,29 +351,29 @@ end
 //
 
 mstatus_t mstatus_i;
-always_comb mstatus_i = mstatus_t'(csr_write_data_i);
+always_comb mstatus_i = mstatus_t'(write_data_i);
 
 mi_t mie_i;
-always_comb mie_i = mi_t'(csr_write_data_i[15:0]);
+always_comb mie_i = mi_t'(write_data_i[15:0]);
 
 always_ff @(posedge clk_i) begin
-    if (csr_write_enable_i) begin
-        case (csr_write_addr_i)
-        CSR_MTVEC:          mtvec_r         <= csr_write_data_i;
-        CSR_MCOUNTINHIBIT:  mcountinhibit_r <= csr_write_data_i;
-        CSR_MSCRATCH:       mscratch_r      <= csr_write_data_i;
-        CSR_MEPC:           mepc_r          <= csr_write_data_i;
+    if (write_enable_i) begin
+        case (write_addr_i)
+        CSR_MTVEC:          mtvec_r         <= write_data_i;
+        CSR_MCOUNTINHIBIT:  mcountinhibit_r <= write_data_i;
+        CSR_MSCRATCH:       mscratch_r      <= write_data_i;
+        CSR_MEPC:           mepc_r          <= write_data_i;
         CSR_MSTATUS:
             begin
                 mstatus_mie_r  <= mstatus_i.mie;
                 mstatus_mpie_r <= mstatus_i.mpie;
             end
-        CSR_CYCLE:          mcycle_r        <= { mcycle_w  [63:32], csr_write_data_i };
-        CSR_TIME:           time_r          <= { time_w    [63:32], csr_write_data_i };
-        CSR_INSTRET:        minstret_r      <= { minstret_w[63:32], csr_write_data_i };
-        CSR_CYCLEH:         mcycle_r        <= { csr_write_data_i, mcycle_w   [31:0] };
-        CSR_TIMEH:          time_r          <= { csr_write_data_i, time_w     [31:0] };
-        CSR_INSTRETH:       minstret_r      <= { csr_write_data_i, minstret_w [31:0] };
+        CSR_CYCLE:          mcycle_r        <= { mcycle_w  [63:32], write_data_i };
+        CSR_TIME:           time_r          <= { time_w    [63:32], write_data_i };
+        CSR_INSTRET:        minstret_r      <= { minstret_w[63:32], write_data_i };
+        CSR_CYCLEH:         mcycle_r        <= { write_data_i, mcycle_w   [31:0] };
+        CSR_TIMEH:          time_r          <= { write_data_i, time_w     [31:0] };
+        CSR_INSTRETH:       minstret_r      <= { write_data_i, minstret_w [31:0] };
         CSR_MIE:
             begin
                 meie_r <= mie_i.mei;
@@ -388,7 +390,7 @@ always_ff @(posedge clk_i) begin
     end
 
     if (mtrap_i)
-        mepc_r   <= pc_i;
+        mepc_r   <= trap_pc_i;
     else if (mret_i)
         mepc_r   <= 32'b0;
 

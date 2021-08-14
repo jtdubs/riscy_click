@@ -40,6 +40,21 @@ module cpu_id
         output      word_t     jmp_addr_async_o,    // jump address
         output      logic      jmp_valid_async_o,   // jump address valid
 
+        // csr interface
+        output      logic      csr_retired_o,       // instruction retirement indicator
+        output      word_t     csr_trap_pc_o,       // trap program counter
+        output      logic      csr_mtrap_o,         // trap needed
+        output      logic      csr_mret_o,          // trap return needed
+        output      mcause_t   csr_mcause_o,        // trap cause
+        input  wire word_t     csr_trap_addr_i,     // trap addr to jump to
+        input  wire logic      csr_trap_valid_i,    // trap addr valid
+        output      csr_t      csr_read_addr_o,     // csr read address
+        output      logic      csr_read_enable_o,   // csr read enable
+        input  wire word_t     csr_read_data_i,     // csr read data
+        output      csr_t      csr_write_addr_o,    // csr write address
+        output      word_t     csr_write_data_o,    // csr write data
+        output      logic      csr_write_enable_o,  // csr write enable
+
         // pipeline output
         output      word_t     pc_o,                // program counter
         output      word_t     ir_o,                // instruction register
@@ -150,31 +165,28 @@ end
 // Privileged Operations
 //
 
-logic    mtrap_w;
-logic    mret_w;
-mcause_t mcause_w;
-
 always_comb begin
-    mtrap_w  = 1'b0;
-    mret_w   = 1'b0;
-    mcause_w = '{ 1'b0, 31'b0 };
+    csr_mtrap_o   = 1'b0;
+    csr_mret_o    = 1'b0;
+    csr_mcause_o  = '{ 1'b0, 31'b0 };
+    csr_trap_pc_o = pc_i;
 
     if (cw_w.priv) begin
         case (f12_w)
         F12_ECALL:
             begin
-                mtrap_w  = 1'b1;
-                mcause_w = '{ 1'b0, ECALL_M        };
+                csr_mtrap_o  = 1'b1;
+                csr_mcause_o = '{ 1'b0, ECALL_M        };
             end
         F12_EBREAK:
             begin
-                mtrap_w  = 1'b1;
-                mcause_w = '{ 1'b0, EXC_BREAKPOINT };
+                csr_mtrap_o  = 1'b1;
+                csr_mcause_o = '{ 1'b0, EXC_BREAKPOINT };
             end
         F12_MRET,
         F12_SRET:
             begin
-                mret_w   = 1'b1;
+                csr_mret_o   = 1'b1;
             end
         endcase
     end
@@ -216,40 +228,6 @@ regfile regfile (
     .write_enable_i     (wb_enable_w)
 );
 
-
-//
-// CSR File Access
-//
-
-logic    retired_w;
-csr_t    csr_read_addr_w;
-logic    csr_read_enable_w;
-word_t   csr_read_data_w;
-csr_t    csr_write_addr_w;
-word_t   csr_write_data_w;
-logic    csr_write_enable_w;
-word_t   trap_addr_w;
-
-cpu_csr csr (
-    .clk_i              (clk_i),
-    .reset_i            (reset_i),
-    .retired_i          (retired_w),
-    .pc_i               (pc_i),
-    .mtrap_i            (mtrap_w),
-    .mret_i             (mret_w),
-    .mcause_i           (mcause_w),
-    .trap_addr_o        (trap_addr_w),
-    .csr_read_addr_i    (csr_read_addr_w),
-    .csr_read_enable_i  (csr_read_enable_w),
-    .csr_read_data_o    (csr_read_data_w),
-    .csr_write_addr_i   (csr_write_addr_w),
-    .csr_write_data_i   (csr_write_data_w),
-    .csr_write_enable_i (csr_write_enable_w),
-    .lookup1_addr       (32'b0),
-    .lookup1_rwx        (),
-    .lookup2_addr       (32'b0),
-    .lookup2_rwx        ()
-);
 
 
 //
@@ -356,34 +334,34 @@ end
 // update CSR control signals
 always_comb begin
     // always read and write from the CSR specified in the instruction
-    csr_read_addr_w  = csr_w;
-    csr_write_addr_w = csr_w;
-    
+    csr_read_addr_o  = csr_w;
+    csr_write_addr_o = csr_w;
+
     // read on read action unless there's nowhere to put it
-    csr_read_enable_w  = csr_read_action_w && rd_w != 5'b0;
-   
+    csr_read_enable_o  = csr_read_action_w && rd_w != 5'b0;
+
     unique case (f3_w)
     F3_CSRRW,  // the RW variations always write on exec action
-    F3_CSRRWI: csr_write_enable_w = csr_write_action_w;
+    F3_CSRRWI: csr_write_enable_o = csr_write_action_w;
     F3_CSRRS,  // the Set/Clear variations write on exec action unless x0 is specified
-    F3_CSRRC:  csr_write_enable_w = csr_write_action_w && (rs1_w != 5'b0);
+    F3_CSRRC:  csr_write_enable_o = csr_write_action_w && (rs1_w != 5'b0);
     F3_CSRRSI, // the Set/Clear Immediate variations write on exec action unless the immediate value is 0
-    F3_CSRRCI: csr_write_enable_w = csr_write_action_w && (uimm_w != 32'b0);
-    default:   csr_write_enable_w = 1'b0;
+    F3_CSRRCI: csr_write_enable_o = csr_write_action_w && (uimm_w != 32'b0);
+    default:   csr_write_enable_o = 1'b0;
     endcase
 
     unique case (f3_w)
-    F3_CSRRW:  csr_write_data_w = ra_bypassed_w;                    // 
-    F3_CSRRWI: csr_write_data_w = uimm_w;
-    F3_CSRRS:  csr_write_data_w = csr_read_data_w | ra_bypassed_w;
-    F3_CSRRSI: csr_write_data_w = csr_read_data_w | uimm_w;
-    F3_CSRRC:  csr_write_data_w = csr_read_data_w & ~ra_bypassed_w;
-    F3_CSRRCI: csr_write_data_w = csr_read_data_w & ~uimm_w;
-    default:   csr_write_data_w = 32'b0;
+    F3_CSRRW:  csr_write_data_o = ra_bypassed_w;                    // 
+    F3_CSRRWI: csr_write_data_o = uimm_w;
+    F3_CSRRS:  csr_write_data_o = csr_read_data_i | ra_bypassed_w;
+    F3_CSRRSI: csr_write_data_o = csr_read_data_i | uimm_w;
+    F3_CSRRC:  csr_write_data_o = csr_read_data_i & ~ra_bypassed_w;
+    F3_CSRRCI: csr_write_data_o = csr_read_data_i & ~uimm_w;
+    default:   csr_write_data_o = 32'b0;
     endcase
 
     // consider this an instruction retirement if writeback stage is retiring OR we are
-    retired_w = !wb_empty_async_i || csr_state_r == CSR_STATE_EXECUTING;
+    csr_retired_o = !wb_empty_async_i || csr_state_r == CSR_STATE_EXECUTING;
 end
 
 // update regfile writeback control siganls
@@ -391,19 +369,19 @@ always_comb begin
     // If CSR is writing, it owns the register file's write port
     if (csr_write_action_w) begin
         wb_addr_w   = rd_w;
-        wb_data_w   = csr_read_data_w;
+        wb_data_w   = csr_read_data_i;
         wb_enable_w = csr_write_action_w && rd_w != 5'b0;
     // Otherwise, it comes from the writeback stage
     end else begin
         wb_addr_w   = wb_addr_async_i;
         wb_data_w   = wb_data_async_i;
         wb_enable_w = wb_valid_async_i;
-    end  
+    end
 end
 
 // advance to next state
 always_ff @(posedge clk_i) begin
-    `log_strobe(("{ \"stage\": \"ID\", \"pc\": \"%0d\", \"csr_addr\": \"%0d\", \"csr_state\": \"%0d\", \"csr_read_data\": \"%0d\", \"csr_write_data\": \"%0d\", \"csr_wb_addr\": \"%0d\", \"csr_wb_enable\": \"%0d\", \"csr_write_enable\": \"%0d\" }", pc_i, csr_w, csr_state_r, csr_read_data_w, csr_write_data_w, wb_addr_w, wb_enable_w, csr_write_enable_w));
+    `log_strobe(("{ \"stage\": \"ID\", \"pc\": \"%0d\", \"csr_addr\": \"%0d\", \"csr_state\": \"%0d\", \"csr_read_data\": \"%0d\", \"csr_write_data\": \"%0d\", \"csr_wb_addr\": \"%0d\", \"csr_wb_enable\": \"%0d\", \"csr_write_enable\": \"%0d\" }", pc_i, csr_w, csr_state_r, csr_read_data_i, csr_write_data_o, wb_addr_w, wb_enable_w, csr_write_enable_o));
 
     csr_state_r <= csr_state_w;
 end
@@ -426,9 +404,9 @@ end
 
 always_comb begin
     // jump signals
-    if (mtrap_w || mret_w) begin
+    if (csr_trap_valid_i) begin
         jmp_valid_async_o = 1'b1;
-        jmp_addr_async_o  = trap_addr_w;
+        jmp_addr_async_o  = csr_trap_addr_i;
     end else begin
         unique case (cw_w.pc_mode)
         PC_NEXT:
