@@ -68,7 +68,9 @@ end
 
 // drive memory access off of upcoming x,y
 always_comb begin
+    // vram lookup is two pixels ahead
     vram_addr_o = { y_r[1][8:4], x_r[1][9:3] };
+    // crom lookup is one pixel ahead
     crom_addr_w = { vram_data_i, y_r[0][3:0] };
 end
 
@@ -91,6 +93,7 @@ always_comb begin
 end
 
 always_ff @(posedge clk_i) begin
+    // signals are based on the NEXT x,y
     vga_hsync_o <= !((x_r[0] >= 657) && (x_r[0] < 753));
     vga_vsync_o <= !((y_r[0] >= 491) && (y_r[0] < 493));
     vga_red_o   <= rgb_w;
