@@ -90,6 +90,7 @@ scancodes = {
     0xE01F: "KEY_LEFTMETA",
     0x0011: "KEY_LEFTALT",
     0x0059: "KEY_RIGHTSHIFT",
+    0xE059: "KEY_RIGHTSHIFT", # BUG: Nexys A7 reports Right Shift as EO 59
     0xE014: "KEY_RIGHTCTRL",
     0xE027: "KEY_RIGHTMETA",
     0xE011: "KEY_RIGHTALT",
