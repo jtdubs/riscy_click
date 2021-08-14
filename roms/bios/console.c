@@ -69,7 +69,6 @@ char con_getch(void) {
             case KEY_LEFTSHIFT:
             case KEY_RIGHTSHIFT:
                 CONTROL_STATE.shift  = kbd_is_make(e) ? 1 : 0;
-                dsp_write(10, 10, 'S');
                 break;
             case KEY_LEFTCTRL:
             case KEY_RIGHTCTRL:
@@ -93,9 +92,8 @@ char con_getch(void) {
                 CONTROL_STATE.scroll = kbd_is_make(e) ? 1 : 0;
                 break;
             default:
-                dsp_write(11, 10, 'C');
                 if (kbd_is_make(e))
-                    return TRANSLATION_TABLE[(CONTROL_STATE.shift << 8) | key];
+                    return TRANSLATION_TABLE[(CONTROL_STATE.shift << 7) | key];
                 break;
         }
     }
