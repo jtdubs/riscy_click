@@ -194,7 +194,7 @@ end
 
 // update interrupt enabled flags
 always_comb begin
-    priority if (mtrap_i)
+    priority if (mtrap_i || take_interrupt_w)
         // on trap, disable interrupts and save previous value
         { mstatus_mie_w, mstatus_mpie_w } = { 1'b0,           mstatus_mie_r  };
     else if (mret_i)
@@ -206,12 +206,16 @@ always_comb begin
 end
 
 // traps and interrupts
+logic take_interrupt_w;
+
 always_comb begin
     trap_addr_o  = 32'b0;
     trap_valid_o = 1'b0;
     meip_w       = interrupt_i;
 
-    if (mtrap_i || (meip_w && meie_r && mstatus_mie_r)) begin
+    take_interrupt_w = meip_w && meie_r && mstatus_mie_r;
+
+    if (mtrap_i || take_interrupt_w) begin
         case (mtvec_r.mode)
         MTVEC_MODE_DIRECT:
             trap_addr_o = { mtvec_r.base, 2'b00 };
@@ -230,11 +234,12 @@ end
 
 // update trap registers
 always_ff @(posedge clk_i) begin
-    if (mtrap_i) begin
+    if (mtrap_i)
         mcause_r <= mcause_i;
-    end else if (mret_i) begin
+    else if (take_interrupt_w)
+        mcause_r <= { 1'b1, INT_M_EXTERNAL };
+    else if (mret_i)
         mcause_r <= MCAUSE_DEFAULT;
-    end
 
     if (reset_i) begin
         mcause_r <= MCAUSE_DEFAULT;
@@ -393,7 +398,7 @@ always_ff @(posedge clk_i) begin
         mstatus_mpie_r <= mstatus_mpie_w;
     end
 
-    if (mtrap_i)
+    if (mtrap_i || take_interrupt_w)
         mepc_r   <= trap_pc_i;
     else if (mret_i)
         mepc_r   <= 32'b0;
