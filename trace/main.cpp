@@ -8,10 +8,10 @@ int main(int argc, char** argv)
     Verilated::commandArgs(argc, argv);
 
     sim_keyboard_t *kbd = key_create();
-    key_make(kbd, GLFW_KEY_DOWN);
-    key_make(kbd, GLFW_KEY_DOWN);
-    key_make(kbd, GLFW_KEY_DOWN);
-    key_make(kbd, GLFW_KEY_DOWN);
+    key_make (kbd, GLFW_KEY_LEFT_SHIFT);
+    key_make (kbd, GLFW_KEY_H);
+    key_break(kbd, GLFW_KEY_H);
+    key_break(kbd, GLFW_KEY_LEFT_SHIFT);
 
     Vchipset *dut = new Vchipset;
     dut->switch_async_i = 0x1234;
@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 
     uint64_t ncycles = 0;
 
-    while (ncycles < 1000 && !Verilated::gotFinish() && (dut->reset_async_i || !dut->halt_o)) {
+    while (ncycles < 10000 && !Verilated::gotFinish() && (dut->reset_async_i || !dut->halt_o)) {
         dut->eval();
 
         ncycles++;
