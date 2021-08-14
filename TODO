@@ -28,7 +28,6 @@ TODO:
     - Add memory controller and DDR
 - CPU
     - Reduce complexity if possible in:
-        - segdisplay
         - vga_controller
         - cpu_id
     - Change stage breakdown or increase stages to up clock speed
