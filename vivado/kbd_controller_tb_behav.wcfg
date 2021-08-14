@@ -12,13 +12,13 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0.000000 us"></ZoomStartTime>
-      <ZoomEndTime time="419.800001 us"></ZoomEndTime>
-      <Cursor1Time time="99.503890 us"></Cursor1Time>
+      <ZoomStartTime time="46,566.700 ns"></ZoomStartTime>
+      <ZoomEndTime time="46,777.201 ns"></ZoomEndTime>
+      <Cursor1Time time="46,660.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="307"></NameColumnWidth>
-      <ValueColumnWidth column_width="130"></ValueColumnWidth>
+      <ValueColumnWidth column_width="124"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="6" />
    <wvobject fp_name="/kbd_controller_tb/kbd/clk_i" type="logic">
@@ -32,6 +32,7 @@
    <wvobject fp_name="group275" type="group">
       <obj_property name="label">Controller</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/kbd_controller_tb/kbd/read_enable_i" type="logic">
          <obj_property name="ElementShortName">read_enable_i</obj_property>
          <obj_property name="ObjectShortName">read_enable_i</obj_property>
@@ -52,18 +53,11 @@
          <obj_property name="ElementShortName">ps2_valid_w</obj_property>
          <obj_property name="ObjectShortName">ps2_valid_w</obj_property>
       </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/kbd_event_w" type="array">
-         <obj_property name="ElementShortName">kbd_event_w</obj_property>
-         <obj_property name="ObjectShortName">kbd_event_w</obj_property>
-      </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/kbd_valid_w" type="logic">
-         <obj_property name="ElementShortName">kbd_valid_w</obj_property>
-         <obj_property name="ObjectShortName">kbd_valid_w</obj_property>
-      </wvobject>
    </wvobject>
    <wvobject fp_name="group224" type="group">
       <obj_property name="label">RX</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/ps2_clk_async_i" type="logic">
          <obj_property name="ElementShortName">ps2_clk_async_i</obj_property>
          <obj_property name="ObjectShortName">ps2_clk_async_i</obj_property>
@@ -71,14 +65,6 @@
       <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/ps2_data_async_i" type="logic">
          <obj_property name="ElementShortName">ps2_data_async_i</obj_property>
          <obj_property name="ObjectShortName">ps2_data_async_i</obj_property>
-      </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/data_o" type="array">
-         <obj_property name="ElementShortName">data_o[7:0]</obj_property>
-         <obj_property name="ObjectShortName">data_o[7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/valid_o" type="logic">
-         <obj_property name="ElementShortName">valid_o</obj_property>
-         <obj_property name="ObjectShortName">valid_o</obj_property>
       </wvobject>
       <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/ps2_clk_r" type="array">
          <obj_property name="ElementShortName">ps2_clk_r[1:0]</obj_property>
@@ -88,65 +74,37 @@
          <obj_property name="ElementShortName">ps2_data_r</obj_property>
          <obj_property name="ObjectShortName">ps2_data_r</obj_property>
       </wvobject>
+      <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/packet_r" type="array">
+         <obj_property name="ElementShortName">packet_r[10:0]</obj_property>
+         <obj_property name="ObjectShortName">packet_r[10:0]</obj_property>
+      </wvobject>
       <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/falling_edge_w" type="logic">
          <obj_property name="ElementShortName">falling_edge_w</obj_property>
          <obj_property name="ObjectShortName">falling_edge_w</obj_property>
       </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/ps2_state_r" type="array">
-         <obj_property name="ElementShortName">ps2_state_r[1:0]</obj_property>
-         <obj_property name="ObjectShortName">ps2_state_r[1:0]</obj_property>
+      <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/parity_good_w" type="logic">
+         <obj_property name="ElementShortName">parity_good_w</obj_property>
+         <obj_property name="ObjectShortName">parity_good_w</obj_property>
       </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/ps2_state_w" type="array">
-         <obj_property name="ElementShortName">ps2_state_w[1:0]</obj_property>
-         <obj_property name="ObjectShortName">ps2_state_w[1:0]</obj_property>
+      <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/start_good_w" type="logic">
+         <obj_property name="ElementShortName">start_good_w</obj_property>
+         <obj_property name="ObjectShortName">start_good_w</obj_property>
       </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/bits_r" type="array">
-         <obj_property name="ElementShortName">bits_r[3:0]</obj_property>
-         <obj_property name="ObjectShortName">bits_r[3:0]</obj_property>
+      <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/stop_good_w" type="logic">
+         <obj_property name="ElementShortName">stop_good_w</obj_property>
+         <obj_property name="ObjectShortName">stop_good_w</obj_property>
       </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/data_r" type="array">
-         <obj_property name="ElementShortName">data_r[7:0]</obj_property>
-         <obj_property name="ObjectShortName">data_r[7:0]</obj_property>
+      <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/packet_good_w" type="logic">
+         <obj_property name="ElementShortName">packet_good_w</obj_property>
+         <obj_property name="ObjectShortName">packet_good_w</obj_property>
       </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/parity_r" type="logic">
-         <obj_property name="ElementShortName">parity_r</obj_property>
-         <obj_property name="ObjectShortName">parity_r</obj_property>
+      <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/data_o" type="array">
+         <obj_property name="ElementShortName">data_o[7:0]</obj_property>
+         <obj_property name="ObjectShortName">data_o[7:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/parity_w" type="logic">
-         <obj_property name="ElementShortName">parity_w</obj_property>
-         <obj_property name="ObjectShortName">parity_w</obj_property>
-      </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/idle_w" type="logic">
-         <obj_property name="ElementShortName">idle_w</obj_property>
-         <obj_property name="ObjectShortName">idle_w</obj_property>
-      </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/start_w" type="logic">
-         <obj_property name="ElementShortName">start_w</obj_property>
-         <obj_property name="ObjectShortName">start_w</obj_property>
-      </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/recv_w" type="logic">
-         <obj_property name="ElementShortName">recv_w</obj_property>
-         <obj_property name="ObjectShortName">recv_w</obj_property>
-      </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/check_w" type="logic">
-         <obj_property name="ElementShortName">check_w</obj_property>
-         <obj_property name="ObjectShortName">check_w</obj_property>
-      </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/pass_w" type="logic">
-         <obj_property name="ElementShortName">pass_w</obj_property>
-         <obj_property name="ObjectShortName">pass_w</obj_property>
-      </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/fail_w" type="logic">
-         <obj_property name="ElementShortName">fail_w</obj_property>
-         <obj_property name="ObjectShortName">fail_w</obj_property>
-      </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/key_w" type="logic">
-         <obj_property name="ElementShortName">key_w</obj_property>
-         <obj_property name="ObjectShortName">key_w</obj_property>
-      </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/abort_w" type="logic">
-         <obj_property name="ElementShortName">abort_w</obj_property>
-         <obj_property name="ObjectShortName">abort_w</obj_property>
+      <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/valid_o" type="logic">
+         <obj_property name="ElementShortName">valid_o</obj_property>
+         <obj_property name="ObjectShortName">valid_o</obj_property>
       </wvobject>
    </wvobject>
    <wvobject fp_name="group233" type="group">
@@ -181,8 +139,8 @@
       <obj_property name="label">FIFO</obj_property>
       <obj_property name="DisplayName">label</obj_property>
       <wvobject fp_name="/kbd_controller_tb/kbd/fifo/write_data_i" type="array">
-         <obj_property name="ElementShortName">write_data_i[9:0]</obj_property>
-         <obj_property name="ObjectShortName">write_data_i[9:0]</obj_property>
+         <obj_property name="ElementShortName">write_data_i[8:0]</obj_property>
+         <obj_property name="ObjectShortName">write_data_i[8:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/kbd_controller_tb/kbd/fifo/write_enable_i" type="logic">
          <obj_property name="ElementShortName">write_enable_i</obj_property>
@@ -193,8 +151,8 @@
          <obj_property name="ObjectShortName">read_enable_i</obj_property>
       </wvobject>
       <wvobject fp_name="/kbd_controller_tb/kbd/fifo/read_data_o" type="array">
-         <obj_property name="ElementShortName">read_data_o[9:0]</obj_property>
-         <obj_property name="ObjectShortName">read_data_o[9:0]</obj_property>
+         <obj_property name="ElementShortName">read_data_o[8:0]</obj_property>
+         <obj_property name="ObjectShortName">read_data_o[8:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/kbd_controller_tb/kbd/fifo/read_valid_o" type="logic">
          <obj_property name="ElementShortName">read_valid_o</obj_property>
@@ -217,76 +175,36 @@
          <obj_property name="ObjectShortName">fifo_full_o</obj_property>
       </wvobject>
       <wvobject fp_name="/kbd_controller_tb/kbd/fifo/data_r" type="array">
-         <obj_property name="ElementShortName">data_r[31:0][9:0]</obj_property>
-         <obj_property name="ObjectShortName">data_r[31:0][9:0]</obj_property>
+         <obj_property name="ElementShortName">data_r[31:0][8:0]</obj_property>
+         <obj_property name="ObjectShortName">data_r[31:0][8:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/kbd_controller_tb/kbd/fifo/read_ptr_r" type="array">
-         <obj_property name="ElementShortName">read_ptr_r[5:0]</obj_property>
-         <obj_property name="ObjectShortName">read_ptr_r[5:0]</obj_property>
+         <obj_property name="ElementShortName">read_ptr_r[4:0]</obj_property>
+         <obj_property name="ObjectShortName">read_ptr_r[4:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/kbd_controller_tb/kbd/fifo/read_ptr_w" type="array">
-         <obj_property name="ElementShortName">read_ptr_w[5:0]</obj_property>
-         <obj_property name="ObjectShortName">read_ptr_w[5:0]</obj_property>
+         <obj_property name="ElementShortName">read_ptr_w[4:0]</obj_property>
+         <obj_property name="ObjectShortName">read_ptr_w[4:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/kbd_controller_tb/kbd/fifo/write_ptr_r" type="array">
-         <obj_property name="ElementShortName">write_ptr_r[5:0]</obj_property>
-         <obj_property name="ObjectShortName">write_ptr_r[5:0]</obj_property>
+         <obj_property name="ElementShortName">write_ptr_r[4:0]</obj_property>
+         <obj_property name="ObjectShortName">write_ptr_r[4:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/kbd_controller_tb/kbd/fifo/write_ptr_w" type="array">
-         <obj_property name="ElementShortName">write_ptr_w[5:0]</obj_property>
-         <obj_property name="ObjectShortName">write_ptr_w[5:0]</obj_property>
+         <obj_property name="ElementShortName">write_ptr_w[4:0]</obj_property>
+         <obj_property name="ObjectShortName">write_ptr_w[4:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/kbd_controller_tb/kbd/fifo/count_w" type="array">
-         <obj_property name="ElementShortName">count_w[5:0]</obj_property>
-         <obj_property name="ObjectShortName">count_w[5:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/fifo/fifo_empty_w" type="logic">
-         <obj_property name="ElementShortName">fifo_empty_w</obj_property>
-         <obj_property name="ObjectShortName">fifo_empty_w</obj_property>
-      </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/fifo/fifo_almost_empty_w" type="logic">
-         <obj_property name="ElementShortName">fifo_almost_empty_w</obj_property>
-         <obj_property name="ObjectShortName">fifo_almost_empty_w</obj_property>
-      </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/fifo/fifo_almost_full_w" type="logic">
-         <obj_property name="ElementShortName">fifo_almost_full_w</obj_property>
-         <obj_property name="ObjectShortName">fifo_almost_full_w</obj_property>
-      </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/fifo/fifo_full_w" type="logic">
-         <obj_property name="ElementShortName">fifo_full_w</obj_property>
-         <obj_property name="ObjectShortName">fifo_full_w</obj_property>
-      </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/fifo/WIDTH" type="array">
-         <obj_property name="ElementShortName">WIDTH[15:0]</obj_property>
-         <obj_property name="ObjectShortName">WIDTH[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/fifo/DEPTH" type="array">
-         <obj_property name="ElementShortName">DEPTH[15:0]</obj_property>
-         <obj_property name="ObjectShortName">DEPTH[15:0]</obj_property>
+         <obj_property name="ElementShortName">count_w[4:0]</obj_property>
+         <obj_property name="ObjectShortName">count_w[4:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/kbd_controller_tb/kbd/fifo/ALMOST_EMPTY_COUNT" type="array">
-         <obj_property name="ElementShortName">ALMOST_EMPTY_COUNT[15:0]</obj_property>
-         <obj_property name="ObjectShortName">ALMOST_EMPTY_COUNT[15:0]</obj_property>
+         <obj_property name="ElementShortName">ALMOST_EMPTY_COUNT[4:0]</obj_property>
+         <obj_property name="ObjectShortName">ALMOST_EMPTY_COUNT[4:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/kbd_controller_tb/kbd/fifo/ALMOST_FULL_COUNT" type="array">
-         <obj_property name="ElementShortName">ALMOST_FULL_COUNT[15:0]</obj_property>
-         <obj_property name="ObjectShortName">ALMOST_FULL_COUNT[15:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/fifo/COUNTER_SIZE" type="array">
-         <obj_property name="ElementShortName">COUNTER_SIZE[31:0]</obj_property>
-         <obj_property name="ObjectShortName">COUNTER_SIZE[31:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/fifo/C_DEPTH" type="array">
-         <obj_property name="ElementShortName">C_DEPTH[5:0]</obj_property>
-         <obj_property name="ObjectShortName">C_DEPTH[5:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/fifo/C_ALMOST_EMPTY_COUNT" type="array">
-         <obj_property name="ElementShortName">C_ALMOST_EMPTY_COUNT[5:0]</obj_property>
-         <obj_property name="ObjectShortName">C_ALMOST_EMPTY_COUNT[5:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/kbd_controller_tb/kbd/fifo/C_ALMOST_FULL_COUNT" type="array">
-         <obj_property name="ElementShortName">C_ALMOST_FULL_COUNT[5:0]</obj_property>
-         <obj_property name="ObjectShortName">C_ALMOST_FULL_COUNT[5:0]</obj_property>
+         <obj_property name="ElementShortName">ALMOST_FULL_COUNT[4:0]</obj_property>
+         <obj_property name="ObjectShortName">ALMOST_FULL_COUNT[4:0]</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>
