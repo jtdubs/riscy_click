@@ -78,6 +78,7 @@ always_comb begin
     endcase
 end
 
+
 // Anode
 always_ff @(posedge clk_i) begin
     dsp_anode_o <= 8'hFF;
@@ -85,6 +86,7 @@ always_ff @(posedge clk_i) begin
     if (enable_w)
         dsp_anode_o[digit_w] <= 1'b0;
 end
+
 
 // Cathode
 always_ff @(posedge clk_i) begin
