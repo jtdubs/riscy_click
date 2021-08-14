@@ -1,7 +1,4 @@
 TODO:
-- Debug
-    - Trace should use register ABI names
-    - Why does bios no longer clear the screen.  It works in -O2 * -O1, but not -O0
 - Keyboard
     - FIFO signals become external interrupts
     - WFI instruction
