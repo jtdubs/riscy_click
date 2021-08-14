@@ -85,7 +85,7 @@ end
 always_ff @(posedge clk_i) begin
     pc_o       <= pc_i;
     ir_o       <= ir_i;
-    ma_addr_o  <= alu_result_w;
+    ma_addr_o  <= (ma_mode_i == MA_X) ? 32'b0 : alu_result_w;
     ma_mode_o  <= ma_mode_i;
     ma_size_o  <= ma_size_i;
     ma_data_o  <= ma_data_i;

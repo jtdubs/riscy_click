@@ -121,7 +121,7 @@ always_comb begin
     { 7'b???????, F3_BGE,     OP_BRANCH }:   cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b1,     1'b1,     1'b0,      1'b0  };
     { 7'b???????, F3_BLTU,    OP_BRANCH }:   cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b1,     1'b1,     1'b0,      1'b0  };
     { 7'b???????, F3_BGEU,    OP_BRANCH }:   cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b1,     1'b1,     1'b0,      1'b0  };
-    { 7'b???????, 3'b???,     OP_LOAD }:     cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, ALU_ADD,     MA_LOAD,     MA_SIZE_W,        WB_SRC_MEM,       1'b1,     1'b1,     1'b0,      1'b0  };
+    { 7'b???????, 3'b???,     OP_LOAD }:     cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, ALU_ADD,     MA_LOAD,     ma_size_t'(f3_w), WB_SRC_MEM,       1'b1,     1'b1,     1'b0,      1'b0  };
     { 7'b???????, 3'b???,     OP_STORE }:    cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMS, ALU_ADD,     MA_STORE,    ma_size_t'(f3_w), WB_SRC_X,         1'b1,     1'b1,     1'b0,      1'b0  };
     { 7'b???????, 3'b???,     OP_MISC_MEM }: cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b0,     1'b0,     1'b0,      1'b0  };
     { 7'b???????, F3_PRIV,    OP_SYSTEM }:   cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b0,     1'b0,     1'b0,      1'b1  };

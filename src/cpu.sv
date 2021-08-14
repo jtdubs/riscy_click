@@ -30,51 +30,52 @@ module cpu
 //
 
 
-wire word_t     if_pc_w;
-wire word_t     if_ir_w;
-wire word_t     id_jmp_addr_async_w;
-wire logic      id_jmp_valid_async_w;
-wire logic      id_ready_async_w;
-wire word_t     id_pc_w;
-wire word_t     id_ir_w;
-wire word_t     id_alu_op1_w;
-wire word_t     id_alu_op2_w;
-wire alu_mode_t id_alu_mode_w;
-wire ma_mode_t  id_ma_mode_w;
-wire ma_size_t  id_ma_size_w;
-wire word_t     id_ma_data_w;
-wire wb_src_t   id_wb_src_w;
-wire word_t     id_wb_data_w;
-wire logic      id_wb_valid_w;
-wire word_t     ex_pc_w;
-wire word_t     ex_ir_w;
-wire word_t     ex_ma_addr_w;
-wire ma_mode_t  ex_ma_mode_w;
-wire ma_size_t  ex_ma_size_w;
-wire word_t     ex_ma_data_w;
-wire wb_src_t   ex_wb_src_w;
-wire word_t     ex_wb_data_w;
-wire logic      ex_wb_valid_w;
-wire regaddr_t  ex_wb_addr_async_w;
-wire word_t     ex_wb_data_async_w;
-wire logic      ex_wb_ready_async_w;
-wire logic      ex_wb_valid_async_w;
-wire logic      ex_empty_async_w;
-wire regaddr_t  ma_wb_addr_async_w;
-wire word_t     ma_wb_data_async_w;
-wire logic      ma_wb_ready_async_w;
-wire logic      ma_wb_valid_async_w;
-wire logic      ma_empty_async_w;
-wire word_t     ma_pc_w;
-wire word_t     ma_ir_w;
-wire logic      ma_load_w;
-wire word_t     ma_wb_data_w;
-wire logic      ma_wb_valid_w;
-wire ma_size_t  ma_size_w;
-wire regaddr_t  wb_addr_async_w;
-wire word_t     wb_data_async_w;
-wire logic      wb_valid_async_w;
-wire logic      wb_empty_async_w;
+wire word_t      if_pc_w;
+wire word_t      if_ir_w;
+wire word_t      id_jmp_addr_async_w;
+wire logic       id_jmp_valid_async_w;
+wire logic       id_ready_async_w;
+wire word_t      id_pc_w;
+wire word_t      id_ir_w;
+wire word_t      id_alu_op1_w;
+wire word_t      id_alu_op2_w;
+wire alu_mode_t  id_alu_mode_w;
+wire ma_mode_t   id_ma_mode_w;
+wire ma_size_t   id_ma_size_w;
+wire word_t      id_ma_data_w;
+wire wb_src_t    id_wb_src_w;
+wire word_t      id_wb_data_w;
+wire logic       id_wb_valid_w;
+wire word_t      ex_pc_w;
+wire word_t      ex_ir_w;
+wire word_t      ex_ma_addr_w;
+wire ma_mode_t   ex_ma_mode_w;
+wire ma_size_t   ex_ma_size_w;
+wire word_t      ex_ma_data_w;
+wire wb_src_t    ex_wb_src_w;
+wire word_t      ex_wb_data_w;
+wire logic       ex_wb_valid_w;
+wire regaddr_t   ex_wb_addr_async_w;
+wire word_t      ex_wb_data_async_w;
+wire logic       ex_wb_ready_async_w;
+wire logic       ex_wb_valid_async_w;
+wire logic       ex_empty_async_w;
+wire regaddr_t   ma_wb_addr_async_w;
+wire word_t      ma_wb_data_async_w;
+wire logic       ma_wb_ready_async_w;
+wire logic       ma_wb_valid_async_w;
+wire logic       ma_empty_async_w;
+wire word_t      ma_pc_w;
+wire word_t      ma_ir_w;
+wire logic       ma_load_w;
+wire logic [1:0] ma_alignment_w;
+wire word_t      ma_wb_data_w;
+wire logic       ma_wb_valid_w;
+wire ma_size_t   ma_size_w;
+wire regaddr_t   wb_addr_async_w;
+wire word_t      wb_data_async_w;
+wire logic       wb_valid_async_w;
+wire logic       wb_empty_async_w;
 
 //
 // CPU Stages
@@ -187,6 +188,7 @@ cpu_ma cpu_ma (
     .ir_o              (ma_ir_w),
     .load_o            (ma_load_w),
     .ma_size_o         (ma_size_w),
+    .ma_alignment_o    (ma_alignment_w),
     .wb_data_o         (ma_wb_data_w),
     .wb_valid_o        (ma_wb_valid_w)
 );
@@ -200,6 +202,7 @@ cpu_wb cpu_wb (
     .ir_i             (ma_ir_w),
     .load_i           (ma_load_w),
     .ma_size_i        (ma_size_w),
+    .ma_alignment_i   (ma_alignment_w),
     .wb_data_i        (ma_wb_data_w),
     .wb_valid_i       (ma_wb_valid_w),
     .wb_addr_async_o  (wb_addr_async_w),

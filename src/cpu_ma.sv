@@ -42,6 +42,7 @@ module cpu_ma
         output      word_t      ir_o,              // instruction register
         output      logic       load_o,            // is this a load instruction?
         output      ma_size_t   ma_size_o,         // memory access size
+        output      logic [1:0] ma_alignment_o,    // memory access alignment
         output      word_t      wb_data_o,         // write-back data
         output      logic       wb_valid_o         // write-back valid
     );
@@ -54,40 +55,28 @@ final stop_logging();
 //
 
 always_comb begin
-    dmem_addr_o       = ma_addr_i;
-    dmem_write_data_o = ma_data_i;
+    dmem_addr_o       = { ma_addr_i[31:2], 2'b0 };
     dmem_write_mask_o = 4'b0000;
 
-    if (ma_mode_i == MA_STORE) begin
-        unique case (ma_size_i)
-        MA_SIZE_B:
-            begin
-                dmem_write_data_o = { 4{ma_data_i[ 7:0]} };
-                unique case (ma_addr_i[1:0])
-                2'b00: dmem_write_mask_o = 4'b0001;
-                2'b01: dmem_write_mask_o = 4'b0010;
-                2'b10: dmem_write_mask_o = 4'b0100;
-                2'b11: dmem_write_mask_o = 4'b1000;
-                endcase
-            end
-        MA_SIZE_H:
-            begin
-                dmem_write_data_o = { 2{ma_data_i[15:0]} };
-                begin
-                    unique case (ma_addr_i[1:0])
-                    2'b00:   dmem_write_mask_o = 4'b0011;
-                    2'b10:   dmem_write_mask_o = 4'b1100;
-                    default: dmem_write_mask_o = 4'b0000;
-                endcase
-            end
-        end
-        MA_SIZE_W:
-            begin
-                dmem_write_data_o = ma_data_i;
-                dmem_write_mask_o = 4'b1111;
-            end
-        endcase
-    end
+    // shift data left based on address lower bits
+    case (ma_addr_i[1:0])
+    2'b00: dmem_write_data_o = { ma_data_i[31:0]        };
+    2'b01: dmem_write_data_o = { ma_data_i[23:0],  8'b0 };
+    2'b10: dmem_write_data_o = { ma_data_i[15:0], 16'b0 };
+    2'b11: dmem_write_data_o = { ma_data_i[ 7:0], 24'b0 };
+    endcase
+
+    // choose write mask based on operation, size and alignment
+    case ({ ma_mode_i, ma_size_i, ma_addr_i[1:0] })
+    { MA_STORE, MA_SIZE_B, 2'b00 }: dmem_write_mask_o = 4'b0001;
+    { MA_STORE, MA_SIZE_B, 2'b01 }: dmem_write_mask_o = 4'b0010;
+    { MA_STORE, MA_SIZE_B, 2'b10 }: dmem_write_mask_o = 4'b0100;
+    { MA_STORE, MA_SIZE_B, 2'b11 }: dmem_write_mask_o = 4'b1000;
+    { MA_STORE, MA_SIZE_H, 2'b00 }: dmem_write_mask_o = 4'b0011;
+    { MA_STORE, MA_SIZE_H, 2'b10 }: dmem_write_mask_o = 4'b1100;
+    { MA_STORE, MA_SIZE_W, 2'b00 }: dmem_write_mask_o = 4'b1111;
+    default:                        dmem_write_mask_o = 4'b0000;
+    endcase
 
     `log_display(("{ \"stage\": \"MA\", \"pc\": \"%0d\", \"ma_mode\": \"%0d\", \"dmem_addr\": \"%0d\", \"dmem_write_data\": \"%0d\", \"dmem_write_mask\": \"%0d\" }", pc_i, ma_mode_i, dmem_addr_o, dmem_write_data_o, dmem_write_mask_o));
 end
@@ -114,20 +103,22 @@ end
 //
 
 always_ff @(posedge clk_i) begin
-    pc_o       <= pc_i;
-    ir_o       <= ir_i;
-    load_o     <= (ma_mode_i == MA_LOAD);
-    ma_size_o  <= ma_size_i;
-    wb_data_o  <= wb_data_i;
-    wb_valid_o <= wb_valid_i;
+    pc_o           <= pc_i;
+    ir_o           <= ir_i;
+    load_o         <= (ma_mode_i == MA_LOAD);
+    ma_size_o      <= (ma_mode_i == MA_X) ? MA_SIZE_W : ma_size_i;
+    ma_alignment_o <= ma_addr_i[1:0];
+    wb_data_o      <= wb_data_i;
+    wb_valid_o     <= wb_valid_i;
 
     if (reset_i) begin
-        pc_o       <= NOP_PC;
-        ir_o       <= NOP_IR;
-        load_o     <= 1'b0;
-        ma_size_o  <= NOP_MA_SIZE;
-        wb_data_o  <= 32'b0;
-        wb_valid_o <= NOP_WB_VALID;
+        pc_o           <= NOP_PC;
+        ir_o           <= NOP_IR;
+        load_o         <= 1'b0;
+        ma_size_o      <= NOP_MA_SIZE;
+        ma_alignment_o <= 2'b00;
+        wb_data_o      <= 32'b0;
+        wb_valid_o     <= NOP_WB_VALID;
     end
 
     `log_strobe(("{ \"stage\": \"MA\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"load\": \"%0d\", \"ma_size\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\" }", pc_o, ir_o, load_o, ma_size_o, wb_data_o, wb_valid_o));
