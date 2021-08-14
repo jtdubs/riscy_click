@@ -413,6 +413,8 @@ end
 // Async Output
 //
 
+logic branch_condition_w;
+
 always_comb begin
     // jump signals
     if (mtrap_w || mret_w) begin
@@ -432,23 +434,25 @@ always_comb begin
             end
         PC_JUMP_ABS:
             begin
-                jmp_valid_async_o = 1'b1;
+                jmp_valid_async_o = !data_hazard_w;
                 jmp_addr_async_o  = ra_bypassed_w + imm_i_w;
             end
         PC_BRANCH:
             begin
-                unique case (f3_w[2:1])
-                    2'b00:  jmp_valid_async_o = (        ra_bypassed_w  ==         rb_bypassed_w);
-                    2'b10:  jmp_valid_async_o = (signed'(ra_bypassed_w) <  signed'(rb_bypassed_w));
-                    2'b11:  jmp_valid_async_o = (        ra_bypassed_w  <          rb_bypassed_w);
+                case (f3_w[2:1])
+                    2'b00:  branch_condition_w = (        ra_bypassed_w  ==         rb_bypassed_w);
+                    2'b10:  branch_condition_w = (signed'(ra_bypassed_w) <  signed'(rb_bypassed_w));
+                    2'b11:  branch_condition_w = (        ra_bypassed_w  <          rb_bypassed_w);
                 endcase
-                jmp_valid_async_o = f3_w[0] ? !jmp_valid_async_o : jmp_valid_async_o;
+                branch_condition_w = f3_w[0] ? !branch_condition_w : branch_condition_w;
+                jmp_valid_async_o = branch_condition_w && !data_hazard_w;
                 jmp_addr_async_o  = pc_i + imm_b_w;
             end
         endcase
+
     end
 
-   // we only want a new instruction if we aren't dealing with a data hazard, and we aren't going to be dealing with a CSR instruction
+    // we only want a new instruction if we aren't dealing with a data hazard, and we aren't going to be dealing with a CSR instruction
     ready_async_o = ~data_hazard_w && (csr_state_w == CSR_STATE_IDLE);
 
     if (reset_i) begin
