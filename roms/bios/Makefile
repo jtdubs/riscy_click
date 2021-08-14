@@ -19,11 +19,15 @@ OBJCOPY = riscv32-unknown-elf-objcopy
 CFLAGS =
 CFLAGS += -mabi=ilp32
 CFLAGS += -march=rv32i
+CFLAGS += -std=c18
 CFLAGS += -nostartfiles
 CFLAGS += -nodefaultlibs
 CFLAGS += -ffreestanding
-CFLAGS += -O2
+CFLAGS += -O0
+CFLAGS += -mstrict-align
+# CFLAGS += -g
 CFLAGS += -Wall
+CFLAGS += -Wpedantic
 CFLAGS += -pedantic
 CFLAGS += -c
 

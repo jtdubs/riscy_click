@@ -18,7 +18,6 @@
 
 .globl _start
 _start:
-
 setup_traps:
     # point all traps at _trap_handler
     la t0, _trap_handler
@@ -51,7 +50,7 @@ zero_start:
     la t1, __zero_end
 zero_loop:
     beq t0, t1, zero_done
-    sw zero, (t2)
+    sw zero, (t0)
     addi t0, t0, 4
     j zero_loop
 zero_done:
