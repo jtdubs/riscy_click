@@ -5,8 +5,6 @@
 /// Seven Segment Display
 ///
 
-// Was: 273 nets, 211 cells
-
 module segdisplay
     // Import Constants
     import common::*;
