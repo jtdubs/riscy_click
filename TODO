@@ -3,8 +3,8 @@ TODO:
     - Interrupt controller aggregates interrupts from external sources (keyboard, mouse, UART, etc.)
     - Interrupt controller has an mmap'd register for reading and clearing external interrupts
     - Interrupt controller has a single interrupt output that drives the Interrupt Pending CSR bit
-    - CSR if Pending & Enabled outputs the Trap Address and an Interrupt indicator
-    - ID treats the Interrupt indicator just like a Trap instruction.
+    # - CSR if Pending & Enabled outputs the Trap Address and an Interrupt indicator
+    # - ID treats the Interrupt indicator just like a Trap instruction.
     - After all this works, I can implement WFI
 - Keyboard
     - Update BIOS to use interrupts to handle keyboard input

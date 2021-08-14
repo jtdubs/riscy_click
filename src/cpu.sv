@@ -12,6 +12,7 @@ module cpu
         // board signals
         input  wire logic       clk_i,
         input  wire logic       reset_i,
+        input  wire logic       interrupt_i,
         output wire logic       halt_o,
 
         // instruction memory bus
@@ -246,6 +247,7 @@ cpu_csr csr (
     .clk_i               (clk_i),
     .reset_i             (reset_i),
     .retired_i           (csr_retired_w),
+    .interrupt_i         (interrupt_i),
     .trap_pc_i           (csr_trap_pc_w),
     .mtrap_i             (csr_mtrap_w),
     .mret_i              (csr_mret_w),

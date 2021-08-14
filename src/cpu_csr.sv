@@ -15,6 +15,7 @@ module cpu_csr
 
         // control port
         input  wire logic       retired_i,     // did an instruction retire this cycle
+        input  wire logic       interrupt_i,   // external interrupt indicator
 
         // trap port
         input  wire word_t      trap_pc_i,     // program counter
@@ -139,11 +140,11 @@ word_t   mtval2_r;                        // exception val2
 word_t   mtinst_r;                        // exception instruction
 logic    mstatus_mie_r,  mstatus_mie_w;   // global interrupt enabled
 logic    mstatus_mpie_r, mstatus_mpie_w;  // global interrupt enabled (prior)
-logic    meip_r;                          // machine external interrupt pending
-logic    mtip_r;                          // machine timer interrupt pending
+logic    meip_w;                          // machine external interrupt pending
+logic    mtip_r;                          // machine timer    interrupt pending
 logic    msip_r;                          // machine software interrupt pending
 logic    meie_r;                          // machine external interrupt enabled
-logic    mtie_r;                          // machine timer interrupt enabled
+logic    mtie_r;                          // machine timer    interrupt enabled
 logic    msie_r;                          // machine software interrupt enabled
 
 
@@ -204,23 +205,26 @@ always_comb begin
         { mstatus_mie_w, mstatus_mpie_w } = { mstatus_mie_r,  mstatus_mpie_r };
 end
 
-// determine trap address
+// traps and interrupts
 always_comb begin
     trap_addr_o  = 32'b0;
-    trap_valid_o = mtrap_i || mret_i;
+    trap_valid_o = 1'b0;
+    meip_w       = interrupt_i;
 
-    if (mtrap_i) begin
+    if (mtrap_i || (meip_w && meie_r && mstatus_mie_r)) begin
         case (mtvec_r.mode)
         MTVEC_MODE_DIRECT:
             trap_addr_o = { mtvec_r.base, 2'b00 };
         MTVEC_MODE_VECTORED:
-            if (mcause_i.is_interrupt)
-                trap_addr_o = { mtvec_r.base + mcause_i.exception_code[29:0], 2'b00 };
+            if (interrupt_i)
+                trap_addr_o = { mtvec_r.base + INT_M_EXTERNAL[29:0], 2'b00 };
             else
                 trap_addr_o = { mtvec_r.base, 2'b00 };
         endcase
+        trap_valid_o = 1'b1;
     end else if (mret_i) begin
         trap_addr_o = mepc_r;
+        trap_valid_o = 1'b1;
     end
 end
 
@@ -262,7 +266,7 @@ always_comb mie_o = '{
 
 mi_t mip_o;
 always_comb mip_o = '{
-    mei:     meip_r,
+    mei:     meip_w,
     mti:     mtip_r,
     msi:     msip_r,
     default: '0
@@ -405,7 +409,6 @@ always_ff @(posedge clk_i) begin
         meie_r          <= 1'b0;
         mtie_r          <= 1'b0;
         msie_r          <= 1'b0;
-        meip_r          <= 1'b0;
         mtip_r          <= 1'b0;
         msip_r          <= 1'b0;
     end 

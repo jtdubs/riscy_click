@@ -231,6 +231,7 @@ end
 cpu cpu (
     .clk_i             (cpu_clk_i),
     .reset_i           (cpu_reset_r),
+    .interrupt_i       (kbd_valid_w),
     .halt_o            (halt_o),
     .imem_addr_o       (imem_addr_w),
     .imem_data_i       (imem_data_w),
