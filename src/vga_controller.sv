@@ -5,6 +5,8 @@
 // VGA Controller - 640x480@60hz
 //
 
+// was 148 cells, 211 nets
+
 module vga_controller
     // Import Constants
     import common::*;
@@ -40,100 +42,34 @@ crom_inst (
 );
 
 
-// keep track of x & y coordinates
-logic [9:0] x_r, x_w, x_lookahead_w;
-logic [9:0] y_r, y_w, y_lookahead_w;
-
-// next pixel needed to plan new RGB values
-always_comb begin
-    x_w = x_r + 1;
-    y_w = y_r;
-
-    if (x_w > 10'd799) begin
-        x_w = x_w - 10'd800;
-        y_w = y_r + 1;
-    end
-
-    if (y_w > 10'd524)
-        y_w = 10'd0;
-end
-
-// 8 pixels from now needed to start memory lookups for next tile
-always_comb begin
-    x_lookahead_w = x_r + 8;
-    y_lookahead_w = y_r;
-
-    if (x_lookahead_w > 10'd799) begin
-        x_lookahead_w = x_lookahead_w - 10'd800;
-        y_lookahead_w = y_lookahead_w + 1;
-    end
-
-    if (y_lookahead_w > 524)
-        y_lookahead_w = 10'd0;
-end
+// keep track next two x,y coordinates
+logic [9:0] x_r [1:0];
+logic [9:0] y_r [1:0];
 
 always_ff @(posedge clk_i) begin
-    x_r <= reset_i ? 10'd799 : x_w;
-    y_r <= reset_i ? 10'd524 : y_w;
+    x_r[0] <= x_r[1];
+    y_r[0] <= y_r[1];
+
+    if (x_r[1] == 'd799) begin
+        x_r[1] <= 'd0;
+        if (y_r[1] == 'd524)
+            y_r[1] <= 'd0;
+        else
+            y_r[1] <= y_r[1] + 1;
+    end else
+        x_r[1] <= x_r[1] + 1;
+
+    if (reset_i) begin
+        { x_r[0], x_r[1] } <= 20'b0;
+        { y_r[0], y_r[1] } <= 20'b0;
+    end
 end
 
 
-// determine display area & sync signals
-logic display_area_w;
-logic hsync_w;
-logic vsync_w;
-
+// drive memory access off of upcoming x,y
 always_comb begin
-    //horizontal:
-    //[  0-639] - active
-    //[640-655] - blank
-    //[656-751] - hsync
-    //[752-799] - blank
-
-    //vertical:
-    //[  0-479] - active
-    //[480-489] - blank
-    //[490-491] - vsync
-    //[492-524] - blank
-
-    display_area_w = (x_w <  640) && (y_w < 480);
-    hsync_w        = (x_w >= 656) && (x_w < 752);
-    vsync_w        = (y_w >= 490) && (y_w < 492);
-end
-
-
-// keep track of character location
-logic [2:0] x_char_offset_w;
-logic [6:0] x_lookahead_char_index_w;
-logic [4:0] y_lookahead_char_index_w;
-logic [3:0] y_lookahead_char_offset_w;
-
-always_comb begin
-    x_char_offset_w = x_w[2:0];
-    x_lookahead_char_index_w = x_lookahead_w[9:3];
-    { y_lookahead_char_index_w, y_lookahead_char_offset_w } = y_lookahead_w[8:0];
-end
-
-
-// keep track of character row
-logic [31:0] char_row_r;
-
-always_comb begin
-    // framebuffer lookup based lookahead
-    vram_addr_o = { y_lookahead_char_index_w[4:0], x_lookahead_char_index_w };
-    // character ROM lookup based on character in framebuffer, and what row
-    // of the character we will be drawwing
-    crom_addr_w = { vram_data_i, y_lookahead_char_offset_w };
-end
-
-// latch in new character row on character boundaries
-always_ff @(posedge clk_i) begin
-    // if on 7th pixel of character, next pixel will be the next character
-    if (x_char_offset_w == 3'b111)
-        char_row_r <= crom_data_w;
-
-    if (reset_i)
-        char_row_r <= 32'b0;
+    vram_addr_o = { y_r[1][8:4], x_r[1][9:3] };
+    crom_addr_w = { vram_data_i, y_r[0][3:0] };
 end
 
 
@@ -142,25 +78,30 @@ logic [3:0] rgb_w;
 
 always_comb begin
     // character nibbles are 4-bit grayscale values for each pixel
-    unique case (x_char_offset_w)
-    0: rgb_w = char_row_r[31:28];
-    1: rgb_w = char_row_r[27:24];
-    2: rgb_w = char_row_r[23:20];
-    3: rgb_w = char_row_r[19:16];
-    4: rgb_w = char_row_r[15:12];
-    5: rgb_w = char_row_r[11: 8];
-    6: rgb_w = char_row_r[ 7: 4];
-    7: rgb_w = char_row_r[ 3: 0];
+    unique case (x_r[0][2:0])
+    1: rgb_w = crom_data_w[31:28];
+    2: rgb_w = crom_data_w[27:24];
+    3: rgb_w = crom_data_w[23:20];
+    4: rgb_w = crom_data_w[19:16];
+    5: rgb_w = crom_data_w[15:12];
+    6: rgb_w = crom_data_w[11: 8];
+    7: rgb_w = crom_data_w[ 7: 4];
+    0: rgb_w = crom_data_w[ 3: 0];
     endcase
 end
 
 always_ff @(posedge clk_i) begin
-    vga_hsync_o <= !hsync_w;
-    vga_vsync_o <= !vsync_w;
-    vga_red_o   <= display_area_w ? rgb_w : 4'b0000;
-    vga_green_o <= display_area_w ? rgb_w : 4'b0000;
-    vga_blue_o  <= display_area_w ? rgb_w : 4'b0000;
-end
+    vga_hsync_o <= !((x_r[0] >= 657) && (x_r[0] < 753));
+    vga_vsync_o <= !((y_r[0] >= 491) && (y_r[0] < 493));
+    vga_red_o   <= rgb_w;
+    vga_green_o <= rgb_w;
+    vga_blue_o  <= rgb_w;
 
+    if ((x_r[0] >= 639) || (y_r[0] >= 479)) begin
+        vga_red_o   <= 4'b0000;
+        vga_green_o <= 4'b0000;
+        vga_blue_o  <= 4'b0000;
+    end
+end
 
 endmodule
