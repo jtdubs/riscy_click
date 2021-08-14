@@ -414,6 +414,15 @@ end
 //
 
 logic branch_condition_w;
+always_comb begin
+    case (f3_w[2:1])
+        2'b00: branch_condition_w = (        ra_bypassed_w  ==         rb_bypassed_w);
+        2'b10: branch_condition_w = (signed'(ra_bypassed_w) <  signed'(rb_bypassed_w));
+        2'b11: branch_condition_w = (        ra_bypassed_w  <          rb_bypassed_w);
+        2'b01: branch_condition_w = 1'b0;
+    endcase
+    branch_condition_w = f3_w[0] ? !branch_condition_w : branch_condition_w;
+end
 
 always_comb begin
     // jump signals
@@ -439,17 +448,10 @@ always_comb begin
             end
         PC_BRANCH:
             begin
-                case (f3_w[2:1])
-                    2'b00:  branch_condition_w = (        ra_bypassed_w  ==         rb_bypassed_w);
-                    2'b10:  branch_condition_w = (signed'(ra_bypassed_w) <  signed'(rb_bypassed_w));
-                    2'b11:  branch_condition_w = (        ra_bypassed_w  <          rb_bypassed_w);
-                endcase
-                branch_condition_w = f3_w[0] ? !branch_condition_w : branch_condition_w;
                 jmp_valid_async_o = branch_condition_w && !data_hazard_w;
                 jmp_addr_async_o  = pc_i + imm_b_w;
             end
         endcase
-
     end
 
     // we only want a new instruction if we aren't dealing with a data hazard, and we aren't going to be dealing with a CSR instruction
