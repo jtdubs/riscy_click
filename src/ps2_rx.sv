@@ -48,97 +48,59 @@ end
 
 
 //
-// State Machine
+// Free running shift register
 //
 
-//  reject          recv
-//   v  |           v  |
-//   IDLE --start-> DATA --check-> PARITY --pass-> STOP
-//   ^  ^                            |              |
-//   |  |-----------fail-------------|              |
-//   |                                              |
-//   |----------------packet,abort------------------|
+logic [10:0] packet_r;
 
-typedef enum logic [1:0] {
-    IDLE   = 2'b00,
-    DATA   = 2'b01,
-    PARITY = 2'b10,
-    STOP   = 2'b11
-} ps2_state_t;
-
-// state
-ps2_state_t ps2_state_r, ps2_state_w;
-logic [3:0] bits_r;
-byte_t      data_r;
-logic       parity_r, parity_w;
-
-// transitions
-logic reject_w;
-logic start_w;
-logic recv_w;
-logic check_w;
-logic pass_w;
-logic fail_w;
-logic packet_w;
-logic abort_w;
-
-always_comb begin
-    reject_w = falling_edge_w && (ps2_state_r == IDLE)   && (ps2_data_r == 1'b1);
-    start_w  = falling_edge_w && (ps2_state_r == IDLE)   && (ps2_data_r == 1'b0);
-    recv_w   = falling_edge_w && (ps2_state_r == DATA)   && (bits_r <  4'd7);
-    check_w  = falling_edge_w && (ps2_state_r == DATA)   && (bits_r == 4'd7);
-    pass_w   = falling_edge_w && (ps2_state_r == PARITY) &&  parity_w;
-    fail_w   = falling_edge_w && (ps2_state_r == PARITY) && !parity_w;
-    packet_w = falling_edge_w && (ps2_state_r == STOP)   &&  ps2_data_r;
-    abort_w  = falling_edge_w && (ps2_state_r == STOP)   && !ps2_data_r;
-end
-
-// keep track of parity
-always_comb parity_w = (parity_r + ps2_data_r);
-
-// determine next state
-always_comb begin
-    if (reject_w || fail_w || packet_w || abort_w)
-        ps2_state_w = IDLE;
-    else if (start_w || recv_w)
-        ps2_state_w = DATA;
-    else if (check_w)
-        ps2_state_w = PARITY;
-    else if (pass_w)
-        ps2_state_w = STOP;
-    else
-        ps2_state_w = ps2_state_r;
-end
-
-// advance to next state
 always_ff @(posedge clk_i) begin
-    ps2_state_r <= ps2_state_w;
+    if (falling_edge_w)
+        packet_r <= { ps2_data_r, packet_r[10:1] };
+    else if (packet_good_w)
+        packet_r <= 11'b11111111111;
 
     if (reset_i)
-        ps2_state_r <= IDLE;
+        packet_r <= 11'b11111111111;
 end
 
-// take transition actions
+
+//
+// Packet Validity
+//
+
+logic parity_good_w;
+logic start_good_w;
+logic stop_good_w;
+logic packet_good_w;
+
+always_comb begin
+    start_good_w = !packet_r[0];
+    stop_good_w  =  packet_r[10];
+
+    parity_good_w =
+        packet_r[1] ^
+        packet_r[2] ^
+        packet_r[3] ^
+        packet_r[4] ^
+        packet_r[5] ^
+        packet_r[6] ^
+        packet_r[7] ^
+        packet_r[8] ^
+        packet_r[9];
+
+    packet_good_w = start_good_w && stop_good_w && parity_good_w;
+end
+
+
+//
+// Emit good packets
+//
+
 always_ff @(posedge clk_i) begin
-    data_o   <= data_r;
-    valid_o  <= packet_w;
-
-    if (start_w) begin
-        bits_r   <= 4'b0;
-        parity_r <= 1'b0;
-    end else if (falling_edge_w) begin
-        bits_r   <= bits_r + 1;
-        parity_r <= parity_w;
-    end
-
-    if (recv_w || check_w) begin
-        data_r   <= { ps2_data_r, data_r[7:1] };
-    end
+    data_o   <= packet_r[8:1];
+    valid_o  <= packet_good_w;
 
     if (reset_i) begin
-        bits_r   <= 4'b0;
-        data_r   <= 8'b0;
-        parity_r <= 1'b0;
         data_o   <= 8'b0;
         valid_o  <= 1'b0;
     end
