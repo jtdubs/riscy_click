@@ -260,6 +260,41 @@ csr_names = {
     0xc9e: "hpmcounter30h"
 }
 
+register_names = {
+    0 : "zero",
+    1 : "ra ",
+    2 : "sp ",
+    3 : "gp ",
+    4 : "tp ",
+    5 : "t0 ",
+    6 : "t1 ",
+    7 : "t2 ",
+    8 : "s0 ",
+    9 : "s1 ",
+    10: "a0 ",
+    11: "a1 ",
+    12: "a2 ",
+    13: "a3 ",
+    14: "a4 ",
+    15: "a5 ",
+    16: "a6 ",
+    17: "a7 ",
+    18: "s2 ",
+    19: "s3 ",
+    20: "s4 ",
+    21: "s5 ",
+    22: "s6 ",
+    23: "s7 ",
+    24: "s8 ",
+    25: "s9 ",
+    26: "s10",
+    27: "s11",
+    28: "t3 ",
+    29: "t4 ",
+    30: "t5 ",
+    31: "t6 "
+}
+
 def main(log_file="../../trace/log.json", *args):
     # load events
     with open(log_file, "r") as l:
@@ -357,11 +392,11 @@ def retire(e):
         s["store"] = "@{0:X} = 0x{1:X} & {2:04b}".format(e["store_addr"], e["store_data"], e["store_mask"])
 
     if int(e["writeback_valid"] and e["writeback_addr"] != 0) == 1:
-        s["writeback"] = "x{0} = 0x{1:X}".format(str(e["writeback_addr"]).ljust(2), e["writeback_data"])
+        s["writeback"] = "{0} = 0x{1:X}".format(register_names[e["writeback_addr"]].ljust(5), e["writeback_data"])
 
     if "csr_addr" in e:
         if e["csr_wb_enable"]:
-            s["csr_read"] = "x{0} = 0x{1:X} [{2}]".format(str(e["csr_wb_addr"]).ljust(2), e["csr_read_data"], csr_names[e["csr_addr"]])
+            s["csr_read"] = "{0} = 0x{1:X} [{2}]".format(register_names[e["csr_wb_addr"]].ljust(5), e["csr_read_data"], csr_names[e["csr_addr"]])
         if e["csr_write_enable"]:
             s["csr_write"] = "{0} = 0x{1:X}".format(csr_names[(e["csr_addr"])], e["csr_write_data"])
 
