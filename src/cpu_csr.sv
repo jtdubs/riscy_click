@@ -8,6 +8,7 @@
 module cpu_csr
     // Import Constants
     import common::*;
+    import logging::*;
     (
         // cpu signals
         input  wire logic       clk_i,         // clock
@@ -43,6 +44,9 @@ module cpu_csr
         input  wire word_t      lookup2_addr,
         output      logic [2:0] lookup2_rwx
     );
+
+initial start_logging();
+final stop_logging();
 
 
 //
@@ -194,7 +198,7 @@ end
 
 // interrupt pending
 always_comb begin
-    meip_w       = interrupt_i;
+    meip_w = interrupt_i;
 end
 
 // trap detection
@@ -285,6 +289,8 @@ always_comb begin
     end else begin
         jmp_addr_o  = 32'b0;
     end
+
+    `log_display(("{ \"stage\": \"CSR\", \"pc\": \"%0d\", \"jmp_addr\": \"%0d\", \"jmp_valid\": \"%0d\", \"interrupt\": \"%0d\" }", trap_pc_i, jmp_addr_o, jmp_valid_o, interrupt_i));
 end
 
 

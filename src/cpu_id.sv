@@ -447,7 +447,6 @@ always_comb begin
     end
 
     `log_display(("{ \"stage\": \"ID\", \"pc\": \"%0d\", \"jmp_valid\": \"%0d\", \"jmp_addr\": \"%0d\", \"ready\": \"%0d\" }", pc_i, jmp_valid_async_o, jmp_addr_async_o, ready_async_o));
-
 end
 
 
