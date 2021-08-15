@@ -16,14 +16,14 @@ module cpu_csr
         // control port
         input  wire logic       retired_i,     // did an instruction retire this cycle
         input  wire logic       interrupt_i,   // external interrupt indicator
-
-        // trap port
-        input  wire word_t      trap_pc_i,     // program counter
+        input  wire word_t      trap_pc_i,     // trap location
         input  wire mcause_t    mcause_i,      // trap cause
-        input  wire logic       mtrap_i,       // is trap needed
-        input  wire logic       mret_i,        // is trap return needed
-        output      word_t      trap_addr_o,   // trap addr to jump to
-        output      logic       trap_valid_o,  // trap addr to jump to
+        input  wire logic       mtrap_i,       // trap valid
+        input  wire logic       mret_i,        // ret valid
+
+        // pipeline control
+        output      word_t      jmp_addr_o,    // jump address (driven by interrupts/trap/etc.)
+        output      logic       jmp_valid_o,   // jump valid
 
         // CSR read port
         input  wire csr_t       read_addr_i,
@@ -192,53 +192,53 @@ end
 // Trap Handling
 //
 
-// update interrupt enabled flags
+// interrupt pending
 always_comb begin
-    priority if (mtrap_i || take_interrupt_w)
-        // on trap, disable interrupts and save previous value
-        { mstatus_mie_w, mstatus_mpie_w } = { 1'b0,           mstatus_mie_r  };
-    else if (mret_i)
-        // on ret, restore previous value
-        { mstatus_mie_w, mstatus_mpie_w } = { mstatus_mpie_r, 1'b1           };
-    else
-        // otherwise, no change
-        { mstatus_mie_w, mstatus_mpie_w } = { mstatus_mie_r,  mstatus_mpie_r };
+    meip_w       = interrupt_i;
 end
 
-// traps and interrupts
+// trap detection
 logic take_interrupt_w;
+logic trap_w;
 
 always_comb begin
-    trap_addr_o  = 32'b0;
-    trap_valid_o = 1'b0;
-    meip_w       = interrupt_i;
-
+    // take interrupt if interrupt is pending, enabled, and globally enabled
     take_interrupt_w = meip_w && meie_r && mstatus_mie_r;
 
-    if (mtrap_i || take_interrupt_w) begin
-        case (mtvec_r.mode)
-        MTVEC_MODE_DIRECT:
-            trap_addr_o = { mtvec_r.base, 2'b00 };
-        MTVEC_MODE_VECTORED:
-            if (interrupt_i)
-                trap_addr_o = { mtvec_r.base + INT_M_EXTERNAL[29:0], 2'b00 };
-            else
-                trap_addr_o = { mtvec_r.base, 2'b00 };
-        endcase
-        trap_valid_o = 1'b1;
-    end else if (mret_i) begin
-        trap_addr_o = mepc_r;
-        trap_valid_o = 1'b1;
-    end
+    // trap if trap requested, or interrupt occuring
+    trap_w = take_interrupt_w || mtrap_i;
 end
 
-// update trap registers
+// manage intererupt enablement stack
+always_ff @(posedge clk_i) begin
+    if (write_enable_i && write_addr_i == CSR_MSTATUS)
+        // respect CSR write
+        { mstatus_mie_r, mstatus_mpie_r } <= { mstatus_i.mie, mstatus_i.mpie };
+    else if (trap_w)
+        // on trap, disable interrupts and save previous value
+        { mstatus_mie_r, mstatus_mpie_r } <= { 1'b0,           mstatus_mie_r  };
+    else if (mret_i)
+        // on ret, restore previous value
+        { mstatus_mie_r, mstatus_mpie_r } <= { mstatus_mpie_r, 1'b1           };
+    else
+        // otherwise, no change
+        { mstatus_mie_r, mstatus_mpie_r } <= { mstatus_mie_r,  mstatus_mpie_r };
+
+    if (reset_i)
+        // reset to interrupts disabled
+        { mstatus_mie_r, mstatus_mpie_r } <= { 1'b0,           1'b0           };
+end
+
+// update trap metadata
 always_ff @(posedge clk_i) begin
     if (mtrap_i)
+        // trap causes are provided
         mcause_r <= mcause_i;
     else if (take_interrupt_w)
+        // interrupt cause is always the same
         mcause_r <= { 1'b1, INT_M_EXTERNAL };
     else if (mret_i)
+        // on return, cause is set back to default
         mcause_r <= MCAUSE_DEFAULT;
 
     if (reset_i) begin
@@ -246,6 +246,44 @@ always_ff @(posedge clk_i) begin
         mtval_r  <= MTVAL_DEFAULT;
         mtval2_r <= MTVAL2_DEFAULT;
         mtinst_r <= MTINST_DEFAULT;
+    end
+end
+
+// execption program counter
+always_ff @(posedge clk_i) begin
+    if (write_enable_i && write_addr_i == CSR_MEPC)
+        // respect CSR write
+        mepc_r <= write_data_i;
+    else if (trap_w)
+        // on trap, disable interrupts and save previous value
+        mepc_r <= trap_pc_i;
+    else if (mret_i)
+        // on ret, restore previous value
+        mepc_r <= MEPC_DEFAULT;
+
+    if (reset_i)
+        // reset to interrupts disabled
+        mepc_r <= MEPC_DEFAULT;
+end
+
+// jump outputs
+always_comb begin
+    jmp_valid_o = trap_w || mret_i;
+
+    if (trap_w) begin
+        case (mtvec_r.mode)
+        MTVEC_MODE_DIRECT:
+            jmp_addr_o = { mtvec_r.base, 2'b00 };
+        MTVEC_MODE_VECTORED:
+            if (interrupt_i)
+                jmp_addr_o = { mtvec_r.base + INT_M_EXTERNAL[29:0], 2'b00 };
+            else
+                jmp_addr_o = { mtvec_r.base,                        2'b00 };
+        endcase
+    end else if (mret_i) begin
+        jmp_addr_o = mepc_r;
+    end else begin
+        jmp_addr_o  = 32'b0;
     end
 end
 
@@ -282,57 +320,34 @@ always_ff @(posedge clk_i) begin
         unique case (read_addr_i)
         //                                  MXLEN=32           ZYXWVUTSRQPONMLKJIHGFEDCBA
         CSR_MISA:          read_data_o <= { 2'b01,   4'b0, 26'b00000000000000000100000000 };
-        //                                    0 means non-commercial implementation
-        CSR_MVENDORID:     read_data_o <= 32'b0; 
-        //                                    no assigned architecture ID
-        CSR_MARCHID:       read_data_o <= 32'b0; 
-        //                                    version 1
+        CSR_MVENDORID:     read_data_o <= 32'b0;
+        CSR_MARCHID:       read_data_o <= 32'b0;
         CSR_MIMPID:        read_data_o <= 32'h0001;
-        //                                    hardware thread #0
         CSR_MHARTID:       read_data_o <= 32'b0;
-        //                                    machine status
         CSR_MSTATUS:       read_data_o <= mstatus_o;
-        //                                    machine trap-vector base-address
         CSR_MTVEC:         read_data_o <= mtvec_r;
-        //                                    counter inhibit
         CSR_MCOUNTINHIBIT: read_data_o <= mcountinhibit_r;
-        //                                    scratch
         CSR_MSCRATCH:      read_data_o <= mscratch_r;
-        //                                    exception cause
         CSR_MCAUSE:        read_data_o <= mcause_r;
-        //                                    exception program counter
         CSR_MEPC:          read_data_o <= mepc_r;
-        //                                    exception value
         CSR_MTVAL:         read_data_o <= mtval_r;
-        //                                    exception value
         CSR_MTVAL2:        read_data_o <= mtval2_r;
-        //                                    exception value
         CSR_MTINST:        read_data_o <= mtinst_r;
-        //                                    machine interrupt pending
         CSR_MIP:           read_data_o <= mip_o;
-        //                                    machine interrupt enabled
         CSR_MIE:           read_data_o <= mie_o;
-        //                                    cycle counter
         CSR_MCYCLE,
         CSR_CYCLE:         read_data_o <= mcycle_r[31:0];
-        //                                    realtime counter
         CSR_TIME:          read_data_o <= time_r[31:0];
-        //                                    retired instruction counter
         CSR_MINSTRET,
         CSR_INSTRET:       read_data_o <= minstret_r[31:0];
-        //                                    cycle counter (upper half)
         CSR_MCYCLEH,
         CSR_CYCLEH:        read_data_o <= mcycle_r[63:32];
-        //                                    realtime counter (upper half)
         CSR_TIMEH:         read_data_o <= time_r[63:32];
-        //                                    retired instruction counter (upper half)
         CSR_MINSTRETH,
         CSR_INSTRETH:      read_data_o <= minstret_r[63:32];
-        //                                    memory config
         (CSR_PMPCFG0+0):   read_data_o <= { PMP_CONFIG[3].cfg, PMP_CONFIG[2].cfg, PMP_CONFIG[1].cfg, PMP_CONFIG[0].cfg };
         (CSR_PMPCFG0+1):   read_data_o <= { PMP_CONFIG[7].cfg, PMP_CONFIG[6].cfg, PMP_CONFIG[5].cfg, PMP_CONFIG[4].cfg };
         (CSR_PMPCFG0+2):   read_data_o <= { 8'b0,              8'b0,              8'b0,              PMP_CONFIG[8].cfg };
-        //                                    memory address
         (CSR_PMPADDR0+0):  read_data_o <= PMP_CONFIG[0].addr;
         (CSR_PMPADDR0+1):  read_data_o <= PMP_CONFIG[1].addr;
         (CSR_PMPADDR0+2):  read_data_o <= PMP_CONFIG[2].addr;
@@ -342,7 +357,6 @@ always_ff @(posedge clk_i) begin
         (CSR_PMPADDR0+6):  read_data_o <= PMP_CONFIG[6].addr;
         (CSR_PMPADDR0+7):  read_data_o <= PMP_CONFIG[7].addr;
         (CSR_PMPADDR0+8):  read_data_o <= PMP_CONFIG[8].addr;
-
         default:           read_data_o <= 32'b0;
         endcase
     end else begin
@@ -371,12 +385,6 @@ always_ff @(posedge clk_i) begin
         CSR_MTVEC:          mtvec_r         <= write_data_i;
         CSR_MCOUNTINHIBIT:  mcountinhibit_r <= write_data_i;
         CSR_MSCRATCH:       mscratch_r      <= write_data_i;
-        CSR_MEPC:           mepc_r          <= write_data_i;
-        CSR_MSTATUS:
-            begin
-                mstatus_mie_r  <= mstatus_i.mie;
-                mstatus_mpie_r <= mstatus_i.mpie;
-            end
         CSR_CYCLE:          mcycle_r        <= { mcycle_w  [63:32], write_data_i };
         CSR_TIME:           time_r          <= { time_w    [63:32], write_data_i };
         CSR_INSTRET:        minstret_r      <= { minstret_w[63:32], write_data_i };
@@ -394,17 +402,9 @@ always_ff @(posedge clk_i) begin
         mcycle_r       <= mcycle_w;
         time_r         <= time_w;
         minstret_r     <= minstret_w;
-        mstatus_mie_r  <= mstatus_mie_w;
-        mstatus_mpie_r <= mstatus_mpie_w;
     end
 
-    if (mtrap_i || take_interrupt_w)
-        mepc_r   <= trap_pc_i;
-    else if (mret_i)
-        mepc_r   <= 32'b0;
-
     if (reset_i) begin
-        mepc_r   <= MEPC_DEFAULT;
         mtvec_r         <= MTVEC_DEFAULT;
         mcountinhibit_r <= MCOUNTINHIBIT_DEFAULT;
         mcycle_r        <= MCYCLE_DEFAULT;

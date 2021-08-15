@@ -43,11 +43,11 @@ module cpu_id
         // csr interface
         output      logic      csr_retired_o,       // instruction retirement indicator
         output      word_t     csr_trap_pc_o,       // trap program counter
+        output      mcause_t   csr_mcause_o,        // trap cause
         output      logic      csr_mtrap_o,         // trap needed
         output      logic      csr_mret_o,          // trap return needed
-        output      mcause_t   csr_mcause_o,        // trap cause
-        input  wire word_t     csr_trap_addr_i,     // trap addr to jump to
-        input  wire logic      csr_trap_valid_i,    // trap addr valid
+        input  wire word_t     csr_jmp_addr_i,      // trap addr to jump to
+        input  wire logic      csr_jmp_valid_i,     // trap addr valid
         output      csr_t      csr_read_addr_o,     // csr read address
         output      logic      csr_read_enable_o,   // csr read enable
         input  wire word_t     csr_read_data_i,     // csr read data
@@ -187,6 +187,9 @@ always_comb begin
         F12_SRET:
             begin
                 csr_mret_o   = 1'b1;
+            end
+        F12_WFI:
+            begin
             end
         endcase
     end
@@ -404,9 +407,9 @@ end
 
 always_comb begin
     // jump signals
-    if (csr_trap_valid_i) begin
+    if (csr_jmp_valid_i) begin
         jmp_valid_async_o = 1'b1;
-        jmp_addr_async_o  = csr_trap_addr_i;
+        jmp_addr_async_o  = csr_jmp_addr_i;
     end else begin
         unique case (cw_w.pc_mode)
         PC_NEXT:

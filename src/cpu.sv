@@ -78,11 +78,11 @@ wire logic       wb_valid_async_w;
 wire logic       wb_empty_async_w;
 wire logic       csr_retired_w;
 wire word_t      csr_trap_pc_w;
+wire mcause_t    csr_mcause_w;
 wire logic       csr_mtrap_w;
 wire logic       csr_mret_w;
-wire mcause_t    csr_mcause_w;
-wire word_t      csr_trap_addr_w;
-wire logic       csr_trap_valid_w;
+wire word_t      csr_jmp_addr_w;
+wire logic       csr_jmp_valid_w;
 wire csr_t       csr_read_addr_w;
 wire logic       csr_read_enable_w;
 wire word_t      csr_read_data_w;
@@ -137,8 +137,8 @@ cpu_id cpu_id (
     .csr_mtrap_o         (csr_mtrap_w),
     .csr_mret_o          (csr_mret_w),
     .csr_mcause_o        (csr_mcause_w),
-    .csr_trap_addr_i     (csr_trap_addr_w),
-    .csr_trap_valid_i    (csr_trap_valid_w),
+    .csr_jmp_addr_i      (csr_jmp_addr_w),
+    .csr_jmp_valid_i     (csr_jmp_valid_w),
     .csr_read_addr_o     (csr_read_addr_w),
     .csr_read_enable_o   (csr_read_enable_w),
     .csr_read_data_i     (csr_read_data_w),
@@ -249,11 +249,11 @@ cpu_csr csr (
     .retired_i           (csr_retired_w),
     .interrupt_i         (interrupt_i),
     .trap_pc_i           (csr_trap_pc_w),
+    .mcause_i            (csr_mcause_w),
     .mtrap_i             (csr_mtrap_w),
     .mret_i              (csr_mret_w),
-    .mcause_i            (csr_mcause_w),
-    .trap_addr_o         (csr_trap_addr_w),
-    .trap_valid_o        (csr_trap_valid_w),
+    .jmp_addr_o          (csr_jmp_addr_w),
+    .jmp_valid_o         (csr_jmp_valid_w),
     .read_addr_i         (csr_read_addr_w),
     .read_enable_i       (csr_read_enable_w),
     .read_data_o         (csr_read_data_w),
