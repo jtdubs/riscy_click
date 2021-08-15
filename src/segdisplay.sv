@@ -32,9 +32,9 @@ module segdisplay
 // Counter
 localparam int unsigned COUNTER_WIDTH = $clog2(CLK_DIVISOR) + 4;
 
-logic [(COUNTER_WIDTH-1):0] counter_r;
-logic       enable_w;
-logic [2:0] digit_w;
+logic [(COUNTER_WIDTH-1):0] counter_r = '0;
+logic                       enable_w;
+logic [2:0]                 digit_w;
 
 always_comb begin
     { digit_w, enable_w } = counter_r[(COUNTER_WIDTH-1):(COUNTER_WIDTH-4)];
@@ -46,7 +46,7 @@ end
 
 
 // Value
-word_t value_r;
+word_t value_r = '0;
 
 always_comb read_data_o = value_r;
 

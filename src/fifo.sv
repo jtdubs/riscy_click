@@ -45,9 +45,9 @@ localparam addr_t ALMOST_EMPTY_COUNT = addr_t'(ALMOST_EMPTY_MARGIN);
 localparam addr_t ALMOST_FULL_COUNT  = addr_t'(CAPACITY - addr_t'(ALMOST_FULL_MARGIN));
 
 // variables
-data_t data_r [CAPACITY:0];
-addr_t read_ptr_r;
-addr_t write_ptr_r;
+data_t data_r [CAPACITY:0] = '{ default: '0 };
+addr_t read_ptr_r          = '0;
+addr_t write_ptr_r         = '0;
 
 // determine next state
 addr_t write_ptr_w;

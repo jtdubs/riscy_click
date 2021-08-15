@@ -35,11 +35,13 @@ module chipset
 // Clocked Resets
 //
 
+// TODO: want these reset lines to START high before the first rising edge...
+
 localparam integer RESET_CYCLES = 12;
 localparam logic [RESET_CYCLES-1:0] RESET_ONES = {RESET_CYCLES{1'b1}};
 
-logic                    cpu_reset_r;
-logic [RESET_CYCLES-1:0] cpu_reset_chain_r;
+logic                    cpu_reset_r       = 1'b1;
+logic [RESET_CYCLES-1:0] cpu_reset_chain_r = RESET_ONES;
 
 always_ff @(posedge cpu_clk_i) begin
     unique if (reset_async_i)
@@ -50,8 +52,8 @@ always_ff @(posedge cpu_clk_i) begin
         { cpu_reset_r, cpu_reset_chain_r } <= { cpu_reset_chain_r, 1'b0 };
 end
 
-logic                    pxl_reset_r;
-logic [RESET_CYCLES-1:0] pxl_reset_chain_r;
+logic                    pxl_reset_r       = 1'b1;
+logic [RESET_CYCLES-1:0] pxl_reset_chain_r = RESET_ONES;
 
 always_ff @(posedge pxl_clk_i) begin
     unique if (reset_async_i)
@@ -88,7 +90,7 @@ kbd_controller kbd (
 // Clock in Switch States
 //
 
-logic [15:0] switch_r;
+logic [15:0] switch_r = '0;
 
 always_ff @(posedge cpu_clk_i) begin
     switch_r <= switch_async_i;
@@ -202,7 +204,7 @@ vga_controller vga (
 // FF000008:            Keyboard FIFO
 // FF00000C - FFFFFFFF: UNMAPPED
 //
-word_t dmem_read_addr_r;
+word_t dmem_read_addr_r = '0;
 
 always_ff @(posedge cpu_clk_i) begin
     dmem_read_addr_r <= cpu_reset_r ? 32'h00000000 : dmem_addr_w;

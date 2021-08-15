@@ -43,8 +43,8 @@ crom_inst (
 
 
 // keep track next two x,y coordinates
-logic [9:0] x_r [1:0];
-logic [9:0] y_r [1:0];
+logic [9:0] x_r [1:0] = { '0, '0 };
+logic [9:0] y_r [1:0] = { '0, '0 };
 
 always_ff @(posedge clk_i) begin
     x_r[0] <= x_r[1];

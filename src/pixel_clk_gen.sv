@@ -100,7 +100,7 @@ pixel_clk_buffer (
 // Simulator Implementation
 //
 
-logic [1:0] counter_r = 2'b00;
+logic [1:0] counter_r = '0;
 
 always_comb begin
     ready_async_o = 1'b1;

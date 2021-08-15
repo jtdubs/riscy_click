@@ -55,9 +55,9 @@ ps2_kbd ps2_kbd (
 
 
 // Keycode Translation ROM
-logic           is_break_w;
+logic           is_break_r = '0;
 byte_t          vk_w;
-logic           vk_valid_w;
+logic           vk_valid_r = '0;
 
 keycode_rom #(.CONTENTS("krom.mem")) krom (
     .clk_i   (clk_i),
@@ -67,8 +67,8 @@ keycode_rom #(.CONTENTS("krom.mem")) krom (
 );
 
 always_ff @(posedge clk_i) begin
-    is_break_w  <= ps2_kbd_event_w.is_break;
-    vk_valid_w  <= ps2_kbd_valid_w;
+    is_break_r  <= ps2_kbd_event_w.is_break;
+    vk_valid_r  <= ps2_kbd_valid_w;
 end
 
 
@@ -81,8 +81,8 @@ fifo #(
 ) fifo (
     .clk_i               (clk_i),
     .reset_i             (reset_i),
-    .write_data_i        ({ is_break_w, vk_w }),
-    .write_enable_i      (vk_valid_w),
+    .write_data_i        ({ is_break_r, vk_w }),
+    .write_enable_i      (vk_valid_r),
     .read_enable_i       (read_enable_i),
     .read_data_o         (read_data_o),
     .read_valid_o        (read_valid_o),

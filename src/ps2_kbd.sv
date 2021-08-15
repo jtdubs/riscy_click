@@ -21,8 +21,8 @@ module ps2_kbd
         output      logic           valid_o
     );
 
-logic extended_r;
-logic is_break_r;
+logic extended_r = 1'b0;
+logic is_break_r = 1'b0;
 
 always_ff @(posedge clk_i) begin
     valid_o <= 1'b0;

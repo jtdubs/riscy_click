@@ -317,7 +317,8 @@ typedef enum logic [1:0] {
 } csr_state_t;
 
 // transitions
-csr_state_t csr_state_r, csr_state_w;
+csr_state_t csr_state_r = CSR_STATE_IDLE;
+csr_state_t csr_state_w;
 logic csr_idle_action_w;   // normal idle transition
 logic csr_flush_action_w;  // start processing a CSR by flushing the pipeline
 logic csr_wait_action_w;   // continuing to flush pipeline

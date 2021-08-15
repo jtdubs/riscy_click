@@ -26,8 +26,8 @@ module ps2_rx
 // Clock in PS2 signals
 //
 
-logic [1:0] ps2_clk_r;
-logic ps2_data_r;
+logic [1:0] ps2_clk_r  = '0;
+logic       ps2_data_r = '0;
 
 always_ff @(posedge clk_i) begin
     ps2_clk_r  <= { ps2_clk_r[0], ps2_clk_async_i };
@@ -51,7 +51,7 @@ end
 // Free running shift register
 //
 
-logic [10:0] packet_r;
+logic [10:0] packet_r = 11'b11111111111;
 
 always_ff @(posedge clk_i) begin
     if (falling_edge_w)

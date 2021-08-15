@@ -30,15 +30,7 @@ module regfile
     );
 
 // Memory
-word_t mem_r [31:0];
-
-// Initialize with Zeroes
-integer i;
-initial begin
-    for (i=0; i<32; i=i+1) begin
-        mem_r[i] = 32'b0;
-    end
-end
+word_t mem_r [31:0] = '{ default: '0 };
 
 // Read Ports
 always_comb begin

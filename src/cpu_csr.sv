@@ -135,22 +135,24 @@ dword_t  minstret_r, minstret_w;          // retired instruction counter
 dword_t  time_r,     time_w;              // time counter
 
 // Non-Counters
-mtvec_t  mtvec_r;                         // trap vector
-word_t   mcountinhibit_r;                 // counter inhibitor
-word_t   mscratch_r;                      // scratch buffer
-word_t   mepc_r;                          // exception program counter
-mcause_t mcause_r;                        // exception cause
-word_t   mtval_r;                         // exception val
-word_t   mtval2_r;                        // exception val2
-word_t   mtinst_r;                        // exception instruction
-logic    mstatus_mie_r,  mstatus_mie_w;   // global interrupt enabled
-logic    mstatus_mpie_r, mstatus_mpie_w;  // global interrupt enabled (prior)
-logic    meip_w;                          // machine external interrupt pending
-logic    mtip_r;                          // machine timer    interrupt pending
-logic    msip_r;                          // machine software interrupt pending
-logic    meie_r;                          // machine external interrupt enabled
-logic    mtie_r;                          // machine timer    interrupt enabled
-logic    msie_r;                          // machine software interrupt enabled
+mtvec_t  mtvec_r         = MTVEC_DEFAULT;         // trap vector
+word_t   mcountinhibit_r = MCOUNTINHIBIT_DEFAULT; // counter inhibitor
+word_t   mscratch_r      = MSCRATCH_DEFAULT;      // scratch buffer
+word_t   mepc_r          = MEPC_DEFAULT;          // exception program counter
+mcause_t mcause_r        = MCAUSE_DEFAULT;        // exception cause
+word_t   mtval_r         = MTVAL_DEFAULT;         // exception val
+word_t   mtval2_r        = MTVAL2_DEFAULT;        // exception val2
+word_t   mtinst_r        = MTINST_DEFAULT;        // exception instruction
+logic    mstatus_mie_r   = 1'b0;                  // global interrupt enabled
+logic    mstatus_mie_w;                           // global interrupt enabled
+logic    mstatus_mpie_r  = 1'b0;                  // global interrupt enabled (prior)
+logic    mstatus_mpie_w;                          // global interrupt enabled (prior)
+logic    meip_w;                                  // machine external interrupt pending
+logic    mtip_r = 1'b0;                           // machine timer    interrupt pending
+logic    msip_r = 1'b0;                           // machine software interrupt pending
+logic    meie_r = 1'b0;                           // machine external interrupt enabled
+logic    mtie_r = 1'b0;                           // machine timer    interrupt enabled
+logic    msie_r = 1'b0;                           // machine software interrupt enabled
 
 
 //

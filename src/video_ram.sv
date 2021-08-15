@@ -104,26 +104,19 @@ video_tdpram_inst (
 // Simulator Implementation
 //
 
-byte_t ram [0:4095];
-
-integer i;
-initial begin
-    for (i=0; i<4096; i++) begin
-        ram[i] = 8'b0;
-    end
-end
+byte_t mem_r [0:4095] = '{ default: '0 };
 
 always_ff @(posedge cpu_clk_i) begin
-    cpu_read_data_o <= cpu_reset_i ? 32'b0 : { ram[cpu_addr_i+3], ram[cpu_addr_i+2], ram[cpu_addr_i+1], ram[cpu_addr_i+0] };
+    cpu_read_data_o <= cpu_reset_i ? 32'b0 : { mem_r[cpu_addr_i+3], mem_r[cpu_addr_i+2], mem_r[cpu_addr_i+1], mem_r[cpu_addr_i+0] };
 
-    if (cpu_write_mask_i[0]) ram[cpu_addr_i+0] <= cpu_write_data_i[ 7: 0];
-    if (cpu_write_mask_i[1]) ram[cpu_addr_i+1] <= cpu_write_data_i[15: 8];
-    if (cpu_write_mask_i[2]) ram[cpu_addr_i+2] <= cpu_write_data_i[23:16];
-    if (cpu_write_mask_i[3]) ram[cpu_addr_i+3] <= cpu_write_data_i[31:24];
+    if (cpu_write_mask_i[0]) mem_r[cpu_addr_i+0] <= cpu_write_data_i[ 7: 0];
+    if (cpu_write_mask_i[1]) mem_r[cpu_addr_i+1] <= cpu_write_data_i[15: 8];
+    if (cpu_write_mask_i[2]) mem_r[cpu_addr_i+2] <= cpu_write_data_i[23:16];
+    if (cpu_write_mask_i[3]) mem_r[cpu_addr_i+3] <= cpu_write_data_i[31:24];
 end
 
 always_ff @(posedge pxl_clk_i) begin
-    pxl_data_o <= pxl_reset_i ? 8'b0 : ram[pxl_addr_i];
+    pxl_data_o <= pxl_reset_i ? 8'b0 : mem_r[pxl_addr_i];
 end
 
 `endif

@@ -1,6 +1,9 @@
 TODO:
 - Verilog
-    - Re-review use of unique & priority on if and case statements...
+    - Can I make the main ID casez unique?  It's close.
+    - Can I replace reset signal with default values  or all registers?
+        - Does that help timing and complexity?  If so, how much?
+        - How can I initialize output registers?  Initial blocks fight with always_ff blocks.
 - Peripherals
     - UART
 - BIOS
