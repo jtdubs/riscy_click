@@ -32,7 +32,7 @@ int main(int argc, char** argv)
         if (ncycles == 10) dut->reset_async_i = 0;
 
         // run ps2 at an absurd rate
-        if (ncycles % 2 == 0) key_tick(kbd, &dut->ps2_clk_async_i, &dut->ps2_data_async_i);
+        if (ncycles % 16 == 0) key_tick(kbd, &dut->ps2_clk_async_i, &dut->ps2_data_async_i);
     }
 
     dut->final();

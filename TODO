@@ -1,6 +1,4 @@
 TODO:
-- Keyboard
-    - Update BIOS to use interrupts to handle keyboard input
 - Peripherals
     - UART
 - Machine Level ISA

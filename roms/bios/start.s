@@ -35,8 +35,6 @@ set_pointers:
 enable_interrupts:
     li t0, 0x800
     csrw mie, t0
-    li t0, 0x8
-    csrw mstatus, t0
 
     # copy r/w data to RAM
 copy_start:
@@ -72,6 +70,18 @@ call_main:
 exit_loop:
     j exit_loop
 
+.global _global_enable_interrupts
+_global_enable_interrupts:
+    li t0, 0x8
+    csrw mstatus, t0
+    ret
+
+.global _global_disable_interrupts
+_global_disable_interrupts:
+    li t0, 0x0
+    csrw mstatus, t0
+    ret
+
 .globl _trap_handler
 _trap_handler:
     addi sp, sp, -64
@@ -93,7 +103,7 @@ _trap_handler:
     sw a6, 56(sp)
     sw a7, 60(sp)
 
-    jal on_key
+    jal on_kbd_interrupt
 
     lw a7, 60(sp)
     lw a6, 56(sp)

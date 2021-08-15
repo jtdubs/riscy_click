@@ -6,8 +6,6 @@
 
 #include <stdint.h>
 
-static volatile int interrupt_count = 0;
-
 int main() {
     dsp_clear(' ');
 
@@ -18,17 +16,10 @@ int main() {
     for (;;) {
         char c = con_getch();
 
-        if (interrupt_count) {
-            char c = dsp_read(10+interrupt_count, 10);
-            c = (c == ' ') ? 'A' : (c+1);
-            dsp_write(10+interrupt_count, 10, c);
-            interrupt_count = 0;
-        }
-
         switch (c) {
         case '\n':
             x = 0;
-            if (++y == DSP_HEIGHT) y = 0;
+            if (++y == (DSP_HEIGHT-1)) y = 0;
             break;
         case '\x1B':
             x = 0;
@@ -39,12 +30,8 @@ int main() {
             dsp_write(x, y, c);
             if (++x == DSP_WIDTH) x = 0;
             if (x == 0)
-                if (++y == DSP_HEIGHT) y = 0;
+                if (++y == (DSP_HEIGHT-1)) y = 0;
             break;
         }
     }
-}
-
-void on_key() {
-    interrupt_count++;
 }

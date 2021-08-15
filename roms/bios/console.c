@@ -59,7 +59,7 @@ const char TRANSLATION_TABLE[256] = {
 
 char con_getch(void) {
     while (true) {
-        kbd_event_t e = kbd_read_valid();
+        kbd_event_t e = kbd_wait();
 
         uint8_t key = kbd_to_key(e);
 
