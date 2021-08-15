@@ -42,7 +42,7 @@ logic                    cpu_reset_r;
 logic [RESET_CYCLES-1:0] cpu_reset_chain_r;
 
 always_ff @(posedge cpu_clk_i) begin
-    if (reset_async_i)
+    unique if (reset_async_i)
         // if resetting, fill the chain with ones
         { cpu_reset_r, cpu_reset_chain_r } <= { 1'b1, RESET_ONES };
     else
@@ -54,7 +54,7 @@ logic                    pxl_reset_r;
 logic [RESET_CYCLES-1:0] pxl_reset_chain_r;
 
 always_ff @(posedge pxl_clk_i) begin
-    if (reset_async_i)
+    unique if (reset_async_i)
         // if resetting, fill the chain with ones
         { pxl_reset_r, pxl_reset_chain_r } <= { 1'b1, RESET_ONES };
     else
@@ -214,7 +214,7 @@ always_comb begin
     kbd_read_enable_w = (dmem_addr_w        == 32'hFF000008);
     vram_write_mask_w = (dmem_addr_w[31:28] == 4'h2)         ? dmem_write_mask_w : 4'b0000;
 
-    casez (dmem_read_addr_r)
+    unique casez (dmem_read_addr_r)
     32'h0???????: begin dmem_read_data_w = bios_read_data_w;     end
     32'h1???????: begin dmem_read_data_w = ram_read_data_w;      end
     32'h2???????: begin dmem_read_data_w = vram_read_data_w;     end

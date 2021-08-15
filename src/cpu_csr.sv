@@ -214,13 +214,13 @@ always_comb begin
     // request jump on interrupt, mtrap or mret
     jmp_request_o = interrupt_w || mtrap_i || mret_i;
 
-    if (mtrap_i || interrupt_w) begin
+    unique if (mtrap_i || interrupt_w) begin
         // mtrap and interrtupt jump to mtvec
-        case (mtvec_r.mode)
+        unique case (mtvec_r.mode)
         MTVEC_MODE_DIRECT:
             jmp_addr_o = { mtvec_r.base, 2'b00 };
         MTVEC_MODE_VECTORED:
-            if (interrupt_i)
+            unique if (interrupt_i)
                 jmp_addr_o = { mtvec_r.base + INT_M_EXTERNAL[29:0], 2'b00 };
             else
                 jmp_addr_o = { mtvec_r.base,                        2'b00 };
@@ -228,6 +228,8 @@ always_comb begin
     end else if (mret_i) begin
         // mret jumps to mepc
         jmp_addr_o = mepc_r;
+    end else begin
+        jmp_addr_o = 32'b0;
     end
 end
 

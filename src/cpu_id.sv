@@ -48,7 +48,7 @@ module cpu_id
         output      logic      csr_mret_o,          // trap return needed
         input  wire word_t     csr_jmp_addr_i,      // trap addr to jump to
         input  wire logic      csr_jmp_request_i,   // trap addr valid
-        output      logic      csr_jmp_accept_o,    // TODO
+        output      logic      csr_jmp_accept_o,    // jump accept
 
 
         output      csr_t      csr_read_addr_o,     // csr read address
@@ -123,6 +123,7 @@ end
 control_word_t cw_w;
 
 always_comb begin
+    // TODO: the first two OP_IMM cases are the only thing preventing this from being a unique casez
     casez ({f7_w, f3_w, opcode_w})
     //                                                 Halt  PC Mode      Alu Op #1     Alu Op #2     Alu Mode     Memory Mode  Memory Size       Writeback Source  RA Used?  RB Used?  CSR Used?  Priv?
     //                                                 ----  -----------  ------------  ------------  -----------  -----------  ----------------  ----------------  --------  --------  ---------  -----
@@ -186,7 +187,7 @@ always_comb begin
     wfi_w         = 1'b0;
 
     if (cw_w.priv) begin
-        case (f12_w)
+        unique case (f12_w)
         F12_ECALL:
             begin
                 csr_mtrap_o  = 1'b1;
@@ -341,6 +342,7 @@ end
 
 // determine next state
 always_comb begin
+    // TODO: for some reason making this a unique if infers a latch
     if (csr_idle_action_w || csr_write_action_w)
         csr_state_w = CSR_STATE_IDLE;
     else if (csr_flush_action_w || csr_wait_action_w)
@@ -385,7 +387,7 @@ end
 // update regfile writeback control siganls
 always_comb begin
     // If CSR is writing, it owns the register file's write port
-    if (csr_write_action_w) begin
+    unique if (csr_write_action_w) begin
         wb_addr_w   = rd_w;
         wb_data_w   = csr_read_data_i;
         wb_enable_w = csr_write_action_w && rd_w != 5'b0;
@@ -411,7 +413,7 @@ end
 
 logic branch_condition_w;
 always_comb begin
-    case (f3_w[2:1])
+    unique case (f3_w[2:1])
         2'b00: branch_condition_w = (        ra_bypassed_w  ==         rb_bypassed_w);
         2'b10: branch_condition_w = (signed'(ra_bypassed_w) <  signed'(rb_bypassed_w));
         2'b11: branch_condition_w = (        ra_bypassed_w  <          rb_bypassed_w);
@@ -422,7 +424,7 @@ end
 
 always_comb begin
     // jump signals
-    if (csr_jmp_request_i && csr_jmp_accept_o) begin
+    unique if (csr_jmp_request_i && csr_jmp_accept_o) begin
         jmp_valid_async_o = 1'b1;
         jmp_addr_async_o  = csr_jmp_addr_i;
     end else begin

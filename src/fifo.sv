@@ -54,13 +54,13 @@ addr_t write_ptr_w;
 addr_t read_ptr_w;
 
 always_comb begin
-    if (write_enable_i && !fifo_full_o) begin
+    unique if (write_enable_i && !fifo_full_o) begin
         write_ptr_w = write_ptr_r + 1;
     end else begin
         write_ptr_w = write_ptr_r;
     end
 
-    if (read_enable_i && !fifo_empty_o) begin
+    unique if (read_enable_i && !fifo_empty_o) begin
         read_ptr_w = read_ptr_r + 1;
     end else begin
         read_ptr_w = read_ptr_r;

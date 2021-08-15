@@ -47,7 +47,7 @@ always_comb begin
     unaligned_w = load_i ? dmem_read_data_i : wb_data_i;
 
     // shift data right based on address lower bits
-    case (ma_alignment_i)
+    unique case (ma_alignment_i)
     2'b00: aligned_w = {        unaligned_w[31: 0] };
     2'b01: aligned_w = {  8'b0, unaligned_w[31: 8] };
     2'b10: aligned_w = { 16'b0, unaligned_w[31:16] };

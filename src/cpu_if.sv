@@ -41,14 +41,13 @@ word_t pc_i, pc_w;
 
 // choose next PC value
 always_comb begin
-    priority if (reset_i)
-        pc_w = 32'h0;            // zero on reset
-    else if (halt_i)
-        pc_w = pc_i;             // no change on halt
+    // TODO: making this priority if creates a latch warning in verilator...
+    if (reset_i)
+        pc_w = 32'h0;
+    else if (halt_i || !ready_async_i)
+        pc_w = pc_i;             // no change on halt or backpressure
     else if (jmp_valid_async_i)
         pc_w = jmp_addr_async_i; // respect jumps
-    else if (~ready_async_i)
-        pc_w = pc_i;             // no change on backpressure
     else
         pc_w = pc_i + 4;         // otherwise keep advancing
 end

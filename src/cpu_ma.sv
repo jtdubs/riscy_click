@@ -59,7 +59,7 @@ always_comb begin
     dmem_write_mask_o = 4'b0000;
 
     // shift data left based on address lower bits
-    case (ma_addr_i[1:0])
+    unique case (ma_addr_i[1:0])
     2'b00: dmem_write_data_o = { ma_data_i[31:0]        };
     2'b01: dmem_write_data_o = { ma_data_i[23:0],  8'b0 };
     2'b10: dmem_write_data_o = { ma_data_i[15:0], 16'b0 };
@@ -67,7 +67,7 @@ always_comb begin
     endcase
 
     // choose write mask based on operation, size and alignment
-    case ({ ma_mode_i, ma_size_i, ma_addr_i[1:0] })
+    unique case ({ ma_mode_i, ma_size_i, ma_addr_i[1:0] })
     { MA_STORE, MA_SIZE_B, 2'b00 }: dmem_write_mask_o = 4'b0001;
     { MA_STORE, MA_SIZE_B, 2'b01 }: dmem_write_mask_o = 4'b0010;
     { MA_STORE, MA_SIZE_B, 2'b10 }: dmem_write_mask_o = 4'b0100;

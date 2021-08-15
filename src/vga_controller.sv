@@ -50,9 +50,9 @@ always_ff @(posedge clk_i) begin
     x_r[0] <= x_r[1];
     y_r[0] <= y_r[1];
 
-    if (x_r[1] == 'd799) begin
+    unique if (x_r[1] == 'd799) begin
         x_r[1] <= 'd0;
-        if (y_r[1] == 'd524)
+        unique if (y_r[1] == 'd524)
             y_r[1] <= 'd0;
         else
             y_r[1] <= y_r[1] + 1;
