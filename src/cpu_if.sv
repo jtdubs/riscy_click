@@ -41,15 +41,15 @@ word_t pc_i, pc_w;
 
 // choose next PC value
 always_comb begin
-    // TODO: making this priority if creates a latch warning in verilator...
-    if (reset_i)
-        pc_w = 32'h0;
+    // default behavior is to advance to next instruction
+    pc_w = pc_i + 4;
+
+    unique0 if (reset_i)
+        pc_w = 32'h0;            // back to zero on reset
     else if (halt_i || !ready_async_i)
         pc_w = pc_i;             // no change on halt or backpressure
     else if (jmp_valid_async_i)
         pc_w = jmp_addr_async_i; // respect jumps
-    else
-        pc_w = pc_i + 4;         // otherwise keep advancing
 end
 
 // always request the IR corresponding to the next PC value

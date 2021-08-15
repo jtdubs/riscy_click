@@ -171,9 +171,6 @@ end
 
 // gating jump requests
 always_comb begin
-    // TODO: if we are jump going to jump again, we don't need to wait for IF
-    // to catch up.  we just need to know the PC value so it can get
-    // returned to later
     csr_jmp_accept_o = csr_jmp_request_i && (pc_i != NOP_PC);
 end
 
@@ -259,10 +256,7 @@ word_t rb_bypassed_w;
 
 // determine bypassed value for first register access
 always_comb begin
-    // TODO: is there any way to avoid these being priority if?
-    priority if (rs1_w == 5'b00000)
-        ra_bypassed_w = ra_w;
-    else if (ex_wb_valid_async_i && rs1_w == ex_wb_addr_async_i)
+    priority if (ex_wb_valid_async_i && rs1_w == ex_wb_addr_async_i)
         ra_bypassed_w = ex_wb_data_async_i;
     else if (ma_wb_valid_async_i && rs1_w == ma_wb_addr_async_i)
         ra_bypassed_w = ma_wb_data_async_i;
@@ -274,10 +268,7 @@ end
 
 // Determine bypassed value for second register access
 always_comb begin
-    // TODO: is there any way to avoid these being priority if?
-    priority if (rs2_w == 5'b00000)
-        rb_bypassed_w = rb_w;
-    else if (ex_wb_valid_async_i && rs2_w == ex_wb_addr_async_i)
+    priority if (ex_wb_valid_async_i && rs2_w == ex_wb_addr_async_i)
         rb_bypassed_w = ex_wb_data_async_i;
     else if (ma_wb_valid_async_i && rs2_w == ma_wb_addr_async_i)
         rb_bypassed_w = ma_wb_data_async_i;
@@ -343,15 +334,16 @@ always_comb begin
 end
 
 // determine next state
+/* verilator lint_off LATCH */
 always_comb begin
-    // TODO: for some reason making this a unique if infers a latch
-    if (csr_idle_action_w || csr_write_action_w)
+    unique if (csr_idle_action_w || csr_write_action_w)
         csr_state_w = CSR_STATE_IDLE;
     else if (csr_flush_action_w || csr_wait_action_w)
         csr_state_w = CSR_STATE_FLUSHING;
-    else
+    else if (csr_read_action_w)
         csr_state_w = CSR_STATE_EXECUTING;
 end
+/* verilator lint_on LATCH */
 
 // update CSR control signals
 always_comb begin
