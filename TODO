@@ -1,6 +1,10 @@
 TODO:
+- Verilog
+    - Re-review use of unique & priority on if and case statements...
 - Peripherals
     - UART
+- BIOS
+    - Provide UART interface for loading an ELF and jumping to it
 - Machine Level ISA
     - CSR
         - Decode should confirm address is read/executable, otherwise trap
@@ -18,11 +22,7 @@ TODO:
     - Add instruction & data cache
     - Add memory controller and DDR
 - CPU
-    - Reduce complexity if possible in:
-        - cpu_id
     - Change stage breakdown or increase stages to up clock speed
-- BIOS
-    - Provide UART interface for loading an ELF and jumping to it
 - Interrupt Controller
     - Interrupt controller aggregates interrupts from external sources (keyboard, mouse, UART, etc.)
     - Interrupt controller has an mmap'd register for reading and clearing external interrupts
