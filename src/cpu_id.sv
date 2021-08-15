@@ -49,8 +49,6 @@ module cpu_id
         input  wire word_t     csr_jmp_addr_i,      // trap addr to jump to
         input  wire logic      csr_jmp_request_i,   // trap addr valid
         output      logic      csr_jmp_accept_o,    // jump accept
-
-
         output      csr_t      csr_read_addr_o,     // csr read address
         output      logic      csr_read_enable_o,   // csr read enable
         input  wire word_t     csr_read_data_i,     // csr read data
@@ -59,17 +57,17 @@ module cpu_id
         output      logic      csr_write_enable_o,  // csr write enable
 
         // pipeline output
-        output      word_t     pc_o,                // program counter
-        output      word_t     ir_o,                // instruction register
-        output      word_t     alu_op1_o,           // ALU operand 1
-        output      word_t     alu_op2_o,           // ALU operand 2
-        output      alu_mode_t alu_mode_o,          // ALU mode
-        output      ma_mode_t  ma_mode_o,           // memory access mode
-        output      ma_size_t  ma_size_o,           // memory access size
-        output      word_t     ma_data_o,           // memory access data (for store operations)
-        output      wb_src_t   wb_src_o,            // write-back source
-        output      word_t     wb_data_o,     // write-back data
-        output      logic      wb_valid_o     // write-back destination
+        output wire word_t     pc_o,                // program counter
+        output wire word_t     ir_o,                // instruction register
+        output wire word_t     alu_op1_o,           // ALU operand 1
+        output wire word_t     alu_op2_o,           // ALU operand 2
+        output wire alu_mode_t alu_mode_o,          // ALU mode
+        output wire ma_mode_t  ma_mode_o,           // memory access mode
+        output wire ma_size_t  ma_size_o,           // memory access size
+        output wire word_t     ma_data_o,           // memory access data (for store operations)
+        output wire wb_src_t   wb_src_o,            // write-back source
+        output wire word_t     wb_data_o,           // write-back data
+        output wire logic      wb_valid_o           // write-back destination
     );
 
 initial start_logging();
@@ -465,56 +463,81 @@ end
 // Pipeline Output
 //
 
+word_t     pc_r       = NOP_PC;
+word_t     ir_r       = NOP_IR;
+word_t     alu_op1_r  = 32'b0;
+word_t     alu_op2_r  = 32'b0;
+alu_mode_t alu_mode_r = NOP_ALU_MODE;
+ma_mode_t  ma_mode_r  = NOP_MA_MODE;
+ma_size_t  ma_size_r  = NOP_MA_SIZE;
+word_t     ma_data_r  = 32'b0;
+wb_src_t   wb_src_r   = NOP_WB_SRC;
+word_t     wb_data_r  = 32'b0;
+logic      wb_valid_r = NOP_WB_VALID;
+logic      halt_r     = 1'b0;
+
 always_ff @(posedge clk_i) begin
     // if a bubble is needed
     if (data_hazard_w || !csr_idle_action_w || wfi_w) begin
         // output a NOP (addi x0, x0, 0)
-        pc_o       <= NOP_PC;
-        ir_o       <= NOP_IR;
-        alu_op1_o  <= 32'b0;
-        alu_op2_o  <= 32'b0;
-        alu_mode_o <= NOP_ALU_MODE;
-        ma_mode_o  <= NOP_MA_MODE;
-        ma_size_o  <= NOP_MA_SIZE;
-        ma_data_o  <= 32'b0;
-        wb_src_o   <= NOP_WB_SRC;
-        wb_data_o  <= 32'b0;
-        wb_valid_o <= NOP_WB_VALID;
-        halt_o     <= 1'b0;
+        pc_r       <= NOP_PC;
+        ir_r       <= NOP_IR;
+        alu_op1_r  <= 32'b0;
+        alu_op2_r  <= 32'b0;
+        alu_mode_r <= NOP_ALU_MODE;
+        ma_mode_r  <= NOP_MA_MODE;
+        ma_size_r  <= NOP_MA_SIZE;
+        ma_data_r  <= 32'b0;
+        wb_src_r   <= NOP_WB_SRC;
+        wb_data_r  <= 32'b0;
+        wb_valid_r <= NOP_WB_VALID;
+        halt_r     <= 1'b0;
     end else begin
         // otherwise, output decoded control signals
-        pc_o       <= pc_i;
-        ir_o       <= ir_i;
-        alu_op1_o  <= alu_op1_w;
-        alu_op2_o  <= alu_op2_w;
-        alu_mode_o <= cw_w.alu_mode;
-        ma_mode_o  <= cw_w.ma_mode;
-        ma_size_o  <= cw_w.ma_size;
-        ma_data_o  <= rb_bypassed_w;
-        wb_src_o   <= cw_w.wb_src;
-        wb_data_o  <= pc_i + 4;
-        wb_valid_o <= wb_valid_w;
-        halt_o     <= cw_w.halt;
+        pc_r       <= pc_i;
+        ir_r       <= ir_i;
+        alu_op1_r  <= alu_op1_w;
+        alu_op2_r  <= alu_op2_w;
+        alu_mode_r <= cw_w.alu_mode;
+        ma_mode_r  <= cw_w.ma_mode;
+        ma_size_r  <= cw_w.ma_size;
+        ma_data_r  <= rb_bypassed_w;
+        wb_src_r   <= cw_w.wb_src;
+        wb_data_r  <= pc_i + 4;
+        wb_valid_r <= wb_valid_w;
+        halt_r     <= cw_w.halt;
     end
 
     if (reset_i) begin
         // output a NOP (addi x0, x0, 0)
-        pc_o       <= NOP_PC;
-        ir_o       <= NOP_IR;
-        alu_op1_o  <= 32'b0;
-        alu_op2_o  <= 32'b0;
-        alu_mode_o <= NOP_ALU_MODE;
-        ma_mode_o  <= NOP_MA_MODE;
-        ma_size_o  <= NOP_MA_SIZE;
-        ma_data_o  <= 32'b0;
-        wb_src_o   <= NOP_WB_SRC;
-        wb_data_o  <= 32'b0;
-        wb_valid_o <= NOP_WB_VALID;
-        halt_o     <= 1'b0;
+        pc_r       <= NOP_PC;
+        ir_r       <= NOP_IR;
+        alu_op1_r  <= 32'b0;
+        alu_op2_r  <= 32'b0;
+        alu_mode_r <= NOP_ALU_MODE;
+        ma_mode_r  <= NOP_MA_MODE;
+        ma_size_r  <= NOP_MA_SIZE;
+        ma_data_r  <= 32'b0;
+        wb_src_r   <= NOP_WB_SRC;
+        wb_data_r  <= 32'b0;
+        wb_valid_r <= NOP_WB_VALID;
+        halt_r     <= 1'b0;
     end
 
-    `log_strobe(("{ \"stage\": \"ID\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"alu_op1\": \"%0d\", \"alu_op2\": \"%0d\", \"alu_mode\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_dst\": \"%0d\", \"halt\": \"%0d\" }", pc_o, ir_o, alu_op1_o, alu_op2_o, alu_mode_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_o, wb_valid_o, halt_o));
-
+    `log_strobe(("{ \"stage\": \"ID\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"alu_op1\": \"%0d\", \"alu_op2\": \"%0d\", \"alu_mode\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_dst\": \"%0d\", \"halt\": \"%0d\" }", pc_r, ir_r, alu_op1_r, alu_op2_r, alu_mode_r, ma_mode_r, ma_size_r, ma_data_r, wb_src_r, wb_data_r, wb_valid_r, halt_r));
 end
+
+assign pc_o       = pc_r;
+assign ir_o       = ir_r;
+assign alu_op1_o  = alu_op1_r;
+assign alu_op2_o  = alu_op2_r;
+assign alu_mode_o = alu_mode_r;
+assign ma_mode_o  = ma_mode_r;
+assign ma_size_o  = ma_size_r;
+assign ma_data_o  = ma_data_r;
+assign wb_src_o   = wb_src_r;
+assign wb_data_o  = wb_data_r;
+assign wb_valid_o = wb_valid_r;
+assign halt_o     = halt_r;
 
 endmodule

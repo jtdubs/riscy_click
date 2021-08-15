@@ -19,8 +19,8 @@ module kbd_controller
 
         // Outputs
         input  wire logic        read_enable_i,
-        output      kbd_event_t  read_data_o,
-        output      logic        read_valid_o,
+        output wire kbd_event_t  read_data_o,
+        output wire logic        read_valid_o,
         output      logic        interrupt_o
     );
 

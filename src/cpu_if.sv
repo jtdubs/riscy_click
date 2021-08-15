@@ -16,7 +16,7 @@ module cpu_if
         input  wire logic  halt_i,            // halt
 
         // instruction memory
-        output      word_t imem_addr_o,       // memory address
+        output wire word_t imem_addr_o,       // memory address
         input  wire word_t imem_data_i,       // data
 
         // async input
@@ -25,8 +25,8 @@ module cpu_if
         input  wire logic  ready_async_i,     // is the ID stage ready to accept input
 
         // pipeline output
-        output      word_t pc_o,              // program counter
-        output      word_t ir_o               // instruction register
+        output wire word_t pc_o,              // program counter
+        output wire word_t ir_o               // instruction register
     );
 
 initial start_logging();
@@ -53,7 +53,7 @@ always_comb begin
 end
 
 // always request the IR corresponding to the next PC value
-always_comb imem_addr_o = pc_w;
+assign imem_addr_o = pc_w;
 
 // update pipeline input to match the address we are requesting from imem
 always_ff @(posedge clk_i) begin
@@ -64,18 +64,25 @@ end
 //
 // Pipeline Outputs
 //
+
+word_t pc_r = NOP_PC;
+word_t ir_r = NOP_IR;
+
 always_ff @(posedge clk_i) begin
-    `log_strobe(("{ \"stage\": \"IF\", \"reset\": \"%0d\", \"pc\": \"%0d\", \"ir\": \"%0d\" }", reset_i, pc_o, ir_o));
+    `log_strobe(("{ \"stage\": \"IF\", \"reset\": \"%0d\", \"pc\": \"%0d\", \"ir\": \"%0d\" }", reset_i, pc_r, ir_r));
  
     if (jmp_valid_async_i || reset_i) begin
         // if jumping or resetting, output a NOP
-        pc_o <= NOP_PC;
-        ir_o <= NOP_IR;
+        pc_r <= NOP_PC;
+        ir_r <= NOP_IR;
     end else if (ready_async_i) begin
         // if next stage is ready, give them new values
-        pc_o <= pc_i;
-        ir_o <= imem_data_i;
+        pc_r <= pc_i;
+        ir_r <= imem_data_i;
     end
 end
+
+assign pc_o = pc_r;
+assign ir_o = ir_r;
 
 endmodule

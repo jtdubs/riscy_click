@@ -16,14 +16,14 @@ module cpu
         output wire logic       halt_o,
 
         // instruction memory bus
-        output      word_t      imem_addr_o,
+        output wire word_t      imem_addr_o,
         input  wire word_t      imem_data_i,
 
         // data memory bus
         output wire word_t      dmem_addr_o,
         input  wire word_t      dmem_read_data_i,
-        output      logic [3:0] dmem_write_mask_o,
-        output      word_t      dmem_write_data_o
+        output wire logic [3:0] dmem_write_mask_o,
+        output wire word_t      dmem_write_data_o
     );
 
 //
@@ -263,10 +263,10 @@ cpu_csr csr (
     .write_addr_i        (csr_write_addr_w),
     .write_data_i        (csr_write_data_w),
     .write_enable_i      (csr_write_enable_w),
-    .lookup1_addr        (32'b0),
-    .lookup1_rwx         (),
-    .lookup2_addr        (32'b0),
-    .lookup2_rwx         ()
+    .lookup1_addr_i      (32'b0),
+    .lookup1_rwx_o       (),
+    .lookup2_addr_i      (32'b0),
+    .lookup2_rwx_o       ()
 );
 
 endmodule

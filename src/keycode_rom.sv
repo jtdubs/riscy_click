@@ -13,7 +13,7 @@ module keycode_rom
 
         // port
         input  wire logic [8:0] addr_i,
-        output      logic [7:0] data_o
+        output wire logic [7:0] data_o
     );
 
 `ifdef ENABLE_XILINX_PRIMITIVES
@@ -74,9 +74,13 @@ initial begin
     $readmemh(CONTENTS, rom);
 end
 
+logic [7:0] data_r = '0;
+
 always_ff @(posedge clk_i) begin
-    data_o <= reset_i ? 8'b0 : rom[addr_i];
+    data_r <= reset_i ? 8'b0 : rom[addr_i];
 end
+
+assign data_o = data_r;
 
 `endif
 

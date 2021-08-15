@@ -17,11 +17,11 @@ module segdisplay
         input  wire logic       reset_i,
 
         // display interface
-        output      logic [7:0] dsp_anode_o,
-        output      logic [7:0] dsp_cathode_o,
+        output wire logic [7:0] dsp_anode_o,
+        output wire logic [7:0] dsp_cathode_o,
 
         // read port
-        output      word_t      read_data_o,
+        output wire word_t      read_data_o,
 
         // write port
         input  wire word_t      write_data_i,
@@ -48,7 +48,7 @@ end
 // Value
 word_t value_r = '0;
 
-always_comb read_data_o = value_r;
+assign read_data_o = value_r;
 
 always @(posedge clk_i) begin
     if (write_mask_i[3]) value_r[31:24] <= write_data_i[31:24];
@@ -78,38 +78,52 @@ end
 
 
 // Anode
+logic [7:0] dsp_anode_r = 8'hFF;
+
 always_ff @(posedge clk_i) begin
-    dsp_anode_o <= 8'hFF;
+    dsp_anode_r <= 8'hFF;
 
     if (enable_w)
-        dsp_anode_o[digit_w] <= 1'b0;
+        dsp_anode_r[digit_w] <= 1'b0;
+
+    if (reset_i)
+        dsp_anode_r = 8'hFF;
 end
+
+assign dsp_anode_o = dsp_anode_r;
 
 
 // Cathode
+logic [7:0] dsp_cathode_r = 8'hFF;
+
 always_ff @(posedge clk_i) begin
-    dsp_cathode_o <= 8'hFF;
+    dsp_cathode_r <= 8'hFF;
 
     if (enable_w) begin
         unique case (nibble_w)
-        0:  dsp_cathode_o <= 8'b11000000;
-        1:  dsp_cathode_o <= 8'b11111001;
-        2:  dsp_cathode_o <= 8'b10100100;
-        3:  dsp_cathode_o <= 8'b10110000;
-        4:  dsp_cathode_o <= 8'b10011001;
-        5:  dsp_cathode_o <= 8'b10010010;
-        6:  dsp_cathode_o <= 8'b10000010;
-        7:  dsp_cathode_o <= 8'b11111000;
-        8:  dsp_cathode_o <= 8'b10000000;
-        9:  dsp_cathode_o <= 8'b10011000;
-        10: dsp_cathode_o <= 8'b10001000;
-        11: dsp_cathode_o <= 8'b10000011;
-        12: dsp_cathode_o <= 8'b11000110;
-        13: dsp_cathode_o <= 8'b10100001;
-        14: dsp_cathode_o <= 8'b10000110;
-        15: dsp_cathode_o <= 8'b10001110;
+        0:  dsp_cathode_r <= 8'b11000000;
+        1:  dsp_cathode_r <= 8'b11111001;
+        2:  dsp_cathode_r <= 8'b10100100;
+        3:  dsp_cathode_r <= 8'b10110000;
+        4:  dsp_cathode_r <= 8'b10011001;
+        5:  dsp_cathode_r <= 8'b10010010;
+        6:  dsp_cathode_r <= 8'b10000010;
+        7:  dsp_cathode_r <= 8'b11111000;
+        8:  dsp_cathode_r <= 8'b10000000;
+        9:  dsp_cathode_r <= 8'b10011000;
+        10: dsp_cathode_r <= 8'b10001000;
+        11: dsp_cathode_r <= 8'b10000011;
+        12: dsp_cathode_r <= 8'b11000110;
+        13: dsp_cathode_r <= 8'b10100001;
+        14: dsp_cathode_r <= 8'b10000110;
+        15: dsp_cathode_r <= 8'b10001110;
         endcase
     end
+
+    if (reset_i)
+        dsp_cathode_r = 8'hFF;
 end
+
+assign dsp_cathode_o = dsp_cathode_r;
 
 endmodule

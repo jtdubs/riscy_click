@@ -19,11 +19,11 @@ module vga_controller
         input  wire byte_t       vram_data_i,
 
         // vga output
-        output      logic [ 3:0] vga_red_o,
-        output      logic [ 3:0] vga_green_o,
-        output      logic [ 3:0] vga_blue_o,
-        output      logic        vga_hsync_o,
-        output      logic        vga_vsync_o
+        output wire logic [ 3:0] vga_red_o,
+        output wire logic [ 3:0] vga_green_o,
+        output wire logic [ 3:0] vga_blue_o,
+        output wire logic        vga_hsync_o,
+        output wire logic        vga_vsync_o
     );
 
 
@@ -92,19 +92,43 @@ always_comb begin
     endcase
 end
 
+//
+// Output signals
+//
+
+logic [ 3:0] vga_red_r   = 1'b1;
+logic [ 3:0] vga_green_r = 1'b1;
+logic [ 3:0] vga_blue_r  = 4'b0000;
+logic        vga_hsync_r = 4'b0000;
+logic        vga_vsync_r = 4'b0000;
+
 always_ff @(posedge clk_i) begin
     // signals are based on the NEXT x,y
-    vga_hsync_o <= !((x_r[0] >= 657) && (x_r[0] < 753));
-    vga_vsync_o <= !((y_r[0] >= 491) && (y_r[0] < 493));
-    vga_red_o   <= rgb_w;
-    vga_green_o <= rgb_w;
-    vga_blue_o  <= rgb_w;
+    vga_hsync_r <= !((x_r[0] >= 657) && (x_r[0] < 753));
+    vga_vsync_r <= !((y_r[0] >= 491) && (y_r[0] < 493));
+    vga_red_r   <= rgb_w;
+    vga_green_r <= rgb_w;
+    vga_blue_r  <= rgb_w;
 
     if ((x_r[0] >= 639) || (y_r[0] >= 479)) begin
-        vga_red_o   <= 4'b0000;
-        vga_green_o <= 4'b0000;
-        vga_blue_o  <= 4'b0000;
+        vga_red_r   <= 4'b0000;
+        vga_green_r <= 4'b0000;
+        vga_blue_r  <= 4'b0000;
+    end
+
+    if (reset_i) begin
+        vga_hsync_r = 1'b1;
+        vga_vsync_r = 1'b1;
+        vga_red_r   = 4'b0000;
+        vga_green_r = 4'b0000;
+        vga_blue_r  = 4'b0000;
     end
 end
+
+assign vga_hsync_o = vga_red_r;
+assign vga_vsync_o = vga_green_r;
+assign vga_red_o   = vga_blue_r;
+assign vga_green_o = vga_hsync_r;
+assign vga_blue_o  = vga_vsync_r;
 
 endmodule

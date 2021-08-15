@@ -5,12 +5,12 @@ module pixel_clk_gen
     // Import Constants
     import common::*;
     (
-        input  wire logic sys_clk_i,     // 100MHz system clock
-        input  wire logic reset_async_i, // reset
+        input  wire logic sys_clk_i,          // 100MHz system clock
+        input  wire logic reset_async_i,      // reset
 
         // cpu clock output
-        output      logic pxl_clk_o,     // 25.2MHz VGA pixel clock
-        output      logic ready_async_o  // cpu clock ready
+        output wire logic pxl_clk_o,          // 25.2MHz VGA pixel clock
+        output wire logic ready_async_o       // cpu clock ready
     );
 
 `ifdef ENABLE_XILINX_PRIMITIVES
@@ -102,10 +102,8 @@ pixel_clk_buffer (
 
 logic [1:0] counter_r = '0;
 
-always_comb begin
-    ready_async_o = 1'b1;
-    pxl_clk_o = counter_r[1];
-end
+assign ready_async_o = 1'b1;
+assign pxl_clk_o     = counter_r[1];
 
 always_ff @(posedge sys_clk_i) begin
     counter_r <= counter_r + 1;

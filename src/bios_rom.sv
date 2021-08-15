@@ -13,11 +13,11 @@ module bios_rom
 
         // read port a
         input  wire word_t read1_addr_i,
-        output      word_t read1_data_o,
+        output wire word_t read1_data_o,
 
         // read port b
         input  wire word_t read2_addr_i,
-        output      word_t read2_data_o
+        output wire word_t read2_data_o
     );
 
 `ifdef ENABLE_XILINX_PRIMITIVES
@@ -95,16 +95,22 @@ bios_dprom_inst (
 //
 
 
-logic [31:0] rom [0:1023];
+logic [31:0] mem_r [0:1023];
 
 initial begin
-    $readmemh(CONTENTS, rom);
+    $readmemh(CONTENTS, mem_r);
 end
 
+word_t read1_data_r = '0;
+word_t read2_data_r = '0;
+
 always_ff @(posedge clk_i) begin
-    read1_data_o <= reset_i ? 32'b0 : rom[read1_addr_i[11:2]];
-    read2_data_o <= reset_i ? 32'b0 : rom[read2_addr_i[11:2]];
+    read1_data_r <= reset_i ? 32'b0 : mem_r[read1_addr_i[11:2]];
+    read2_data_r <= reset_i ? 32'b0 : mem_r[read2_addr_i[11:2]];
 end
+
+assign read1_data_o = read1_data_r;
+assign read2_data_o = read2_data_r;
 
 `endif
 

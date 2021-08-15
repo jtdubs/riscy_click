@@ -17,8 +17,8 @@ module ps2_rx
         input  wire logic  ps2_data_async_i,
 
         // PS2 Output
-        output      byte_t data_o,
-        output      logic  valid_o
+        output wire byte_t data_o,
+        output wire logic  valid_o
     );
 
 
@@ -51,10 +51,11 @@ end
 // Packet Validity
 //
 
-logic parity_good_w;
-logic start_good_w;
-logic stop_good_w;
-logic packet_good_w;
+logic [10:0] packet_r = 11'b11111111111;
+logic        parity_good_w;
+logic        start_good_w;
+logic        stop_good_w;
+logic        packet_good_w;
 
 always_comb begin
     start_good_w = !packet_r[0];
@@ -79,8 +80,6 @@ end
 // Shift in new bits, resetting on good packet
 //
 
-logic [10:0] packet_r = 11'b11111111111;
-
 always_ff @(posedge clk_i) begin
     if (falling_edge_w)
         packet_r <= { ps2_data_r, packet_r[10:1] };
@@ -96,14 +95,20 @@ end
 // Emit good packets
 //
 
+byte_t data_r  = '0;
+logic  valid_r = '0;
+
 always_ff @(posedge clk_i) begin
-    data_o   <= packet_r[8:1];
-    valid_o  <= packet_good_w;
+    data_r  <= packet_r[8:1];
+    valid_r <= packet_good_w;
 
     if (reset_i) begin
-        data_o   <= 8'b0;
-        valid_o  <= 1'b0;
+        data_r  <= 8'b0;
+        valid_r <= 1'b0;
     end
 end
+
+assign data_o  = data_r;
+assign valid_o = valid_r;
 
 endmodule

@@ -13,7 +13,7 @@ module character_rom
 
         // port
         input  wire logic [11:0] addr_i,
-        output      logic [31:0] data_o
+        output wire logic [31:0] data_o
     );
 
 `ifdef ENABLE_XILINX_PRIMITIVES
@@ -68,15 +68,19 @@ character_sprom_inst (
 // Simulator Implmentation
 //
 
-logic [31:0] rom [0:4095];
+logic [31:0] mem_r [0:4095];
 
 initial begin
-    $readmemh(CONTENTS, rom);
+    $readmemh(CONTENTS, mem_r);
 end
 
+logic [31:0] data_r = '0;
+
 always_ff @(posedge clk_i) begin
-    data_o <= reset_i ? 32'b0 : rom[addr_i];
+    data_r <= reset_i ? 32'b0 : mem_r[addr_i];
 end
+
+assign data_o = data_r;
 
 `endif
 

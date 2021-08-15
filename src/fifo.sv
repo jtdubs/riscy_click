@@ -27,14 +27,14 @@ module fifo
 
         // read port
         input  wire logic                    read_enable_i,
-        output      logic [(DATA_WIDTH-1):0] read_data_o,
-        output      logic                    read_valid_o,
+        output wire logic [(DATA_WIDTH-1):0] read_data_o,
+        output wire logic                    read_valid_o,
 
         // fifo status
-        output      logic                    fifo_empty_o,
-        output      logic                    fifo_almost_empty_o,
-        output      logic                    fifo_almost_full_o,
-        output      logic                    fifo_full_o
+        output wire logic                    fifo_empty_o,
+        output wire logic                    fifo_almost_empty_o,
+        output wire logic                    fifo_almost_full_o,
+        output wire logic                    fifo_full_o
     );
 
 typedef logic [(DATA_WIDTH-1):0] data_t;
@@ -72,35 +72,49 @@ addr_t count_w;
 always_comb count_w = write_ptr_w - read_ptr_w;
 
 // update registers
+logic [(DATA_WIDTH-1):0] read_data_r         = '0;
+logic                    read_valid_r        = 1'b0;
+logic                    fifo_empty_r        = 1'b1;
+logic                    fifo_almost_empty_r = 1'b1;
+logic                    fifo_almost_full_r  = 1'b0;
+logic                    fifo_full_r         = 1'b0;
+
 always_ff @(posedge clk_i) begin
-    fifo_empty_o        <= (count_w == '0);
-    fifo_almost_empty_o <= (count_w <= ALMOST_EMPTY_COUNT);
-    fifo_almost_full_o  <= (count_w >= ALMOST_FULL_COUNT);
-    fifo_full_o         <= (count_w == CAPACITY);
+    fifo_empty_r        <= (count_w == '0);
+    fifo_almost_empty_r <= (count_w <= ALMOST_EMPTY_COUNT);
+    fifo_almost_full_r  <= (count_w >= ALMOST_FULL_COUNT);
+    fifo_full_r         <= (count_w == CAPACITY);
     read_ptr_r          <= read_ptr_w;
     write_ptr_r         <= write_ptr_w;
 
-    if (write_enable_i && !fifo_full_o)
+    if (write_enable_i && !fifo_full_r)
         data_r[write_ptr_r] <= write_data_i;
 
-    if (read_enable_i && !fifo_empty_o) begin
-        read_data_o  <= data_r[read_ptr_r];
-        read_valid_o <= 1'b1;
+    if (read_enable_i && !fifo_empty_r) begin
+        read_data_r  <= data_r[read_ptr_r];
+        read_valid_r <= 1'b1;
     end else begin
-        read_data_o  <= '0;
-        read_valid_o <= 1'b0;
+        read_data_r  <= '0;
+        read_valid_r <= 1'b0;
     end
 
     if (reset_i) begin
-        read_data_o         <= '0;
-        read_valid_o        <= 1'b0;
-        fifo_empty_o        <= 1'b1;
-        fifo_almost_empty_o <= 1'b1;
-        fifo_almost_full_o  <= 1'b0;
-        fifo_full_o         <= 1'b0;
+        read_data_r         <= '0;
+        read_valid_r        <= 1'b0;
+        fifo_empty_r        <= 1'b1;
+        fifo_almost_empty_r <= 1'b1;
+        fifo_almost_full_r  <= 1'b0;
+        fifo_full_r         <= 1'b0;
         read_ptr_r          <= '0;
         write_ptr_r         <= '0;
     end
 end
+
+assign read_data_o         = read_data_r;
+assign read_valid_o        = read_valid_r;
+assign fifo_empty_o        = fifo_empty_r;
+assign fifo_almost_empty_o = fifo_almost_empty_r;
+assign fifo_almost_full_o  = fifo_almost_full_r;
+assign fifo_full_o         = fifo_full_r;
 
 endmodule

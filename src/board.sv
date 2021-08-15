@@ -32,7 +32,6 @@ module board
 //
 
 wire logic cpu_clk_w;
-wire logic clk_reset;
 
 cpu_clk_gen cpu_clk_gen (
     .sys_clk_i     (sys_clk_i),

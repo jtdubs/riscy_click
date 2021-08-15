@@ -30,7 +30,7 @@ module cpu_csr
         // CSR read port
         input  wire csr_t       read_addr_i,
         input  wire logic       read_enable_i,
-        output      word_t      read_data_o,
+        output wire word_t      read_data_o,
 
         // CSR write port
         input  wire csr_t       write_addr_i,
@@ -38,12 +38,12 @@ module cpu_csr
         input  wire logic       write_enable_i,
 
         // PMP lookup port 1
-        input  wire word_t      lookup1_addr,
-        output      logic [2:0] lookup1_rwx,
+        input  wire word_t      lookup1_addr_i,
+        output      logic [2:0] lookup1_rwx_o,
 
         // PMP lookup port 2
-        input  wire word_t      lookup2_addr,
-        output      logic [2:0] lookup2_rwx
+        input  wire word_t      lookup2_addr_i,
+        output      logic [2:0] lookup2_rwx_o
     );
 
 initial start_logging();
@@ -83,45 +83,45 @@ localparam pmp_entry_t [0:8] PMP_CONFIG = '{
 //
 
 always_comb begin
-    priority if (lookup1_addr < PMP_CONFIG[1].addr)
-        lookup1_rwx = PMP_CONFIG[0].cfg.rwx;
-    else if (lookup1_addr < PMP_CONFIG[2].addr)
-        lookup1_rwx = PMP_CONFIG[1].cfg.rwx;
-    else if (lookup1_addr < PMP_CONFIG[3].addr)
-        lookup1_rwx = PMP_CONFIG[2].cfg.rwx;
-    else if (lookup1_addr < PMP_CONFIG[4].addr)
-        lookup1_rwx = PMP_CONFIG[3].cfg.rwx;
-    else if (lookup1_addr < PMP_CONFIG[5].addr)
-        lookup1_rwx = PMP_CONFIG[4].cfg.rwx;
-    else if (lookup1_addr < PMP_CONFIG[6].addr)
-        lookup1_rwx = PMP_CONFIG[5].cfg.rwx;
-    else if (lookup1_addr == PMP_CONFIG[6].addr)
-        lookup1_rwx = PMP_CONFIG[6].cfg.rwx;
-    else if (lookup1_addr == PMP_CONFIG[7].addr)
-        lookup1_rwx = PMP_CONFIG[7].cfg.rwx;
+    priority if (lookup1_addr_i < PMP_CONFIG[1].addr)
+        lookup1_rwx_o = PMP_CONFIG[0].cfg.rwx;
+    else if (lookup1_addr_i < PMP_CONFIG[2].addr)
+        lookup1_rwx_o = PMP_CONFIG[1].cfg.rwx;
+    else if (lookup1_addr_i < PMP_CONFIG[3].addr)
+        lookup1_rwx_o = PMP_CONFIG[2].cfg.rwx;
+    else if (lookup1_addr_i < PMP_CONFIG[4].addr)
+        lookup1_rwx_o = PMP_CONFIG[3].cfg.rwx;
+    else if (lookup1_addr_i < PMP_CONFIG[5].addr)
+        lookup1_rwx_o = PMP_CONFIG[4].cfg.rwx;
+    else if (lookup1_addr_i < PMP_CONFIG[6].addr)
+        lookup1_rwx_o = PMP_CONFIG[5].cfg.rwx;
+    else if (lookup1_addr_i == PMP_CONFIG[6].addr)
+        lookup1_rwx_o = PMP_CONFIG[6].cfg.rwx;
+    else if (lookup1_addr_i == PMP_CONFIG[7].addr)
+        lookup1_rwx_o = PMP_CONFIG[7].cfg.rwx;
     else
-        lookup1_rwx = PMP_CONFIG[8].cfg.rwx;
+        lookup1_rwx_o = PMP_CONFIG[8].cfg.rwx;
 end
 
 always_comb begin
-    priority if (lookup2_addr < PMP_CONFIG[1].addr)
-        lookup2_rwx = PMP_CONFIG[0].cfg.rwx;
-    else if (lookup2_addr < PMP_CONFIG[2].addr)
-        lookup2_rwx = PMP_CONFIG[1].cfg.rwx;
-    else if (lookup2_addr < PMP_CONFIG[3].addr)
-        lookup2_rwx = PMP_CONFIG[2].cfg.rwx;
-    else if (lookup2_addr < PMP_CONFIG[4].addr)
-        lookup2_rwx = PMP_CONFIG[3].cfg.rwx;
-    else if (lookup2_addr < PMP_CONFIG[5].addr)
-        lookup2_rwx = PMP_CONFIG[4].cfg.rwx;
-    else if (lookup2_addr < PMP_CONFIG[6].addr)
-        lookup2_rwx = PMP_CONFIG[5].cfg.rwx;
-    else if (lookup2_addr == PMP_CONFIG[6].addr)
-        lookup2_rwx = PMP_CONFIG[6].cfg.rwx;
-    else if (lookup2_addr == PMP_CONFIG[7].addr)
-        lookup2_rwx = PMP_CONFIG[7].cfg.rwx;
+    priority if (lookup2_addr_i < PMP_CONFIG[1].addr)
+        lookup2_rwx_o = PMP_CONFIG[0].cfg.rwx;
+    else if (lookup2_addr_i < PMP_CONFIG[2].addr)
+        lookup2_rwx_o = PMP_CONFIG[1].cfg.rwx;
+    else if (lookup2_addr_i < PMP_CONFIG[3].addr)
+        lookup2_rwx_o = PMP_CONFIG[2].cfg.rwx;
+    else if (lookup2_addr_i < PMP_CONFIG[4].addr)
+        lookup2_rwx_o = PMP_CONFIG[3].cfg.rwx;
+    else if (lookup2_addr_i < PMP_CONFIG[5].addr)
+        lookup2_rwx_o = PMP_CONFIG[4].cfg.rwx;
+    else if (lookup2_addr_i < PMP_CONFIG[6].addr)
+        lookup2_rwx_o = PMP_CONFIG[5].cfg.rwx;
+    else if (lookup2_addr_i == PMP_CONFIG[6].addr)
+        lookup2_rwx_o = PMP_CONFIG[6].cfg.rwx;
+    else if (lookup2_addr_i == PMP_CONFIG[7].addr)
+        lookup2_rwx_o = PMP_CONFIG[7].cfg.rwx;
     else
-        lookup2_rwx = PMP_CONFIG[8].cfg.rwx;
+        lookup2_rwx_o = PMP_CONFIG[8].cfg.rwx;
 end
 
 
@@ -322,58 +322,62 @@ always_comb mip_o = '{
     default: '0
 };
 
+word_t read_data_r = '0;
+
 always_ff @(posedge clk_i) begin
     if (read_enable_i) begin
         unique case (read_addr_i)
         //                                  MXLEN=32           ZYXWVUTSRQPONMLKJIHGFEDCBA
-        CSR_MISA:          read_data_o <= { 2'b01,   4'b0, 26'b00000000000000000100000000 };
-        CSR_MVENDORID:     read_data_o <= 32'b0;
-        CSR_MARCHID:       read_data_o <= 32'b0;
-        CSR_MIMPID:        read_data_o <= 32'h0001;
-        CSR_MHARTID:       read_data_o <= 32'b0;
-        CSR_MSTATUS:       read_data_o <= mstatus_o;
-        CSR_MTVEC:         read_data_o <= mtvec_r;
-        CSR_MCOUNTINHIBIT: read_data_o <= mcountinhibit_r;
-        CSR_MSCRATCH:      read_data_o <= mscratch_r;
-        CSR_MCAUSE:        read_data_o <= mcause_r;
-        CSR_MEPC:          read_data_o <= mepc_r;
-        CSR_MTVAL:         read_data_o <= mtval_r;
-        CSR_MTVAL2:        read_data_o <= mtval2_r;
-        CSR_MTINST:        read_data_o <= mtinst_r;
-        CSR_MIP:           read_data_o <= mip_o;
-        CSR_MIE:           read_data_o <= mie_o;
+        CSR_MISA:          read_data_r <= { 2'b01,   4'b0, 26'b00000000000000000100000000 };
+        CSR_MVENDORID:     read_data_r <= 32'b0;
+        CSR_MARCHID:       read_data_r <= 32'b0;
+        CSR_MIMPID:        read_data_r <= 32'h0001;
+        CSR_MHARTID:       read_data_r <= 32'b0;
+        CSR_MSTATUS:       read_data_r <= mstatus_o;
+        CSR_MTVEC:         read_data_r <= mtvec_r;
+        CSR_MCOUNTINHIBIT: read_data_r <= mcountinhibit_r;
+        CSR_MSCRATCH:      read_data_r <= mscratch_r;
+        CSR_MCAUSE:        read_data_r <= mcause_r;
+        CSR_MEPC:          read_data_r <= mepc_r;
+        CSR_MTVAL:         read_data_r <= mtval_r;
+        CSR_MTVAL2:        read_data_r <= mtval2_r;
+        CSR_MTINST:        read_data_r <= mtinst_r;
+        CSR_MIP:           read_data_r <= mip_o;
+        CSR_MIE:           read_data_r <= mie_o;
         CSR_MCYCLE,
-        CSR_CYCLE:         read_data_o <= mcycle_r[31:0];
-        CSR_TIME:          read_data_o <= time_r[31:0];
+        CSR_CYCLE:         read_data_r <= mcycle_r[31:0];
+        CSR_TIME:          read_data_r <= time_r[31:0];
         CSR_MINSTRET,
-        CSR_INSTRET:       read_data_o <= minstret_r[31:0];
+        CSR_INSTRET:       read_data_r <= minstret_r[31:0];
         CSR_MCYCLEH,
-        CSR_CYCLEH:        read_data_o <= mcycle_r[63:32];
-        CSR_TIMEH:         read_data_o <= time_r[63:32];
+        CSR_CYCLEH:        read_data_r <= mcycle_r[63:32];
+        CSR_TIMEH:         read_data_r <= time_r[63:32];
         CSR_MINSTRETH,
-        CSR_INSTRETH:      read_data_o <= minstret_r[63:32];
-        (CSR_PMPCFG0+0):   read_data_o <= { PMP_CONFIG[3].cfg, PMP_CONFIG[2].cfg, PMP_CONFIG[1].cfg, PMP_CONFIG[0].cfg };
-        (CSR_PMPCFG0+1):   read_data_o <= { PMP_CONFIG[7].cfg, PMP_CONFIG[6].cfg, PMP_CONFIG[5].cfg, PMP_CONFIG[4].cfg };
-        (CSR_PMPCFG0+2):   read_data_o <= { 8'b0,              8'b0,              8'b0,              PMP_CONFIG[8].cfg };
-        (CSR_PMPADDR0+0):  read_data_o <= PMP_CONFIG[0].addr;
-        (CSR_PMPADDR0+1):  read_data_o <= PMP_CONFIG[1].addr;
-        (CSR_PMPADDR0+2):  read_data_o <= PMP_CONFIG[2].addr;
-        (CSR_PMPADDR0+3):  read_data_o <= PMP_CONFIG[3].addr;
-        (CSR_PMPADDR0+4):  read_data_o <= PMP_CONFIG[4].addr;
-        (CSR_PMPADDR0+5):  read_data_o <= PMP_CONFIG[5].addr;
-        (CSR_PMPADDR0+6):  read_data_o <= PMP_CONFIG[6].addr;
-        (CSR_PMPADDR0+7):  read_data_o <= PMP_CONFIG[7].addr;
-        (CSR_PMPADDR0+8):  read_data_o <= PMP_CONFIG[8].addr;
-        default:           read_data_o <= 32'b0;
+        CSR_INSTRETH:      read_data_r <= minstret_r[63:32];
+        (CSR_PMPCFG0+0):   read_data_r <= { PMP_CONFIG[3].cfg, PMP_CONFIG[2].cfg, PMP_CONFIG[1].cfg, PMP_CONFIG[0].cfg };
+        (CSR_PMPCFG0+1):   read_data_r <= { PMP_CONFIG[7].cfg, PMP_CONFIG[6].cfg, PMP_CONFIG[5].cfg, PMP_CONFIG[4].cfg };
+        (CSR_PMPCFG0+2):   read_data_r <= { 8'b0,              8'b0,              8'b0,              PMP_CONFIG[8].cfg };
+        (CSR_PMPADDR0+0):  read_data_r <= PMP_CONFIG[0].addr;
+        (CSR_PMPADDR0+1):  read_data_r <= PMP_CONFIG[1].addr;
+        (CSR_PMPADDR0+2):  read_data_r <= PMP_CONFIG[2].addr;
+        (CSR_PMPADDR0+3):  read_data_r <= PMP_CONFIG[3].addr;
+        (CSR_PMPADDR0+4):  read_data_r <= PMP_CONFIG[4].addr;
+        (CSR_PMPADDR0+5):  read_data_r <= PMP_CONFIG[5].addr;
+        (CSR_PMPADDR0+6):  read_data_r <= PMP_CONFIG[6].addr;
+        (CSR_PMPADDR0+7):  read_data_r <= PMP_CONFIG[7].addr;
+        (CSR_PMPADDR0+8):  read_data_r <= PMP_CONFIG[8].addr;
+        default:           read_data_r <= 32'b0;
         endcase
     end else begin
-        read_data_o <= 32'b0;
+        read_data_r <= 32'b0;
     end
 
     if (reset_i) begin
-        read_data_o <= 32'b0;
+        read_data_r <= 32'b0;
     end
 end
+
+assign read_data_o = read_data_r;
 
 
 //

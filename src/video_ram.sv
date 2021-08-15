@@ -11,13 +11,13 @@ module video_ram
         input  wire word_t       cpu_addr_i,
         input  wire word_t       cpu_write_data_i,
         input  wire logic [ 3:0] cpu_write_mask_i,
-        output      word_t       cpu_read_data_o,
+        output wire word_t       cpu_read_data_o,
 
         // vga controller interface
         input  wire logic        pxl_clk_i,
         input  wire logic        pxl_reset_i,
         input  wire logic [11:0] pxl_addr_i,
-        output      byte_t       pxl_data_o
+        output wire byte_t       pxl_data_o
     );
 
 `ifdef ENABLE_XILINX_PRIMITIVES
@@ -106,8 +106,12 @@ video_tdpram_inst (
 
 byte_t mem_r [0:4095] = '{ default: '0 };
 
+
+// cpu side
+word_t cpu_read_data_r = '0;
+
 always_ff @(posedge cpu_clk_i) begin
-    cpu_read_data_o <= cpu_reset_i ? 32'b0 : { mem_r[cpu_addr_i+3], mem_r[cpu_addr_i+2], mem_r[cpu_addr_i+1], mem_r[cpu_addr_i+0] };
+    cpu_read_data_r <= cpu_reset_i ? 32'b0 : { mem_r[cpu_addr_i+3], mem_r[cpu_addr_i+2], mem_r[cpu_addr_i+1], mem_r[cpu_addr_i+0] };
 
     if (cpu_write_mask_i[0]) mem_r[cpu_addr_i+0] <= cpu_write_data_i[ 7: 0];
     if (cpu_write_mask_i[1]) mem_r[cpu_addr_i+1] <= cpu_write_data_i[15: 8];
@@ -115,9 +119,17 @@ always_ff @(posedge cpu_clk_i) begin
     if (cpu_write_mask_i[3]) mem_r[cpu_addr_i+3] <= cpu_write_data_i[31:24];
 end
 
+assign cpu_read_data_o = cpu_read_data_r;
+
+
+// vga side
+byte_t pxl_data_r = '0;
+
 always_ff @(posedge pxl_clk_i) begin
-    pxl_data_o <= pxl_reset_i ? 8'b0 : mem_r[pxl_addr_i];
+    pxl_data_r <= pxl_reset_i ? 8'b0 : mem_r[pxl_addr_i];
 end
+
+assign pxl_data_o = pxl_data_r;
 
 `endif
 

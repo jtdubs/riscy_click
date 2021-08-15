@@ -38,13 +38,13 @@ module cpu_ma
         output      logic       empty_async_o,     // stage empty
 
         // pipeline output
-        output      word_t      pc_o,              // program counter
-        output      word_t      ir_o,              // instruction register
-        output      logic       load_o,            // is this a load instruction?
-        output      ma_size_t   ma_size_o,         // memory access size
-        output      logic [1:0] ma_alignment_o,    // memory access alignment
-        output      word_t      wb_data_o,         // write-back data
-        output      logic       wb_valid_o         // write-back valid
+        output wire word_t      pc_o,              // program counter
+        output wire word_t      ir_o,              // instruction register
+        output wire logic       load_o,            // is this a load instruction?
+        output wire ma_size_t   ma_size_o,         // memory access size
+        output wire logic [1:0] ma_alignment_o,    // memory access alignment
+        output wire word_t      wb_data_o,         // write-back data
+        output wire logic       wb_valid_o         // write-back valid
     );
 
 initial start_logging();
@@ -102,26 +102,42 @@ end
 // Pipeline Output
 //
 
+word_t      pc_r           = NOP_PC;
+word_t      ir_r           = NOP_IR;
+logic       load_r         = 1'b0;
+ma_size_t   ma_size_r      = NOP_MA_SIZE;
+logic [1:0] ma_alignment_r = 2'b00;
+word_t      wb_data_r      = 32'b0;
+logic       wb_valid_r     = NOP_WB_VALID;
+
 always_ff @(posedge clk_i) begin
-    pc_o           <= pc_i;
-    ir_o           <= ir_i;
-    load_o         <= (ma_mode_i == MA_LOAD);
-    ma_size_o      <= (ma_mode_i == MA_X) ? MA_SIZE_W : ma_size_i;
-    ma_alignment_o <= ma_addr_i[1:0];
-    wb_data_o      <= wb_data_i;
-    wb_valid_o     <= wb_valid_i;
+    pc_r           <= pc_i;
+    ir_r           <= ir_i;
+    load_r         <= (ma_mode_i == MA_LOAD);
+    ma_size_r      <= (ma_mode_i == MA_X) ? MA_SIZE_W : ma_size_i;
+    ma_alignment_r <= ma_addr_i[1:0];
+    wb_data_r      <= wb_data_i;
+    wb_valid_r     <= wb_valid_i;
 
     if (reset_i) begin
-        pc_o           <= NOP_PC;
-        ir_o           <= NOP_IR;
-        load_o         <= 1'b0;
-        ma_size_o      <= NOP_MA_SIZE;
-        ma_alignment_o <= 2'b00;
-        wb_data_o      <= 32'b0;
-        wb_valid_o     <= NOP_WB_VALID;
+        pc_r           <= NOP_PC;
+        ir_r           <= NOP_IR;
+        load_r         <= 1'b0;
+        ma_size_r      <= NOP_MA_SIZE;
+        ma_alignment_r <= 2'b00;
+        wb_data_r      <= 32'b0;
+        wb_valid_r     <= NOP_WB_VALID;
     end
 
-    `log_strobe(("{ \"stage\": \"MA\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"load\": \"%0d\", \"ma_size\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\" }", pc_o, ir_o, load_o, ma_size_o, wb_data_o, wb_valid_o));
+    `log_strobe(("{ \"stage\": \"MA\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"load\": \"%0d\", \"ma_size\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\" }", pc_r, ir_r, load_r, ma_size_r, wb_data_r, wb_valid_r));
 end
+
+assign pc_o           = pc_r;
+assign ir_o           = ir_r;
+assign load_o         = load_r;
+assign ma_size_o      = ma_size_r;
+assign ma_alignment_o = ma_alignment_r;
+assign wb_data_o      = wb_data_r;
+assign wb_valid_o     = wb_valid_r;
 
 endmodule
