@@ -65,8 +65,8 @@ module cpu_id
         output      ma_size_t  ma_size_o,           // memory access size
         output      word_t     ma_data_o,           // memory access data (for store operations)
         output      wb_src_t   wb_src_o,            // write-back source
-        output      word_t     wb_data_async_o,     // write-back data
-        output      logic      wb_valid_async_o     // write-back destination
+        output      word_t     wb_data_o,     // write-back data
+        output      logic      wb_valid_o     // write-back destination
     );
 
 initial start_logging();
@@ -77,22 +77,22 @@ final stop_logging();
 // Instruction Unpacking
 //
 
-opcode_t   opcode_w;
-regaddr_t  rs1_w;
-regaddr_t  rs2_w;
-regaddr_t  rd_w;
-funct3_t   f3_w;
-funct7_t   f7_w;
-funct12_t  f12_w;
-csr_t      csr_w;
-word_t     imm_i_w;
-word_t     imm_s_w;
-word_t     imm_b_w;
-word_t     imm_u_w;
-word_t     imm_j_w;
-word_t     uimm_w;
-alu_mode_t alu_mode3_w;
-alu_mode_t alu_mode7_w;
+opcode_t     opcode_w;
+regaddr_t    rs1_w;
+regaddr_t    rs2_w;
+regaddr_t    rd_w;
+funct3_t     f3_w;
+funct7_t     f7_w;
+funct12_t    f12_w;
+csr_t        csr_w;
+word_t       imm_i_w;
+word_t       imm_s_w;
+word_t       imm_b_w;
+word_t       imm_u_w;
+word_t       imm_j_w;
+word_t       uimm_w;
+alu_mode_t   alu_mode3_w;
+alu_mode_t   alu_mode7_w;
 logic [11:0] f12_bits_w;
 
 always_comb begin
@@ -123,29 +123,29 @@ always_comb begin
     casez ({f7_w, f3_w, opcode_w})
     //                                                 Halt  PC Mode      Alu Op #1     Alu Op #2     Alu Mode     Memory Mode  Memory Size       Writeback Source  RA Used?  RB Used?  CSR Used?  Priv?
     //                                                 ----  -----------  ------------  ------------  -----------  -----------  ----------------  ----------------  --------  --------  ---------  -----
-    { 7'b0?00000, F3_SRL_SRA, OP_IMM }:      cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, alu_mode7_w, MA_X,        MA_SIZE_W,        WB_SRC_ALU,       1'b1,     1'b0,     1'b0,      1'b0  };
-    { 7'b???????, 3'b???,     OP_IMM }:      cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, alu_mode3_w, MA_X,        MA_SIZE_W,        WB_SRC_ALU,       1'b1,     1'b0,     1'b0,      1'b0  };
-    { 7'b???????, 3'b???,     OP_LUI }:      cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_IMMU, ALU_OP2_RS2,  ALU_COPY1,   MA_X,        MA_SIZE_W,        WB_SRC_ALU,       1'b0,     1'b1,     1'b0,      1'b0  };
-    { 7'b???????, 3'b???,     OP_AUIPC }:    cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_IMMU, ALU_OP2_PC,   ALU_ADD,     MA_X,        MA_SIZE_W,        WB_SRC_ALU,       1'b0,     1'b0,     1'b0,      1'b0  };
-    { 7'b???????, 3'b???,     OP }:          cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_RS2,  alu_mode7_w, MA_X,        MA_SIZE_W,        WB_SRC_ALU,       1'b1,     1'b1,     1'b0,      1'b0  };
-    { 7'b???????, 3'b???,     OP_JAL }:      cw_w = '{ 1'b0, PC_JUMP_REL, ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_W,        WB_SRC_PC4,       1'b0,     1'b0,     1'b0,      1'b0  };
-    { 7'b???????, 3'b???,     OP_JALR }:     cw_w = '{ 1'b0, PC_JUMP_ABS, ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_W,        WB_SRC_PC4,       1'b1,     1'b0,     1'b0,      1'b0  };
-    { 7'b???????, F3_BEQ,     OP_BRANCH }:   cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b1,     1'b1,     1'b0,      1'b0  };
-    { 7'b???????, F3_BNE,     OP_BRANCH }:   cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b1,     1'b1,     1'b0,      1'b0  };
-    { 7'b???????, F3_BLT,     OP_BRANCH }:   cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b1,     1'b1,     1'b0,      1'b0  };
-    { 7'b???????, F3_BGE,     OP_BRANCH }:   cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b1,     1'b1,     1'b0,      1'b0  };
-    { 7'b???????, F3_BLTU,    OP_BRANCH }:   cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b1,     1'b1,     1'b0,      1'b0  };
-    { 7'b???????, F3_BGEU,    OP_BRANCH }:   cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b1,     1'b1,     1'b0,      1'b0  };
-    { 7'b???????, 3'b???,     OP_LOAD }:     cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, ALU_ADD,     MA_LOAD,     ma_size_t'(f3_w), WB_SRC_MEM,       1'b1,     1'b1,     1'b0,      1'b0  };
-    { 7'b???????, 3'b???,     OP_STORE }:    cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMS, ALU_ADD,     MA_STORE,    ma_size_t'(f3_w), WB_SRC_X,         1'b1,     1'b1,     1'b0,      1'b0  };
+    { 7'b0?00000, F3_SRL_SRA, OP_IMM      }: cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, alu_mode7_w, MA_X,        MA_SIZE_W,        WB_SRC_ALU,       1'b1,     1'b0,     1'b0,      1'b0  };
+    { 7'b???????, 3'b???,     OP_IMM      }: cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, alu_mode3_w, MA_X,        MA_SIZE_W,        WB_SRC_ALU,       1'b1,     1'b0,     1'b0,      1'b0  };
+    { 7'b???????, 3'b???,     OP_LUI      }: cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_IMMU, ALU_OP2_RS2,  ALU_COPY1,   MA_X,        MA_SIZE_W,        WB_SRC_ALU,       1'b0,     1'b1,     1'b0,      1'b0  };
+    { 7'b???????, 3'b???,     OP_AUIPC    }: cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_IMMU, ALU_OP2_PC,   ALU_ADD,     MA_X,        MA_SIZE_W,        WB_SRC_ALU,       1'b0,     1'b0,     1'b0,      1'b0  };
+    { 7'b???????, 3'b???,     OP          }: cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_RS2,  alu_mode7_w, MA_X,        MA_SIZE_W,        WB_SRC_ALU,       1'b1,     1'b1,     1'b0,      1'b0  };
+    { 7'b???????, 3'b???,     OP_JAL      }: cw_w = '{ 1'b0, PC_JUMP_REL, ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_W,        WB_SRC_PC4,       1'b0,     1'b0,     1'b0,      1'b0  };
+    { 7'b???????, 3'b???,     OP_JALR     }: cw_w = '{ 1'b0, PC_JUMP_ABS, ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_W,        WB_SRC_PC4,       1'b1,     1'b0,     1'b0,      1'b0  };
+    { 7'b???????, F3_BEQ,     OP_BRANCH   }: cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b1,     1'b1,     1'b0,      1'b0  };
+    { 7'b???????, F3_BNE,     OP_BRANCH   }: cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b1,     1'b1,     1'b0,      1'b0  };
+    { 7'b???????, F3_BLT,     OP_BRANCH   }: cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b1,     1'b1,     1'b0,      1'b0  };
+    { 7'b???????, F3_BGE,     OP_BRANCH   }: cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b1,     1'b1,     1'b0,      1'b0  };
+    { 7'b???????, F3_BLTU,    OP_BRANCH   }: cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b1,     1'b1,     1'b0,      1'b0  };
+    { 7'b???????, F3_BGEU,    OP_BRANCH   }: cw_w = '{ 1'b0, PC_BRANCH,   ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b1,     1'b1,     1'b0,      1'b0  };
+    { 7'b???????, 3'b???,     OP_LOAD     }: cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMI, ALU_ADD,     MA_LOAD,     ma_size_t'(f3_w), WB_SRC_MEM,       1'b1,     1'b1,     1'b0,      1'b0  };
+    { 7'b???????, 3'b???,     OP_STORE    }: cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_RS1,  ALU_OP2_IMMS, ALU_ADD,     MA_STORE,    ma_size_t'(f3_w), WB_SRC_X,         1'b1,     1'b1,     1'b0,      1'b0  };
     { 7'b???????, 3'b???,     OP_MISC_MEM }: cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b0,     1'b0,     1'b0,      1'b0  };
-    { 7'b???????, F3_PRIV,    OP_SYSTEM }:   cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b0,     1'b0,     1'b0,      1'b1  };
-    { 7'b???????, F3_CSRRW,   OP_SYSTEM }:   cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b1,     1'b0,     1'b1,      1'b0  };
-    { 7'b???????, F3_CSRRS,   OP_SYSTEM }:   cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b1,     1'b0,     1'b1,      1'b0  };
-    { 7'b???????, F3_CSRRC,   OP_SYSTEM }:   cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b1,     1'b0,     1'b1,      1'b0  };
-    { 7'b???????, F3_CSRRWI,  OP_SYSTEM }:   cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b0,     1'b0,     1'b1,      1'b0  };
-    { 7'b???????, F3_CSRRSI,  OP_SYSTEM }:   cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b0,     1'b0,     1'b1,      1'b0  };
-    { 7'b???????, F3_CSRRCI,  OP_SYSTEM }:   cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b0,     1'b0,     1'b1,      1'b0  };
+    { 7'b???????, F3_PRIV,    OP_SYSTEM   }: cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b0,     1'b0,     1'b0,      1'b1  };
+    { 7'b???????, F3_CSRRW,   OP_SYSTEM   }: cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b1,     1'b0,     1'b1,      1'b0  };
+    { 7'b???????, F3_CSRRS,   OP_SYSTEM   }: cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b1,     1'b0,     1'b1,      1'b0  };
+    { 7'b???????, F3_CSRRC,   OP_SYSTEM   }: cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b1,     1'b0,     1'b1,      1'b0  };
+    { 7'b???????, F3_CSRRWI,  OP_SYSTEM   }: cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b0,     1'b0,     1'b1,      1'b0  };
+    { 7'b???????, F3_CSRRSI,  OP_SYSTEM   }: cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b0,     1'b0,     1'b1,      1'b0  };
+    { 7'b???????, F3_CSRRCI,  OP_SYSTEM   }: cw_w = '{ 1'b0, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b0,     1'b0,     1'b1,      1'b0  };
     default:                                 cw_w = '{ 1'b1, PC_NEXT,     ALU_OP1_X,    ALU_OP2_X,    ALU_X,       MA_X,        MA_SIZE_X,        WB_SRC_X,         1'b0,     1'b0,     1'b0,      1'b0  };
     endcase
 end
@@ -166,10 +166,11 @@ end
 //
 
 always_comb begin
-    csr_mtrap_o   = 1'b0;
-    csr_mret_o    = 1'b0;
-    csr_mcause_o  = '{ 1'b0, 31'b0 };
     csr_trap_pc_o = pc_i;
+
+    csr_mtrap_o  = 1'b0;
+    csr_mret_o   = 1'b0;
+    csr_mcause_o = '{ 1'b0, 31'b0 };
 
     if (cw_w.priv) begin
         case (f12_w)
@@ -230,7 +231,6 @@ regfile regfile (
     .write_data_i       (wb_data_w),
     .write_enable_i     (wb_enable_w)
 );
-
 
 
 //
@@ -297,7 +297,7 @@ end
 
 
 //
-// CSR Access State Machine
+// CSR Read/Write State Machine
 //
 
 // states
@@ -456,53 +456,53 @@ end
 
 always_ff @(posedge clk_i) begin
     // if a bubble is needed
-    if (data_hazard_w || csr_flush_action_w || csr_wait_action_w || csr_read_action_w || csr_write_action_w) begin
+    if (data_hazard_w || !csr_idle_action_w) begin
         // output a NOP (addi x0, x0, 0)
-        pc_o             <= NOP_PC;
-        ir_o             <= NOP_IR;
-        alu_op1_o        <= 32'b0;
-        alu_op2_o        <= 32'b0;
-        alu_mode_o       <= NOP_ALU_MODE;
-        ma_mode_o        <= NOP_MA_MODE;
-        ma_size_o        <= NOP_MA_SIZE;
-        ma_data_o        <= 32'b0;
-        wb_src_o         <= NOP_WB_SRC;
-        wb_data_async_o  <= 32'b0;
-        wb_valid_async_o <= NOP_WB_VALID;
-        halt_o           <= 1'b0;
+        pc_o       <= NOP_PC;
+        ir_o       <= NOP_IR;
+        alu_op1_o  <= 32'b0;
+        alu_op2_o  <= 32'b0;
+        alu_mode_o <= NOP_ALU_MODE;
+        ma_mode_o  <= NOP_MA_MODE;
+        ma_size_o  <= NOP_MA_SIZE;
+        ma_data_o  <= 32'b0;
+        wb_src_o   <= NOP_WB_SRC;
+        wb_data_o  <= 32'b0;
+        wb_valid_o <= NOP_WB_VALID;
+        halt_o     <= 1'b0;
     end else begin
         // otherwise, output decoded control signals
-        pc_o             <= pc_i;
-        ir_o             <= ir_i;
-        alu_op1_o        <= alu_op1_w;
-        alu_op2_o        <= alu_op2_w;
-        alu_mode_o       <= cw_w.alu_mode;
-        ma_mode_o        <= cw_w.ma_mode;
-        ma_size_o        <= cw_w.ma_size;
-        ma_data_o        <= rb_bypassed_w;
-        wb_src_o         <= cw_w.wb_src;
-        wb_data_async_o  <= pc_i + 4;
-        wb_valid_async_o <= wb_valid_w;
-        halt_o           <= cw_w.halt;
+        pc_o       <= pc_i;
+        ir_o       <= ir_i;
+        alu_op1_o  <= alu_op1_w;
+        alu_op2_o  <= alu_op2_w;
+        alu_mode_o <= cw_w.alu_mode;
+        ma_mode_o  <= cw_w.ma_mode;
+        ma_size_o  <= cw_w.ma_size;
+        ma_data_o  <= rb_bypassed_w;
+        wb_src_o   <= cw_w.wb_src;
+        wb_data_o  <= pc_i + 4;
+        wb_valid_o <= wb_valid_w;
+        halt_o     <= cw_w.halt;
     end
 
     if (reset_i) begin
         // output a NOP (addi x0, x0, 0)
-        pc_o             <= NOP_PC;
-        ir_o             <= NOP_IR;
-        alu_op1_o        <= 32'b0;
-        alu_op2_o        <= 32'b0;
-        alu_mode_o       <= NOP_ALU_MODE;
-        ma_mode_o        <= NOP_MA_MODE;
-        ma_size_o        <= NOP_MA_SIZE;
-        ma_data_o        <= 32'b0;
-        wb_src_o         <= NOP_WB_SRC;
-        wb_data_async_o  <= 32'b0;
-        wb_valid_async_o <= NOP_WB_VALID;
-        halt_o           <= 1'b0;
+        pc_o       <= NOP_PC;
+        ir_o       <= NOP_IR;
+        alu_op1_o  <= 32'b0;
+        alu_op2_o  <= 32'b0;
+        alu_mode_o <= NOP_ALU_MODE;
+        ma_mode_o  <= NOP_MA_MODE;
+        ma_size_o  <= NOP_MA_SIZE;
+        ma_data_o  <= 32'b0;
+        wb_src_o   <= NOP_WB_SRC;
+        wb_data_o  <= 32'b0;
+        wb_valid_o <= NOP_WB_VALID;
+        halt_o     <= 1'b0;
     end
 
-    `log_strobe(("{ \"stage\": \"ID\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"alu_op1\": \"%0d\", \"alu_op2\": \"%0d\", \"alu_mode\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_dst\": \"%0d\", \"halt\": \"%0d\" }", pc_o, ir_o, alu_op1_o, alu_op2_o, alu_mode_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_async_o, wb_valid_async_o, halt_o));
+    `log_strobe(("{ \"stage\": \"ID\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"alu_op1\": \"%0d\", \"alu_op2\": \"%0d\", \"alu_mode\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_dst\": \"%0d\", \"halt\": \"%0d\" }", pc_o, ir_o, alu_op1_o, alu_op2_o, alu_mode_o, ma_mode_o, ma_size_o, ma_data_o, wb_src_o, wb_data_o, wb_valid_o, halt_o));
 
 end
 

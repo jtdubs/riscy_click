@@ -155,8 +155,8 @@ cpu_id cpu_id (
     .ma_size_o           (id_ma_size_w),
     .ma_data_o           (id_ma_data_w),
     .wb_src_o            (id_wb_src_w),
-    .wb_data_async_o     (id_wb_data_w),
-    .wb_valid_async_o    (id_wb_valid_w)
+    .wb_data_o           (id_wb_data_w),
+    .wb_valid_o          (id_wb_valid_w)
 );
 
 // Execute
