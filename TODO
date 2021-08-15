@@ -1,10 +1,8 @@
 TODO:
 - Verilog
-    - FIFO: can it be a parameterized type rather than a parameterized data length??
     - All the CSR siganls should be _async ??
-    - Change from always_comb to assign where appropriate, such as for output wires
     - Can I make the main ID casez unique?  It's close.
-    - Can I replace reset signal with default values  or all registers?
+    - Can I replace reset signal with default values or all registers?
         - Does that help timing and complexity?  If so, how much?
         - How can I initialize output registers?  Initial blocks fight with always_ff blocks.
 - Peripherals
