@@ -165,12 +165,12 @@ end
 // Privileged Operations
 //
 
+// traps and returns
 always_comb begin
     csr_trap_pc_o = pc_i;
-
-    csr_mtrap_o  = 1'b0;
-    csr_mret_o   = 1'b0;
-    csr_mcause_o = '{ 1'b0, 31'b0 };
+    csr_mtrap_o   = 1'b0;
+    csr_mret_o    = 1'b0;
+    csr_mcause_o  = '{ 1'b0, 31'b0 };
 
     if (cw_w.priv) begin
         case (f12_w)
@@ -189,12 +189,13 @@ always_comb begin
             begin
                 csr_mret_o   = 1'b1;
             end
-        F12_WFI:
-            begin
-            end
         endcase
     end
 end
+
+// wait for interrupt
+logic wfi_w;
+always_comb wfi_w = cw_w.priv && f12_w == F12_WFI && !csr_jmp_valid_i;
 
 
 //
@@ -436,7 +437,7 @@ always_comb begin
     end
 
     // we only want a new instruction if we aren't dealing with a data hazard, and we aren't going to be dealing with a CSR instruction
-    ready_async_o = ~data_hazard_w && (csr_state_w == CSR_STATE_IDLE);
+    ready_async_o = !data_hazard_w && (csr_state_w == CSR_STATE_IDLE) && !wfi_w;
 
     if (reset_i) begin
         // set initial signal values
@@ -456,7 +457,7 @@ end
 
 always_ff @(posedge clk_i) begin
     // if a bubble is needed
-    if (data_hazard_w || !csr_idle_action_w) begin
+    if (data_hazard_w || !csr_idle_action_w || wfi_w) begin
         // output a NOP (addi x0, x0, 0)
         pc_o       <= NOP_PC;
         ir_o       <= NOP_IR;
