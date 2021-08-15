@@ -177,11 +177,13 @@ always_comb begin
 end
 
 // traps and returns
+logic wfi_w;
 always_comb begin
     csr_trap_pc_o = pc_i;
     csr_mtrap_o   = 1'b0;
     csr_mret_o    = 1'b0;
     csr_mcause_o  = '{ 1'b0, 31'b0 };
+    wfi_w         = 1'b0;
 
     if (cw_w.priv) begin
         case (f12_w)
@@ -200,13 +202,14 @@ always_comb begin
             begin
                 csr_mret_o   = 1'b1;
             end
+        F12_WFI:
+            begin
+                csr_trap_pc_o = pc_i + 4;
+                wfi_w         = !csr_jmp_request_i;
+            end
         endcase
     end
 end
-
-// wait for interrupt
-logic wfi_w;
-always_comb wfi_w = cw_w.priv && f12_w == F12_WFI && !csr_jmp_request_i;
 
 
 //
