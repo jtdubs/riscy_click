@@ -87,7 +87,7 @@ always_ff @(posedge clk_i) begin
         dsp_anode_r[digit_w] <= 1'b0;
 
     if (reset_i)
-        dsp_anode_r = 8'hFF;
+        dsp_anode_r <= 8'hFF;
 end
 
 assign dsp_anode_o = dsp_anode_r;
@@ -121,7 +121,7 @@ always_ff @(posedge clk_i) begin
     end
 
     if (reset_i)
-        dsp_cathode_r = 8'hFF;
+        dsp_cathode_r <= 8'hFF;
 end
 
 assign dsp_cathode_o = dsp_cathode_r;
