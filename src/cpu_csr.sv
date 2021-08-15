@@ -126,36 +126,6 @@ end
 
 
 //
-// CSR Registers
-//
-
-// Counters
-dword_t  mcycle_r,   mcycle_w;            // cycle counter
-dword_t  minstret_r, minstret_w;          // retired instruction counter
-dword_t  time_r,     time_w;              // time counter
-
-// Non-Counters
-mtvec_t  mtvec_r         = MTVEC_DEFAULT;         // trap vector
-word_t   mcountinhibit_r = MCOUNTINHIBIT_DEFAULT; // counter inhibitor
-word_t   mscratch_r      = MSCRATCH_DEFAULT;      // scratch buffer
-word_t   mepc_r          = MEPC_DEFAULT;          // exception program counter
-mcause_t mcause_r        = MCAUSE_DEFAULT;        // exception cause
-word_t   mtval_r         = MTVAL_DEFAULT;         // exception val
-word_t   mtval2_r        = MTVAL2_DEFAULT;        // exception val2
-word_t   mtinst_r        = MTINST_DEFAULT;        // exception instruction
-logic    mstatus_mie_r   = 1'b0;                  // global interrupt enabled
-logic    mstatus_mie_w;                           // global interrupt enabled
-logic    mstatus_mpie_r  = 1'b0;                  // global interrupt enabled (prior)
-logic    mstatus_mpie_w;                          // global interrupt enabled (prior)
-logic    meip_w;                                  // machine external interrupt pending
-logic    mtip_r = 1'b0;                           // machine timer    interrupt pending
-logic    msip_r = 1'b0;                           // machine software interrupt pending
-logic    meie_r = 1'b0;                           // machine external interrupt enabled
-logic    mtie_r = 1'b0;                           // machine timer    interrupt enabled
-logic    msie_r = 1'b0;                           // machine software interrupt enabled
-
-
-//
 // Default Values
 //
 
@@ -179,6 +149,36 @@ localparam mcause_t MCAUSE_DEFAULT = '{
     is_interrupt:   1'b0,
     exception_code: 31'b0
 };
+
+
+//
+// CSR Registers
+//
+
+// Counters
+dword_t  mcycle_r,   mcycle_w;            // cycle counter
+dword_t  minstret_r, minstret_w;          // retired instruction counter
+dword_t  time_r,     time_w;              // time counter
+
+// Non-Counters
+mtvec_t  mtvec_r         = MTVEC_DEFAULT;         // trap vector
+word_t   mcountinhibit_r = MCOUNTINHIBIT_DEFAULT; // counter inhibitor
+word_t   mscratch_r      = MSCRATCH_DEFAULT;      // scratch buffer
+word_t   mepc_r          = MEPC_DEFAULT;          // exception program counter
+mcause_t mcause_r        = MCAUSE_DEFAULT;        // exception cause
+word_t   mtval_r         = MTVAL_DEFAULT;         // exception val
+word_t   mtval2_r        = MTVAL2_DEFAULT;        // exception val2
+word_t   mtinst_r        = MTINST_DEFAULT;        // exception instruction
+logic    mstatus_mie_r   = 1'b0;                  // global interrupt enabled
+logic    mstatus_mie_w;                           // global interrupt enabled
+logic    mstatus_mpie_r  = 1'b0;                  // global interrupt enabled (prior)
+logic    mstatus_mpie_w;                          // global interrupt enabled (prior)
+logic    meip_w;                                  // machine external interrupt pending
+logic    mtip_r          = 1'b0;                  // machine timer    interrupt pending
+logic    msip_r          = 1'b0;                  // machine software interrupt pending
+logic    meie_r          = 1'b0;                  // machine external interrupt enabled
+logic    mtie_r          = 1'b0;                  // machine timer    interrupt enabled
+logic    msie_r          = 1'b0;                  // machine software interrupt enabled
 
 
 //
