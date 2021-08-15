@@ -12,13 +12,13 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="46,566.700 ns"></ZoomStartTime>
-      <ZoomEndTime time="46,777.201 ns"></ZoomEndTime>
-      <Cursor1Time time="46,660.000 ns"></Cursor1Time>
+      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="342.234 ns"></ZoomEndTime>
+      <Cursor1Time time="0.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="307"></NameColumnWidth>
-      <ValueColumnWidth column_width="124"></ValueColumnWidth>
+      <ValueColumnWidth column_width="118"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="6" />
    <wvobject fp_name="/kbd_controller_tb/kbd/clk_i" type="logic">
@@ -53,11 +53,14 @@
          <obj_property name="ElementShortName">ps2_valid_w</obj_property>
          <obj_property name="ObjectShortName">ps2_valid_w</obj_property>
       </wvobject>
+      <wvobject fp_name="/kbd_controller_tb/kbd/interrupt_o" type="logic">
+         <obj_property name="ElementShortName">interrupt_o</obj_property>
+         <obj_property name="ObjectShortName">interrupt_o</obj_property>
+      </wvobject>
    </wvobject>
    <wvobject fp_name="group224" type="group">
       <obj_property name="label">RX</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/kbd_controller_tb/kbd/ps2_rx/ps2_clk_async_i" type="logic">
          <obj_property name="ElementShortName">ps2_clk_async_i</obj_property>
          <obj_property name="ObjectShortName">ps2_clk_async_i</obj_property>
@@ -138,6 +141,7 @@
    <wvobject fp_name="group263" type="group">
       <obj_property name="label">FIFO</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/kbd_controller_tb/kbd/fifo/write_data_i" type="array">
          <obj_property name="ElementShortName">write_data_i[8:0]</obj_property>
          <obj_property name="ObjectShortName">write_data_i[8:0]</obj_property>

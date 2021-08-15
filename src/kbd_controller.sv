@@ -20,7 +20,8 @@ module kbd_controller
         // Outputs
         input  wire logic        read_enable_i,
         output      kbd_event_t  read_data_o,
-        output      logic        read_valid_o
+        output      logic        read_valid_o,
+        output      logic        interrupt_o
     );
 
 
@@ -72,6 +73,8 @@ end
 
 
 // Buffer
+logic fifo_empty_w;
+
 fifo #(
     .DATA_WIDTH(9),
     .ADDR_WIDTH(5)
@@ -83,10 +86,13 @@ fifo #(
     .read_enable_i       (read_enable_i),
     .read_data_o         (read_data_o),
     .read_valid_o        (read_valid_o),
-    .fifo_empty_o        (),
+    .fifo_empty_o        (fifo_empty_w),
     .fifo_almost_empty_o (),
     .fifo_almost_full_o  (),
     .fifo_full_o         ()
 );
+
+// interrupt
+always_comb interrupt_o = !fifo_empty_w;
 
 endmodule

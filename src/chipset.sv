@@ -70,6 +70,7 @@ end
 kbd_event_t kbd_event_w;
 logic       kbd_valid_w;
 logic       kbd_read_enable_w;
+logic       kbd_interrupt_w;
 
 kbd_controller kbd (
     .clk_i            (cpu_clk_i),
@@ -78,7 +79,8 @@ kbd_controller kbd (
     .ps2_data_async_i (ps2_data_async_i),
     .read_enable_i    (kbd_read_enable_w),
     .read_data_o      (kbd_event_w),
-    .read_valid_o     (kbd_valid_w)
+    .read_valid_o     (kbd_valid_w),
+    .interrupt_o      (kbd_interrupt_w)
 );
 
 
@@ -231,7 +233,7 @@ end
 cpu cpu (
     .clk_i             (cpu_clk_i),
     .reset_i           (cpu_reset_r),
-    .interrupt_i       (kbd_valid_w),
+    .interrupt_i       (kbd_interrupt_w),
     .halt_o            (halt_o),
     .imem_addr_o       (imem_addr_w),
     .imem_data_i       (imem_data_w),

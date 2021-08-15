@@ -12,6 +12,7 @@ module kbd_controller_tb
      logic        read_enable_i;
 wire kbd_event_t  read_data_o;
 wire logic        read_valid_o;
+wire logic        interrupt_o;
 
 kbd_controller kbd (.*);
 
