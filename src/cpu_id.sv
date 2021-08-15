@@ -259,6 +259,7 @@ word_t rb_bypassed_w;
 
 // determine bypassed value for first register access
 always_comb begin
+    // TODO: is there any way to avoid these being priority if?
     priority if (rs1_w == 5'b00000)
         ra_bypassed_w = ra_w;
     else if (ex_wb_valid_async_i && rs1_w == ex_wb_addr_async_i)
@@ -273,6 +274,7 @@ end
 
 // Determine bypassed value for second register access
 always_comb begin
+    // TODO: is there any way to avoid these being priority if?
     priority if (rs2_w == 5'b00000)
         rb_bypassed_w = rb_w;
     else if (ex_wb_valid_async_i && rs2_w == ex_wb_addr_async_i)
