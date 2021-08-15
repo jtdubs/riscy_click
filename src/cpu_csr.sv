@@ -24,7 +24,8 @@ module cpu_csr
 
         // pipeline control
         output      word_t      jmp_addr_o,    // jump address (driven by interrupts/trap/etc.)
-        output      logic       jmp_valid_o,   // jump valid
+        output      logic       jmp_request_o, // jump request
+        input  wire logic       jmp_accept_i,  // accept jump request
 
         // CSR read port
         input  wire csr_t       read_addr_i,
@@ -201,32 +202,51 @@ always_comb begin
     meip_w = interrupt_i;
 end
 
-// trap detection
-logic take_interrupt_w;
-logic trap_w;
-
+// interrupt enablement
+logic interrupt_w;
 always_comb begin
-    // take interrupt if interrupt is pending, enabled, and globally enabled
-    take_interrupt_w = meip_w && meie_r && mstatus_mie_r;
-
-    // trap if trap requested, or interrupt occuring
-    trap_w = take_interrupt_w || mtrap_i;
+    // interrupt if interrupt is pending, enabled, and globally enabled
+    interrupt_w = meip_w && meie_r && mstatus_mie_r;
 end
+
+// jump requests
+always_comb begin
+    // request jump on interrupt, mtrap or mret
+    jmp_request_o = interrupt_w || mtrap_i || mret_i;
+
+    if (mtrap_i || interrupt_w) begin
+        // mtrap and interrtupt jump to mtvec
+        case (mtvec_r.mode)
+        MTVEC_MODE_DIRECT:
+            jmp_addr_o = { mtvec_r.base, 2'b00 };
+        MTVEC_MODE_VECTORED:
+            if (interrupt_i)
+                jmp_addr_o = { mtvec_r.base + INT_M_EXTERNAL[29:0], 2'b00 };
+            else
+                jmp_addr_o = { mtvec_r.base,                        2'b00 };
+        endcase
+    end else if (mret_i) begin
+        // mret jumps to mepc
+        jmp_addr_o = mepc_r;
+    end
+end
+
+always_ff @(posedge clk_i) begin
+    `log_strobe(("{ \"stage\": \"CSR\", \"pc\": \"%0d\", \"jmp_addr\": \"%0d\", \"jmp_request\": \"%0d\", \"jmp_accept\": \"%0d\", \"interrupt\": \"%0d\" }", trap_pc_i, jmp_addr_o, jmp_request_o, jmp_accept_i, interrupt_i));
+end
+
 
 // manage intererupt enablement stack
 always_ff @(posedge clk_i) begin
     if (write_enable_i && write_addr_i == CSR_MSTATUS)
         // respect CSR write
         { mstatus_mie_r, mstatus_mpie_r } <= { mstatus_i.mie, mstatus_i.mpie };
-    else if (trap_w)
-        // on trap, disable interrupts and save previous value
+    else if (jmp_accept_i && (interrupt_w || mtrap_i))
+        // on accepted mtrap or interrupt, disable interrupts and save previous value
         { mstatus_mie_r, mstatus_mpie_r } <= { 1'b0,           mstatus_mie_r  };
-    else if (mret_i)
-        // on ret, restore previous value
+    else if (jmp_accept_i && mret_i)
+        // on accepted mret, restore previous value
         { mstatus_mie_r, mstatus_mpie_r } <= { mstatus_mpie_r, 1'b1           };
-    else
-        // otherwise, no change
-        { mstatus_mie_r, mstatus_mpie_r } <= { mstatus_mie_r,  mstatus_mpie_r };
 
     if (reset_i)
         // reset to interrupts disabled
@@ -235,13 +255,13 @@ end
 
 // update trap metadata
 always_ff @(posedge clk_i) begin
-    if (mtrap_i)
+    if (jmp_accept_i && mtrap_i)
         // trap causes are provided
         mcause_r <= mcause_i;
-    else if (take_interrupt_w)
+    else if (jmp_accept_i && interrupt_w)
         // interrupt cause is always the same
         mcause_r <= { 1'b1, INT_M_EXTERNAL };
-    else if (mret_i)
+    else if (jmp_accept_i && mret_i)
         // on return, cause is set back to default
         mcause_r <= MCAUSE_DEFAULT;
 
@@ -256,41 +276,18 @@ end
 // execption program counter
 always_ff @(posedge clk_i) begin
     if (write_enable_i && write_addr_i == CSR_MEPC)
-        // respect CSR write
+        // respect CSR writes
         mepc_r <= write_data_i;
-    else if (trap_w)
-        // on trap, disable interrupts and save previous value
+    else if (jmp_accept_i && (interrupt_w || mtrap_i))
+        // on accepted mtrap or interrupt, disable interrupts and save previous value
         mepc_r <= trap_pc_i;
-    else if (mret_i)
-        // on ret, restore previous value
+    else if (jmp_accept_i && mret_i)
+        // on accepted mret, restore previous value
         mepc_r <= MEPC_DEFAULT;
 
     if (reset_i)
         // reset to interrupts disabled
         mepc_r <= MEPC_DEFAULT;
-end
-
-// jump outputs
-always_comb begin
-    jmp_valid_o = trap_w || mret_i;
-
-    if (trap_w) begin
-        case (mtvec_r.mode)
-        MTVEC_MODE_DIRECT:
-            jmp_addr_o = { mtvec_r.base, 2'b00 };
-        MTVEC_MODE_VECTORED:
-            if (interrupt_i)
-                jmp_addr_o = { mtvec_r.base + INT_M_EXTERNAL[29:0], 2'b00 };
-            else
-                jmp_addr_o = { mtvec_r.base,                        2'b00 };
-        endcase
-    end else if (mret_i) begin
-        jmp_addr_o = mepc_r;
-    end else begin
-        jmp_addr_o  = 32'b0;
-    end
-
-    `log_display(("{ \"stage\": \"CSR\", \"pc\": \"%0d\", \"jmp_addr\": \"%0d\", \"jmp_valid\": \"%0d\", \"interrupt\": \"%0d\" }", trap_pc_i, jmp_addr_o, jmp_valid_o, interrupt_i));
 end
 
 

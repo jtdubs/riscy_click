@@ -82,7 +82,8 @@ wire mcause_t    csr_mcause_w;
 wire logic       csr_mtrap_w;
 wire logic       csr_mret_w;
 wire word_t      csr_jmp_addr_w;
-wire logic       csr_jmp_valid_w;
+wire logic       csr_jmp_request_w;
+wire logic       csr_jmp_accept_w;
 wire csr_t       csr_read_addr_w;
 wire logic       csr_read_enable_w;
 wire word_t      csr_read_data_w;
@@ -138,7 +139,8 @@ cpu_id cpu_id (
     .csr_mret_o          (csr_mret_w),
     .csr_mcause_o        (csr_mcause_w),
     .csr_jmp_addr_i      (csr_jmp_addr_w),
-    .csr_jmp_valid_i     (csr_jmp_valid_w),
+    .csr_jmp_request_i   (csr_jmp_request_w),
+    .csr_jmp_accept_o    (csr_jmp_accept_w),
     .csr_read_addr_o     (csr_read_addr_w),
     .csr_read_enable_o   (csr_read_enable_w),
     .csr_read_data_i     (csr_read_data_w),
@@ -253,7 +255,8 @@ cpu_csr csr (
     .mtrap_i             (csr_mtrap_w),
     .mret_i              (csr_mret_w),
     .jmp_addr_o          (csr_jmp_addr_w),
-    .jmp_valid_o         (csr_jmp_valid_w),
+    .jmp_request_o       (csr_jmp_request_w),
+    .jmp_accept_i        (csr_jmp_accept_w),
     .read_addr_i         (csr_read_addr_w),
     .read_enable_i       (csr_read_enable_w),
     .read_data_o         (csr_read_data_w),

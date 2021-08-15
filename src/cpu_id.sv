@@ -47,7 +47,10 @@ module cpu_id
         output      logic      csr_mtrap_o,         // trap needed
         output      logic      csr_mret_o,          // trap return needed
         input  wire word_t     csr_jmp_addr_i,      // trap addr to jump to
-        input  wire logic      csr_jmp_valid_i,     // trap addr valid
+        input  wire logic      csr_jmp_request_i,   // trap addr valid
+        output      logic      csr_jmp_accept_o,    // TODO
+
+
         output      csr_t      csr_read_addr_o,     // csr read address
         output      logic      csr_read_enable_o,   // csr read enable
         input  wire word_t     csr_read_data_i,     // csr read data
@@ -165,6 +168,14 @@ end
 // Privileged Operations
 //
 
+// gating jump requests
+always_comb begin
+    // TODO: if we are jump going to jump again, we don't need to wait for IF
+    // to catch up.  we just need to know the PC value so it can get
+    // returned to later
+    csr_jmp_accept_o = csr_jmp_request_i && (pc_i != NOP_PC);
+end
+
 // traps and returns
 always_comb begin
     csr_trap_pc_o = pc_i;
@@ -195,7 +206,7 @@ end
 
 // wait for interrupt
 logic wfi_w;
-always_comb wfi_w = cw_w.priv && f12_w == F12_WFI && !csr_jmp_valid_i;
+always_comb wfi_w = cw_w.priv && f12_w == F12_WFI && !csr_jmp_request_i;
 
 
 //
@@ -408,7 +419,7 @@ end
 
 always_comb begin
     // jump signals
-    if (csr_jmp_valid_i) begin
+    if (csr_jmp_request_i && csr_jmp_accept_o) begin
         jmp_valid_async_o = 1'b1;
         jmp_addr_async_o  = csr_jmp_addr_i;
     end else begin
