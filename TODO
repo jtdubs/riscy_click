@@ -1,4 +1,7 @@
 TODO:
+- Verilator
+    - Pull out Verilator folder that builds a static library
+    - Sim and Trace can link it into their own projects
 - CSR
     - Consider pulling CSR state machine out into it's own module to simplify ID
 - Data Bus

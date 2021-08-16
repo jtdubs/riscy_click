@@ -2,6 +2,14 @@
 
 A barely tested, barely functional, toy computer being developed as a hobby project to gain better understanding of RISC-V, FPGA's, etc.
 
+## Dependencies
+
+- [IMGUI](https://github.com/ocornut/imgui) for the simulator's UI.
+- [Freetype](https://www.freetype.org/) for font rendering.
+- [RISC-V GNU Toolchain](https://github.com/riscv/riscv-gnu-toolchain) for BIOS compilation.
+- [Verilator](https://www.veripool.org/verilator/) for the simulator.
+- [Vivado](https://www.xilinx.com/products/design-tools/vivado.html) for FPGA support.
+
 ## Folder Structure
 
 `compliance/`
@@ -56,4 +64,3 @@ Testbench SystemVerilog code.
 - `*_async_o` - Unregistered output port (varies during clock cycle based on input)
 - `*_r` - Registers
 - `*_w` - Wires / Combinational Logic
-
