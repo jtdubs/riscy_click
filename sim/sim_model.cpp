@@ -38,7 +38,7 @@ sim_model_t* sim_create(int argc, char **argv) {
 
     // Create Chipset
     model->chipset = new Vchipset;
-    model->chipset->switch_async_i = 0x0000;
+    model->chipset->switch_i = 0x0000;
     model->chipset->cpu_clk_i = 1;
     model->chipset->pxl_clk_i = 1;
 
@@ -84,10 +84,10 @@ void sim_tick(sim_model_t* model) {
     if (model->ncycles % 2 == 0) { dut->pxl_clk_i ^= 1; }
 
     // update switches
-    uint16_t switch_async_i = 0;
+    uint16_t switch_i = 0;
     for (int i=0; i<16; i++)
-        switch_async_i |= model->switches[15-i] << i;
-    dut->switch_async_i = switch_async_i;
+        switch_i |= model->switches[15-i] << i;
+    dut->switch_i = switch_i;
 
     // update seven segment display
     seg_tick(model->segments, dut->dsp_anode_o, dut->dsp_cathode_o);
@@ -98,7 +98,7 @@ void sim_tick(sim_model_t* model) {
 
     // update PS2 every 100 cycles (100x faster than a real PS/2 port....)
     if (model->ncycles % 100 == 0)
-        key_tick(model->keyboard, &dut->ps2_clk_async_i, &dut->ps2_data_async_i);
+        key_tick(model->keyboard, &dut->ps2_clk_i, &dut->ps2_data_i);
 }
 
 void sim_draw(sim_model_t* model, float secondsElapsed) {

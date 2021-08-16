@@ -10,7 +10,7 @@ module decoder
     import common::*;
     import logging::*;
     (
-        input  wire word_t         ir_async_i, // instruction register
+        input  wire word_t         ir_i,       // instruction register
         output      control_word_t cw_async_o  // control word
     );
 
@@ -31,7 +31,7 @@ funct7_t     f7_w;
 alu_mode_t   alu_mode_w;
 
 always_comb begin
-    { f7_w, rs2_w, rs1_w, f3_w, rd_w, opcode_w } = ir_async_i;
+    { f7_w, rs2_w, rs1_w, f3_w, rd_w, opcode_w } = ir_i;
     alu_mode_w = alu_mode_t'({ f7_w[5], f3_w });
 end
 

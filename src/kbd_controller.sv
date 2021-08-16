@@ -10,11 +10,11 @@ module kbd_controller
     import common::*;
     (
         // Clocks
-        input  wire logic        clk_i,            // Clock
+        input  wire logic        clk_i,      // Clock
 
         // Inputs
-        input  wire logic        ps2_clk_async_i,  // PS2 HID clock (async)
-        input  wire logic        ps2_data_async_i, // PS2 HID data (async)
+        input  wire logic        ps2_clk_i,  // PS2 HID clock
+        input  wire logic        ps2_data_i, // PS2 HID data
 
         // Outputs
         input  wire logic        read_enable_i,
@@ -30,11 +30,11 @@ byte_t      ps2_data_w;
 logic       ps2_valid_w;
 
 ps2_rx ps2_rx (
-    .clk_i            (clk_i),
-    .ps2_clk_async_i  (ps2_clk_async_i),
-    .ps2_data_async_i (ps2_data_async_i),
-    .data_o           (ps2_data_w),
-    .valid_o          (ps2_valid_w)
+    .clk_i      (clk_i),
+    .ps2_clk_i  (ps2_clk_i),
+    .ps2_data_i (ps2_data_i),
+    .data_o     (ps2_data_w),
+    .valid_o    (ps2_valid_w)
 );
 
 
@@ -43,11 +43,11 @@ ps2_kbd_event_t ps2_kbd_event_w;
 logic           ps2_kbd_valid_w;
 
 ps2_kbd ps2_kbd (
-    .clk_i            (clk_i),
-    .data_i           (ps2_data_w),
-    .valid_i          (ps2_valid_w),
-    .event_o          (ps2_kbd_event_w),
-    .valid_o          (ps2_kbd_valid_w)
+    .clk_i      (clk_i),
+    .data_i     (ps2_data_w),
+    .valid_i    (ps2_valid_w),
+    .event_o    (ps2_kbd_event_w),
+    .valid_o    (ps2_kbd_valid_w)
 );
 
 

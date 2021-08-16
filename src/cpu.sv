@@ -31,9 +31,9 @@ module cpu
 
 wire word_t      if_pc_w;
 wire word_t      if_ir_w;
-wire word_t      id_jmp_addr_async_w;
-wire logic       id_jmp_valid_async_w;
-wire logic       id_ready_async_w;
+wire word_t      id_jmp_addr_w;
+wire logic       id_jmp_valid_w;
+wire logic       id_ready_w;
 wire word_t      id_pc_w;
 wire word_t      id_ir_w;
 wire word_t      id_alu_op1_w;
@@ -54,16 +54,16 @@ wire word_t      ex_ma_data_w;
 wire wb_src_t    ex_wb_src_w;
 wire word_t      ex_wb_data_w;
 wire logic       ex_wb_valid_w;
-wire regaddr_t   ex_wb_addr_async_w;
-wire word_t      ex_wb_data_async_w;
-wire logic       ex_wb_ready_async_w;
-wire logic       ex_wb_valid_async_w;
-wire logic       ex_empty_async_w;
-wire regaddr_t   ma_wb_addr_async_w;
-wire word_t      ma_wb_data_async_w;
-wire logic       ma_wb_ready_async_w;
-wire logic       ma_wb_valid_async_w;
-wire logic       ma_empty_async_w;
+wire regaddr_t   ex_wb_addr_w;
+wire word_t      ex_wb_data_w;
+wire logic       ex_wb_ready_w;
+wire logic       ex_wb_valid_w;
+wire logic       ex_empty_w;
+wire regaddr_t   ma_wb_addr_w;
+wire word_t      ma_wb_data_w;
+wire logic       ma_wb_ready_w;
+wire logic       ma_wb_valid_w;
+wire logic       ma_empty_w;
 wire word_t      ma_pc_w;
 wire word_t      ma_ir_w;
 wire logic       ma_load_w;
@@ -71,10 +71,10 @@ wire logic [1:0] ma_alignment_w;
 wire word_t      ma_wb_data_w;
 wire logic       ma_wb_valid_w;
 wire ma_size_t   ma_size_w;
-wire regaddr_t   wb_addr_async_w;
-wire word_t      wb_data_async_w;
-wire logic       wb_valid_async_w;
-wire logic       wb_empty_async_w;
+wire regaddr_t   wb_addr_w;
+wire word_t      wb_data_w;
+wire logic       wb_valid_w;
+wire logic       wb_empty_w;
 wire logic       csr_retired_w;
 wire word_t      csr_trap_pc_w;
 wire mcause_t    csr_mcause_w;
@@ -101,9 +101,9 @@ cpu_if cpu_if (
     .halt_i              (halt_o),
     .imem_addr_o         (imem_addr_o),
     .imem_data_i         (imem_data_i),
-    .jmp_addr_async_i    (id_jmp_addr_async_w),
-    .jmp_valid_async_i   (id_jmp_valid_async_w),
-    .ready_async_i       (id_ready_async_w),
+    .jmp_addr_i          (id_jmp_addr_w),
+    .jmp_valid_i         (id_jmp_valid_w),
+    .ready_i             (id_ready_w),
     .pc_o                (if_pc_w),
     .ir_o                (if_ir_w)
 );
@@ -113,23 +113,23 @@ cpu_id cpu_id (
     .clk_i               (clk_i),
     .pc_i                (if_pc_w),
     .ir_i                (if_ir_w),
-    .ex_wb_addr_async_i  (ex_wb_addr_async_w),
-    .ex_wb_data_async_i  (ex_wb_data_async_w),
-    .ex_wb_ready_async_i (ex_wb_ready_async_w),
-    .ex_wb_valid_async_i (ex_wb_valid_async_w),
-    .ex_empty_async_i    (ex_empty_async_w),
-    .ma_wb_addr_async_i  (ma_wb_addr_async_w),
-    .ma_wb_data_async_i  (ma_wb_data_async_w),
-    .ma_wb_ready_async_i (ma_wb_ready_async_w),
-    .ma_wb_valid_async_i (ma_wb_valid_async_w),
-    .ma_empty_async_i    (ma_empty_async_w),
-    .wb_addr_async_i     (wb_addr_async_w),
-    .wb_data_async_i     (wb_data_async_w),
-    .wb_valid_async_i    (wb_valid_async_w),
-    .wb_empty_async_i    (wb_empty_async_w),
-    .ready_async_o       (id_ready_async_w),
-    .jmp_addr_async_o    (id_jmp_addr_async_w),
-    .jmp_valid_async_o   (id_jmp_valid_async_w),
+    .ex_wb_addr_i        (ex_wb_addr_w),
+    .ex_wb_data_i        (ex_wb_data_w),
+    .ex_wb_ready_i       (ex_wb_ready_w),
+    .ex_wb_valid_i       (ex_wb_valid_w),
+    .ex_empty_i          (ex_empty_w),
+    .ma_wb_addr_i        (ma_wb_addr_w),
+    .ma_wb_data_i        (ma_wb_data_w),
+    .ma_wb_ready_i       (ma_wb_ready_w),
+    .ma_wb_valid_i       (ma_wb_valid_w),
+    .ma_empty_i          (ma_empty_w),
+    .wb_addr_i           (wb_addr_w),
+    .wb_data_i           (wb_data_w),
+    .wb_valid_i          (wb_valid_w),
+    .wb_empty_i          (wb_empty_w),
+    .ready_async_o       (id_ready_w),
+    .jmp_addr_async_o    (id_jmp_addr_w),
+    .jmp_valid_async_o   (id_jmp_valid_w),
     .csr_retired_o       (csr_retired_w),
     .csr_trap_pc_o       (csr_trap_pc_w),
     .csr_mtrap_o         (csr_mtrap_w),
@@ -172,11 +172,11 @@ cpu_ex cpu_ex (
     .wb_src_i            (id_wb_src_w),
     .wb_data_i           (id_wb_data_w),
     .wb_valid_i          (id_wb_valid_w),
-    .wb_addr_async_o     (ex_wb_addr_async_w),
-    .wb_data_async_o     (ex_wb_data_async_w),
-    .wb_ready_async_o    (ex_wb_ready_async_w),
-    .wb_valid_async_o    (ex_wb_valid_async_w),
-    .empty_async_o       (ex_empty_async_w),
+    .wb_addr_async_o     (ex_wb_addr_w),
+    .wb_data_async_o     (ex_wb_data_w),
+    .wb_ready_async_o    (ex_wb_ready_w),
+    .wb_valid_async_o    (ex_wb_valid_w),
+    .empty_async_o       (ex_empty_w),
     .pc_o                (ex_pc_w),
     .ir_o                (ex_ir_w),
     .ma_addr_o           (ex_ma_addr_w),
@@ -203,11 +203,11 @@ cpu_ma cpu_ma (
     .wb_src_i            (ex_wb_src_w),
     .wb_data_i           (ex_wb_data_w),
     .wb_valid_i          (ex_wb_valid_w),
-    .wb_addr_async_o     (ma_wb_addr_async_w),
-    .wb_data_async_o     (ma_wb_data_async_w),
-    .wb_ready_async_o    (ma_wb_ready_async_w),
-    .wb_valid_async_o    (ma_wb_valid_async_w),
-    .empty_async_o       (ma_empty_async_w),
+    .wb_addr_async_o     (ma_wb_addr_w),
+    .wb_data_async_o     (ma_wb_data_w),
+    .wb_ready_async_o    (ma_wb_ready_w),
+    .wb_valid_async_o    (ma_wb_valid_w),
+    .empty_async_o       (ma_empty_w),
     .pc_o                (ma_pc_w),
     .ir_o                (ma_ir_w),
     .load_o              (ma_load_w),
@@ -228,10 +228,10 @@ cpu_wb cpu_wb (
     .ma_alignment_i      (ma_alignment_w),
     .wb_data_i           (ma_wb_data_w),
     .wb_valid_i          (ma_wb_valid_w),
-    .wb_addr_async_o     (wb_addr_async_w),
-    .wb_data_async_o     (wb_data_async_w),
-    .wb_valid_async_o    (wb_valid_async_w),
-    .empty_async_o       (wb_empty_async_w)
+    .wb_addr_async_o     (wb_addr_w),
+    .wb_data_async_o     (wb_data_w),
+    .wb_valid_async_o    (wb_valid_w),
+    .empty_async_o       (wb_empty_w)
 );
 
 
@@ -247,8 +247,8 @@ cpu_csr csr (
     .mcause_i            (csr_mcause_w),
     .mtrap_i             (csr_mtrap_w),
     .mret_i              (csr_mret_w),
-    .jmp_addr_o          (csr_jmp_addr_w),
-    .jmp_request_o       (csr_jmp_request_w),
+    .jmp_addr_async_o    (csr_jmp_addr_w),
+    .jmp_request_async_o (csr_jmp_request_w),
     .jmp_accept_i        (csr_jmp_accept_w),
     .read_addr_i         (csr_read_addr_w),
     .read_enable_i       (csr_read_enable_w),
@@ -257,9 +257,9 @@ cpu_csr csr (
     .write_data_i        (csr_write_data_w),
     .write_enable_i      (csr_write_enable_w),
     .lookup1_addr_i      (32'b0),
-    .lookup1_rwx_o       (),
+    .lookup1_rwx_async_o (),
     .lookup2_addr_i      (32'b0),
-    .lookup2_rwx_o       ()
+    .lookup2_rwx_async_o ()
 );
 
 endmodule

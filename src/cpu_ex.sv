@@ -55,9 +55,9 @@ final stop_logging();
 wire word_t alu_result_w;
 
 alu alu (
-    .alu_mode_async_i   (alu_mode_i),
-    .alu_op1_async_i    (alu_op1_i),
-    .alu_op2_async_i    (alu_op2_i),
+    .alu_mode_i         (alu_mode_i),
+    .alu_op1_i          (alu_op1_i),
+    .alu_op2_i          (alu_op2_i),
     .alu_result_async_o (alu_result_w)
 );
 

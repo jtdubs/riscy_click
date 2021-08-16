@@ -11,20 +11,20 @@ module cpu_csr
     import logging::*;
     (
         // cpu signals
-        input  wire logic       clk_i,         // clock
+        input  wire logic       clk_i,               // clock
 
         // control port
-        input  wire logic       retired_i,     // did an instruction retire this cycle
-        input  wire logic       interrupt_i,   // external interrupt indicator
-        input  wire word_t      trap_pc_i,     // trap location
-        input  wire mcause_t    mcause_i,      // trap cause
-        input  wire logic       mtrap_i,       // trap valid
-        input  wire logic       mret_i,        // ret valid
+        input  wire logic       retired_i,           // did an instruction retire this cycle
+        input  wire logic       interrupt_i,         // external interrupt indicator
+        input  wire word_t      trap_pc_i,           // trap location
+        input  wire mcause_t    mcause_i,            // trap cause
+        input  wire logic       mtrap_i,             // trap valid
+        input  wire logic       mret_i,              // ret valid
 
         // pipeline control
-        output      word_t      jmp_addr_o,    // jump address (driven by interrupts/trap/etc.)
-        output      logic       jmp_request_o, // jump request
-        input  wire logic       jmp_accept_i,  // accept jump request
+        output      word_t      jmp_addr_async_o,    // jump address (driven by interrupts/trap/etc.)
+        output      logic       jmp_request_async_o, // jump request
+        input  wire logic       jmp_accept_i,        // accept jump request
 
         // CSR read port
         input  wire csr_t       read_addr_i,
@@ -38,11 +38,11 @@ module cpu_csr
 
         // PMP lookup port 1
         input  wire word_t      lookup1_addr_i,
-        output      logic [2:0] lookup1_rwx_o,
+        output      logic [2:0] lookup1_rwx_async_o,
 
         // PMP lookup port 2
         input  wire word_t      lookup2_addr_i,
-        output      logic [2:0] lookup2_rwx_o
+        output      logic [2:0] lookup2_rwx_async_o
     );
 
 initial start_logging();
@@ -83,44 +83,44 @@ localparam pmp_entry_t [0:8] PMP_CONFIG = '{
 
 always_comb begin
     priority if (lookup1_addr_i < PMP_CONFIG[1].addr)
-        lookup1_rwx_o = PMP_CONFIG[0].cfg.rwx;
+        lookup1_rwx_async_o = PMP_CONFIG[0].cfg.rwx;
     else if (lookup1_addr_i < PMP_CONFIG[2].addr)
-        lookup1_rwx_o = PMP_CONFIG[1].cfg.rwx;
+        lookup1_rwx_async_o = PMP_CONFIG[1].cfg.rwx;
     else if (lookup1_addr_i < PMP_CONFIG[3].addr)
-        lookup1_rwx_o = PMP_CONFIG[2].cfg.rwx;
+        lookup1_rwx_async_o = PMP_CONFIG[2].cfg.rwx;
     else if (lookup1_addr_i < PMP_CONFIG[4].addr)
-        lookup1_rwx_o = PMP_CONFIG[3].cfg.rwx;
+        lookup1_rwx_async_o = PMP_CONFIG[3].cfg.rwx;
     else if (lookup1_addr_i < PMP_CONFIG[5].addr)
-        lookup1_rwx_o = PMP_CONFIG[4].cfg.rwx;
+        lookup1_rwx_async_o = PMP_CONFIG[4].cfg.rwx;
     else if (lookup1_addr_i < PMP_CONFIG[6].addr)
-        lookup1_rwx_o = PMP_CONFIG[5].cfg.rwx;
+        lookup1_rwx_async_o = PMP_CONFIG[5].cfg.rwx;
     else if (lookup1_addr_i == PMP_CONFIG[6].addr)
-        lookup1_rwx_o = PMP_CONFIG[6].cfg.rwx;
+        lookup1_rwx_async_o = PMP_CONFIG[6].cfg.rwx;
     else if (lookup1_addr_i == PMP_CONFIG[7].addr)
-        lookup1_rwx_o = PMP_CONFIG[7].cfg.rwx;
+        lookup1_rwx_async_o = PMP_CONFIG[7].cfg.rwx;
     else
-        lookup1_rwx_o = PMP_CONFIG[8].cfg.rwx;
+        lookup1_rwx_async_o = PMP_CONFIG[8].cfg.rwx;
 end
 
 always_comb begin
     priority if (lookup2_addr_i < PMP_CONFIG[1].addr)
-        lookup2_rwx_o = PMP_CONFIG[0].cfg.rwx;
+        lookup2_rwx_async_o = PMP_CONFIG[0].cfg.rwx;
     else if (lookup2_addr_i < PMP_CONFIG[2].addr)
-        lookup2_rwx_o = PMP_CONFIG[1].cfg.rwx;
+        lookup2_rwx_async_o = PMP_CONFIG[1].cfg.rwx;
     else if (lookup2_addr_i < PMP_CONFIG[3].addr)
-        lookup2_rwx_o = PMP_CONFIG[2].cfg.rwx;
+        lookup2_rwx_async_o = PMP_CONFIG[2].cfg.rwx;
     else if (lookup2_addr_i < PMP_CONFIG[4].addr)
-        lookup2_rwx_o = PMP_CONFIG[3].cfg.rwx;
+        lookup2_rwx_async_o = PMP_CONFIG[3].cfg.rwx;
     else if (lookup2_addr_i < PMP_CONFIG[5].addr)
-        lookup2_rwx_o = PMP_CONFIG[4].cfg.rwx;
+        lookup2_rwx_async_o = PMP_CONFIG[4].cfg.rwx;
     else if (lookup2_addr_i < PMP_CONFIG[6].addr)
-        lookup2_rwx_o = PMP_CONFIG[5].cfg.rwx;
+        lookup2_rwx_async_o = PMP_CONFIG[5].cfg.rwx;
     else if (lookup2_addr_i == PMP_CONFIG[6].addr)
-        lookup2_rwx_o = PMP_CONFIG[6].cfg.rwx;
+        lookup2_rwx_async_o = PMP_CONFIG[6].cfg.rwx;
     else if (lookup2_addr_i == PMP_CONFIG[7].addr)
-        lookup2_rwx_o = PMP_CONFIG[7].cfg.rwx;
+        lookup2_rwx_async_o = PMP_CONFIG[7].cfg.rwx;
     else
-        lookup2_rwx_o = PMP_CONFIG[8].cfg.rwx;
+        lookup2_rwx_async_o = PMP_CONFIG[8].cfg.rwx;
 end
 
 
@@ -213,29 +213,29 @@ end
 // jump requests
 always_comb begin
     // request jump on interrupt, mtrap or mret
-    jmp_request_o = interrupt_w || mtrap_i || mret_i;
+    jmp_request_async_o = interrupt_w || mtrap_i || mret_i;
 
     unique if (mtrap_i || interrupt_w) begin
         // mtrap and interrtupt jump to mtvec
         unique case (mtvec_r.mode)
         MTVEC_MODE_DIRECT:
-            jmp_addr_o = { mtvec_r.base, 2'b00 };
+            jmp_addr_async_o = { mtvec_r.base, 2'b00 };
         MTVEC_MODE_VECTORED:
             unique if (interrupt_i)
-                jmp_addr_o = { mtvec_r.base + INT_M_EXTERNAL[29:0], 2'b00 };
+                jmp_addr_async_o = { mtvec_r.base + INT_M_EXTERNAL[29:0], 2'b00 };
             else
-                jmp_addr_o = { mtvec_r.base,                        2'b00 };
+                jmp_addr_async_o = { mtvec_r.base,                        2'b00 };
         endcase
     end else if (mret_i) begin
         // mret jumps to mepc
-        jmp_addr_o = mepc_r;
+        jmp_addr_async_o = mepc_r;
     end else begin
-        jmp_addr_o = 32'b0;
+        jmp_addr_async_o = 32'b0;
     end
 end
 
 always_ff @(posedge clk_i) begin
-    `log_strobe(("{ \"stage\": \"CSR\", \"pc\": \"%0d\", \"jmp_addr\": \"%0d\", \"jmp_request\": \"%0d\", \"jmp_accept\": \"%0d\", \"interrupt\": \"%0d\" }", trap_pc_i, jmp_addr_o, jmp_request_o, jmp_accept_i, interrupt_i));
+    `log_strobe(("{ \"stage\": \"CSR\", \"pc\": \"%0d\", \"jmp_addr\": \"%0d\", \"jmp_request\": \"%0d\", \"jmp_accept\": \"%0d\", \"interrupt\": \"%0d\" }", trap_pc_i, jmp_addr_async_o, jmp_request_async_o, jmp_accept_i, interrupt_i));
 end
 
 

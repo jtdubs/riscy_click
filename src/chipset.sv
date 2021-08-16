@@ -10,23 +10,23 @@ module chipset
     import common::*;
     (
         // Clocks
-        input  wire logic        cpu_clk_i,        // 50MHz CPU clock
-        input  wire logic        pxl_clk_i,        // 25.2MHz pixel clock
-        input  wire logic        ps2_clk_async_i,  // PS2 HID clock (async)
-        input  wire logic        ps2_data_async_i, // PS2 HID data (async)
+        input  wire logic        cpu_clk_i,      // 50MHz CPU clock
+        input  wire logic        pxl_clk_i,      // 25.2MHz pixel clock
+        input  wire logic        ps2_clk_i,      // PS2 HID clock (async)
+        input  wire logic        ps2_data_i,     // PS2 HID data (async)
 
         // Inputs
-        input  wire logic [15:0] switch_async_i,   // async hardware switch bank input
+        input  wire logic [15:0] switch_i,       // async hardware switch bank input
 
         // Outputs
-        output wire logic        halt_o,           // halt output
-        output wire logic [ 7:0] dsp_anode_o,      // seven segment display anodes output
-        output wire logic [ 7:0] dsp_cathode_o,    // seven segment display cathodes output
-        output wire logic [ 3:0] vga_red_o,        // vga red output
-        output wire logic [ 3:0] vga_green_o,      // vga green output
-        output wire logic [ 3:0] vga_blue_o,       // vga blue output
-        output wire logic        vga_hsync_o,      // vga horizontal sync output
-        output wire logic        vga_vsync_o       // vga vertical sync output
+        output wire logic        halt_o,         // halt output
+        output wire logic [ 7:0] dsp_anode_o,    // seven segment display anodes output
+        output wire logic [ 7:0] dsp_cathode_o,  // seven segment display cathodes output
+        output wire logic [ 3:0] vga_red_o,      // vga red output
+        output wire logic [ 3:0] vga_green_o,    // vga green output
+        output wire logic [ 3:0] vga_blue_o,     // vga blue output
+        output wire logic        vga_hsync_o,    // vga horizontal sync output
+        output wire logic        vga_vsync_o     // vga vertical sync output
     );
 
 
@@ -41,8 +41,8 @@ logic       kbd_interrupt_w;
 
 kbd_controller kbd (
     .clk_i            (cpu_clk_i),
-    .ps2_clk_async_i  (ps2_clk_async_i),
-    .ps2_data_async_i (ps2_data_async_i),
+    .ps2_clk_i  (ps2_clk_i),
+    .ps2_data_i (ps2_data_i),
     .read_enable_i    (kbd_read_enable_w),
     .read_data_o      (kbd_event_w),
     .read_valid_o     (kbd_valid_w),
@@ -57,7 +57,7 @@ kbd_controller kbd (
 logic [15:0] switch_r = '0;
 
 always_ff @(posedge cpu_clk_i) begin
-    switch_r <= switch_async_i;
+    switch_r <= switch_i;
 end
 
 

@@ -14,7 +14,7 @@ int main(int argc, char** argv)
     key_break(kbd, GLFW_KEY_LEFT_SHIFT);
 
     Vchipset *dut = new Vchipset;
-    dut->switch_async_i = 0x1234;
+    dut->switch_i = 0x1234;
 
     uint64_t ncycles = 0;
 
@@ -28,7 +28,7 @@ int main(int argc, char** argv)
         if (ncycles % 2 == 0) { dut->pxl_clk_i ^= 1; }
 
         // run ps2 at an absurd rate
-        if (ncycles % 16 == 0) key_tick(kbd, &dut->ps2_clk_async_i, &dut->ps2_data_async_i);
+        if (ncycles % 16 == 0) key_tick(kbd, &dut->ps2_clk_i, &dut->ps2_data_i);
     }
 
     dut->final();

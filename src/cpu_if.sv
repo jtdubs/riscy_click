@@ -11,21 +11,21 @@ module cpu_if
     import logging::*;
     (
         // cpu signals
-        input  wire logic  clk_i,             // clock
-        input  wire logic  halt_i,            // halt
+        input  wire logic  clk_i,       // clock
+        input  wire logic  halt_i,      // halt
 
         // instruction memory
-        output wire word_t imem_addr_o,       // memory address
-        input  wire word_t imem_data_i,       // data
+        output wire word_t imem_addr_o, // memory address
+        input  wire word_t imem_data_i, // data
 
         // async input
-        input  wire word_t jmp_addr_async_i,  // jump address
-        input  wire logic  jmp_valid_async_i, // whether or not jump address is valid
-        input  wire logic  ready_async_i,     // is the ID stage ready to accept input
+        input  wire word_t jmp_addr_i,  // jump address
+        input  wire logic  jmp_valid_i, // whether or not jump address is valid
+        input  wire logic  ready_i,     // is the ID stage ready to accept input
 
         // pipeline output
-        output wire word_t pc_o,              // program counter
-        output wire word_t ir_o               // instruction register
+        output wire word_t pc_o,        // program counter
+        output wire word_t ir_o         // instruction register
     );
 
 initial start_logging();
@@ -57,10 +57,10 @@ always_comb begin
 
     unique0 if (first_cycle_r[0])
         pc_w = '0;
-    if (halt_i || !ready_async_i)
+    if (halt_i || !ready_i)
         pc_w = pc_i;             // no change on halt or backpressure
-    else if (jmp_valid_async_i)
-        pc_w = jmp_addr_async_i; // respect jumps
+    else if (jmp_valid_i)
+        pc_w = jmp_addr_i; // respect jumps
 end
 
 // always request the IR corresponding to the next PC value
@@ -82,11 +82,11 @@ word_t ir_r = NOP_IR;
 always_ff @(posedge clk_i) begin
     `log_strobe(("{ \"stage\": \"IF\", \"pc\": \"%0d\", \"ir\": \"%0d\" }", pc_r, ir_r));
  
-    if (jmp_valid_async_i | first_cycle_r[0]) begin
+    if (jmp_valid_i | first_cycle_r[0]) begin
         // if jumping, output a NOP
         pc_r <= NOP_PC;
         ir_r <= NOP_IR;
-    end else if (ready_async_i) begin
+    end else if (ready_i) begin
         // if next stage is ready, give them new values
         pc_r <= pc_i;
         ir_r <= imem_data_i;

@@ -12,8 +12,8 @@ module ps2_rx
         input  wire logic  clk_i,
 
         // PS2 Input
-        input  wire logic  ps2_clk_async_i,
-        input  wire logic  ps2_data_async_i,
+        input  wire logic  ps2_clk_i,
+        input  wire logic  ps2_data_i,
 
         // PS2 Output
         output wire byte_t data_o,
@@ -29,8 +29,8 @@ logic [1:0] ps2_clk_r  = '0;
 logic       ps2_data_r = '0;
 
 always_ff @(posedge clk_i) begin
-    ps2_clk_r  <= { ps2_clk_r[0], ps2_clk_async_i };
-    ps2_data_r <= ps2_data_async_i;
+    ps2_clk_r  <= { ps2_clk_r[0], ps2_clk_i };
+    ps2_data_r <= ps2_data_i;
 end
 
 

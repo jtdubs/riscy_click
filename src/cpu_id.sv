@@ -17,22 +17,20 @@ module cpu_id
         // pipeline input
         input  wire word_t     pc_i,                // program counter
         input  wire word_t     ir_i,                // instruction register
-
-        // async input
-        input  wire regaddr_t  ex_wb_addr_async_i,  // ex stage write-back address
-        input  wire word_t     ex_wb_data_async_i,  // ex stage write-back data
-        input  wire logic      ex_wb_ready_async_i, // ex stage write-back data ready
-        input  wire logic      ex_wb_valid_async_i, // ex stage write-back valid
-        input  wire logic      ex_empty_async_i,    // ex stage empty
-        input  wire regaddr_t  ma_wb_addr_async_i,  // ma stage write-back address
-        input  wire word_t     ma_wb_data_async_i,  // ma stage write-back data
-        input  wire logic      ma_wb_ready_async_i, // ma stage write-back data ready
-        input  wire logic      ma_wb_valid_async_i, // ma stage write-back valid
-        input  wire logic      ma_empty_async_i,    // ma stage empty
-        input  wire regaddr_t  wb_addr_async_i,     // write-back address
-        input  wire word_t     wb_data_async_i,     // write-back data
-        input  wire logic      wb_valid_async_i,    // write-back valid
-        input  wire logic      wb_empty_async_i,    // wb stage empty
+        input  wire regaddr_t  ex_wb_addr_i,        // ex stage write-back address
+        input  wire word_t     ex_wb_data_i,        // ex stage write-back data
+        input  wire logic      ex_wb_ready_i,       // ex stage write-back data ready
+        input  wire logic      ex_wb_valid_i,       // ex stage write-back valid
+        input  wire logic      ex_empty_i,          // ex stage empty
+        input  wire regaddr_t  ma_wb_addr_i,        // ma stage write-back address
+        input  wire word_t     ma_wb_data_i,        // ma stage write-back data
+        input  wire logic      ma_wb_ready_i,       // ma stage write-back data ready
+        input  wire logic      ma_wb_valid_i,       // ma stage write-back valid
+        input  wire logic      ma_empty_i,          // ma stage empty
+        input  wire regaddr_t  wb_addr_i,           // write-back address
+        input  wire word_t     wb_data_i,           // write-back data
+        input  wire logic      wb_valid_i,          // write-back valid
+        input  wire logic      wb_empty_i,          // wb stage empty
 
         // async output
         output      logic      ready_async_o,       // stage ready for new inputs
@@ -113,7 +111,7 @@ end
 control_word_t cw_w;
 
 decoder decoder (
-    .ir_async_i (ir_i),
+    .ir_i       (ir_i),
     .cw_async_o (cw_w)
 );
 
@@ -170,8 +168,8 @@ end
 logic data_hazard_w, ra_collision_w, rb_collision_w;
 
 always_comb begin
-    ra_collision_w = cw_w.ra_used && ((ex_wb_valid_async_i && ex_wb_addr_async_i == rs1_w && !ex_wb_ready_async_i) || (ma_wb_valid_async_i && ma_wb_addr_async_i == rs1_w && !ma_wb_ready_async_i));
-    rb_collision_w = cw_w.rb_used && ((ex_wb_valid_async_i && ex_wb_addr_async_i == rs2_w && !ex_wb_ready_async_i) || (ma_wb_valid_async_i && ma_wb_addr_async_i == rs2_w && !ma_wb_ready_async_i));
+    ra_collision_w = cw_w.ra_used && ((ex_wb_valid_i && ex_wb_addr_i == rs1_w && !ex_wb_ready_i) || (ma_wb_valid_i && ma_wb_addr_i == rs1_w && !ma_wb_ready_i));
+    rb_collision_w = cw_w.rb_used && ((ex_wb_valid_i && ex_wb_addr_i == rs2_w && !ex_wb_ready_i) || (ma_wb_valid_i && ma_wb_addr_i == rs2_w && !ma_wb_ready_i));
     data_hazard_w  = ra_collision_w || rb_collision_w;
 end
 
@@ -189,9 +187,9 @@ wire word_t    rb_w;
 
 regfile regfile (
     .clk_i              (clk_i),
-    .read1_addr_async_i (rs1_w),
+    .read1_addr_i       (rs1_w),
     .read1_data_async_o (ra_w),
-    .read2_addr_async_i (rs2_w),
+    .read2_addr_i       (rs2_w),
     .read2_data_async_o (rb_w),
     .write_addr_i       (wb_addr_w),
     .write_data_i       (wb_data_w),
@@ -209,24 +207,24 @@ word_t rb_bypassed_w;
 
 // determine bypassed value for first register access
 always_comb begin
-    priority if (ex_wb_valid_async_i && rs1_w == ex_wb_addr_async_i)
-        ra_bypassed_w = ex_wb_data_async_i;
-    else if (ma_wb_valid_async_i && rs1_w == ma_wb_addr_async_i)
-        ra_bypassed_w = ma_wb_data_async_i;
-    else if (wb_valid_async_i && rs1_w == wb_addr_async_i)
-        ra_bypassed_w = wb_data_async_i;
+    priority if (ex_wb_valid_i && rs1_w == ex_wb_addr_i)
+        ra_bypassed_w = ex_wb_data_i;
+    else if (ma_wb_valid_i && rs1_w == ma_wb_addr_i)
+        ra_bypassed_w = ma_wb_data_i;
+    else if (wb_valid_i && rs1_w == wb_addr_i)
+        ra_bypassed_w = wb_data_i;
     else
         ra_bypassed_w = ra_w;
 end
 
 // Determine bypassed value for second register access
 always_comb begin
-    priority if (ex_wb_valid_async_i && rs2_w == ex_wb_addr_async_i)
-        rb_bypassed_w = ex_wb_data_async_i;
-    else if (ma_wb_valid_async_i && rs2_w == ma_wb_addr_async_i)
-        rb_bypassed_w = ma_wb_data_async_i;
-    else if (wb_valid_async_i && rs2_w == wb_addr_async_i)
-        rb_bypassed_w = wb_data_async_i;
+    priority if (ex_wb_valid_i && rs2_w == ex_wb_addr_i)
+        rb_bypassed_w = ex_wb_data_i;
+    else if (ma_wb_valid_i && rs2_w == ma_wb_addr_i)
+        rb_bypassed_w = ma_wb_data_i;
+    else if (wb_valid_i && rs2_w == wb_addr_i)
+        rb_bypassed_w = wb_data_i;
     else
         rb_bypassed_w = rb_w;
 end
@@ -282,8 +280,8 @@ logic csr_write_action_w;  // writing new CSR value and performing register writ
 always_comb begin
     csr_idle_action_w  = (csr_state_r == CSR_STATE_IDLE)     && ~cw_w.csr_used;
     csr_flush_action_w = (csr_state_r == CSR_STATE_IDLE)     &&  cw_w.csr_used;
-    csr_wait_action_w  = (csr_state_r == CSR_STATE_FLUSHING) && ~(ex_empty_async_i && ma_empty_async_i && wb_empty_async_i);
-    csr_read_action_w  = (csr_state_r == CSR_STATE_FLUSHING) &&  (ex_empty_async_i && ma_empty_async_i && wb_empty_async_i);
+    csr_wait_action_w  = (csr_state_r == CSR_STATE_FLUSHING) && ~(ex_empty_i && ma_empty_i && wb_empty_i);
+    csr_read_action_w  = (csr_state_r == CSR_STATE_FLUSHING) &&  (ex_empty_i && ma_empty_i && wb_empty_i);
     csr_write_action_w = (csr_state_r == CSR_STATE_EXECUTING);
 end
 
@@ -329,7 +327,7 @@ always_comb begin
     endcase
 
     // consider this an instruction retirement if writeback stage is retiring OR we are
-    csr_retired_o = !wb_empty_async_i || csr_state_r == CSR_STATE_EXECUTING;
+    csr_retired_o = !wb_empty_i || csr_state_r == CSR_STATE_EXECUTING;
 end
 
 // update regfile writeback control siganls
@@ -341,9 +339,9 @@ always_comb begin
         wb_enable_w = csr_write_action_w && rd_w != 5'b0;
     // Otherwise, it comes from the writeback stage
     end else begin
-        wb_addr_w   = wb_addr_async_i;
-        wb_data_w   = wb_data_async_i;
-        wb_enable_w = wb_valid_async_i;
+        wb_addr_w   = wb_addr_i;
+        wb_data_w   = wb_data_i;
+        wb_enable_w = wb_valid_i;
     end
 end
 
