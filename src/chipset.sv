@@ -221,7 +221,7 @@ uart uart (
     .read_enable_i  (dmem_read_enable_w),
     .read_data_o    (uart_read_data_w),
     .write_data_i   (dmem_write_data_w),
-    .write_mask_i   (dmem_write_mask_w != '0)
+    .write_mask_i   (dmem_write_mask_w)
 );
 
 // VGA

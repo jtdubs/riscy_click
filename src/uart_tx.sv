@@ -47,7 +47,7 @@ always_ff @(posedge clk_i) begin
     end
 end
 
-always_comb read_enable_o = (packet_r == 3'h000);
+always_comb read_enable_o = (packet_r == 12'h000);
 assign txd_o = txd_w;
 
 

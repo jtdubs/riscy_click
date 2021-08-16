@@ -38,7 +38,7 @@ always_ff @(posedge clk_i) begin
     priority if (bits_r[0] != bits_r[1])
         // if edge found, wait a half-period to center
         cycles_to_center <= { 1'b0, config_i.samples_per_bit[23:1] };
-    else if (cycles_to_center == 25'b0)
+    else if (cycles_to_center == 24'b0)
         // if center reached, next center is one period away
         cycles_to_center <= config_i.samples_per_bit;
     else

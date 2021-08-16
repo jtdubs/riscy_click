@@ -27,7 +27,7 @@ module uart
 
 
 // Default is 115200/8-N-1 without flow control, based on a 50MHz system clock
-uart_config_t config_r = '{ DATA_EIGHT, PARITY_NONE, STOP_ONE, FLOW_NONE, 1'b0, 25'd434 };
+uart_config_t config_r = '{ DATA_EIGHT, PARITY_NONE, STOP_ONE, FLOW_NONE, 1'b0, 24'd434 };
 
 
 //
@@ -43,22 +43,21 @@ typedef struct packed {
 chip_select_t chip_select_w;
 chip_select_t chip_select_r;
 
-wire word_t config_data_w;
-wire word_t read_fifo_data_w;
-wire word_t write_fifo_data_w;
-wire word_t read_data_w;
-
 always_ff @(posedge clk_i) begin
     chip_select_r <= chip_select_w;
 end
 
 always_comb begin
-    unique casez (addr_i)
-    2'b00: chip_select_w = '{ uart_config: 1'b1, default: 1'b0 };
-    2'b01: chip_select_w = '{ read_fifo:   1'b1, default: 1'b0 };
-    2'b10: chip_select_w = '{ write_fifo:  1'b1, default: 1'b0 };
-    2'b11: chip_select_w = '{                    default: 1'b0 };
-    endcase
+    if (chip_select_i) begin
+        unique casez (addr_i)
+        2'b00: chip_select_w = '{ uart_config: 1'b1, default: 1'b0 };
+        2'b01: chip_select_w = '{ read_fifo:   1'b1, default: 1'b0 };
+        2'b10: chip_select_w = '{ write_fifo:  1'b1, default: 1'b0 };
+        2'b11: chip_select_w = '{                    default: 1'b0 };
+        endcase
+    end else begin
+        chip_select_w = '{                    default: 1'b0 };
+    end
 end
 
 always_comb begin
@@ -107,7 +106,7 @@ fifo #(
     .clk_i               (clk_i),
     .write_data_i        (rx_data_w),
     .write_enable_i      (rx_valid_w),
-    .read_enable_i       (chip_select_w.read_fifo),
+    .read_enable_i       (chip_select_w.read_fifo && read_enable_i),
     .read_data_o         (rx_fifo_data_w),
     .read_valid_o        (rx_fifo_valid_w),
     .fifo_empty_o        (rx_fifo_empty_w),
