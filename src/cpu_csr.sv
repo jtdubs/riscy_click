@@ -215,7 +215,10 @@ always_comb begin
     // request jump on interrupt, mtrap or mret
     jmp_request_async_o = interrupt_w || mtrap_i || mret_i;
 
-    unique if (mtrap_i || interrupt_w) begin
+    priority if (mret_i) begin
+        // mret jumps to mepc
+        jmp_addr_async_o = mepc_r;
+    end else if (mtrap_i || interrupt_w) begin
         // mtrap and interrtupt jump to mtvec
         unique case (mtvec_r.mode)
         MTVEC_MODE_DIRECT:
@@ -226,9 +229,6 @@ always_comb begin
             else
                 jmp_addr_async_o = { mtvec_r.base,                        2'b00 };
         endcase
-    end else if (mret_i) begin
-        // mret jumps to mepc
-        jmp_addr_async_o = mepc_r;
     end else begin
         jmp_addr_async_o = 32'b0;
     end

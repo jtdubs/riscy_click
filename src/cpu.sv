@@ -21,6 +21,7 @@ module cpu
         // data memory bus
         output wire word_t      dmem_addr_o,
         input  wire word_t      dmem_read_data_i,
+        output wire logic       dmem_read_enable_o,
         output wire logic [3:0] dmem_write_mask_o,
         output wire word_t      dmem_write_data_o
     );
@@ -192,6 +193,7 @@ cpu_ex cpu_ex (
 cpu_ma cpu_ma (
     .clk_i               (clk_i),
     .dmem_addr_o         (dmem_addr_o),
+    .dmem_read_enable_o  (dmem_read_enable_o),
     .dmem_write_data_o   (dmem_write_data_o),
     .dmem_write_mask_o   (dmem_write_mask_o),
     .pc_i                (ex_pc_w),

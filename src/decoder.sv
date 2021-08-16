@@ -11,7 +11,7 @@ module decoder
     import logging::*;
     (
         input  wire word_t         ir_i,       // instruction register
-        output      control_word_t cw_async_o  // control word
+        output wire control_word_t cw_async_o  // control word
     );
 
 initial start_logging();

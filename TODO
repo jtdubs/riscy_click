@@ -1,14 +1,19 @@
 TODO:
-- CSR
-    - Consider pulling CSR state machine out into it's own module to simplify ID
 - Peripherals
     - UART
-        - Get basic state machine working
-        - Tx/Rx via pair of memory mapped FIFOs
-        - Make UART configurable via memory mapped registers....
-            - Enable/disable, baud rate, data bits, stop bits, parity, flow control, etc.
+        # - Get basic state machine working
+        # - Tx/Rx via pair of memory mapped FIFOs
+        # - Make UART configurable via memory mapped registers....
+        #     - Enable/disable, baud rate, data bits, stop bits, parity
+        # - Memory Map it
+        # - Hook it up to the board's USB UART bridge
+        - Update BIOS to exercise it
+        - How do I want to handle this in the simulator?  Feels like another window.
+        - Flow Control
     - Full PS/2 driver including sending commands back to keyboard
     - PS/2 Mouse
+- CSR
+    - Consider pulling CSR state machine out into it's own module to simplify ID
 - Interrupt Controller
     - Interrupt controller aggregates interrupts from external sources (keyboard, mouse, UART, etc.)
     - Interrupt controller has an mmap'd register for reading and clearing external interrupts

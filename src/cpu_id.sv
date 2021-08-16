@@ -108,7 +108,7 @@ end
 // Instruction Decoding
 //
 
-control_word_t cw_w;
+wire control_word_t cw_w;
 
 decoder decoder (
     .ir_i       (ir_i),

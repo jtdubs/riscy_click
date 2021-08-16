@@ -9,20 +9,20 @@ module uart
     // Import Constants
     import common::*;
     (
-        input  wire logic clk_i,
-        input  wire logic chip_select_i,
-        output      logic interrupt_o,
+        input  wire logic       clk_i,
+        input  wire logic       chip_select_i,
+        output      logic       interrupt_o,
 
         // UART
-        input  wire logic rxd_i,
-        output wire logic txd_o,
+        input  wire logic       rxd_i,
+        output wire logic       txd_o,
 
         // Memory Mapped Interface
         input  wire logic [1:0] addr_i,
         input  wire logic       read_enable_i,
         output      word_t      read_data_o,
         input  wire word_t      write_data_i,
-        input  wire logic       write_enable_i
+        input  wire logic [3:0] write_mask_i
     );
 
 
@@ -73,9 +73,11 @@ always_comb begin
 end
 
 always_ff @(posedge clk_i) begin
-    if (write_enable_i) begin
-        if (chip_select_r.uart_config)
-            config_r <= write_data_i;
+    if (chip_select_r.uart_config) begin
+        if (write_mask_i[0]) config_r[7 : 0] <= write_data_i[ 7: 0];
+        if (write_mask_i[1]) config_r[15: 8] <= write_data_i[15: 8];
+        if (write_mask_i[2]) config_r[23:16] <= write_data_i[23:16];
+        if (write_mask_i[3]) config_r[31:24] <= write_data_i[31:24];
     end
 end
 
@@ -131,7 +133,7 @@ fifo #(
 ) tx_fifo (
     .clk_i               (clk_i),
     .write_data_i        (write_data_i[7:0]),
-    .write_enable_i      (chip_select_w.write_fifo & write_enable_i),
+    .write_enable_i      (chip_select_w.write_fifo & write_mask_i[0]),
     .read_enable_i       (tx_read_enable_w),
     .read_data_o         (tx_read_data_w),
     .read_valid_o        (tx_read_valid_w),

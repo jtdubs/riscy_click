@@ -11,39 +11,40 @@ module cpu_ma
     import logging::*;
     (
         // cpu signals
-        input  wire logic       clk_i,             // clock
+        input  wire logic       clk_i,              // clock
 
         // data memory
-        output      word_t      dmem_addr_o,       // address
-        output      word_t      dmem_write_data_o, // write data
-        output      logic [3:0] dmem_write_mask_o, // write enable
+        output      word_t      dmem_addr_o,        // address
+        output      logic       dmem_read_enable_o, // read enable
+        output      word_t      dmem_write_data_o,  // write data
+        output      logic [3:0] dmem_write_mask_o,  // write enable
 
         // pipeline input
-        input  wire word_t      pc_i,              // program counter
-        input  wire word_t      ir_i,              // instruction register
-        input  wire word_t      ma_addr_i,         // memoricy access address
-        input  wire ma_mode_t   ma_mode_i,         // memory access mode
-        input  wire ma_size_t   ma_size_i,         // memory access size
-        input  wire word_t      ma_data_i,         // memory access data
-        input  wire wb_src_t    wb_src_i,          // write-back source
-        input  wire word_t      wb_data_i,         // write-back data
-        input  wire logic       wb_valid_i,        // write-back valid
+        input  wire word_t      pc_i,               // program counter
+        input  wire word_t      ir_i,               // instruction register
+        input  wire word_t      ma_addr_i,          // memoricy access address
+        input  wire ma_mode_t   ma_mode_i,          // memory access mode
+        input  wire ma_size_t   ma_size_i,          // memory access size
+        input  wire word_t      ma_data_i,          // memory access data
+        input  wire wb_src_t    wb_src_i,           // write-back source
+        input  wire word_t      wb_data_i,          // write-back data
+        input  wire logic       wb_valid_i,         // write-back valid
 
         // async output
-        output      regaddr_t   wb_addr_async_o,   // write-back address
-        output      word_t      wb_data_async_o,   // write-back data
-        output      logic       wb_ready_async_o,  // write-back ready
-        output      logic       wb_valid_async_o,  // write-back valid
-        output      logic       empty_async_o,     // stage empty
+        output      regaddr_t   wb_addr_async_o,    // write-back address
+        output      word_t      wb_data_async_o,    // write-back data
+        output      logic       wb_ready_async_o,   // write-back ready
+        output      logic       wb_valid_async_o,   // write-back valid
+        output      logic       empty_async_o,      // stage empty
 
         // pipeline output
-        output wire word_t      pc_o,              // program counter
-        output wire word_t      ir_o,              // instruction register
-        output wire logic       load_o,            // is this a load instruction?
-        output wire ma_size_t   ma_size_o,         // memory access size
-        output wire logic [1:0] ma_alignment_o,    // memory access alignment
-        output wire word_t      wb_data_o,         // write-back data
-        output wire logic       wb_valid_o         // write-back valid
+        output wire word_t      pc_o,               // program counter
+        output wire word_t      ir_o,               // instruction register
+        output wire logic       load_o,             // is this a load instruction?
+        output wire ma_size_t   ma_size_o,          // memory access size
+        output wire logic [1:0] ma_alignment_o,     // memory access alignment
+        output wire word_t      wb_data_o,          // write-back data
+        output wire logic       wb_valid_o          // write-back valid
     );
 
 initial start_logging();
@@ -54,9 +55,10 @@ final stop_logging();
 //
 
 always_comb begin
-    dmem_addr_o       = { ma_addr_i[31:2], 2'b0 };
-    dmem_write_mask_o = 4'b0000;
-
+    dmem_addr_o        = { ma_addr_i[31:2], 2'b0 };
+    dmem_read_enable_o = (ma_mode_i == MA_LOAD);
+    dmem_write_mask_o  = 4'b0000;
+    
     // shift data left based on address lower bits
     unique case (ma_addr_i[1:0])
     2'b00: dmem_write_data_o = { ma_data_i[31:0]        };
@@ -112,7 +114,7 @@ logic       wb_valid_r     = NOP_WB_VALID;
 always_ff @(posedge clk_i) begin
     pc_r           <= pc_i;
     ir_r           <= ir_i;
-    load_r         <= (ma_mode_i == MA_LOAD);
+    load_r         <= dmem_read_enable_o;
     ma_size_r      <= (ma_mode_i == MA_X) ? MA_SIZE_W : ma_size_i;
     ma_alignment_r <= ma_addr_i[1:0];
     wb_data_r      <= wb_data_i;

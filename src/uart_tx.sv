@@ -39,12 +39,15 @@ logic [11:0] packet_r = '0;
 logic        txd_w = '1;
 
 always_ff @(posedge clk_i) begin
-    if (cycles_r == 24'b0) begin
+    if (read_valid_i) begin
+        packet_r <= packet_w;
+    end else if (cycles_r == 24'b0) begin
         packet_r <= { 1'b0, packet_r[11:1] };
         txd_w    <= (packet_r == '0) ? 1'b1 : packet_r[0];
     end
 end
 
+always_comb read_enable_o = (packet_r == 3'h000);
 assign txd_o = txd_w;
 
 
@@ -99,19 +102,6 @@ always_comb begin
         DATA_SEVEN: packet_w[8] = parity_w;
         DATA_EIGHT: packet_w[9] = parity_w;
         endcase
-    end
-end
-
-
-//
-// Repopulate Shift Register
-//
-
-always_comb read_enable_o = (packet_r == 3'h000);
-
-always_ff @(posedge clk_i) begin
-    if (read_valid_i) begin
-        packet_r <= packet_w;
     end
 end
 

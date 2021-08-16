@@ -7,6 +7,7 @@ module board_tb ();
      logic [15:0] switch_i;
      logic        ps2_clk_i;
      logic        ps2_data_i;
+     logic        uart_rxd_i;
 wire logic        halt_o;
 wire logic [ 7:0] dsp_anode_o;
 wire logic [ 7:0] dsp_cathode_o;
@@ -15,6 +16,7 @@ wire logic [ 3:0] vga_green_o;
 wire logic [ 3:0] vga_blue_o;
 wire logic        vga_hsync_o;
 wire logic        vga_vsync_o;
+wire logic        uart_txd_o;
 
 board board (.*);
 
@@ -74,6 +76,43 @@ initial begin
             send_ps2_packet(8'hF0);
             #2000;
             send_ps2_packet(KEYSTROKES[i]);
+        end
+    end
+end
+
+// uart signal driving
+function logic [10:0] make_uart_packet (input logic [7:0] data);
+begin
+    integer i;
+    logic parity;
+    parity = 1;
+    for (i=0; i<8; i++)
+        parity = parity ^ data[i];
+    make_uart_packet = { 1'b1, data, 1'b0 };
+end
+endfunction
+
+task automatic send_uart_packet (input logic [7:0] data);
+begin
+    integer i;
+    logic [9:0] packet = make_uart_packet(data);
+    for (i=0; i<10; i++) begin
+        uart_rxd_i = packet[i];
+        #8680;
+    end
+end
+endtask
+
+localparam logic [7:0] INPUT_BUFFER [0:12] = { 8'h33, 8'h24, 8'h4B, 8'h4B, 8'h44, 8'h41, 8'h29, 8'h1D, 8'h44, 8'h2D, 8'h4B, 8'h23, 8'h5A };
+
+integer i;
+initial begin
+    uart_rxd_i = 1;
+    #40000;
+    forever begin
+        for (i=0; i<13; i++) begin
+            send_uart_packet(INPUT_BUFFER[i]);
+            #100000;
         end
     end
 end

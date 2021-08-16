@@ -14,6 +14,7 @@ module board
         input  wire logic [15:0] switch_i,      // hardware switch bank (async)
         input  wire logic        ps2_clk_i,     // PS2 HID clock (async)
         input  wire logic        ps2_data_i,    // PS2 HID data (async)
+        input  wire logic        uart_rxd_i,
 
         // Outputs
         output wire logic [ 7:0] dsp_anode_o,   // seven segment display anodes
@@ -23,7 +24,8 @@ module board
         output wire logic [ 3:0] vga_green_o,   // VGA red color
         output wire logic [ 3:0] vga_blue_o,    // VGA red color
         output wire logic        vga_hsync_o,   // VGA hsync signal
-        output wire logic        vga_vsync_o    // VGA vsync signal
+        output wire logic        vga_vsync_o,   // VGA vsync signal
+        output wire logic        uart_txd_o
     );
 
 //
@@ -55,6 +57,7 @@ pixel_clk_gen pixel_clk_gen (
 chipset chipset (
     .cpu_clk_i     (cpu_clk_w),
     .pxl_clk_i     (pxl_clk_w),
+    .uart_rxd_i    (uart_rxd_i),
     .ps2_clk_i     (ps2_clk_i),
     .ps2_data_i    (ps2_data_i),
     .switch_i      (switch_i),
@@ -65,7 +68,8 @@ chipset chipset (
     .vga_green_o   (vga_green_o),
     .vga_blue_o    (vga_blue_o),
     .vga_hsync_o   (vga_hsync_o),
-    .vga_vsync_o   (vga_vsync_o)
+    .vga_vsync_o   (vga_vsync_o),
+    .uart_txd_o    (uart_txd_o)
 );
 
 endmodule
