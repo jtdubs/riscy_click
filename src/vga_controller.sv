@@ -35,8 +35,9 @@ character_rom #(
 )
 crom_inst (
     .clk_i(clk_i),
-    .addr_i(crom_addr_w),
-    .data_o(crom_data_w)
+    .read_enable_i(1'b1),
+    .read_addr_i(crom_addr_w),
+    .read_data_o(crom_data_w)
 );
 
 

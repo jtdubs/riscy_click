@@ -1,12 +1,6 @@
 TODO:
-- Verilator
-    - Pull out Verilator folder that builds a static library
-    - Sim and Trace can link it into their own projects
 - CSR
     - Consider pulling CSR state machine out into it's own module to simplify ID
-- Data Bus
-    - Add specific read/write enable and/or chip-select for everything on the bus
-    - Pull it all out into a separate module?
 - Peripherals
     - UART
         - Get basic state machine working

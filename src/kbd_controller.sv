@@ -57,9 +57,10 @@ byte_t          vk_w;
 logic           vk_valid_r = '0;
 
 keycode_rom #(.CONTENTS("krom.mem")) krom (
-    .clk_i   (clk_i),
-    .addr_i  (ps2_kbd_event_w[8:0]),
-    .data_o  (vk_w)
+    .clk_i         (clk_i),
+    .read_enable_i (ps2_kbd_valid_w), // 1'b1),
+    .read_addr_i   (ps2_kbd_event_w[8:0]),
+    .read_data_o   (vk_w)
 );
 
 always_ff @(posedge clk_i) begin

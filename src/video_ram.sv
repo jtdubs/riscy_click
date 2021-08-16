@@ -7,6 +7,7 @@ module video_ram
     (
         // cpu interface
         input  wire logic        cpu_clk_i,
+        input  wire logic        cpu_chip_select_i,
         input  wire word_t       cpu_addr_i,
         input  wire word_t       cpu_write_data_i,
         input  wire logic [ 3:0] cpu_write_mask_i,
@@ -14,6 +15,7 @@ module video_ram
 
         // vga controller interface
         input  wire logic        pxl_clk_i,
+        input  wire logic        pxl_chip_select_i,
         input  wire logic [11:0] pxl_addr_i,
         output wire byte_t       pxl_data_o
     );
@@ -73,7 +75,7 @@ video_tdpram_inst (
     .douta(cpu_read_data_o),
     .dina(cpu_write_data_i),
     .wea(cpu_write_mask_i),
-    .ena(1'b1),
+    .ena(cpu_chip_select_i),
     .regcea(1'b1),
     .rsta(1'b0),
     .dbiterra(),
@@ -87,7 +89,7 @@ video_tdpram_inst (
     .doutb(pxl_data_o),
     .dinb(8'b0),
     .web(1'b0),
-    .enb(1'b1),
+    .enb(pxl_chip_select_i),
     .regceb(1'b1),
     .rstb(1'b0),
     .dbiterrb(),
@@ -109,12 +111,14 @@ byte_t mem_r [0:4095] = '{ default: '0 };
 word_t cpu_read_data_r = '0;
 
 always_ff @(posedge cpu_clk_i) begin
-    cpu_read_data_r <= { mem_r[cpu_addr_i+3], mem_r[cpu_addr_i+2], mem_r[cpu_addr_i+1], mem_r[cpu_addr_i+0] };
+    if (cpu_chip_select_i) begin
+        cpu_read_data_r <= { mem_r[cpu_addr_i+3], mem_r[cpu_addr_i+2], mem_r[cpu_addr_i+1], mem_r[cpu_addr_i+0] };
 
-    if (cpu_write_mask_i[0]) mem_r[cpu_addr_i+0] <= cpu_write_data_i[ 7: 0];
-    if (cpu_write_mask_i[1]) mem_r[cpu_addr_i+1] <= cpu_write_data_i[15: 8];
-    if (cpu_write_mask_i[2]) mem_r[cpu_addr_i+2] <= cpu_write_data_i[23:16];
-    if (cpu_write_mask_i[3]) mem_r[cpu_addr_i+3] <= cpu_write_data_i[31:24];
+        if (cpu_write_mask_i[0]) mem_r[cpu_addr_i+0] <= cpu_write_data_i[ 7: 0];
+        if (cpu_write_mask_i[1]) mem_r[cpu_addr_i+1] <= cpu_write_data_i[15: 8];
+        if (cpu_write_mask_i[2]) mem_r[cpu_addr_i+2] <= cpu_write_data_i[23:16];
+        if (cpu_write_mask_i[3]) mem_r[cpu_addr_i+3] <= cpu_write_data_i[31:24];
+    end
 end
 
 assign cpu_read_data_o = cpu_read_data_r;
@@ -124,7 +128,8 @@ assign cpu_read_data_o = cpu_read_data_r;
 byte_t pxl_data_r = '0;
 
 always_ff @(posedge pxl_clk_i) begin
-    pxl_data_r <= mem_r[pxl_addr_i];
+    if (pxl_chip_select_i)
+        pxl_data_r <= mem_r[pxl_addr_i];
 end
 
 assign pxl_data_o = pxl_data_r;

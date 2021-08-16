@@ -12,10 +12,12 @@ module bios_rom
 
         // read port a
         input  wire word_t read1_addr_i,
+        input  wire logic  read1_enable_i,
         output wire word_t read1_data_o,
 
         // read port b
         input  wire word_t read2_addr_i,
+        input  wire logic  read2_enable_i,
         output wire word_t read2_data_o
     );
 
@@ -65,7 +67,7 @@ bios_dprom_inst (
     // port A
     .clka(clk_i),
     .rsta(1'b0),
-    .ena(1'b1),
+    .ena(read1_enable_i),
     .regcea(1'b1),
     .addra(read1_addr_i[11:2]),
     .douta(read1_data_o),
@@ -77,7 +79,7 @@ bios_dprom_inst (
     // port B
     .clkb(clk_i),
     .rstb(1'b0),
-    .enb(1'b1),
+    .enb(read2_enable_i),
     .regceb(1'b1),
     .addrb(read2_addr_i[11:2]),
     .doutb(read2_data_o),
@@ -104,8 +106,11 @@ word_t read1_data_r = '0;
 word_t read2_data_r = '0;
 
 always_ff @(posedge clk_i) begin
-    read1_data_r <= mem_r[read1_addr_i[11:2]];
-    read2_data_r <= mem_r[read2_addr_i[11:2]];
+    if (read1_enable_i)
+        read1_data_r <= mem_r[read1_addr_i[11:2]];
+
+    if (read2_enable_i)
+        read2_data_r <= mem_r[read2_addr_i[11:2]];
 end
 
 assign read1_data_o = read1_data_r;

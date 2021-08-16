@@ -11,8 +11,9 @@ module keycode_rom
         input  wire logic       clk_i,
 
         // port
-        input  wire logic [8:0] addr_i,
-        output wire logic [7:0] data_o
+        input  wire logic [8:0] read_addr_i,
+        input  wire logic       read_enable_i,
+        output wire logic [7:0] read_data_o
     );
 
 `ifdef ENABLE_XILINX_PRIMITIVES
@@ -50,9 +51,9 @@ character_sprom_inst (
 
     // port parameters
     .clka(clk_i),
-    .addra(addr_i),
-    .douta(data_o),
-    .ena(1'b1),
+    .addra(read_addr_i),
+    .douta(read_data_o),
+    .ena(read_enable_i),
     .regcea(1'b1),
     .rsta(1'b0),
     .dbiterra(),
@@ -67,19 +68,20 @@ character_sprom_inst (
 // Simulator Implmentation
 //
 
-logic [7:0] rom [0:511];
+logic [7:0] mem_r [0:511];
 
 initial begin
-    $readmemh(CONTENTS, rom);
+    $readmemh(CONTENTS, mem_r);
 end
 
-logic [7:0] data_r = '0;
+logic [7:0] read_data_r = '0;
 
 always_ff @(posedge clk_i) begin
-    data_r <= rom[addr_i];
+    if (read_enable_i)
+        read_data_r <= mem_r[read_addr_i];
 end
 
-assign data_o = data_r;
+assign read_data_o = read_data_r;
 
 `endif
 

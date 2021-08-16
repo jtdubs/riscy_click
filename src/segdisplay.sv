@@ -19,10 +19,9 @@ module segdisplay
         output wire logic [7:0] dsp_anode_o,
         output wire logic [7:0] dsp_cathode_o,
 
-        // read port
+        // read/write port
+        input  wire logic       chip_select_i,
         output wire word_t      read_data_o,
-
-        // write port
         input  wire word_t      write_data_i,
         input  wire logic [3:0] write_mask_i
     );
@@ -50,10 +49,12 @@ word_t value_r = '0;
 assign read_data_o = value_r;
 
 always @(posedge clk_i) begin
-    if (write_mask_i[3]) value_r[31:24] <= write_data_i[31:24];
-    if (write_mask_i[2]) value_r[23:16] <= write_data_i[23:16];
-    if (write_mask_i[1]) value_r[15: 8] <= write_data_i[15: 8];
-    if (write_mask_i[0]) value_r[ 7: 0] <= write_data_i[ 7: 0];
+    if (chip_select_i) begin
+        if (write_mask_i[3]) value_r[31:24] <= write_data_i[31:24];
+        if (write_mask_i[2]) value_r[23:16] <= write_data_i[23:16];
+        if (write_mask_i[1]) value_r[15: 8] <= write_data_i[15: 8];
+        if (write_mask_i[0]) value_r[ 7: 0] <= write_data_i[ 7: 0];
+    end
 end
 
 

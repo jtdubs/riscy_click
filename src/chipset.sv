@@ -29,112 +29,179 @@ module chipset
         output wire logic        vga_vsync_o     // vga vertical sync output
     );
 
+//    32'hFF000008: begin dmem_read_data_w = { 15'b0, kbd_valid_w, 7'b0, kbd_event_w }; end
 
-//
-// Keyboard Controller
-//
-
-kbd_event_t kbd_event_w;
-logic       kbd_valid_w;
-logic       kbd_read_enable_w;
-logic       kbd_interrupt_w;
-
-kbd_controller kbd (
-    .clk_i            (cpu_clk_i),
-    .ps2_clk_i  (ps2_clk_i),
-    .ps2_data_i (ps2_data_i),
-    .read_enable_i    (kbd_read_enable_w),
-    .read_data_o      (kbd_event_w),
-    .read_valid_o     (kbd_valid_w),
-    .interrupt_o      (kbd_interrupt_w)
-);
 
 
 //
-// Clock in Switch States
+// CPU
 //
 
-logic [15:0] switch_r = '0;
-
-always_ff @(posedge cpu_clk_i) begin
-    switch_r <= switch_i;
-end
-
-
-//
-// Memory Signals
-//
-
-// Instruction Memory
+wire logic       interrupt_w;
 wire word_t      imem_addr_w;
 wire word_t      imem_data_w;
-
-// Data Memory
 wire word_t      dmem_addr_w;
      word_t      dmem_read_data_w;
 wire word_t      dmem_write_data_w;
 wire logic [3:0] dmem_write_mask_w;
 
-// Write Masks
-     logic [3:0] dsp_write_mask_w;
-     logic [3:0] ram_write_mask_w;
-     logic [3:0] vram_write_mask_w;
+cpu cpu (
+    .clk_i             (cpu_clk_i),
+    .interrupt_i       (interrupt_w),
+    .halt_o            (halt_o),
+    .imem_addr_o       (imem_addr_w),
+    .imem_data_i       (imem_data_w),
+    .dmem_addr_o       (dmem_addr_w),
+    .dmem_read_data_i  (dmem_read_data_w),
+    .dmem_write_data_o (dmem_write_data_w),
+    .dmem_write_mask_o (dmem_write_mask_w)
+);
 
-// Device
-wire word_t      dsp_read_data_w;
-wire word_t      bios_read_data_w;
-wire word_t      ram_read_data_w;
-wire word_t      vram_read_data_w;
+
+//
+// Chip Select
+//
+
+typedef struct packed {
+    logic bios;
+    logic ram;
+    logic vram;
+    logic keyboard;
+    logic display;
+    logic switches;
+} chip_select_t;
+
+chip_select_t chip_select_w;
+chip_select_t chip_select_r;
+
+wire word_t bios_read_data_w;
+wire word_t ram_read_data_w;
+wire word_t vram_read_data_w;
+wire word_t kbd_read_data_w;
+wire word_t dsp_read_data_w;
+wire word_t sw_read_data_w;
+
+always_ff @(posedge cpu_clk_i) begin
+    chip_select_r <= chip_select_w;
+end
+
+always_comb begin
+    unique casez (dmem_addr_w)
+    32'h0???????: chip_select_w = '{ bios:     1'b1, default: 1'b0 };
+    32'h1???????: chip_select_w = '{ ram:      1'b1, default: 1'b0 };
+    32'h2???????: chip_select_w = '{ vram:     1'b1, default: 1'b0 };
+    32'hFF000000: chip_select_w = '{ display:  1'b1, default: 1'b0 };
+    32'hFF000004: chip_select_w = '{ switches: 1'b1, default: 1'b0 };
+    32'hFF000008: chip_select_w = '{ keyboard: 1'b1, default: 1'b0 };
+    default:      chip_select_w = '{                 default: 1'b0 };
+    endcase
+end
+
+always_comb begin
+    if (chip_select_r.bios)
+        dmem_read_data_w = bios_read_data_w;
+    else if (chip_select_r.ram)
+        dmem_read_data_w = ram_read_data_w;
+    else if (chip_select_r.vram)
+        dmem_read_data_w = vram_read_data_w;
+    else if (chip_select_r.keyboard)
+        dmem_read_data_w = kbd_read_data_w;
+    else if (chip_select_r.display)
+        dmem_read_data_w = dsp_read_data_w;
+    else if (chip_select_r.switches)
+        dmem_read_data_w = sw_read_data_w;
+    else
+        dmem_read_data_w = 32'b0;
+end
 
 
 //
 // Devices
 //
 
+
+// Switches
+logic [31:0] switch_r = '0;
+
+always_ff @(posedge cpu_clk_i) begin
+    switch_r[15:0] <= switch_i;
+end
+
+assign sw_read_data_w = switch_r;
+
+
+// Keyboard Controller
+kbd_event_t kbd_event_w;
+logic       kbd_valid_w;
+
+kbd_controller kbd (
+    .clk_i         (cpu_clk_i),
+    .ps2_clk_i     (ps2_clk_i),
+    .ps2_data_i    (ps2_data_i),
+    .read_enable_i (chip_select_w.keyboard),
+    .read_data_o   (kbd_event_w),
+    .read_valid_o  (kbd_valid_w),
+    .interrupt_o   (interrupt_w)
+);
+
+assign kbd_read_data_w = { 15'b0, kbd_valid_w, 7'b0, kbd_event_w };
+
+
 // BIOS
 bios_rom #(.CONTENTS("bios.mem")) bios (
-    .clk_i         (cpu_clk_i),
-    .read1_addr_i  (imem_addr_w),
-    .read1_data_o  (imem_data_w),
-    .read2_addr_i  (dmem_addr_w),
-    .read2_data_o  (bios_read_data_w)
+    .clk_i          (cpu_clk_i),
+    .read1_enable_i (1'b1),
+    .read1_addr_i   (imem_addr_w),
+    .read1_data_o   (imem_data_w),
+    .read2_enable_i (chip_select_w.bios),
+    .read2_addr_i   (dmem_addr_w),
+    .read2_data_o   (bios_read_data_w)
 );
+
 
 // RAM
 system_ram ram (
-    .clk_i        (cpu_clk_i),
-    .addr_i       (dmem_addr_w),
-    .write_data_i (dmem_write_data_w),
-    .write_mask_i (ram_write_mask_w),
-    .read_data_o  (ram_read_data_w)
+    .clk_i         (cpu_clk_i),
+    .chip_select_i (chip_select_w.ram),
+    .addr_i        (dmem_addr_w),
+    .write_data_i  (dmem_write_data_w),
+    .write_mask_i  (dmem_write_mask_w),
+    .read_data_o   (ram_read_data_w)
 );
+
 
 // Display
 segdisplay #(.CLK_DIVISOR(50000)) disp (
     .clk_i         (cpu_clk_i),
     .dsp_anode_o   (dsp_anode_o),
     .dsp_cathode_o (dsp_cathode_o),
+    .chip_select_i (chip_select_w.display),
     .read_data_o   (dsp_read_data_w),
     .write_data_i  (dmem_write_data_w),
-    .write_mask_i  (dsp_write_mask_w)
+    .write_mask_i  (dmem_write_mask_w)
 );
 
+
+// Video RAM
 logic [11:0] vga_vram_addr_w;
 byte_t       vga_vram_data_w;
 
 video_ram vram (
     // cpu port
-    .cpu_clk_i        (cpu_clk_i),
-    .cpu_addr_i       (dmem_addr_w),
-    .cpu_write_data_i (dmem_write_data_w),
-    .cpu_write_mask_i (vram_write_mask_w),
-    .cpu_read_data_o  (vram_read_data_w),
+    .cpu_clk_i         (cpu_clk_i),
+    .cpu_chip_select_i (chip_select_w.vram),
+    .cpu_addr_i        (dmem_addr_w),
+    .cpu_write_data_i  (dmem_write_data_w),
+    .cpu_write_mask_i  (dmem_write_mask_w),
+    .cpu_read_data_o   (vram_read_data_w),
 
     // vga port
-    .pxl_clk_i        (pxl_clk_i),
-    .pxl_addr_i       (vga_vram_addr_w),
-    .pxl_data_o       (vga_vram_data_w)
+    .pxl_clk_i         (pxl_clk_i),
+    .pxl_chip_select_i (1'b1),
+    .pxl_addr_i        (vga_vram_addr_w),
+    .pxl_data_o        (vga_vram_data_w)
 );
+
 
 // VGA
 vga_controller vga (
@@ -148,58 +215,5 @@ vga_controller vga (
     .vga_vsync_o (vga_vsync_o)
 );
 
-
-//
-// Address decoding
-//
-// Memory map:
-// 00000000 - 0FFFFFFF: BIOS
-// 10000000 - 1FFFFFFF: RAM
-// 20000000 - 2FFFFFFF: Video RAM
-// 30000000 - FEFFFFFF: UNMAPPED
-// FF000000:            Seven Segment Display
-// FF000004:            Switch Bank
-// FF000008:            Keyboard FIFO
-// FF00000C - FFFFFFFF: UNMAPPED
-//
-word_t dmem_read_addr_r = '0;
-
-always_ff @(posedge cpu_clk_i) begin
-    dmem_read_addr_r <= dmem_addr_w;
-end
-
-always_comb begin
-    ram_write_mask_w  = (dmem_addr_w[31:28] == 4'h1)         ? dmem_write_mask_w : 4'b0000;
-    dsp_write_mask_w  = (dmem_addr_w        == 32'hFF000000) ? dmem_write_mask_w : 4'b0000;
-    kbd_read_enable_w = (dmem_addr_w        == 32'hFF000008);
-    vram_write_mask_w = (dmem_addr_w[31:28] == 4'h2)         ? dmem_write_mask_w : 4'b0000;
-
-    unique casez (dmem_read_addr_r)
-    32'h0???????: begin dmem_read_data_w = bios_read_data_w;     end
-    32'h1???????: begin dmem_read_data_w = ram_read_data_w;      end
-    32'h2???????: begin dmem_read_data_w = vram_read_data_w;     end
-    32'hFF000000: begin dmem_read_data_w = dsp_read_data_w;      end
-    32'hFF000004: begin dmem_read_data_w = { 16'h00, switch_r }; end
-    32'hFF000008: begin dmem_read_data_w = { 15'b0, kbd_valid_w, 7'b0, kbd_event_w }; end
-    default:      begin dmem_read_data_w = 32'h00000000;         end
-    endcase
-end
-
-
-//
-// CPU
-//
-
-cpu cpu (
-    .clk_i             (cpu_clk_i),
-    .interrupt_i       (kbd_interrupt_w),
-    .halt_o            (halt_o),
-    .imem_addr_o       (imem_addr_w),
-    .imem_data_i       (imem_data_w),
-    .dmem_addr_o       (dmem_addr_w),
-    .dmem_read_data_i  (dmem_read_data_w),
-    .dmem_write_data_o (dmem_write_data_w),
-    .dmem_write_mask_o (dmem_write_mask_w)
-);
 
 endmodule
