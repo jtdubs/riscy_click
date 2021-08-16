@@ -1,6 +1,17 @@
 TODO:
+- Data Bus
+    - Add specific read/write enable and/or chip-select for everything on the bus
+    - Pull it all out into a separate module?
+- CSR
+    - Consider pulling CSR state machine out into it's own module to simplify ID
 - Peripherals
     - UART
+        - Get basic state machine working
+        - Tx/Rx via pair of memory mapped FIFOs
+        - Make UART configurable via memory mapped registers....
+            - Enable/disable, baud rate, data bits, stop bits, parity, flow control, etc.
+    - Full PS/2 driver including sending commands back to keyboard
+    - PS/2 Mouse
 - Interrupt Controller
     - Interrupt controller aggregates interrupts from external sources (keyboard, mouse, UART, etc.)
     - Interrupt controller has an mmap'd register for reading and clearing external interrupts
