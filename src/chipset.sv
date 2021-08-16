@@ -16,7 +16,6 @@ module chipset
         input  wire logic        ps2_data_async_i, // PS2 HID data (async)
 
         // Inputs
-        input  wire logic        reset_async_i,    // async reset input
         input  wire logic [15:0] switch_async_i,   // async hardware switch bank input
 
         // Outputs
@@ -32,40 +31,6 @@ module chipset
 
 
 //
-// Clocked Resets
-//
-
-// TODO: want these reset lines to START high before the first rising edge...
-
-localparam integer RESET_CYCLES = 12;
-localparam logic [RESET_CYCLES-1:0] RESET_ONES = {RESET_CYCLES{1'b1}};
-
-logic                    cpu_reset_r       = 1'b1;
-logic [RESET_CYCLES-1:0] cpu_reset_chain_r = RESET_ONES;
-
-always_ff @(posedge cpu_clk_i) begin
-    unique if (reset_async_i)
-        // if resetting, fill the chain with ones
-        { cpu_reset_r, cpu_reset_chain_r } <= { 1'b1, RESET_ONES };
-    else
-        // otherwise, start shifting out the ones
-        { cpu_reset_r, cpu_reset_chain_r } <= { cpu_reset_chain_r, 1'b0 };
-end
-
-logic                    pxl_reset_r       = 1'b1;
-logic [RESET_CYCLES-1:0] pxl_reset_chain_r = RESET_ONES;
-
-always_ff @(posedge pxl_clk_i) begin
-    unique if (reset_async_i)
-        // if resetting, fill the chain with ones
-        { pxl_reset_r, pxl_reset_chain_r } <= { 1'b1, RESET_ONES };
-    else
-        // otherwise, start shifting out the ones
-        { pxl_reset_r, pxl_reset_chain_r } <= { pxl_reset_chain_r, 1'b0 };
-end
-
-
-//
 // Keyboard Controller
 //
 
@@ -76,7 +41,6 @@ logic       kbd_interrupt_w;
 
 kbd_controller kbd (
     .clk_i            (cpu_clk_i),
-    .reset_i          (cpu_reset_r),
     .ps2_clk_async_i  (ps2_clk_async_i),
     .ps2_data_async_i (ps2_data_async_i),
     .read_enable_i    (kbd_read_enable_w),
@@ -129,18 +93,16 @@ wire word_t      vram_read_data_w;
 
 // BIOS
 bios_rom #(.CONTENTS("bios.mem")) bios (
-    .clk_i        (cpu_clk_i),
-    .reset_i      (1'b0),
-    .read1_addr_i (imem_addr_w),
-    .read1_data_o (imem_data_w),
-    .read2_addr_i (dmem_addr_w),
-    .read2_data_o (bios_read_data_w)
+    .clk_i         (cpu_clk_i),
+    .read1_addr_i  (imem_addr_w),
+    .read1_data_o  (imem_data_w),
+    .read2_addr_i  (dmem_addr_w),
+    .read2_data_o  (bios_read_data_w)
 );
 
 // RAM
 system_ram ram (
     .clk_i        (cpu_clk_i),
-    .reset_i      (1'b0),
     .addr_i       (dmem_addr_w),
     .write_data_i (dmem_write_data_w),
     .write_mask_i (ram_write_mask_w),
@@ -150,7 +112,6 @@ system_ram ram (
 // Display
 segdisplay #(.CLK_DIVISOR(50000)) disp (
     .clk_i         (cpu_clk_i),
-    .reset_i       (cpu_reset_r),
     .dsp_anode_o   (dsp_anode_o),
     .dsp_cathode_o (dsp_cathode_o),
     .read_data_o   (dsp_read_data_w),
@@ -164,7 +125,6 @@ byte_t       vga_vram_data_w;
 video_ram vram (
     // cpu port
     .cpu_clk_i        (cpu_clk_i),
-    .cpu_reset_i      (cpu_reset_r),
     .cpu_addr_i       (dmem_addr_w),
     .cpu_write_data_i (dmem_write_data_w),
     .cpu_write_mask_i (vram_write_mask_w),
@@ -172,7 +132,6 @@ video_ram vram (
 
     // vga port
     .pxl_clk_i        (pxl_clk_i),
-    .pxl_reset_i      (pxl_reset_r),
     .pxl_addr_i       (vga_vram_addr_w),
     .pxl_data_o       (vga_vram_data_w)
 );
@@ -180,7 +139,6 @@ video_ram vram (
 // VGA
 vga_controller vga (
     .clk_i       (pxl_clk_i),
-    .reset_i     (pxl_reset_r),
     .vram_addr_o (vga_vram_addr_w),
     .vram_data_i (vga_vram_data_w),
     .vga_red_o   (vga_red_o),
@@ -207,7 +165,7 @@ vga_controller vga (
 word_t dmem_read_addr_r = '0;
 
 always_ff @(posedge cpu_clk_i) begin
-    dmem_read_addr_r <= cpu_reset_r ? 32'h00000000 : dmem_addr_w;
+    dmem_read_addr_r <= dmem_addr_w;
 end
 
 always_comb begin
@@ -234,7 +192,6 @@ end
 
 cpu cpu (
     .clk_i             (cpu_clk_i),
-    .reset_i           (cpu_reset_r),
     .interrupt_i       (kbd_interrupt_w),
     .halt_o            (halt_o),
     .imem_addr_o       (imem_addr_w),

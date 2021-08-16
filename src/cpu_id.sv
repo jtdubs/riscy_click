@@ -12,7 +12,6 @@ module cpu_id
     (
         // cpu signals
         input  wire logic      clk_i,               // clock
-        input  wire logic      reset_i,             // reset_i
         output      logic      halt_o,              // halt
 
         // pipeline input
@@ -448,13 +447,6 @@ always_comb begin
     // we only want a new instruction if we aren't dealing with a data hazard, and we aren't going to be dealing with a CSR instruction
     ready_async_o = !data_hazard_w && (csr_state_w == CSR_STATE_IDLE) && !wfi_w;
 
-    if (reset_i) begin
-        // set initial signal values
-        jmp_valid_async_o = 1'b0;
-        jmp_addr_async_o  = 32'h00000000;
-        ready_async_o = 1'b1;
-    end
-
     `log_display(("{ \"stage\": \"ID\", \"pc\": \"%0d\", \"jmp_valid\": \"%0d\", \"jmp_addr\": \"%0d\", \"ready\": \"%0d\" }", pc_i, jmp_valid_async_o, jmp_addr_async_o, ready_async_o));
 end
 
@@ -506,22 +498,6 @@ always_ff @(posedge clk_i) begin
         wb_data_r  <= pc_i + 4;
         wb_valid_r <= wb_valid_w;
         halt_r     <= cw_w.halt;
-    end
-
-    if (reset_i) begin
-        // output a NOP (addi x0, x0, 0)
-        pc_r       <= NOP_PC;
-        ir_r       <= NOP_IR;
-        alu_op1_r  <= 32'b0;
-        alu_op2_r  <= 32'b0;
-        alu_mode_r <= NOP_ALU_MODE;
-        ma_mode_r  <= NOP_MA_MODE;
-        ma_size_r  <= NOP_MA_SIZE;
-        ma_data_r  <= 32'b0;
-        wb_src_r   <= NOP_WB_SRC;
-        wb_data_r  <= 32'b0;
-        wb_valid_r <= NOP_WB_VALID;
-        halt_r     <= 1'b0;
     end
 
     `log_strobe(("{ \"stage\": \"ID\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"alu_op1\": \"%0d\", \"alu_op2\": \"%0d\", \"alu_mode\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_dst\": \"%0d\", \"halt\": \"%0d\" }", pc_r, ir_r, alu_op1_r, alu_op2_r, alu_mode_r, ma_mode_r, ma_size_r, ma_data_r, wb_src_r, wb_data_r, wb_valid_r, halt_r));

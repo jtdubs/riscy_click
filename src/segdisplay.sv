@@ -14,7 +14,6 @@ module segdisplay
     (
         // system clock domain
         input  wire logic       clk_i,
-        input  wire logic       reset_i,
 
         // display interface
         output wire logic [7:0] dsp_anode_o,
@@ -41,7 +40,7 @@ always_comb begin
 end
 
 always_ff @(posedge clk_i) begin
-    counter_r <= reset_i ? '0 : counter_r + 1;
+    counter_r <= counter_r + 1;
 end
 
 
@@ -55,9 +54,6 @@ always @(posedge clk_i) begin
     if (write_mask_i[2]) value_r[23:16] <= write_data_i[23:16];
     if (write_mask_i[1]) value_r[15: 8] <= write_data_i[15: 8];
     if (write_mask_i[0]) value_r[ 7: 0] <= write_data_i[ 7: 0];
-
-    if (reset_i)
-        value_r <= 32'b0;
 end
 
 
@@ -85,9 +81,6 @@ always_ff @(posedge clk_i) begin
 
     if (enable_w)
         dsp_anode_r[digit_w] <= 1'b0;
-
-    if (reset_i)
-        dsp_anode_r <= 8'hFF;
 end
 
 assign dsp_anode_o = dsp_anode_r;
@@ -119,9 +112,6 @@ always_ff @(posedge clk_i) begin
         15: dsp_cathode_r <= 8'b10001110;
         endcase
     end
-
-    if (reset_i)
-        dsp_cathode_r <= 8'hFF;
 end
 
 assign dsp_cathode_o = dsp_cathode_r;

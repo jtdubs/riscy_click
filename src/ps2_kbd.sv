@@ -10,7 +10,6 @@ module ps2_kbd
     import common::*;
     (
         input  wire logic           clk_i,
-        input  wire logic           reset_i,
 
         // PS2 Input
         input  wire byte_t          data_i,
@@ -40,13 +39,6 @@ always_ff @(posedge clk_i) begin
             event_r    <= '{ is_break_r, extended_r, data_i };
             valid_r    <= 1'b1;
         end
-    end
-
-    if (reset_i) begin
-        extended_r <= 1'b0;
-        is_break_r <= 1'b0;
-        event_r    <= '{ default: '0 };
-        valid_r    <= 1'b0;
     end
 end
 

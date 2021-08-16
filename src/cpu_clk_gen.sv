@@ -6,7 +6,6 @@ module cpu_clk_gen
     import common::*;
     (
         input  wire logic sys_clk_i,     // 100MHz system clock
-        input  wire logic reset_async_i, // reset
 
         // cpu clock output
         output wire logic cpu_clk_o,     // 50MHz cpu clock
@@ -62,7 +61,7 @@ cpu_clk_pll (
   .LOCKED(ready_async_o),
   .CLKIN1(sys_clk_i),
   .PWRDWN(1'b0),
-  .RST(reset_async_i),
+  .RST(1'b0),
   .CLKFBIN(clk_feedback_w)
 );
 
@@ -98,10 +97,6 @@ assign cpu_clk_o     = counter_r[0];
 
 always_ff @(posedge sys_clk_i) begin
     counter_r <= counter_r + 1;
-
-    if (reset_async_i) begin
-        counter_r <= 2'b00;
-    end
 end
 
 `endif

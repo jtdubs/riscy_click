@@ -19,7 +19,6 @@ module fifo
     )
     (
         input  wire logic                    clk_i,
-        input  wire logic                    reset_i,
 
         // write port
         input  wire logic [(DATA_WIDTH-1):0] write_data_i,
@@ -96,17 +95,6 @@ always_ff @(posedge clk_i) begin
     end else begin
         read_data_r  <= '0;
         read_valid_r <= 1'b0;
-    end
-
-    if (reset_i) begin
-        read_data_r         <= '0;
-        read_valid_r        <= 1'b0;
-        fifo_empty_r        <= 1'b1;
-        fifo_almost_empty_r <= 1'b1;
-        fifo_almost_full_r  <= 1'b0;
-        fifo_full_r         <= 1'b0;
-        read_ptr_r          <= '0;
-        write_ptr_r         <= '0;
     end
 end
 

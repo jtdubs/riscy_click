@@ -12,7 +12,6 @@ module cpu_ex
     (
         // cpu signals
         input  wire logic      clk_i,            // clock
-        input  wire logic      reset_i,          // reset_i
 
         // pipeline input
         input  wire word_t     pc_i,             // program counter
@@ -102,18 +101,6 @@ always_ff @(posedge clk_i) begin
     wb_src_r   <= wb_src_i;
     wb_data_r  <= wb_data_async_o;
     wb_valid_r <= wb_valid_i;
-
-    if (reset_i) begin
-        pc_r       <= NOP_PC;
-        ir_r       <= NOP_IR;
-        ma_addr_r  <= 32'b0;
-        ma_mode_r  <= NOP_MA_MODE;
-        ma_size_r  <= NOP_MA_SIZE;
-        ma_data_r  <= 32'b0;
-        wb_src_r   <= NOP_WB_SRC;
-        wb_data_r  <= 32'b0;
-        wb_valid_r <= NOP_WB_VALID; 
-    end
 
     `log_strobe(("{ \"stage\": \"EX\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"ma_addr\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\" }", pc_r, ir_r, ma_addr_r, ma_mode_r, ma_size_r, ma_data_r, wb_src_r, wb_data_r, wb_valid_r));
 end

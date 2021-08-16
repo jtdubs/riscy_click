@@ -11,7 +11,6 @@ module kbd_controller
     (
         // Clocks
         input  wire logic        clk_i,            // Clock
-        input  wire logic        reset_i,          // Reset
 
         // Inputs
         input  wire logic        ps2_clk_async_i,  // PS2 HID clock (async)
@@ -32,7 +31,6 @@ logic       ps2_valid_w;
 
 ps2_rx ps2_rx (
     .clk_i            (clk_i),
-    .reset_i          (reset_i),
     .ps2_clk_async_i  (ps2_clk_async_i),
     .ps2_data_async_i (ps2_data_async_i),
     .data_o           (ps2_data_w),
@@ -46,7 +44,6 @@ logic           ps2_kbd_valid_w;
 
 ps2_kbd ps2_kbd (
     .clk_i            (clk_i),
-    .reset_i          (reset_i),
     .data_i           (ps2_data_w),
     .valid_i          (ps2_valid_w),
     .event_o          (ps2_kbd_event_w),
@@ -61,7 +58,6 @@ logic           vk_valid_r = '0;
 
 keycode_rom #(.CONTENTS("krom.mem")) krom (
     .clk_i   (clk_i),
-    .reset_i (reset_i),
     .addr_i  (ps2_kbd_event_w[8:0]),
     .data_o  (vk_w)
 );
@@ -80,7 +76,6 @@ fifo #(
     .ADDR_WIDTH(5)
 ) fifo (
     .clk_i               (clk_i),
-    .reset_i             (reset_i),
     .write_data_i        ({ is_break_r, vk_w }),
     .write_enable_i      (vk_valid_r),
     .read_enable_i       (read_enable_i),

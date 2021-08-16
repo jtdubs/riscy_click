@@ -2,8 +2,6 @@ TODO:
 - Verilog
     - All the CSR signals should be _async ??
     - Can I make the main ID casez unique?  It's close.
-    - Can I replace reset signal with default values or all registers?
-        - Does that help timing and complexity?  If so, how much?
 - Peripherals
     - UART
 - BIOS

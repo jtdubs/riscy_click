@@ -9,7 +9,6 @@ module keycode_rom
     )
     (
         input  wire logic       clk_i,
-        input  wire logic       reset_i,
 
         // port
         input  wire logic [8:0] addr_i,
@@ -55,7 +54,7 @@ character_sprom_inst (
     .douta(data_o),
     .ena(1'b1),
     .regcea(1'b1),
-    .rsta(reset_i),
+    .rsta(1'b0),
     .dbiterra(),
     .sbiterra(),
     .injectdbiterra(1'b0),
@@ -77,7 +76,7 @@ end
 logic [7:0] data_r = '0;
 
 always_ff @(posedge clk_i) begin
-    data_r <= reset_i ? 8'b0 : rom[addr_i];
+    data_r <= rom[addr_i];
 end
 
 assign data_o = data_r;

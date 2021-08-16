@@ -12,7 +12,6 @@ module cpu_ma
     (
         // cpu signals
         input  wire logic       clk_i,             // clock
-        input  wire logic       reset_i,           // reset_i
 
         // data memory
         output      word_t      dmem_addr_o,       // address
@@ -118,16 +117,6 @@ always_ff @(posedge clk_i) begin
     ma_alignment_r <= ma_addr_i[1:0];
     wb_data_r      <= wb_data_i;
     wb_valid_r     <= wb_valid_i;
-
-    if (reset_i) begin
-        pc_r           <= NOP_PC;
-        ir_r           <= NOP_IR;
-        load_r         <= 1'b0;
-        ma_size_r      <= NOP_MA_SIZE;
-        ma_alignment_r <= 2'b00;
-        wb_data_r      <= 32'b0;
-        wb_valid_r     <= NOP_WB_VALID;
-    end
 
     `log_strobe(("{ \"stage\": \"MA\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"load\": \"%0d\", \"ma_size\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\" }", pc_r, ir_r, load_r, ma_size_r, wb_data_r, wb_valid_r));
 end

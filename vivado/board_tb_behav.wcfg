@@ -13,15 +13,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="30,550.600 ns"></ZoomStartTime>
-      <ZoomEndTime time="30,968.001 ns"></ZoomEndTime>
-      <Cursor1Time time="30,771.000 ns"></Cursor1Time>
+      <ZoomStartTime time="37.040 ns"></ZoomStartTime>
+      <ZoomEndTime time="455.641 ns"></ZoomEndTime>
+      <Cursor1Time time="1,000.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="307"></NameColumnWidth>
-      <ValueColumnWidth column_width="142"></ValueColumnWidth>
+      <ValueColumnWidth column_width="136"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="11" />
+   <WVObjectSize size="12" />
    <wave_markers>
       <marker time="30790000" label="" />
    </wave_markers>
@@ -48,26 +48,6 @@
    <wvobject fp_name="group83" type="group">
       <obj_property name="label">Reset</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <wvobject fp_name="/board_tb/board/chipset/reset_async_i" type="logic">
-         <obj_property name="ElementShortName">reset_async_i</obj_property>
-         <obj_property name="ObjectShortName">reset_async_i</obj_property>
-      </wvobject>
-      <wvobject fp_name="/board_tb/board/chipset/cpu_reset_r" type="logic">
-         <obj_property name="ElementShortName">cpu_reset_r</obj_property>
-         <obj_property name="ObjectShortName">cpu_reset_r</obj_property>
-      </wvobject>
-      <wvobject fp_name="/board_tb/board/chipset/cpu_reset_chain_r" type="array">
-         <obj_property name="ElementShortName">cpu_reset_chain_r[11:0]</obj_property>
-         <obj_property name="ObjectShortName">cpu_reset_chain_r[11:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/board_tb/board/chipset/pxl_reset_r" type="logic">
-         <obj_property name="ElementShortName">pxl_reset_r</obj_property>
-         <obj_property name="ObjectShortName">pxl_reset_r</obj_property>
-      </wvobject>
-      <wvobject fp_name="/board_tb/board/chipset/pxl_reset_chain_r" type="array">
-         <obj_property name="ElementShortName">pxl_reset_chain_r[11:0]</obj_property>
-         <obj_property name="ObjectShortName">pxl_reset_chain_r[11:0]</obj_property>
-      </wvobject>
    </wvobject>
    <wvobject fp_name="group82" type="group">
       <obj_property name="label">VGA</obj_property>
@@ -112,6 +92,7 @@
    <wvobject fp_name="group81" type="group">
       <obj_property name="label">Instruction Bus</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/board_tb/board/chipset/imem_addr_w" type="array">
          <obj_property name="ElementShortName">imem_addr_w[31:0]</obj_property>
          <obj_property name="ObjectShortName">imem_addr_w[31:0]</obj_property>
@@ -124,6 +105,7 @@
    <wvobject fp_name="group80" type="group">
       <obj_property name="label">Data Bus</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/board_tb/board/chipset/dmem_read_addr_r" type="array">
          <obj_property name="ElementShortName">dmem_read_addr_r[31:0]</obj_property>
          <obj_property name="ObjectShortName">dmem_read_addr_r[31:0]</obj_property>
@@ -183,6 +165,7 @@
       <wvobject fp_name="group87" type="group">
          <obj_property name="label">BIOS ROM</obj_property>
          <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/board_tb/board/chipset/bios_read_data_w" type="array">
             <obj_property name="ElementShortName">bios_read_data_w[31:0]</obj_property>
             <obj_property name="ObjectShortName">bios_read_data_w[31:0]</obj_property>
@@ -192,7 +175,6 @@
    <wvobject fp_name="group422" type="group">
       <obj_property name="label">Keyboard</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/board_tb/board/chipset/kbd/ps2_clk_async_i" type="logic">
          <obj_property name="ElementShortName">ps2_clk_async_i</obj_property>
          <obj_property name="ObjectShortName">ps2_clk_async_i</obj_property>
@@ -221,14 +203,6 @@
          <obj_property name="ElementShortName">ps2_valid_w</obj_property>
          <obj_property name="ObjectShortName">ps2_valid_w</obj_property>
       </wvobject>
-      <wvobject fp_name="/board_tb/board/chipset/kbd/kbd_event_w" type="array">
-         <obj_property name="ElementShortName">kbd_event_w</obj_property>
-         <obj_property name="ObjectShortName">kbd_event_w</obj_property>
-      </wvobject>
-      <wvobject fp_name="/board_tb/board/chipset/kbd/kbd_valid_w" type="logic">
-         <obj_property name="ElementShortName">kbd_valid_w</obj_property>
-         <obj_property name="ObjectShortName">kbd_valid_w</obj_property>
-      </wvobject>
    </wvobject>
    <wvobject fp_name="group423" type="group">
       <obj_property name="label">CPU</obj_property>
@@ -238,6 +212,10 @@
          <obj_property name="label">Pipeline</obj_property>
          <obj_property name="DisplayName">label</obj_property>
          <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/first_cycle_r" type="array">
+            <obj_property name="ElementShortName">first_cycle_r[2:0]</obj_property>
+            <obj_property name="ObjectShortName">first_cycle_r[2:0]</obj_property>
+         </wvobject>
          <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/pc_i" type="array">
             <obj_property name="ElementShortName">pc_i[31:0]</obj_property>
             <obj_property name="ObjectShortName">pc_i[31:0]</obj_property>
@@ -282,7 +260,6 @@
       <wvobject fp_name="group435" type="group">
          <obj_property name="label">MA</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_ma/dmem_addr_o" type="array">
             <obj_property name="ElementShortName">dmem_addr_o[31:0]</obj_property>
             <obj_property name="ObjectShortName">dmem_addr_o[31:0]</obj_property>
@@ -323,7 +300,6 @@
       <wvobject fp_name="group445" type="group">
          <obj_property name="label">WB</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_wb/dmem_read_data_i" type="array">
             <obj_property name="ElementShortName">dmem_read_data_i[31:0]</obj_property>
             <obj_property name="ObjectShortName">dmem_read_data_i[31:0]</obj_property>
@@ -355,6 +331,60 @@
          <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_wb/empty_async_o" type="logic">
             <obj_property name="ElementShortName">empty_async_o</obj_property>
             <obj_property name="ObjectShortName">empty_async_o</obj_property>
+         </wvobject>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group132" type="group">
+      <obj_property name="label">Clocks</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="group139" type="group">
+         <obj_property name="label">Pixel</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/board_tb/board/pixel_clk_gen/sys_clk_i" type="logic">
+            <obj_property name="ElementShortName">sys_clk_i</obj_property>
+            <obj_property name="ObjectShortName">sys_clk_i</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/pixel_clk_gen/pxl_clk_o" type="logic">
+            <obj_property name="ElementShortName">pxl_clk_o</obj_property>
+            <obj_property name="ObjectShortName">pxl_clk_o</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/pixel_clk_gen/ready_async_o" type="logic">
+            <obj_property name="ElementShortName">ready_async_o</obj_property>
+            <obj_property name="ObjectShortName">ready_async_o</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/pixel_clk_gen/clk_feedback_w" type="logic">
+            <obj_property name="ElementShortName">clk_feedback_w</obj_property>
+            <obj_property name="ObjectShortName">clk_feedback_w</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/pixel_clk_gen/pxl_clk_w" type="logic">
+            <obj_property name="ElementShortName">pxl_clk_w</obj_property>
+            <obj_property name="ObjectShortName">pxl_clk_w</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group138" type="group">
+         <obj_property name="label">CPU</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/board_tb/board/cpu_clk_gen/sys_clk_i" type="logic">
+            <obj_property name="ElementShortName">sys_clk_i</obj_property>
+            <obj_property name="ObjectShortName">sys_clk_i</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/cpu_clk_gen/cpu_clk_o" type="logic">
+            <obj_property name="ElementShortName">cpu_clk_o</obj_property>
+            <obj_property name="ObjectShortName">cpu_clk_o</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/cpu_clk_gen/ready_async_o" type="logic">
+            <obj_property name="ElementShortName">ready_async_o</obj_property>
+            <obj_property name="ObjectShortName">ready_async_o</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/cpu_clk_gen/clk_feedback_w" type="logic">
+            <obj_property name="ElementShortName">clk_feedback_w</obj_property>
+            <obj_property name="ObjectShortName">clk_feedback_w</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/cpu_clk_gen/cpu_clk_w" type="logic">
+            <obj_property name="ElementShortName">cpu_clk_w</obj_property>
+            <obj_property name="ObjectShortName">cpu_clk_w</obj_property>
          </wvobject>
       </wvobject>
    </wvobject>

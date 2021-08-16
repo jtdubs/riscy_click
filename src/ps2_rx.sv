@@ -10,7 +10,6 @@ module ps2_rx
     import common::*;
     (
         input  wire logic  clk_i,
-        input  wire logic  reset_i,
 
         // PS2 Input
         input  wire logic  ps2_clk_async_i,
@@ -85,9 +84,6 @@ always_ff @(posedge clk_i) begin
         packet_r <= { ps2_data_r, packet_r[10:1] };
     else if (packet_good_w)
         packet_r <= 11'b11111111111;
-
-    if (reset_i)
-        packet_r <= 11'b11111111111;
 end
 
 
@@ -101,11 +97,6 @@ logic  valid_r = '0;
 always_ff @(posedge clk_i) begin
     data_r  <= packet_r[8:1];
     valid_r <= packet_good_w;
-
-    if (reset_i) begin
-        data_r  <= 8'b0;
-        valid_r <= 1'b0;
-    end
 end
 
 assign data_o  = data_r;

@@ -12,7 +12,6 @@ module cpu_csr
     (
         // cpu signals
         input  wire logic       clk_i,         // clock
-        input  wire logic       reset_i,       // reset_i
 
         // control port
         input  wire logic       retired_i,     // did an instruction retire this cycle
@@ -251,10 +250,6 @@ always_ff @(posedge clk_i) begin
     else if (jmp_accept_i && mret_i)
         // on accepted mret, restore previous value
         { mstatus_mie_r, mstatus_mpie_r } <= { mstatus_mpie_r, 1'b1           };
-
-    if (reset_i)
-        // reset to interrupts disabled
-        { mstatus_mie_r, mstatus_mpie_r } <= { 1'b0,           1'b0           };
 end
 
 // update trap metadata
@@ -268,13 +263,6 @@ always_ff @(posedge clk_i) begin
     else if (jmp_accept_i && mret_i)
         // on return, cause is set back to default
         mcause_r <= MCAUSE_DEFAULT;
-
-    if (reset_i) begin
-        mcause_r <= MCAUSE_DEFAULT;
-        mtval_r  <= MTVAL_DEFAULT;
-        mtval2_r <= MTVAL2_DEFAULT;
-        mtinst_r <= MTINST_DEFAULT;
-    end
 end
 
 // execption program counter
@@ -287,10 +275,6 @@ always_ff @(posedge clk_i) begin
         mepc_r <= trap_pc_i;
     else if (jmp_accept_i && mret_i)
         // on accepted mret, restore previous value
-        mepc_r <= MEPC_DEFAULT;
-
-    if (reset_i)
-        // reset to interrupts disabled
         mepc_r <= MEPC_DEFAULT;
 end
 
@@ -371,10 +355,6 @@ always_ff @(posedge clk_i) begin
     end else begin
         read_data_r <= 32'b0;
     end
-
-    if (reset_i) begin
-        read_data_r <= 32'b0;
-    end
 end
 
 assign read_data_o = read_data_r;
@@ -414,20 +394,6 @@ always_ff @(posedge clk_i) begin
         time_r         <= time_w;
         minstret_r     <= minstret_w;
     end
-
-    if (reset_i) begin
-        mtvec_r         <= MTVEC_DEFAULT;
-        mcountinhibit_r <= MCOUNTINHIBIT_DEFAULT;
-        mcycle_r        <= MCYCLE_DEFAULT;
-        time_r          <= TIME_DEFAULT;
-        minstret_r      <= MINSTRET_DEFAULT;
-        mscratch_r      <= MSCRATCH_DEFAULT;
-        meie_r          <= 1'b0;
-        mtie_r          <= 1'b0;
-        msie_r          <= 1'b0;
-        mtip_r          <= 1'b0;
-        msip_r          <= 1'b0;
-    end 
 end
 
 endmodule

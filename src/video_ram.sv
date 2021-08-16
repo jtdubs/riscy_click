@@ -7,7 +7,6 @@ module video_ram
     (
         // cpu interface
         input  wire logic        cpu_clk_i,
-        input  wire logic        cpu_reset_i,
         input  wire word_t       cpu_addr_i,
         input  wire word_t       cpu_write_data_i,
         input  wire logic [ 3:0] cpu_write_mask_i,
@@ -15,7 +14,6 @@ module video_ram
 
         // vga controller interface
         input  wire logic        pxl_clk_i,
-        input  wire logic        pxl_reset_i,
         input  wire logic [11:0] pxl_addr_i,
         output wire byte_t       pxl_data_o
     );
@@ -77,7 +75,7 @@ video_tdpram_inst (
     .wea(cpu_write_mask_i),
     .ena(1'b1),
     .regcea(1'b1),
-    .rsta(cpu_reset_i),
+    .rsta(1'b0),
     .dbiterra(),
     .sbiterra(),
     .injectdbiterra(1'b0),
@@ -91,7 +89,7 @@ video_tdpram_inst (
     .web(1'b0),
     .enb(1'b1),
     .regceb(1'b1),
-    .rstb(pxl_reset_i),
+    .rstb(1'b0),
     .dbiterrb(),
     .sbiterrb(),
     .injectdbiterrb(1'b0),
@@ -111,7 +109,7 @@ byte_t mem_r [0:4095] = '{ default: '0 };
 word_t cpu_read_data_r = '0;
 
 always_ff @(posedge cpu_clk_i) begin
-    cpu_read_data_r <= cpu_reset_i ? 32'b0 : { mem_r[cpu_addr_i+3], mem_r[cpu_addr_i+2], mem_r[cpu_addr_i+1], mem_r[cpu_addr_i+0] };
+    cpu_read_data_r <= { mem_r[cpu_addr_i+3], mem_r[cpu_addr_i+2], mem_r[cpu_addr_i+1], mem_r[cpu_addr_i+0] };
 
     if (cpu_write_mask_i[0]) mem_r[cpu_addr_i+0] <= cpu_write_data_i[ 7: 0];
     if (cpu_write_mask_i[1]) mem_r[cpu_addr_i+1] <= cpu_write_data_i[15: 8];
@@ -126,7 +124,7 @@ assign cpu_read_data_o = cpu_read_data_r;
 byte_t pxl_data_r = '0;
 
 always_ff @(posedge pxl_clk_i) begin
-    pxl_data_r <= pxl_reset_i ? 8'b0 : mem_r[pxl_addr_i];
+    pxl_data_r <= mem_r[pxl_addr_i];
 end
 
 assign pxl_data_o = pxl_data_r;

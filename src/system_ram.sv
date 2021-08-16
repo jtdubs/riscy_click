@@ -6,7 +6,6 @@ module system_ram
     import common::*;
     (
         input  wire logic       clk_i,
-        input  wire logic       reset_i,
 
         // read/write port
         input  wire word_t      addr_i,
@@ -55,7 +54,7 @@ system_spram_inst (
 
     // port
     .clka(clk_i),
-    .rsta(reset_i),
+    .rsta(1'b0),
     .regcea(1'b1),
     .ena(1'b1),
     .addra(addr_i[11:2]),
@@ -79,7 +78,7 @@ logic [31:0] mem_r [0:1023] = '{ default: '0 };
 word_t read_data_r = '0;
 
 always_ff @(posedge clk_i) begin
-    read_data_r <= reset_i ? 32'b0 : mem_r[addr_i[11:2]];
+    read_data_r <= mem_r[addr_i[11:2]];
 
     if (write_mask_i[0]) mem_r[addr_i[11:2]][ 7: 0] <= write_data_i[ 7: 0];
     if (write_mask_i[1]) mem_r[addr_i[11:2]][15: 8] <= write_data_i[15: 8];

@@ -12,7 +12,6 @@ module vga_controller
     import common::*;
     (
         input  wire logic        clk_i,     // 25.2MHz pixel clock
-        input  wire logic        reset_i,   // reset
 
         // video ram interface
         output      logic [11:0] vram_addr_o,
@@ -36,7 +35,6 @@ character_rom #(
 )
 crom_inst (
     .clk_i(clk_i),
-    .reset_i(reset_i),
     .addr_i(crom_addr_w),
     .data_o(crom_data_w)
 );
@@ -58,11 +56,6 @@ always_ff @(posedge clk_i) begin
             y_r[1] <= y_r[1] + 1;
     end else
         x_r[1] <= x_r[1] + 1;
-
-    if (reset_i) begin
-        { x_r[0], x_r[1] } <= 20'b0;
-        { y_r[0], y_r[1] } <= 20'b0;
-    end
 end
 
 
@@ -114,14 +107,6 @@ always_ff @(posedge clk_i) begin
         vga_red_r   <= 4'b0000;
         vga_green_r <= 4'b0000;
         vga_blue_r  <= 4'b0000;
-    end
-
-    if (reset_i) begin
-        vga_red_r   <= 4'b0000;
-        vga_green_r <= 4'b0000;
-        vga_blue_r  <= 4'b0000;
-        vga_hsync_r <= 1'b1;
-        vga_vsync_r <= 1'b1;
     end
 end
 

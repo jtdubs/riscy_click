@@ -11,7 +11,6 @@ module cpu
     (
         // board signals
         input  wire logic       clk_i,
-        input  wire logic       reset_i,
         input  wire logic       interrupt_i,
         output wire logic       halt_o,
 
@@ -99,7 +98,6 @@ wire logic       csr_write_enable_w;
 // Instruction Fetch
 cpu_if cpu_if (
     .clk_i               (clk_i),
-    .reset_i             (reset_i),
     .halt_i              (halt_o),
     .imem_addr_o         (imem_addr_o),
     .imem_data_i         (imem_data_i),
@@ -113,7 +111,6 @@ cpu_if cpu_if (
 // Instruction Decode
 cpu_id cpu_id (
     .clk_i               (clk_i),
-    .reset_i             (reset_i),
     .pc_i                (if_pc_w),
     .ir_i                (if_ir_w),
     .ex_wb_addr_async_i  (ex_wb_addr_async_w),
@@ -164,7 +161,6 @@ cpu_id cpu_id (
 // Execute
 cpu_ex cpu_ex (
     .clk_i               (clk_i),
-    .reset_i             (reset_i),
     .pc_i                (id_pc_w),
     .ir_i                (id_ir_w),
     .alu_op1_i           (id_alu_op1_w),
@@ -195,7 +191,6 @@ cpu_ex cpu_ex (
 // Memory Access
 cpu_ma cpu_ma (
     .clk_i               (clk_i),
-    .reset_i             (reset_i),
     .dmem_addr_o         (dmem_addr_o),
     .dmem_write_data_o   (dmem_write_data_o),
     .dmem_write_mask_o   (dmem_write_mask_o),
@@ -225,7 +220,6 @@ cpu_ma cpu_ma (
 // Write Back
 cpu_wb cpu_wb (
     .clk_i               (clk_i),
-    .reset_i             (reset_i),
     .dmem_read_data_i    (dmem_read_data_i),
     .pc_i                (ma_pc_w),
     .ir_i                (ma_ir_w),
@@ -247,7 +241,6 @@ cpu_wb cpu_wb (
 
 cpu_csr csr (
     .clk_i               (clk_i),
-    .reset_i             (reset_i),
     .retired_i           (csr_retired_w),
     .interrupt_i         (interrupt_i),
     .trap_pc_i           (csr_trap_pc_w),

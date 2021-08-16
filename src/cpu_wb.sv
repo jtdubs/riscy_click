@@ -12,7 +12,6 @@ module cpu_wb
     (
         // cpu signals
         input  wire logic       clk_i,            // clock
-        input  wire logic       reset_i,          // reset
 
         // data memory
         input  wire word_t      dmem_read_data_i, // memory data
@@ -66,13 +65,7 @@ always_comb begin
     wb_addr_async_o  = ir_i[11:7];
     wb_valid_async_o = wb_valid_i;
 
-    if (reset_i) begin
-        wb_addr_async_o  = 5'b0;
-        wb_data_async_o  = 32'b0;
-        wb_valid_async_o = NOP_WB_VALID;
-    end
-
-    empty_async_o = reset_i || (pc_i == NOP_PC);
+    empty_async_o = (pc_i == NOP_PC);
 end
 
 
