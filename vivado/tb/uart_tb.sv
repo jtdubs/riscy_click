@@ -32,11 +32,26 @@ initial begin
 end
 
 // always read from fifo
+integer d;
 initial begin
-    addr_i = 1;
+    addr_i = 2;
     read_enable_i = 1;
     write_data_i = 0;
     write_enable_i = 0;
+    #40000;
+    forever begin
+        for (d=0; d<8'hFF; d++) begin
+            @(negedge clk_i) begin
+                write_data_i <= d;
+                write_enable_i <= 1;
+            end
+            @(negedge clk_i) begin
+                write_enable_i <= 0;
+            end
+            #100000;
+        end
+        #100000;
+    end 
 end
 
 // uart signal driving

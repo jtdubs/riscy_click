@@ -12,15 +12,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0.000000 us"></ZoomStartTime>
-      <ZoomEndTime time="4,846.000001 us"></ZoomEndTime>
-      <Cursor1Time time="3,001.000000 us"></Cursor1Time>
+      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="4,198.001 ns"></ZoomEndTime>
+      <Cursor1Time time="0.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="307"></NameColumnWidth>
       <ValueColumnWidth column_width="130"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="3" />
+   <WVObjectSize size="6" />
    <wvobject fp_name="/uart_tb/uart/rx/clk_i" type="logic">
       <obj_property name="ElementShortName">clk_i</obj_property>
       <obj_property name="ObjectShortName">clk_i</obj_property>
@@ -29,10 +29,125 @@
       <obj_property name="ElementShortName">config_i</obj_property>
       <obj_property name="ObjectShortName">config_i</obj_property>
    </wvobject>
+   <wvobject fp_name="group211" type="group">
+      <obj_property name="label">RX FIFO</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/write_data_i" type="array">
+         <obj_property name="ElementShortName">write_data_i[7:0]</obj_property>
+         <obj_property name="ObjectShortName">write_data_i[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/write_enable_i" type="logic">
+         <obj_property name="ElementShortName">write_enable_i</obj_property>
+         <obj_property name="ObjectShortName">write_enable_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/read_enable_i" type="logic">
+         <obj_property name="ElementShortName">read_enable_i</obj_property>
+         <obj_property name="ObjectShortName">read_enable_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/read_data_o" type="array">
+         <obj_property name="ElementShortName">read_data_o[7:0]</obj_property>
+         <obj_property name="ObjectShortName">read_data_o[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/read_valid_o" type="logic">
+         <obj_property name="ElementShortName">read_valid_o</obj_property>
+         <obj_property name="ObjectShortName">read_valid_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/fifo_empty_o" type="logic">
+         <obj_property name="ElementShortName">fifo_empty_o</obj_property>
+         <obj_property name="ObjectShortName">fifo_empty_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/fifo_almost_empty_o" type="logic">
+         <obj_property name="ElementShortName">fifo_almost_empty_o</obj_property>
+         <obj_property name="ObjectShortName">fifo_almost_empty_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/fifo_almost_full_o" type="logic">
+         <obj_property name="ElementShortName">fifo_almost_full_o</obj_property>
+         <obj_property name="ObjectShortName">fifo_almost_full_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/fifo_full_o" type="logic">
+         <obj_property name="ElementShortName">fifo_full_o</obj_property>
+         <obj_property name="ObjectShortName">fifo_full_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/data_r" type="array">
+         <obj_property name="ElementShortName">data_r[15:0][7:0]</obj_property>
+         <obj_property name="ObjectShortName">data_r[15:0][7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/read_ptr_r" type="array">
+         <obj_property name="ElementShortName">read_ptr_r[3:0]</obj_property>
+         <obj_property name="ObjectShortName">read_ptr_r[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/write_ptr_r" type="array">
+         <obj_property name="ElementShortName">write_ptr_r[3:0]</obj_property>
+         <obj_property name="ObjectShortName">write_ptr_r[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/write_ptr_w" type="array">
+         <obj_property name="ElementShortName">write_ptr_w[3:0]</obj_property>
+         <obj_property name="ObjectShortName">write_ptr_w[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/read_ptr_w" type="array">
+         <obj_property name="ElementShortName">read_ptr_w[3:0]</obj_property>
+         <obj_property name="ObjectShortName">read_ptr_w[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/count_w" type="array">
+         <obj_property name="ElementShortName">count_w[3:0]</obj_property>
+         <obj_property name="ObjectShortName">count_w[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/read_data_r" type="array">
+         <obj_property name="ElementShortName">read_data_r[7:0]</obj_property>
+         <obj_property name="ObjectShortName">read_data_r[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/read_valid_r" type="logic">
+         <obj_property name="ElementShortName">read_valid_r</obj_property>
+         <obj_property name="ObjectShortName">read_valid_r</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/fifo_empty_r" type="logic">
+         <obj_property name="ElementShortName">fifo_empty_r</obj_property>
+         <obj_property name="ObjectShortName">fifo_empty_r</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/fifo_almost_empty_r" type="logic">
+         <obj_property name="ElementShortName">fifo_almost_empty_r</obj_property>
+         <obj_property name="ObjectShortName">fifo_almost_empty_r</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/fifo_almost_full_r" type="logic">
+         <obj_property name="ElementShortName">fifo_almost_full_r</obj_property>
+         <obj_property name="ObjectShortName">fifo_almost_full_r</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/fifo_full_r" type="logic">
+         <obj_property name="ElementShortName">fifo_full_r</obj_property>
+         <obj_property name="ObjectShortName">fifo_full_r</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/DATA_WIDTH" type="array">
+         <obj_property name="ElementShortName">DATA_WIDTH[15:0]</obj_property>
+         <obj_property name="ObjectShortName">DATA_WIDTH[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/ADDR_WIDTH" type="array">
+         <obj_property name="ElementShortName">ADDR_WIDTH[15:0]</obj_property>
+         <obj_property name="ObjectShortName">ADDR_WIDTH[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/ALMOST_EMPTY_MARGIN" type="array">
+         <obj_property name="ElementShortName">ALMOST_EMPTY_MARGIN[15:0]</obj_property>
+         <obj_property name="ObjectShortName">ALMOST_EMPTY_MARGIN[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/ALMOST_FULL_MARGIN" type="array">
+         <obj_property name="ElementShortName">ALMOST_FULL_MARGIN[15:0]</obj_property>
+         <obj_property name="ObjectShortName">ALMOST_FULL_MARGIN[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/CAPACITY" type="array">
+         <obj_property name="ElementShortName">CAPACITY[3:0]</obj_property>
+         <obj_property name="ObjectShortName">CAPACITY[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/ALMOST_EMPTY_COUNT" type="array">
+         <obj_property name="ElementShortName">ALMOST_EMPTY_COUNT[3:0]</obj_property>
+         <obj_property name="ObjectShortName">ALMOST_EMPTY_COUNT[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/rx_fifo/ALMOST_FULL_COUNT" type="array">
+         <obj_property name="ElementShortName">ALMOST_FULL_COUNT[3:0]</obj_property>
+         <obj_property name="ObjectShortName">ALMOST_FULL_COUNT[3:0]</obj_property>
+      </wvobject>
+   </wvobject>
    <wvobject fp_name="group136" type="group">
       <obj_property name="label">RX</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/uart_tb/uart/rx/rxd_i" type="logic">
          <obj_property name="ElementShortName">rxd_i</obj_property>
          <obj_property name="ObjectShortName">rxd_i</obj_property>
@@ -92,6 +207,171 @@
       <wvobject fp_name="/uart_tb/uart/rx/data_valid_o" type="logic">
          <obj_property name="ElementShortName">data_valid_o</obj_property>
          <obj_property name="ObjectShortName">data_valid_o</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group168" type="group">
+      <obj_property name="label">TX</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/uart_tb/uart/tx/cycles_r" type="array">
+         <obj_property name="ElementShortName">cycles_r[23:0]</obj_property>
+         <obj_property name="ObjectShortName">cycles_r[23:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx/packet_r" type="array">
+         <obj_property name="ElementShortName">packet_r[11:0]</obj_property>
+         <obj_property name="ObjectShortName">packet_r[11:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx/odd_parity_w" type="logic">
+         <obj_property name="ElementShortName">odd_parity_w</obj_property>
+         <obj_property name="ObjectShortName">odd_parity_w</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx/parity_w" type="logic">
+         <obj_property name="ElementShortName">parity_w</obj_property>
+         <obj_property name="ObjectShortName">parity_w</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx/packet_w" type="array">
+         <obj_property name="ElementShortName">packet_w[11:0]</obj_property>
+         <obj_property name="ObjectShortName">packet_w[11:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx/read_enable_o" type="logic">
+         <obj_property name="ElementShortName">read_enable_o</obj_property>
+         <obj_property name="ObjectShortName">read_enable_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx/read_data_i" type="array">
+         <obj_property name="ElementShortName">read_data_i[7:0]</obj_property>
+         <obj_property name="ObjectShortName">read_data_i[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx/read_valid_i" type="logic">
+         <obj_property name="ElementShortName">read_valid_i</obj_property>
+         <obj_property name="ObjectShortName">read_valid_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx/txd_w" type="logic">
+         <obj_property name="ElementShortName">txd_w</obj_property>
+         <obj_property name="ObjectShortName">txd_w</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx/txd_o" type="logic">
+         <obj_property name="ElementShortName">txd_o</obj_property>
+         <obj_property name="ObjectShortName">txd_o</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group181" type="group">
+      <obj_property name="label">TX FIFO</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/clk_i" type="logic">
+         <obj_property name="ElementShortName">clk_i</obj_property>
+         <obj_property name="ObjectShortName">clk_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/write_data_i" type="array">
+         <obj_property name="ElementShortName">write_data_i[7:0]</obj_property>
+         <obj_property name="ObjectShortName">write_data_i[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/write_enable_i" type="logic">
+         <obj_property name="ElementShortName">write_enable_i</obj_property>
+         <obj_property name="ObjectShortName">write_enable_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/read_enable_i" type="logic">
+         <obj_property name="ElementShortName">read_enable_i</obj_property>
+         <obj_property name="ObjectShortName">read_enable_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/read_data_o" type="array">
+         <obj_property name="ElementShortName">read_data_o[7:0]</obj_property>
+         <obj_property name="ObjectShortName">read_data_o[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/read_valid_o" type="logic">
+         <obj_property name="ElementShortName">read_valid_o</obj_property>
+         <obj_property name="ObjectShortName">read_valid_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/fifo_empty_o" type="logic">
+         <obj_property name="ElementShortName">fifo_empty_o</obj_property>
+         <obj_property name="ObjectShortName">fifo_empty_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/fifo_almost_empty_o" type="logic">
+         <obj_property name="ElementShortName">fifo_almost_empty_o</obj_property>
+         <obj_property name="ObjectShortName">fifo_almost_empty_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/fifo_almost_full_o" type="logic">
+         <obj_property name="ElementShortName">fifo_almost_full_o</obj_property>
+         <obj_property name="ObjectShortName">fifo_almost_full_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/fifo_full_o" type="logic">
+         <obj_property name="ElementShortName">fifo_full_o</obj_property>
+         <obj_property name="ObjectShortName">fifo_full_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/data_r" type="array">
+         <obj_property name="ElementShortName">data_r[15:0][7:0]</obj_property>
+         <obj_property name="ObjectShortName">data_r[15:0][7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/read_ptr_r" type="array">
+         <obj_property name="ElementShortName">read_ptr_r[3:0]</obj_property>
+         <obj_property name="ObjectShortName">read_ptr_r[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/write_ptr_r" type="array">
+         <obj_property name="ElementShortName">write_ptr_r[3:0]</obj_property>
+         <obj_property name="ObjectShortName">write_ptr_r[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/write_ptr_w" type="array">
+         <obj_property name="ElementShortName">write_ptr_w[3:0]</obj_property>
+         <obj_property name="ObjectShortName">write_ptr_w[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/read_ptr_w" type="array">
+         <obj_property name="ElementShortName">read_ptr_w[3:0]</obj_property>
+         <obj_property name="ObjectShortName">read_ptr_w[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/count_w" type="array">
+         <obj_property name="ElementShortName">count_w[3:0]</obj_property>
+         <obj_property name="ObjectShortName">count_w[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/read_data_r" type="array">
+         <obj_property name="ElementShortName">read_data_r[7:0]</obj_property>
+         <obj_property name="ObjectShortName">read_data_r[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/read_valid_r" type="logic">
+         <obj_property name="ElementShortName">read_valid_r</obj_property>
+         <obj_property name="ObjectShortName">read_valid_r</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/fifo_empty_r" type="logic">
+         <obj_property name="ElementShortName">fifo_empty_r</obj_property>
+         <obj_property name="ObjectShortName">fifo_empty_r</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/fifo_almost_empty_r" type="logic">
+         <obj_property name="ElementShortName">fifo_almost_empty_r</obj_property>
+         <obj_property name="ObjectShortName">fifo_almost_empty_r</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/fifo_almost_full_r" type="logic">
+         <obj_property name="ElementShortName">fifo_almost_full_r</obj_property>
+         <obj_property name="ObjectShortName">fifo_almost_full_r</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/fifo_full_r" type="logic">
+         <obj_property name="ElementShortName">fifo_full_r</obj_property>
+         <obj_property name="ObjectShortName">fifo_full_r</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/DATA_WIDTH" type="array">
+         <obj_property name="ElementShortName">DATA_WIDTH[15:0]</obj_property>
+         <obj_property name="ObjectShortName">DATA_WIDTH[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/ADDR_WIDTH" type="array">
+         <obj_property name="ElementShortName">ADDR_WIDTH[15:0]</obj_property>
+         <obj_property name="ObjectShortName">ADDR_WIDTH[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/ALMOST_EMPTY_MARGIN" type="array">
+         <obj_property name="ElementShortName">ALMOST_EMPTY_MARGIN[15:0]</obj_property>
+         <obj_property name="ObjectShortName">ALMOST_EMPTY_MARGIN[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/ALMOST_FULL_MARGIN" type="array">
+         <obj_property name="ElementShortName">ALMOST_FULL_MARGIN[15:0]</obj_property>
+         <obj_property name="ObjectShortName">ALMOST_FULL_MARGIN[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/CAPACITY" type="array">
+         <obj_property name="ElementShortName">CAPACITY[3:0]</obj_property>
+         <obj_property name="ObjectShortName">CAPACITY[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/ALMOST_EMPTY_COUNT" type="array">
+         <obj_property name="ElementShortName">ALMOST_EMPTY_COUNT[3:0]</obj_property>
+         <obj_property name="ObjectShortName">ALMOST_EMPTY_COUNT[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart/tx_fifo/ALMOST_FULL_COUNT" type="array">
+         <obj_property name="ElementShortName">ALMOST_FULL_COUNT[3:0]</obj_property>
+         <obj_property name="ObjectShortName">ALMOST_FULL_COUNT[3:0]</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>

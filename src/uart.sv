@@ -114,11 +114,40 @@ fifo #(
     .fifo_full_o         ()
 );
 
-
-//
-// Interrupt
-//
-
 always_comb interrupt_o = !rx_fifo_empty_w;
+
+
+//
+// Transmitter
+//
+
+logic       tx_read_enable_w;
+logic       tx_read_valid_w;
+logic [7:0] tx_read_data_w;
+
+fifo #(
+    .DATA_WIDTH(8),
+    .ADDR_WIDTH(4)
+) tx_fifo (
+    .clk_i               (clk_i),
+    .write_data_i        (write_data_i[7:0]),
+    .write_enable_i      (chip_select_w.write_fifo & write_enable_i),
+    .read_enable_i       (tx_read_enable_w),
+    .read_data_o         (tx_read_data_w),
+    .read_valid_o        (tx_read_valid_w),
+    .fifo_empty_o        (),
+    .fifo_almost_empty_o (),
+    .fifo_almost_full_o  (),
+    .fifo_full_o         ()
+);
+
+uart_tx tx (
+    .clk_i         (clk_i),
+    .config_i      (config_r),
+    .txd_o         (txd_o),
+    .read_enable_o (tx_read_enable_w),
+    .read_data_i   (tx_read_data_w),
+    .read_valid_i  (tx_read_valid_w)
+);
 
 endmodule
