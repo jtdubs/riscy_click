@@ -54,15 +54,15 @@ wire word_t      ex_ma_data_w;
 wire wb_src_t    ex_wb_src_w;
 wire word_t      ex_wb_data_w;
 wire logic       ex_wb_valid_w;
-wire regaddr_t   ex_wb_addr_w;
-wire word_t      ex_wb_data_w;
-wire logic       ex_wb_ready_w;
-wire logic       ex_wb_valid_w;
+wire regaddr_t   ex_wb_addr_async_w;
+wire word_t      ex_wb_data_async_w;
+wire logic       ex_wb_ready_async_w;
+wire logic       ex_wb_valid_async_w;
 wire logic       ex_empty_w;
-wire regaddr_t   ma_wb_addr_w;
-wire word_t      ma_wb_data_w;
-wire logic       ma_wb_ready_w;
-wire logic       ma_wb_valid_w;
+wire regaddr_t   ma_wb_addr_async_w;
+wire word_t      ma_wb_data_async_w;
+wire logic       ma_wb_ready_async_w;
+wire logic       ma_wb_valid_async_w;
 wire logic       ma_empty_w;
 wire word_t      ma_pc_w;
 wire word_t      ma_ir_w;
@@ -113,15 +113,15 @@ cpu_id cpu_id (
     .clk_i               (clk_i),
     .pc_i                (if_pc_w),
     .ir_i                (if_ir_w),
-    .ex_wb_addr_i        (ex_wb_addr_w),
-    .ex_wb_data_i        (ex_wb_data_w),
-    .ex_wb_ready_i       (ex_wb_ready_w),
-    .ex_wb_valid_i       (ex_wb_valid_w),
+    .ex_wb_addr_i        (ex_wb_addr_async_w),
+    .ex_wb_data_i        (ex_wb_data_async_w),
+    .ex_wb_ready_i       (ex_wb_ready_async_w),
+    .ex_wb_valid_i       (ex_wb_valid_async_w),
     .ex_empty_i          (ex_empty_w),
-    .ma_wb_addr_i        (ma_wb_addr_w),
-    .ma_wb_data_i        (ma_wb_data_w),
-    .ma_wb_ready_i       (ma_wb_ready_w),
-    .ma_wb_valid_i       (ma_wb_valid_w),
+    .ma_wb_addr_i        (ma_wb_addr_async_w),
+    .ma_wb_data_i        (ma_wb_data_async_w),
+    .ma_wb_ready_i       (ma_wb_ready_async_w),
+    .ma_wb_valid_i       (ma_wb_valid_async_w),
     .ma_empty_i          (ma_empty_w),
     .wb_addr_i           (wb_addr_w),
     .wb_data_i           (wb_data_w),
@@ -172,10 +172,10 @@ cpu_ex cpu_ex (
     .wb_src_i            (id_wb_src_w),
     .wb_data_i           (id_wb_data_w),
     .wb_valid_i          (id_wb_valid_w),
-    .wb_addr_async_o     (ex_wb_addr_w),
-    .wb_data_async_o     (ex_wb_data_w),
-    .wb_ready_async_o    (ex_wb_ready_w),
-    .wb_valid_async_o    (ex_wb_valid_w),
+    .wb_addr_async_o     (ex_wb_addr_async_w),
+    .wb_data_async_o     (ex_wb_data_async_w),
+    .wb_ready_async_o    (ex_wb_ready_async_w),
+    .wb_valid_async_o    (ex_wb_valid_async_w),
     .empty_async_o       (ex_empty_w),
     .pc_o                (ex_pc_w),
     .ir_o                (ex_ir_w),
@@ -203,10 +203,10 @@ cpu_ma cpu_ma (
     .wb_src_i            (ex_wb_src_w),
     .wb_data_i           (ex_wb_data_w),
     .wb_valid_i          (ex_wb_valid_w),
-    .wb_addr_async_o     (ma_wb_addr_w),
-    .wb_data_async_o     (ma_wb_data_w),
-    .wb_ready_async_o    (ma_wb_ready_w),
-    .wb_valid_async_o    (ma_wb_valid_w),
+    .wb_addr_async_o     (ma_wb_addr_async_w),
+    .wb_data_async_o     (ma_wb_data_async_w),
+    .wb_ready_async_o    (ma_wb_ready_async_w),
+    .wb_valid_async_o    (ma_wb_valid_async_w),
     .empty_async_o       (ma_empty_w),
     .pc_o                (ma_pc_w),
     .ir_o                (ma_ir_w),
