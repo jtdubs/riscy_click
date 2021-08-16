@@ -36,7 +36,7 @@ final stop_logging();
 // First Cycle Detection
 //
 
-logic [1:0] first_cycle_r = 3'b11;
+logic [1:0] first_cycle_r = 2'b11;
 always_ff @(posedge clk_i) begin
     first_cycle_r <= { 1'b0, first_cycle_r[1] };
 end

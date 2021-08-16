@@ -20,7 +20,6 @@ struct sim_model {
     Vchipset*       chipset;
     std::thread     tick_thread;
     bool            thread_exit;
-    bool            reset;
     bool            switches[16];
     uint8_t         segments[8];
     GLuint          vga_texture;
@@ -34,13 +33,11 @@ sim_model_t* sim_create(int argc, char **argv) {
     Verilated::commandArgs(argc, argv);
 
     sim_model_t *model = new sim_model_t();
-    model->reset       = true;
     model->vga_buffer  = new uint16_t[640*480];
     model->keyboard    = key_create();
 
     // Create Chipset
     model->chipset = new Vchipset;
-    model->chipset->reset_async_i = model->reset?1:0;
     model->chipset->switch_async_i = 0x0000;
     model->chipset->cpu_clk_i = 1;
     model->chipset->pxl_clk_i = 1;
@@ -86,10 +83,6 @@ void sim_tick(sim_model_t* model) {
     dut->cpu_clk_i ^= 1;
     if (model->ncycles % 2 == 0) { dut->pxl_clk_i ^= 1; }
 
-    // lower reset after 10 half-cycles
-    if (model->ncycles == 10) model->reset = 0; 
-    dut->reset_async_i = model->reset;
-
     // update switches
     uint16_t switch_async_i = 0;
     for (int i=0; i<16; i++)
@@ -131,8 +124,6 @@ void sim_draw(sim_model_t* model, float secondsElapsed) {
         if (i < 15)
             ImGui::SameLine();
     }
-
-    ImGui::Checkbox("Reset", &model->reset);
 
     uint64_t this_ncycles = model->ncycles;
     uint64_t cyclesElapsed = this_ncycles - last_ncycles;
