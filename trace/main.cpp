@@ -15,11 +15,10 @@ int main(int argc, char** argv)
 
     Vchipset *dut = new Vchipset;
     dut->switch_async_i = 0x1234;
-    dut->reset_async_i = 1;
 
     uint64_t ncycles = 0;
 
-    while (ncycles < 10000 && !Verilated::gotFinish() && (dut->reset_async_i || !dut->halt_o)) {
+    while (ncycles < 10000 && !Verilated::gotFinish() && !dut->halt_o) {
         dut->eval();
 
         ncycles++;
@@ -27,9 +26,6 @@ int main(int argc, char** argv)
         // update clocks
         dut->cpu_clk_i ^= 1;
         if (ncycles % 2 == 0) { dut->pxl_clk_i ^= 1; }
-
-        // lower reset after 10 half-cycles
-        if (ncycles == 10) dut->reset_async_i = 0;
 
         // run ps2 at an absurd rate
         if (ncycles % 16 == 0) key_tick(kbd, &dut->ps2_clk_async_i, &dut->ps2_data_async_i);

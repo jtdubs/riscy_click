@@ -1,15 +1,14 @@
 `verilator_config
 
-lint_off -rule UNUSED          -file "../src/chipset.sv"
 lint_off -rule UNUSED          -file "../src/common.sv"
 lint_off -rule UNUSED          -file "../src/bios_rom.sv"
 lint_off -rule UNUSED          -file "../src/system_ram.sv"
 lint_off -rule UNUSED          -file "../src/cpu_wb.sv"
 lint_off -rule UNUSED          -file "../src/cpu_csr.sv"
+lint_off -rule UNUSED          -file "../src/decoder.sv"
 lint_off -rule CASEINCOMPLETE  -file "../src/alu.sv"
 lint_off -rule CASEINCOMPLETE  -file "../src/cpu_csr.sv"
 lint_off -rule CASEINCOMPLETE  -file "../src/cpu_id.sv"
-lint_off -rule CASEINCOMPLETE  -file "../src/cpu_ma.sv"
 lint_off -rule CASEINCOMPLETE  -file "../src/cpu_wb.sv"
 lint_off -rule PINCONNECTEMPTY -file "../src/board.sv"
 lint_off -rule PINCONNECTEMPTY -file "../src/cpu.sv"
