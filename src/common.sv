@@ -123,19 +123,19 @@ typedef enum logic [2:0] {
 } alu_op2_t;
 
 // ALU Mode
-typedef enum logic [4:0] {
-    ALU_ADD      = 5'b00000,    // Addition
-    ALU_LSL      = 5'b00001,    // Logical Shift Left
-    ALU_SLT      = 5'b00010,    // Less-Than (Signed)
-    ALU_ULT      = 5'b00011,    // Less-Than (Unsigned)
-    ALU_XOR      = 5'b00100,    // Binary XOR
-    ALU_LSR      = 5'b00101,    // Logical Shift Right
-    ALU_OR       = 5'b00110,    // Binary OR
-    ALU_AND      = 5'b00111,    // Binary AND
-    ALU_SUB      = 5'b01000,    // Subtraction
-    ALU_ASR      = 5'b01101,    // Logical Shift Right
-    ALU_COPY1    = 5'b11001,    // Output Operand #1
-    ALU_X        = 5'b11111     // Disabled
+typedef enum logic [3:0] {
+    ALU_ADD      = 4'b0000,    // Addition
+    ALU_LSL      = 4'b0001,    // Logical Shift Left
+    ALU_SLT      = 4'b0010,    // Less-Than (Signed)
+    ALU_ULT      = 4'b0011,    // Less-Than (Unsigned)
+    ALU_XOR      = 4'b0100,    // Binary XOR
+    ALU_LSR      = 4'b0101,    // Logical Shift Right
+    ALU_OR       = 4'b0110,    // Binary OR
+    ALU_AND      = 4'b0111,    // Binary AND
+    ALU_SUB      = 4'b1000,    // Subtraction
+    ALU_ASR      = 4'b1101,    // Logical Shift Right
+    ALU_COPY1    = 4'b1110,    // Output Operand #1
+    ALU_X        = 4'b1111     // Disabled
 } alu_mode_t;
 
 // Memory Access Mode
