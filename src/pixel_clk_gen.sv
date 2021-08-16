@@ -78,7 +78,7 @@ pixel_clk_mmcm (
 // Global Clock Buffer
 BUFGCTRL #(
   .INIT_OUT(0),            // Initial value of BUFGCTRL output ($VALUES;)
-  .PRESELECT_I0("TRUE"),   // BUFGCTRL output uses I0 input ($VALUES;)
+  .PRESELECT_I0("FALSE"),  // BUFGCTRL output uses I0 input ($VALUES;)
   .PRESELECT_I1("FALSE"),  // BUFGCTRL output uses I1 input ($VALUES;)
   .SIM_DEVICE("7SERIES")
 )
@@ -89,8 +89,8 @@ pixel_clk_buffer (
   .I0(pxl_clk_w),      // 1-bit input: Primary clock
   .I1(1'b0),           // 1-bit input: Secondary clock
   .IGNORE0(1'b0),      // 1-bit input: Clock ignore input for I0
-  .IGNORE1(1'b1),      // 1-bit input: Clock ignore input for I1
-  .S0(1'b1),           // 1-bit input: Clock select for I0
+  .IGNORE1(1'b0),      // 1-bit input: Clock ignore input for I1
+  .S0(ready_async_o),  // 1-bit input: Clock select for I0
   .S1(1'b0)            // 1-bit input: Clock select for I1
 );
 
