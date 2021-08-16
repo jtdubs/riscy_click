@@ -13,15 +13,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="37.040 ns"></ZoomStartTime>
-      <ZoomEndTime time="455.641 ns"></ZoomEndTime>
-      <Cursor1Time time="1,000.000 ns"></Cursor1Time>
+      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="1,049.501 ns"></ZoomEndTime>
+      <Cursor1Time time="201,000.000 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="307"></NameColumnWidth>
-      <ValueColumnWidth column_width="136"></ValueColumnWidth>
+      <ValueColumnWidth column_width="130"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="12" />
+   <WVObjectSize size="11" />
    <wave_markers>
       <marker time="30790000" label="" />
    </wave_markers>
@@ -37,13 +37,9 @@
       <obj_property name="ElementShortName">halt_o</obj_property>
       <obj_property name="ObjectShortName">halt_o</obj_property>
    </wvobject>
-   <wvobject fp_name="/board_tb/board/chipset/switch_async_i" type="array">
-      <obj_property name="ElementShortName">switch_async_i[15:0]</obj_property>
-      <obj_property name="ObjectShortName">switch_async_i[15:0]</obj_property>
-   </wvobject>
    <wvobject fp_name="/board_tb/board/chipset/switch_r" type="array">
-      <obj_property name="ElementShortName">switch_r[15:0]</obj_property>
-      <obj_property name="ObjectShortName">switch_r[15:0]</obj_property>
+      <obj_property name="ElementShortName">switch_r[31:0]</obj_property>
+      <obj_property name="ObjectShortName">switch_r[31:0]</obj_property>
    </wvobject>
    <wvobject fp_name="group83" type="group">
       <obj_property name="label">Reset</obj_property>
@@ -106,10 +102,6 @@
       <obj_property name="label">Data Bus</obj_property>
       <obj_property name="DisplayName">label</obj_property>
       <obj_property name="isExpanded"></obj_property>
-      <wvobject fp_name="/board_tb/board/chipset/dmem_read_addr_r" type="array">
-         <obj_property name="ElementShortName">dmem_read_addr_r[31:0]</obj_property>
-         <obj_property name="ObjectShortName">dmem_read_addr_r[31:0]</obj_property>
-      </wvobject>
       <wvobject fp_name="/board_tb/board/chipset/dmem_read_data_w" type="array">
          <obj_property name="ElementShortName">dmem_read_data_w[31:0]</obj_property>
          <obj_property name="ObjectShortName">dmem_read_data_w[31:0]</obj_property>
@@ -126,13 +118,17 @@
          <obj_property name="ElementShortName">dmem_write_mask_w[3:0]</obj_property>
          <obj_property name="ObjectShortName">dmem_write_mask_w[3:0]</obj_property>
       </wvobject>
+      <wvobject fp_name="/board_tb/board/chipset/chip_select_w" type="array">
+         <obj_property name="ElementShortName">chip_select_w</obj_property>
+         <obj_property name="ObjectShortName">chip_select_w</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board_tb/board/chipset/chip_select_r" type="array">
+         <obj_property name="ElementShortName">chip_select_r</obj_property>
+         <obj_property name="ObjectShortName">chip_select_r</obj_property>
+      </wvobject>
       <wvobject fp_name="group84" type="group">
          <obj_property name="label">Seg Display</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <wvobject fp_name="/board_tb/board/chipset/dsp_write_mask_w" type="array">
-            <obj_property name="ElementShortName">dsp_write_mask_w[3:0]</obj_property>
-            <obj_property name="ObjectShortName">dsp_write_mask_w[3:0]</obj_property>
-         </wvobject>
          <wvobject fp_name="/board_tb/board/chipset/dsp_read_data_w" type="array">
             <obj_property name="ElementShortName">dsp_read_data_w[31:0]</obj_property>
             <obj_property name="ObjectShortName">dsp_read_data_w[31:0]</obj_property>
@@ -141,10 +137,6 @@
       <wvobject fp_name="group85" type="group">
          <obj_property name="label">System RAM</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <wvobject fp_name="/board_tb/board/chipset/ram_write_mask_w" type="array">
-            <obj_property name="ElementShortName">ram_write_mask_w[3:0]</obj_property>
-            <obj_property name="ObjectShortName">ram_write_mask_w[3:0]</obj_property>
-         </wvobject>
          <wvobject fp_name="/board_tb/board/chipset/ram_read_data_w" type="array">
             <obj_property name="ElementShortName">ram_read_data_w[31:0]</obj_property>
             <obj_property name="ObjectShortName">ram_read_data_w[31:0]</obj_property>
@@ -153,10 +145,6 @@
       <wvobject fp_name="group86" type="group">
          <obj_property name="label">Video RAM</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <wvobject fp_name="/board_tb/board/chipset/vram_write_mask_w" type="array">
-            <obj_property name="ElementShortName">vram_write_mask_w[3:0]</obj_property>
-            <obj_property name="ObjectShortName">vram_write_mask_w[3:0]</obj_property>
-         </wvobject>
          <wvobject fp_name="/board_tb/board/chipset/vram_read_data_w" type="array">
             <obj_property name="ElementShortName">vram_read_data_w[31:0]</obj_property>
             <obj_property name="ObjectShortName">vram_read_data_w[31:0]</obj_property>
@@ -165,7 +153,6 @@
       <wvobject fp_name="group87" type="group">
          <obj_property name="label">BIOS ROM</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/board_tb/board/chipset/bios_read_data_w" type="array">
             <obj_property name="ElementShortName">bios_read_data_w[31:0]</obj_property>
             <obj_property name="ObjectShortName">bios_read_data_w[31:0]</obj_property>
@@ -175,14 +162,6 @@
    <wvobject fp_name="group422" type="group">
       <obj_property name="label">Keyboard</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <wvobject fp_name="/board_tb/board/chipset/kbd/ps2_clk_async_i" type="logic">
-         <obj_property name="ElementShortName">ps2_clk_async_i</obj_property>
-         <obj_property name="ObjectShortName">ps2_clk_async_i</obj_property>
-      </wvobject>
-      <wvobject fp_name="/board_tb/board/chipset/kbd/ps2_data_async_i" type="logic">
-         <obj_property name="ElementShortName">ps2_data_async_i</obj_property>
-         <obj_property name="ObjectShortName">ps2_data_async_i</obj_property>
-      </wvobject>
       <wvobject fp_name="/board_tb/board/chipset/kbd/read_enable_i" type="logic">
          <obj_property name="ElementShortName">read_enable_i</obj_property>
          <obj_property name="ObjectShortName">read_enable_i</obj_property>
@@ -213,8 +192,8 @@
          <obj_property name="DisplayName">label</obj_property>
          <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/first_cycle_r" type="array">
-            <obj_property name="ElementShortName">first_cycle_r[2:0]</obj_property>
-            <obj_property name="ObjectShortName">first_cycle_r[2:0]</obj_property>
+            <obj_property name="ElementShortName">first_cycle_r[1:0]</obj_property>
+            <obj_property name="ObjectShortName">first_cycle_r[1:0]</obj_property>
          </wvobject>
          <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/pc_i" type="array">
             <obj_property name="ElementShortName">pc_i[31:0]</obj_property>
