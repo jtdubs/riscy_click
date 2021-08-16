@@ -16,6 +16,7 @@ SV_SOURCES += ../src/vga_controller.sv
 SV_SOURCES += ../src/regfile.sv
 SV_SOURCES += ../src/fifo.sv
 SV_SOURCES += ../src/alu.sv
+SV_SOURCES += ../src/decoder.sv
 SV_SOURCES += ../src/cpu_csr.sv
 SV_SOURCES += ../src/cpu_if.sv
 SV_SOURCES += ../src/cpu_wb.sv
