@@ -43,7 +43,7 @@ xpm_memory_tdpram #(
     .USE_MEM_INIT(1),
     .USE_MEM_INIT_MMI(0),
     .WAKEUP_TIME("disable_sleep"),
-    .WRITE_PROTECT(0),
+    .WRITE_PROTECT(1),
 
     // cpu port
     .ADDR_WIDTH_A(10),
