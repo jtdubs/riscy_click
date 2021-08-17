@@ -1,14 +1,18 @@
 TODO:
-- Peripherals
-    - UART
-        - Update BIOS to exercise it
-        - How do I want to handle this in the simulator?  Feels like another window.
-        - Implement flow control in uart.sv
+- FIFO
+    - Make valid go high, and data fall through as soon as available
+    - Change interrupt to come from data_valid_o
 - Interrupt Controller
     - Interrupt controller aggregates interrupts from external sources (keyboard, mouse, UART, etc.)
     - Interrupt controller has an mmap'd register for reading and clearing external interrupts
     - Interrupt controller has a single interrupt output that drives the Interrupt Pending CSR bit
-- Peripherals
+- UART
+    - Update BIOS to exercise it
+    - How do I want to handle this in the simulator?  Feels like another window.
+    - Flow Control
+- Verilog
+    - Split the peripheral stuff out of common.sv into other files.
+- PS/2
     - Full PS/2 driver including sending commands back to keyboard
     - PS/2 Mouse
 - CSR

@@ -470,6 +470,7 @@
       </Config>
     </FileSet>
     <FileSet Name="uart_sim" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/uart_sim" RelGenDir="$PGENDIR/uart_sim">
+      <Filter Type="Srcs"/>
       <File Path="$PPRDIR/tb/uart_tb.sv">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
