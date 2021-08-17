@@ -29,6 +29,9 @@ SV_SOURCES += ../src/board.sv
 SV_SOURCES += ../src/cpu_clk_gen.sv
 SV_SOURCES += ../src/pixel_clk_gen.sv
 SV_SOURCES += ../src/chipset.sv
+SV_SOURCES += ../src/uart.sv
+SV_SOURCES += ../src/uart_tx.sv
+SV_SOURCES += ../src/uart_rx.sv
 
 VLT_SOURCES =
 VLT_SOURCES = ./config.vlt
