@@ -29,9 +29,6 @@ module chipset
         output wire logic        vga_vsync_o     // vga vertical sync output
     );
 
-//    32'hFF000008: begin dmem_read_data_w = { 15'b0, kbd_valid_w, 7'b0, kbd_event_w }; end
-
-
 
 //
 // CPU
