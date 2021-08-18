@@ -59,8 +59,8 @@ static uint32_t DefaultMode = BUILD_CHAR(
     0,   // bg red
     0,   // bg green
     255, // bg blue
-    1,   // underline
-    1    // blink
+    0,   // underline
+    0    // blink
 );
 
 
@@ -69,7 +69,7 @@ static uint32_t DefaultMode = BUILD_CHAR(
 //
 
 void fb_init(void) {
-    fb_clear(' ');
+    fb_clear('\x00');
 }
 
 
