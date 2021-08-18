@@ -36,12 +36,17 @@ word_t enabled_r = '0;
 word_t active_w;
 
 always_comb begin
-    active_w    = pending_r & enabled_r;
-    interrupt_o = active_w != '0;
+    active_w = pending_r & enabled_r;
 end
 
 always_ff @(posedge clk_i) begin
     pending_r <= interrupt_i;
+end
+
+logic  interrupt_r = '0;
+assign interrupt_o = interrupt_r;
+always_ff @(posedge clk_i) begin
+    interrupt_r <= active_w != '0;
 end
 
 word_t read_data_w = '0;

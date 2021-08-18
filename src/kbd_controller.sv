@@ -12,7 +12,7 @@ module kbd_controller
     (
         // System Interface
         input  wire logic       clk_i,
-        output      logic       interrupt_o,
+        output wire logic       interrupt_o,
 
         // PS/2 Interface
         input  wire logic       ps2_clk_i,
@@ -39,12 +39,14 @@ typedef enum logic [3:0] {
 } port_t;
 
 // read
+word_t read_data_w = '0;
+assign read_data_o = read_data_w;
 always_ff @(posedge clk_i) begin
     if (chip_select_i && read_enable_i) begin
         case (addr_i)
-        PORT_DATA:    read_data_o <= { 15'b0, read_valid_w, 7'b0, read_data_w };
-        PORT_CONTROL: read_data_o <= 32'b0;
-        default:      read_data_o <= 32'b0;
+        PORT_DATA:    read_data_w <= { 15'b0, fifo_valid_w, 7'b0, fifo_data_w };
+        PORT_CONTROL: read_data_w <= 32'b0;
+        default:      read_data_w <= 32'b0;
         endcase
     end
 end
@@ -109,8 +111,8 @@ end
 
 // Buffer
 
-logic [8:0] read_data_w;
-logic       read_valid_w;
+wire logic [8:0] fifo_data_w;
+wire logic       fifo_valid_w;
 
 fifo #(
     .DATA_WIDTH(9),
@@ -120,8 +122,8 @@ fifo #(
     .write_data_i        ({ is_break_r, vk_w }),
     .write_enable_i      (vk_valid_r),
     .read_enable_i       (chip_select_i && read_enable_i),
-    .read_data_o         (read_data_w),
-    .read_valid_o        (read_valid_w),
+    .read_data_o         (fifo_data_w),
+    .read_valid_o        (fifo_valid_w),
     .fifo_empty_o        (),
     .fifo_almost_empty_o (),
     .fifo_almost_full_o  (),
@@ -129,6 +131,6 @@ fifo #(
 );
 
 // interrupt
-always_comb interrupt_o = read_valid_w;
+assign interrupt_o = fifo_valid_w;
 
 endmodule

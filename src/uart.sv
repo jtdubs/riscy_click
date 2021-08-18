@@ -44,12 +44,14 @@ typedef enum logic [3:0] {
 } port_t;
 
 // read
+word_t read_data_w = '0;
+assign read_data_o = read_data_w;
 always_ff @(posedge clk_i) begin
     if (chip_select_i && read_enable_i) begin
         case (addr_i)
-        PORT_CONFIG: read_data_o <= config_r;
-        PORT_READ:   read_data_o <= { 23'b0, rx_fifo_valid_w, rx_fifo_data_w };
-        default:     read_data_o <= 32'b0;
+        PORT_CONFIG: read_data_w <= config_r;
+        PORT_READ:   read_data_w <= { 23'b0, rx_fifo_valid_w, rx_fifo_data_w };
+        default:     read_data_w <= 32'b0;
         endcase
     end
 end
