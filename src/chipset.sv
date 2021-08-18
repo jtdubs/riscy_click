@@ -176,7 +176,7 @@ system_ram ram (
 
 // Video RAM
 logic [11:0] vga_vram_addr_w;
-byte_t       vga_vram_data_w;
+word_t       vga_vram_data_w;
 
 video_ram vram (
     // cpu port

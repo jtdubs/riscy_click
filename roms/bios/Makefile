@@ -23,7 +23,7 @@ CFLAGS += -std=c18
 CFLAGS += -nostartfiles
 CFLAGS += -nodefaultlibs
 CFLAGS += -ffreestanding
-CFLAGS += -O0
+CFLAGS += -Os
 CFLAGS += -mstrict-align
 # CFLAGS += -g
 CFLAGS += -Wall
