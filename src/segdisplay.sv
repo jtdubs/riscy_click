@@ -32,7 +32,7 @@ module segdisplay
 // Bus Interface
 //
 
-logic  enabled_r = '1;
+logic  enabled_r = '0;
 word_t value_r   = '0;
 
 typedef enum logic [3:0] {

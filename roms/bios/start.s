@@ -103,7 +103,7 @@ _trap_handler:
     sw a6, 56(sp)
     sw a7, 60(sp)
 
-    jal on_kbd_interrupt
+    jal on_interrupt
 
     lw a7, 60(sp)
     lw a6, 56(sp)

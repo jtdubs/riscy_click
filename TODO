@@ -1,6 +1,7 @@
 TODO:
+- BIOS
+    - UART
 - UART
-    - Update BIOS to exercise it
     - How do I want to handle this in the simulator?  Feels like another window.
     - Flow Control
 - PS/2

@@ -1,9 +1,7 @@
-#include "keyboard.h"
+#include "peripherals/keyboard.h"
+#include "peripherals/display.h"
+#include "peripherals/framebuffer.h"
 #include "console.h"
-#include "segment.h"
-#include "display.h"
-#include "keys.h"
-#include "mmap.h"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -63,7 +61,7 @@ char con_getch(void) {
 
         uint8_t key = kbd_to_key(e);
 
-        seg_write(key);
+        dsp_write(key);
 
         switch (key) {
             case KEY_LEFTSHIFT:

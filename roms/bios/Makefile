@@ -1,7 +1,7 @@
 .PHONY: all clean
 
 ASM_SOURCES = $(wildcard *.s)
-CXX_SOURCES = $(wildcard *.c)
+CXX_SOURCES = $(wildcard *.c) $(wildcard peripherals/*.c)
 LINK_SCRIPT = bios.ld
 
 TARGET = bios
@@ -41,7 +41,7 @@ $(ELF_TARGET): $(OBJECTS)
 	$(LD) $(LDFLAGS) -T $(LINK_SCRIPT) -o $@ $^
 
 clean:
-	rm -f *.o *.elf *.dis *.img *.mem
+	rm -f $(OBJECTS) $(ELF_TARGET) $(DIS_TARGET) $(MEM_TARGET)
 
 %.o: %.s
 	$(CC) $(CFLAGS) -o $@ $^

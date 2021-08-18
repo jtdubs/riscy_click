@@ -27,14 +27,17 @@ module interrupt_controller
 
 typedef enum logic [3:0] {
     PORT_PENDING = 4'b0000,
-    PORT_ENABLED = 4'b0001
+    PORT_ENABLED = 4'b0001,
+    PORT_ACTIVE  = 4'b0010
 } port_t;
 
 word_t pending_r = '0;
-word_t enabled_r = 32'hFFFFFFFF;
+word_t enabled_r = '0;
+word_t active_w;
 
 always_comb begin
-    interrupt_o = (pending_r & enabled_r) != 32'b0;
+    active_w    = pending_r & enabled_r;
+    interrupt_o = active_w != '0;
 end
 
 always_ff @(posedge clk_i) begin
@@ -48,6 +51,7 @@ always_ff @(posedge clk_i) begin
         case (addr_i)
         PORT_PENDING: read_data_w <= pending_r;
         PORT_ENABLED: read_data_w <= enabled_r;
+        PORT_ACTIVE:  read_data_w <= active_w;
         default:      read_data_w <= 32'b0;
         endcase
     end
@@ -56,13 +60,6 @@ end
 always_ff @(posedge clk_i) begin
     if (chip_select_i) begin
         case (addr_i)
-        PORT_PENDING:
-            begin
-                if (write_mask_i[0]) pending_r[ 7: 0] <= write_data_i[ 7: 0];
-                if (write_mask_i[1]) pending_r[15: 8] <= write_data_i[15: 8];
-                if (write_mask_i[2]) pending_r[23:16] <= write_data_i[23:16];
-                if (write_mask_i[3]) pending_r[31:24] <= write_data_i[31:24];
-            end
         PORT_ENABLED:
             begin
                 if (write_mask_i[0]) enabled_r[ 7: 0] <= write_data_i[ 7: 0];

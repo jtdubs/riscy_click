@@ -1,13 +1,18 @@
-#include "mmap.h"
-#include "keyboard.h"
-#include "display.h"
-#include "segment.h"
+#include "peripherals/display.h"
+#include "peripherals/framebuffer.h"
+#include "peripherals/interrupt.h"
+#include "peripherals/keyboard.h"
+#include "peripherals/switches.h"
 #include "console.h"
 
 #include <stdint.h>
 
 int main() {
-    dsp_clear(' ');
+    irq_init();
+    dsp_init();
+    kbd_init();
+    sw_init();
+    fb_init();
 
     // main loop
     uint8_t x = 0;
@@ -19,18 +24,18 @@ int main() {
         switch (c) {
         case '\n':
             x = 0;
-            if (++y == (DSP_HEIGHT-1)) y = 0;
+            if (++y == (FrameBufferHeight-1)) y = 0;
             break;
         case '\x1B':
             x = 0;
             y = 0;
-            dsp_clear(' ');
+            fb_clear(' ');
             break;
         default:
-            dsp_write(x, y, c);
-            if (++x == DSP_WIDTH) x = 0;
+            fb_write(x, y, c);
+            if (++x == FrameBufferWidth) x = 0;
             if (x == 0)
-                if (++y == (DSP_HEIGHT-1)) y = 0;
+                if (++y == (FrameBufferHeight-1)) y = 0;
             break;
         }
     }

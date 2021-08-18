@@ -101,6 +101,7 @@ end
 // Memory Map
 // FFFF0000 - R   - Interrupt Controller Pending
 // FFFF0004 - R/W - Interrupt Controller Enabled
+// FFFF0008 - R   - Interrupt Controller Active
 // FFFF0100 - R/W - UART Config  { baud, parity, etc. }
 // FFFF0104 - R   - UART Status  { tx fifo status, rx fifo status, break indicator }  (TODO)
 // FFFF0108 - R   - UART Rx Data { data available, data }
