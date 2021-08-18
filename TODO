@@ -8,8 +8,6 @@ TODO:
 - PS/2
     - Full PS/2 driver including sending commands back to keyboard
     - PS/2 Mouse
-- CSR
-    - Consider pulling CSR state machine out into it's own module to simplify ID
 - VGA
     - 1280x1024
 - Machine Level ISA
