@@ -14,6 +14,8 @@ int main() {
     sw_init();
     fb_init();
 
+    dsp_enable();
+
     // main loop
     uint8_t x = 0;
     uint8_t y = 0;
