@@ -8,6 +8,7 @@
 module uart_rx
     // Import Constants
     import common::*;
+    import uart_common::*;
     (
         input  wire logic         clk_i,
         input  wire uart_config_t config_i,

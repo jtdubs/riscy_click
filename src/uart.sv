@@ -8,19 +8,20 @@
 module uart
     // Import Constants
     import common::*;
+    import uart_common::*;
     (
         input  wire logic       clk_i,
-        input  wire logic       chip_select_i,
         output      logic       interrupt_o,
 
         // UART
         input  wire logic       rxd_i,
         output wire logic       txd_o,
 
-        // Memory Mapped Interface
-        input  wire logic [1:0] addr_i,
+        // Bus Interface
+        input  wire logic       chip_select_i,
+        input  wire logic [3:0] addr_i,
         input  wire logic       read_enable_i,
-        output      word_t      read_data_o,
+        output wire word_t      read_data_o,
         input  wire word_t      write_data_i,
         input  wire logic [3:0] write_mask_i
     );
@@ -31,52 +32,41 @@ uart_config_t config_r = '{ DATA_EIGHT, PARITY_NONE, STOP_ONE, FLOW_NONE, 1'b0, 
 
 
 //
-// Reads & Writes
+// Bus Interface
 //
 
-typedef struct packed {
-    logic uart_config;
-    logic read_fifo;
-    logic write_fifo;
-} chip_select_t;
+// ports
+typedef enum logic [3:0] {
+    PORT_CONFIG = 4'b0000,
+    PORT_STATUS = 4'b0001,
+    PORT_READ   = 4'b0010,
+    PORT_WRITE  = 4'b0011
+} port_t;
 
-chip_select_t chip_select_w;
-chip_select_t chip_select_r;
-
+// read
 always_ff @(posedge clk_i) begin
-    chip_select_r <= chip_select_w;
-end
-
-always_comb begin
-    if (chip_select_i) begin
-        unique casez (addr_i)
-        2'b00: chip_select_w = '{ uart_config: 1'b1, default: 1'b0 };
-        2'b01: chip_select_w = '{ read_fifo:   1'b1, default: 1'b0 };
-        2'b10: chip_select_w = '{ write_fifo:  1'b1, default: 1'b0 };
-        2'b11: chip_select_w = '{                    default: 1'b0 };
+    if (chip_select_i && read_enable_i) begin
+        case (addr_i)
+        PORT_CONFIG: read_data_o <= config_r;
+        PORT_READ:   read_data_o <= { 23'b0, rx_fifo_valid_w, rx_fifo_data_w };
+        default:     read_data_o <= 32'b0;
         endcase
-    end else begin
-        chip_select_w = '{                    default: 1'b0 };
     end
 end
 
-always_comb begin
-    if (chip_select_r.uart_config)
-        read_data_o = config_r;
-    else if (chip_select_r.read_fifo)
-        read_data_o = { 23'b0, rx_fifo_valid_w, rx_fifo_data_w };
-    else if (chip_select_r.write_fifo)
-        read_data_o = 32'b0;
-    else
-        read_data_o = 32'b0;
-end
-
+// write
 always_ff @(posedge clk_i) begin
-    if (chip_select_r.uart_config) begin
-        if (write_mask_i[0]) config_r[7 : 0] <= write_data_i[ 7: 0];
-        if (write_mask_i[1]) config_r[15: 8] <= write_data_i[15: 8];
-        if (write_mask_i[2]) config_r[23:16] <= write_data_i[23:16];
-        if (write_mask_i[3]) config_r[31:24] <= write_data_i[31:24];
+    if (chip_select_i) begin
+        case (addr_i)
+        PORT_CONFIG:
+            begin
+                if (write_mask_i[0]) config_r[7 : 0] <= write_data_i[ 7: 0];
+                if (write_mask_i[1]) config_r[15: 8] <= write_data_i[15: 8];
+                if (write_mask_i[2]) config_r[23:16] <= write_data_i[23:16];
+                if (write_mask_i[3]) config_r[31:24] <= write_data_i[31:24];
+            end
+        default: ;
+        endcase
     end
 end
 
@@ -106,7 +96,7 @@ fifo #(
     .clk_i               (clk_i),
     .write_data_i        (rx_data_w),
     .write_enable_i      (rx_valid_w),
-    .read_enable_i       (chip_select_w.read_fifo && read_enable_i),
+    .read_enable_i       (addr_i == PORT_READ && read_enable_i),
     .read_data_o         (rx_fifo_data_w),
     .read_valid_o        (rx_fifo_valid_w),
     .fifo_empty_o        (rx_fifo_empty_w),
@@ -132,7 +122,7 @@ fifo #(
 ) tx_fifo (
     .clk_i               (clk_i),
     .write_data_i        (write_data_i[7:0]),
-    .write_enable_i      (chip_select_w.write_fifo & write_mask_i[0]),
+    .write_enable_i      (addr_i == PORT_WRITE & write_mask_i[0]),
     .read_enable_i       (tx_read_enable_w),
     .read_data_o         (tx_read_data_w),
     .read_valid_o        (tx_read_valid_w),

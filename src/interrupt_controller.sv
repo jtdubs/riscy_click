@@ -16,11 +16,11 @@ module interrupt_controller
         input  wire word_t      interrupt_i,
         output wire logic       interrupt_o,
 
-        // Memory Mapped Interface
+        // Bus Interface
         input  wire logic       chip_select_i,
         input  wire logic [3:0] addr_i,
         input  wire logic       read_enable_i,
-        output      word_t      read_data_o,
+        output wire word_t      read_data_o,
         input  wire word_t      write_data_i,
         input  wire logic [3:0] write_mask_i
     );
@@ -41,12 +41,14 @@ always_ff @(posedge clk_i) begin
     pending_r <= interrupt_i;
 end
 
+word_t read_data_w = '0;
+assign read_data_o = read_data_w;
 always_ff @(posedge clk_i) begin
     if (chip_select_i && read_enable_i) begin
         case (addr_i)
-        PORT_PENDING: read_data_o <= pending_r;
-        PORT_ENABLED: read_data_o <= enabled_r;
-        default:      read_data_o <= 32'b0;
+        PORT_PENDING: read_data_w <= pending_r;
+        PORT_ENABLED: read_data_w <= enabled_r;
+        default:      read_data_w <= 32'b0;
         endcase
     end
 end

@@ -8,21 +8,59 @@
 module kbd_controller
     // Import Constants
     import common::*;
+    import kbd_common::*;
     (
-        // Clocks
-        input  wire logic        clk_i,      // Clock
+        // System Interface
+        input  wire logic       clk_i,
+        output      logic       interrupt_o,
 
-        // Inputs
-        input  wire logic        ps2_clk_i,  // PS2 HID clock
-        input  wire logic        ps2_data_i, // PS2 HID data
+        // PS/2 Interface
+        input  wire logic       ps2_clk_i,
+        input  wire logic       ps2_data_i,
 
-        // Outputs
-        input  wire logic        read_enable_i,
-        output wire kbd_event_t  read_data_o,
-        output wire logic        read_valid_o,
-        output      logic        interrupt_o
+        // Bus Interface
+        input  wire logic       chip_select_i,
+        input  wire logic [3:0] addr_i,
+        input  wire logic       read_enable_i,
+        output wire word_t      read_data_o,
+        input  wire word_t      write_data_i,
+        input  wire logic [3:0] write_mask_i
     );
 
+
+//
+// Bus Interface
+//
+
+// ports
+typedef enum logic [3:0] {
+    PORT_DATA    = 4'b0000,
+    PORT_CONTROL = 4'b0001
+} port_t;
+
+// read
+always_ff @(posedge clk_i) begin
+    if (chip_select_i && read_enable_i) begin
+        case (addr_i)
+        PORT_DATA:    read_data_o <= { 15'b0, read_valid_w, 7'b0, read_data_w };
+        PORT_CONTROL: read_data_o <= 32'b0;
+        default:      read_data_o <= 32'b0;
+        endcase
+    end
+end
+
+// write
+always_ff @(posedge clk_i) begin
+    if (chip_select_i) begin
+        case (addr_i)
+        PORT_CONTROL:
+            begin
+                // TODO
+            end
+        default: ;
+        endcase
+    end
+end
 
 
 // PS2 RX
@@ -70,6 +108,10 @@ end
 
 
 // Buffer
+
+logic [8:0] read_data_w;
+logic       read_valid_w;
+
 fifo #(
     .DATA_WIDTH(9),
     .ADDR_WIDTH(5)
@@ -77,9 +119,9 @@ fifo #(
     .clk_i               (clk_i),
     .write_data_i        ({ is_break_r, vk_w }),
     .write_enable_i      (vk_valid_r),
-    .read_enable_i       (read_enable_i),
-    .read_data_o         (read_data_o),
-    .read_valid_o        (read_valid_o),
+    .read_enable_i       (chip_select_i && read_enable_i),
+    .read_data_o         (read_data_w),
+    .read_valid_o        (read_valid_w),
     .fifo_empty_o        (),
     .fifo_almost_empty_o (),
     .fifo_almost_full_o  (),
@@ -87,6 +129,6 @@ fifo #(
 );
 
 // interrupt
-always_comb interrupt_o = read_valid_o;
+always_comb interrupt_o = read_valid_w;
 
 endmodule

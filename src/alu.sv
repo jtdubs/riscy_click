@@ -7,6 +7,7 @@
 module alu
     // Import Constants
     import common::*;
+    import cpu_common::*;
     (
         // Inputs
         input  wire alu_mode_t alu_mode_i,

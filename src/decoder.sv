@@ -8,6 +8,7 @@
 module decoder
     // Import Constants
     import common::*;
+    import cpu_common::*;
     import logging::*;
     (
         input  wire word_t         ir_i,       // instruction register

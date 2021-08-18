@@ -8,6 +8,8 @@
 module cpu
     // Import Constants
     import common::*;
+    import cpu_common::*;
+    import csr_common::*;
     (
         // board signals
         input  wire logic       clk_i,

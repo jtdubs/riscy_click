@@ -1,6 +1,10 @@
 `verilator_config
 
 lint_off -rule UNUSED          -file "../src/common.sv"
+lint_off -rule UNUSED          -file "../src/cpu_common.sv"
+lint_off -rule UNUSED          -file "../src/csr_common.sv"
+lint_off -rule UNUSED          -file "../src/uart_common.sv"
+lint_off -rule UNUSED          -file "../src/kbd_common.sv"
 lint_off -rule UNUSED          -file "../src/bios_rom.sv"
 lint_off -rule UNUSED          -file "../src/system_ram.sv"
 lint_off -rule UNUSED          -file "../src/cpu_wb.sv"
@@ -8,6 +12,7 @@ lint_off -rule UNUSED          -file "../src/cpu_csr.sv"
 lint_off -rule UNUSED          -file "../src/decoder.sv"
 lint_off -rule UNUSED          -file "../src/uart_rx.sv"
 lint_off -rule UNUSED          -file "../src/uart_tx.sv"
+lint_off -rule UNUSED          -file "../src/kbd_controller.sv"
 lint_off -rule CASEINCOMPLETE  -file "../src/alu.sv"
 lint_off -rule CASEINCOMPLETE  -file "../src/cpu_csr.sv"
 lint_off -rule CASEINCOMPLETE  -file "../src/cpu_id.sv"

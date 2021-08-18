@@ -12,20 +12,70 @@ module segdisplay
         parameter shortint unsigned CLK_DIVISOR = 32768 // Clock ratio
     )
     (
-        // system clock domain
+        // Clock
         input  wire logic       clk_i,
 
-        // display interface
+        // Display Interface
         output wire logic [7:0] dsp_anode_o,
         output wire logic [7:0] dsp_cathode_o,
 
-        // read/write port
+        // Bus Interface
         input  wire logic       chip_select_i,
+        input  wire logic [3:0] addr_i,
+        input  wire logic       read_enable_i,
         output wire word_t      read_data_o,
         input  wire word_t      write_data_i,
         input  wire logic [3:0] write_mask_i
     );
 
+//
+// Bus Interface
+//
+
+logic  enabled_r = '1;
+word_t value_r   = '0;
+
+typedef enum logic [3:0] {
+    PORT_CONTROL = 4'b0000,
+    PORT_DATA    = 4'b0001
+} port_t;
+
+
+word_t read_data_w = '0;
+assign read_data_o = read_data_w;
+always_ff @(posedge clk_i) begin
+    if (chip_select_i && read_enable_i) begin
+        case (addr_i)
+        PORT_CONTROL: read_data_w <= { 31'b0, enabled_r };
+        PORT_DATA:    read_data_w <= value_r;
+        default:      read_data_w <= '0;
+        endcase
+    end
+end
+
+always_ff @(posedge clk_i) begin
+    if (chip_select_i) begin
+        case (addr_i)
+        PORT_CONTROL:
+            begin
+                if (write_mask_i[0]) enabled_r <= write_data_i[0];
+            end
+        PORT_DATA:
+            begin
+                if (write_mask_i[0]) value_r[ 7: 0] <= write_data_i[ 7: 0];
+                if (write_mask_i[1]) value_r[15: 8] <= write_data_i[15: 8];
+                if (write_mask_i[2]) value_r[23:16] <= write_data_i[23:16];
+                if (write_mask_i[3]) value_r[31:24] <= write_data_i[31:24];
+            end
+        default: ;
+        endcase
+    end
+end
+
+
+//
+// Display Driving
+//
 
 // Counter
 localparam int unsigned COUNTER_WIDTH = $clog2(CLK_DIVISOR) + 4;
@@ -39,27 +89,16 @@ always_comb begin
 end
 
 always_ff @(posedge clk_i) begin
-    counter_r <= counter_r + 1;
-end
-
-
-// Value
-word_t value_r = '0;
-
-assign read_data_o = value_r;
-
-always @(posedge clk_i) begin
-    if (chip_select_i) begin
-        if (write_mask_i[3]) value_r[31:24] <= write_data_i[31:24];
-        if (write_mask_i[2]) value_r[23:16] <= write_data_i[23:16];
-        if (write_mask_i[1]) value_r[15: 8] <= write_data_i[15: 8];
-        if (write_mask_i[0]) value_r[ 7: 0] <= write_data_i[ 7: 0];
-    end
+    if (enabled_r)
+        counter_r <= counter_r + 1;
+    else
+        counter_r <= '0;
 end
 
 
 // Nibble
 logic [3:0] nibble_w;
+
 always_comb begin
     unique case (digit_w)
     0: nibble_w = value_r[ 3: 0];
@@ -76,6 +115,7 @@ end
 
 // Anode
 logic [7:0] dsp_anode_r = 8'hFF;
+assign      dsp_anode_o = dsp_anode_r;
 
 always_ff @(posedge clk_i) begin
     dsp_anode_r <= 8'hFF;
@@ -84,11 +124,10 @@ always_ff @(posedge clk_i) begin
         dsp_anode_r[digit_w] <= 1'b0;
 end
 
-assign dsp_anode_o = dsp_anode_r;
-
 
 // Cathode
 logic [7:0] dsp_cathode_r = 8'hFF;
+assign      dsp_cathode_o = dsp_cathode_r;
 
 always_ff @(posedge clk_i) begin
     dsp_cathode_r <= 8'hFF;
@@ -114,7 +153,5 @@ always_ff @(posedge clk_i) begin
         endcase
     end
 end
-
-assign dsp_cathode_o = dsp_cathode_r;
 
 endmodule

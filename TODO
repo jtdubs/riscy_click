@@ -1,9 +1,6 @@
 TODO:
-- Verilog
-    - Split the peripheral stuff out of common.sv into other files.
-    - Define interfaces for bus membership
-    - Define interfaces for writeback?
-    - Define interfaces between pipeline stages?
+- Switches
+    - Pull out a peripheral unit for this so I can also drive interrupts on it
 - UART
     - Update BIOS to exercise it
     - How do I want to handle this in the simulator?  Feels like another window.
@@ -15,22 +12,22 @@ TODO:
     - Consider pulling CSR state machine out into it's own module to simplify ID
 - VGA
     - 1280x1024
-- BIOS
-    - Provide UART interface for loading an ELF and jumping to it
 - Machine Level ISA
     - CSR
         - Decode should confirm address is read/executable, otherwise trap
         - Memory access should confirm address is read/write as appropriate
         - Expose chip select along with rwx.  Can use it externally to drive the dmem mux...
         - MTIME and MTIMECMP memory mapped registers??
-- ISA Extensions
-    - A - Atomics
-    - C - Compressed
-    - M - Multiplication & Division (multi-cycle)
 - Memory
     - Allow for memory stalls
     - Add instruction & data cache
     - Add memory controller and DDR
+- ISA Extensions
+    - A - Atomics
+    - C - Compressed
+    - M - Multiplication & Division (multi-cycle)
+- BIOS
+    - Provide UART interface for loading an ELF and jumping to it
 - CPU
     - Change stage breakdown or increase stages to up clock speed
 

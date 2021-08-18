@@ -8,6 +8,7 @@
 module cpu_ex
     // Import Constants
     import common::*;
+    import cpu_common::*;
     import logging::*;
     (
         // cpu signals

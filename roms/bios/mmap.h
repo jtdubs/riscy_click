@@ -19,9 +19,9 @@ extern void * const __heap_end;
 #define MMAP_BIOS        __rom_start
 #define MMAP_RAM         __ram_start
 #define MMAP_FRAMEBUFFER 0x20000000
-#define MMAP_DISPLAY     0xFF000000
-#define MMAP_SWITCH      0xFF000004
-#define MMAP_KEYBOARD    0xFF000008
+#define MMAP_DISPLAY     0xFFFF0204
+#define MMAP_SWITCH      0xFFFF0300
+#define MMAP_KEYBOARD    0xFFFF0400
 
 #define PTR_BIOS         ((volatile uint32_t * const)MMAP_BIOS)
 #define PTR_RAM          ((volatile uint32_t * const)MMAP_RAM)

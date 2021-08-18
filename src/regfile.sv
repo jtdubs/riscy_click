@@ -12,6 +12,7 @@
 module regfile
     // Import Constants
     import common::*;
+    import cpu_common::*;
     (
         input  wire logic     clk_i,              // Clock
 

@@ -8,6 +8,7 @@
 module ps2_kbd
     // Import Constants
     import common::*;
+    import kbd_common::*;
     (
         input  wire logic           clk_i,
 

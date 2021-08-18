@@ -8,6 +8,8 @@
 module cpu_csr
     // Import Constants
     import common::*;
+    import cpu_common::*;
+    import csr_common::*;
     import logging::*;
     (
         // cpu signals
