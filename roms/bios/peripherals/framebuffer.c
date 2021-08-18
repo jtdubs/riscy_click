@@ -59,8 +59,8 @@ static uint32_t DefaultMode = BUILD_CHAR(
     0,   // bg red
     0,   // bg green
     255, // bg blue
-    0,   // underline
-    0    // blink
+    1,   // underline
+    1    // blink
 );
 
 

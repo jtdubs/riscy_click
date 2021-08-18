@@ -26,6 +26,10 @@ module vga_controller
     );
 
 
+// frame counter
+logic [4:0] frame_counter_r = '0;
+
+
 // character rom
 logic [11:0] crom_addr_w;
 logic [31:0] crom_data_w;
@@ -51,12 +55,17 @@ always_ff @(posedge clk_i) begin
 
     unique if (x_r[1] == 'd799) begin
         x_r[1] <= 'd0;
-        unique if (y_r[1] == 'd524)
+
+        unique if (y_r[1] == 'd524) begin
             y_r[1] <= 'd0;
-        else
+            frame_counter_r <= frame_counter_r + 1;
+        end else begin
             y_r[1] <= y_r[1] + 1;
-    end else
+        end
+
+    end else begin
         x_r[1] <= x_r[1] + 1;
+    end
 end
 
 
@@ -110,6 +119,14 @@ always_comb begin
     7: alpha_w = crom_data_w[ 7: 4];
     0: alpha_w = crom_data_w[ 3: 0];
     endcase
+
+    // in underline mode, draw a solid line 14 pixels down
+    if (y_r[0][3:0] == 14 && underline_w)
+        alpha_w = 4'b1111;
+
+    // hide character every 16 frames
+    if (blink_w && frame_counter_r[4])
+        alpha_w = 4'b0000;
 end
 
 logic [3:0] red_w;

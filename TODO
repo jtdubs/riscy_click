@@ -1,13 +1,4 @@
 TODO:
-- VGA
-    - Color
-        - Character ROM becomes 4bpp alpha channel
-        - Video RAM becomes 30 bits per character
-            - 8 bit char
-            - { 3, 4, 3 } bit foreground color
-            - { 3, 4, 3 } bit background color
-            - 2 bit flags (underline and blink)
-        - VGA does basic alpha blending: (1-alpha*bg) + ((alpha)*fg)
 - BIOS
     - UART
 - UART
