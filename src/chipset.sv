@@ -102,16 +102,14 @@ end
 // FFFF0000 - R   - Interrupt Controller Pending
 // FFFF0004 - R/W - Interrupt Controller Enabled
 // FFFF0100 - R/W - UART Config  { baud, parity, etc. }
-// FFFF0104 - R   - UART Status  { tx fifo status, rx fifo status, break indicator }
+// FFFF0104 - R   - UART Status  { tx fifo status, rx fifo status, break indicator }  (TODO)
 // FFFF0108 - R   - UART Rx Data { data available, data }
 // FFFF010C - W   - UART Tx Data { data }
 // FFFF0200 - R/W - Seven Segment Display Control { enabled }
 // FFFF0204 - R/W - Seven Segment Display Value
 // FFFF0300 - R   - Switches
 // FFFF0400 - R   - PS/2 Keyboard Status  { data available, make/break, keycode }
-// FFFF0404 - W   - PS/2 Keyboard Control { caps, num, scroll }
-// FFFF0500 - R   - PS/2 Mouse    Status  { data available, make/break, keycode }
-// FFFF0504 - W   - PS/2 Mouse    Control ??
+// FFFF0404 - W   - PS/2 Keyboard Control { caps, num, scroll }  (TODO)
 
 always_comb begin
     chip_select_w = '{ default: '0 };
@@ -127,15 +125,6 @@ always_comb begin
     default: ;
     endcase
 end
-
-// TODO: Interrupts
-// - Keyboard Data Available
-// - Mouse Data Available
-// - UART Break State Changed
-// - UART Data Available
-// - UART TX Overrun ??
-// - UART RX Overrun ??
-// - Switch position changed
 
 always_comb begin
     if (chip_select_r.bios)
@@ -234,16 +223,27 @@ segdisplay #(.CLK_DIVISOR(50000)) disp (
 );
 
 // Switches
-logic [31:0] switch_r = '0;
+logic sw_interrupt_w;
 
-always_ff @(posedge cpu_clk_i) begin
-    switch_r[15:0] <= switch_i;
-end
-
-assign sw_read_data_w = switch_r;
+switches switches (
+    .clk_i             (cpu_clk_i),
+    .interrupt_o       (sw_interrupt_w),
+    .switch_i          (switch_i),
+    .chip_select_i     (chip_select_w.switches),
+    .addr_i            (dmem_addr_w[5:2]),
+    .read_enable_i     (dmem_read_enable_w),
+    .read_data_o       (sw_read_data_w),
+    .write_data_i      (dmem_write_data_w),
+    .write_mask_i      (dmem_write_mask_w)
+);
 
 // UART
 logic uart_interrupt_w;
+
+// TODO: Interrupts
+// - UART Break State Changed
+// - UART TX Overrun ??
+// - UART RX Overrun ??
 
 uart uart (
     .clk_i             (cpu_clk_i),
@@ -261,7 +261,7 @@ uart uart (
 // IRQ
 interrupt_controller irq (
     .clk_i             (cpu_clk_i),
-    .interrupt_i       ({ 30'b0, kbd_interrupt_w, uart_interrupt_w }),
+    .interrupt_i       ({ 29'b0, sw_interrupt_w, kbd_interrupt_w, uart_interrupt_w }),
     .interrupt_o       (interrupt_w),
     .chip_select_i     (chip_select_w.irq),
     .addr_i            (dmem_addr_w[5:2]),

@@ -17,6 +17,7 @@ SV_SOURCES += ../src/bios_rom.sv
 SV_SOURCES += ../src/keycode_rom.sv
 SV_SOURCES += ../src/segdisplay.sv
 SV_SOURCES += ../src/vga_controller.sv
+SV_SOURCES += ../src/switches.sv
 SV_SOURCES += ../src/regfile.sv
 SV_SOURCES += ../src/fifo.sv
 SV_SOURCES += ../src/alu.sv
