@@ -217,8 +217,8 @@ always_ff @(posedge clk_i) begin
     vga_red_r   <= red_w;
     vga_green_r <= green_w;
     vga_blue_r  <= blue_w;
-    vga_hsync_r <= !((x_r[0] >= H_SYNC_START) && (x_r[0] < H_SYNC_STOP));
-    vga_vsync_r <= !((y_r[0] >= V_SYNC_START) && (y_r[0] < V_SYNC_STOP));
+    vga_hsync_r <= !((x_r[0] >= (H_SYNC_START-1)) && (x_r[0] < (H_SYNC_STOP-1)));
+    vga_vsync_r <= !((y_r[0] >= (V_SYNC_START-1)) && (y_r[0] < (V_SYNC_STOP-1)));
 
     if ((x_r[0] > H_ACTIVE) || (y_r[0] > V_ACTIVE)) begin
         vga_red_r   <= 4'b0000;
