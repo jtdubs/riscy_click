@@ -26,6 +26,41 @@ module vga_controller
     );
 
 
+//
+// Display Parameters
+//
+
+localparam logic [6:0] CHAR_WIDTH  = 'd9;
+localparam logic [6:0] CHAR_HEIGHT = 'd16;
+
+localparam logic [9:0] V_ACTIVE      = 'd404;
+localparam logic [9:0] V_BACK_PORCH  = 'd32;
+localparam logic [9:0] V_SYNC_PULSE  = 'd2;
+localparam logic [9:0] V_FRONT_PORCH = 'd11;
+localparam logic [9:0] V_TOTAL       = (V_ACTIVE + V_BACK_PORCH + V_SYNC_PULSE + V_FRONT_PORCH);
+
+localparam logic [9:0] H_ACTIVE      = 'd726;
+localparam logic [9:0] H_BACK_PORCH  = 'd51;
+localparam logic [9:0] H_SYNC_PULSE  = 'd108;
+localparam logic [9:0] H_FRONT_PORCH = 'd15;
+localparam logic [9:0] H_TOTAL       = (H_ACTIVE + H_BACK_PORCH + H_SYNC_PULSE + H_FRONT_PORCH);
+
+
+//
+// Computed Parameters
+//
+
+localparam logic [9:0] H_MAX = H_TOTAL - 1;
+localparam logic [9:0] V_MAX = V_TOTAL - 1;
+localparam logic [6:0] H_CHAR_MAX = (H_TOTAL / CHAR_WIDTH) - 1;
+
+localparam logic [9:0] H_SYNC_START = H_ACTIVE + H_BACK_PORCH;
+localparam logic [9:0] H_SYNC_STOP = H_SYNC_START + H_SYNC_PULSE;
+
+localparam logic [9:0] V_SYNC_START = V_ACTIVE + V_BACK_PORCH;
+localparam logic [9:0] V_SYNC_STOP = V_SYNC_START + V_SYNC_PULSE;
+
+
 // frame counter
 logic [4:0] frame_counter_r = '0;
 
@@ -53,10 +88,10 @@ always_ff @(posedge clk_i) begin
     x_r[0]      <= x_r[1];
     y_r[0]      <= y_r[1];
 
-    unique if (x_r[1] == 'd935) begin
+    unique if (x_r[1] == H_MAX) begin
         x_r[1] <= 'd0;
 
-        unique if (y_r[1] == 'd445) begin
+        unique if (y_r[1] == V_MAX) begin
             y_r[1] <= 'd0;
             frame_counter_r <= frame_counter_r + 1;
         end else begin
@@ -78,7 +113,7 @@ always_ff @(posedge clk_i) begin
 
     unique if (x_offset_r[1] == 'd8) begin
         x_offset_r[1] <= 4'd0;
-        if (x_index_r[1] == 7'd103)
+        if (x_index_r[1] == H_CHAR_MAX)
             x_index_r[1] <= 7'd0;
         else
             x_index_r[1] <= x_index_r[1] + 1;
@@ -181,10 +216,10 @@ always_ff @(posedge clk_i) begin
     vga_red_r   <= red_w;
     vga_green_r <= green_w;
     vga_blue_r  <= blue_w;
-    vga_hsync_r <= !((x_r[0] >= 757) && (x_r[0] < 829));
-    vga_vsync_r <= !((y_r[0] >= 402) && (y_r[0] < 405));
+    vga_hsync_r <= !((x_r[0] >= H_SYNC_START) && (x_r[0] < H_SYNC_STOP));
+    vga_vsync_r <= !((y_r[0] >= V_SYNC_START) && (y_r[0] < V_SYNC_STOP));
 
-    if ((x_r[0] >= 719) || (y_r[0] >= 399)) begin
+    if ((x_r[0] > H_ACTIVE) || (y_r[0] > V_ACTIVE)) begin
         vga_red_r   <= 4'b0000;
         vga_green_r <= 4'b0000;
         vga_blue_r  <= 4'b0000;
