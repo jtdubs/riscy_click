@@ -75,7 +75,7 @@ VERILATOR_LIB = $(VERILATOR_DIR)/V$(VERILATOR_TOP)__ALL.a
 
 ROMS =
 ROMS += bios.mem
-ROMS += crom.mem
+ROMS += crom1.mem crom2.mem crom3.mem crom4.mem
 ROMS += krom.mem
 
 EXE = $(VERILATOR_TOP)
@@ -94,7 +94,16 @@ run: $(EXE)
 bios.mem: ../roms/bios/bios.mem
 	ln -sf $^ $@
 
-crom.mem: ../roms/character_rom/crom.mem
+crom1.mem: ../roms/character_rom/crom1.mem
+	ln -sf $^ $@
+
+crom2.mem: ../roms/character_rom/crom2.mem
+	ln -sf $^ $@
+
+crom3.mem: ../roms/character_rom/crom3.mem
+	ln -sf $^ $@
+
+crom4.mem: ../roms/character_rom/crom4.mem
 	ln -sf $^ $@
 
 krom.mem: ../roms/keycode/krom.mem

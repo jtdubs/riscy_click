@@ -5,7 +5,7 @@ module character_rom
     // Import Constants
     import common::*;
     #(
-        CONTENTS = ""
+        parameter string CONTENTS = ""
     )
     (
         input  wire logic        clk_i,

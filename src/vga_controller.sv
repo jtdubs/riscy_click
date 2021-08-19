@@ -68,17 +68,27 @@ logic [4:0] frame_counter_r = '0;
 
 // character rom
 logic [11:0] crom_addr_w;
-logic [8:0] crom_data_w;
+logic [8:0] crom_data_w [3:0];
 
-character_rom #(
-    .CONTENTS("crom.mem")
-)
-crom_inst (
-    .clk_i(clk_i),
-    .read_enable_i(1'b1),
-    .read_addr_i(crom_addr_w),
-    .read_data_o(crom_data_w)
-);
+parameter string ROM_FILES [3:0] = '{
+    "crom4.mem",
+    "crom3.mem",
+    "crom2.mem",
+    "crom1.mem"
+};
+
+generate
+for (genvar i=0; i<4; i++) begin
+    character_rom #(
+        .CONTENTS(ROM_FILES[i])
+    ) crom_inst (
+        .clk_i(clk_i),
+        .read_enable_i(1'b1),
+        .read_addr_i(crom_addr_w),
+        .read_data_o(crom_data_w[i])
+    );
+end
+endgenerate
 
 
 // keep track next two x,y coordinates
@@ -165,15 +175,15 @@ logic alpha_w;
 always_comb begin
     // character nibbles are 4-bit alpha blend values for each pixel
     unique case (x_offset_r[0])
-    0: alpha_w = crom_data_w[8];
-    1: alpha_w = crom_data_w[7];
-    2: alpha_w = crom_data_w[6];
-    3: alpha_w = crom_data_w[5];
-    4: alpha_w = crom_data_w[4];
-    5: alpha_w = crom_data_w[3];
-    6: alpha_w = crom_data_w[2];
-    7: alpha_w = crom_data_w[1];
-    8: alpha_w = crom_data_w[0];
+    0: alpha_w = crom_data_w[3][8];
+    1: alpha_w = crom_data_w[3][7];
+    2: alpha_w = crom_data_w[3][6];
+    3: alpha_w = crom_data_w[3][5];
+    4: alpha_w = crom_data_w[3][4];
+    5: alpha_w = crom_data_w[3][3];
+    6: alpha_w = crom_data_w[3][2];
+    7: alpha_w = crom_data_w[3][1];
+    8: alpha_w = crom_data_w[3][0];
     endcase
 
     // in underline mode, draw a solid line 14 pixels down
