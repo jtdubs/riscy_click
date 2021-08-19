@@ -7,8 +7,6 @@ TODO:
 - PS/2
     - Full PS/2 driver including sending commands back to keyboard
     - PS/2 Mouse
-- VGA
-    - 1280x1024
 - Machine Level ISA
     - CSR
         - Decode should confirm address is read/executable, otherwise trap
