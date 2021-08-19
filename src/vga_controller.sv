@@ -70,7 +70,7 @@ logic [4:0] frame_counter_r = '0;
 logic [11:0] crom_addr_w;
 logic [8:0] crom_data_w [3:0];
 
-parameter string ROM_FILES [3:0] = '{
+localparam string ROM_FILES [3:0] = '{
     "crom4.mem",
     "crom3.mem",
     "crom2.mem",
