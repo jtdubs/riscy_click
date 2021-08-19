@@ -56,13 +56,8 @@ void irq_disable(interrupt_t i) {
 // Wait for Interrupts
 //
 
-extern void _global_enable_interrupts  (void);
-extern void _global_disable_interrupts (void);
-
 void irq_wait(void) {
-    _global_enable_interrupts();
     __asm__ volatile ("wfi");
-    _global_disable_interrupts();
 }
 
 

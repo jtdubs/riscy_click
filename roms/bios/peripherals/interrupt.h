@@ -2,6 +2,9 @@
 
 #include <stdint.h>
 
+extern void _global_enable_interrupts  (void);
+extern void _global_disable_interrupts (void);
+
 // External Interrupts
 typedef enum {
     IRQ_UART     = 0x00000001,

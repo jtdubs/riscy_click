@@ -16,6 +16,8 @@ int main() {
 
     dsp_enable();
 
+    _global_enable_interrupts();
+
     // main loop
     uint8_t x = 0;
     uint8_t y = 0;
@@ -43,11 +45,6 @@ int main() {
             break;
         default:
             {
-                uint16_t sw = sw_read();
-                fb_set_font(sw >> 14);
-                fb_set_blink((sw >> 13) == 1);
-                fb_set_underline((sw >> 12) == 1);
-                fb_set_fg_color((sw & 0xF00) >> 4, (sw & 0xF0), (sw & 0x0F) << 4);
                 fb_write(x, y, c);
                 if (++x == FrameBufferWidth) x = 0;
                 if (x == 0)
