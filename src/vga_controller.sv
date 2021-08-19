@@ -111,7 +111,7 @@ end
 
 // clock domain transfer
 always_ff @(posedge clk_i) begin
-    font_r <= { bus_font_r, font_r[1] };
+    font_r <= '{ bus_font_r, font_r[1] };
 end
 
 
