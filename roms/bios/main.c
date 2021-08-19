@@ -20,6 +20,12 @@ int main() {
     uint8_t x = 0;
     uint8_t y = 0;
 
+    for (y=0; y<8; y++)
+        for (x=0; x<32; x++)
+            fb_write(x << 1, y, (y<<5)+x);
+
+    x = 0;
+    y = 0;
     for (;;) {
         char c = con_getch();
 
@@ -31,6 +37,8 @@ int main() {
         case '\x1B':
             x = 0;
             y = 0;
+            fb_set_blink(false);
+            fb_set_underline(false);
             fb_clear(' ');
             break;
         default:

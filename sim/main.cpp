@@ -74,7 +74,7 @@ int main(int argc, char** argv)
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     // Load Fonts
-    io.Fonts->AddFontFromFileTTF("../roms/character_rom/NotoSansMono-Regular.ttf", 32.0f);
+    io.Fonts->AddFontFromFileTTF("../roms/character_rom/ttf_fonts/NotoSansMono-Regular.ttf", 32.0f);
 
     // Our state
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);

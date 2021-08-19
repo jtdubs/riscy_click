@@ -14,7 +14,7 @@ def main(font, *args):
 
         with open(font + ".mem", "w") as mem:
             print("@0000", file=mem)
-            for c in range(0x00, 0x100):
+            for c in range(0x01, 0x101):
                 face.load_char(chr(c))
                 bitmap = face.glyph.bitmap.buffer
                 for row in bitmap:
