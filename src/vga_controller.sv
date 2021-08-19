@@ -68,7 +68,7 @@ logic [4:0] frame_counter_r = '0;
 
 // character rom
 logic [11:0] crom_addr_w;
-logic [35:0] crom_data_w;
+logic [8:0] crom_data_w;
 
 character_rom #(
     .CONTENTS("crom.mem")
@@ -160,45 +160,39 @@ end
 
 
 // determine rgb values
-logic [3:0] alpha_w;
+logic alpha_w;
 
 always_comb begin
     // character nibbles are 4-bit alpha blend values for each pixel
     unique case (x_offset_r[0])
-    0: alpha_w = crom_data_w[35:32];
-    1: alpha_w = crom_data_w[31:28];
-    2: alpha_w = crom_data_w[27:24];
-    3: alpha_w = crom_data_w[23:20];
-    4: alpha_w = crom_data_w[19:16];
-    5: alpha_w = crom_data_w[15:12];
-    6: alpha_w = crom_data_w[11: 8];
-    7: alpha_w = crom_data_w[ 7: 4];
-    8: alpha_w = crom_data_w[ 3: 0];
+    0: alpha_w = crom_data_w[8];
+    1: alpha_w = crom_data_w[7];
+    2: alpha_w = crom_data_w[6];
+    3: alpha_w = crom_data_w[5];
+    4: alpha_w = crom_data_w[4];
+    5: alpha_w = crom_data_w[3];
+    6: alpha_w = crom_data_w[2];
+    7: alpha_w = crom_data_w[1];
+    8: alpha_w = crom_data_w[0];
     endcase
 
     // in underline mode, draw a solid line 14 pixels down
     if (y_r[0][3:0] == 14 && underline_w)
-        alpha_w = 4'b1111;
+        alpha_w = 1'b1;
 
     // hide character every 16 frames
     if (blink_w && frame_counter_r[4])
-        alpha_w = 4'b0000;
+        alpha_w = 1'b0;
 end
 
 logic [3:0] red_w;
 logic [3:0] green_w;
 logic [3:0] blue_w;
 
-logic [7:0] alpha_wide_w;
-logic [7:0] neg_alpha_wide_w;
-
 always_comb begin
-    alpha_wide_w     = { 4'b0,         alpha_w  };
-    neg_alpha_wide_w = { 4'b0, (4'hF - alpha_w) };
-
-    red_w   = { ((alpha_wide_w * fg_red_w)   + (neg_alpha_wide_w * bg_red_w))   }[6:3];
-    green_w = { ((alpha_wide_w * fg_green_w) + (neg_alpha_wide_w * bg_green_w)) }[7:4];
-    blue_w  = { ((alpha_wide_w * fg_blue_w)  + (neg_alpha_wide_w * bg_blue_w))  }[6:3];
+    red_w   = { (alpha_w ? fg_red_w   : bg_red_w),  1'b0 };
+    green_w =   (alpha_w ? fg_green_w : bg_green_w);
+    blue_w  = { (alpha_w ? fg_blue_w  : bg_blue_w), 1'b0 };
 end
 
 

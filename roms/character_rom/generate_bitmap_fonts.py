@@ -4,6 +4,9 @@ import sys
 import glob
 import freetype
 
+bits_to_hex = {
+}
+
 def main(font, *args):
     for font in glob.glob("bitmap_fonts/*.FON"):
         face = freetype.Face(font)
@@ -22,9 +25,10 @@ def main(font, *args):
                     bitmap = [(bitmap[n] | (bitmap[n+1] << 8)) for n in range(0, 32, 2)]
 
                 for row in bitmap:
-                    bits = "".join(reversed([str(((row >> x) & 1)) for x in range(0, face.glyph.bitmap.width)]))
-                    bits = bits.replace("1", "F")
-                    print(bits, file=mem)
+                    a = "{0:X}".format((row >> 0) & 0xF)
+                    b = "{0:X}".format((row >> 4) & 0xF)
+                    c = "{0:X}".format((row >> 8) & 0xF)
+                    print(c+b+a, file=mem)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
