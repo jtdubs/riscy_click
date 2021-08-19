@@ -18,9 +18,9 @@ def main(font, *args):
                 face.load_char(chr(c))
                 bitmap = face.glyph.bitmap.buffer
                 for row in bitmap:
-                    bits = reversed([str(((row >> x) & 1)) for x in range(0, 8)])
-                    pix = "".join([4*b for b in bits])
-                    print(pix, file=mem)
+                    bits = "".join(reversed([str(((row >> x) & 1)) for x in range(0, 8)]))
+                    bits = bits.replace("1", "F")
+                    print(bits, file=mem)
 
 if __name__ == "__main__":
     main(sys.argv[1:])

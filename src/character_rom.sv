@@ -71,7 +71,7 @@ character_sprom_inst (
 logic [31:0] mem_r [0:4095];
 
 initial begin
-    $readmemb(CONTENTS, mem_r);
+    $readmemh(CONTENTS, mem_r);
 end
 
 logic [31:0] read_data_r = '0;
