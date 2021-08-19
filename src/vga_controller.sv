@@ -30,35 +30,36 @@ module vga_controller
 // Display Parameters
 //
 
-localparam logic [6:0] CHAR_WIDTH  = 'd9;
-localparam logic [6:0] CHAR_HEIGHT = 'd16;
-
-localparam logic [9:0] V_ACTIVE      = 'd404;
-localparam logic [9:0] V_BACK_PORCH  = 'd32;
-localparam logic [9:0] V_SYNC_PULSE  = 'd2;
-localparam logic [9:0] V_FRONT_PORCH = 'd11;
-localparam logic [9:0] V_TOTAL       = (V_ACTIVE + V_BACK_PORCH + V_SYNC_PULSE + V_FRONT_PORCH);
+localparam logic [6:0] CHAR_WIDTH    = 'd9;
+localparam logic [6:0] CHAR_HEIGHT   = 'd16;
 
 localparam logic [9:0] H_ACTIVE      = 'd726;
-localparam logic [9:0] H_BACK_PORCH  = 'd51;
-localparam logic [9:0] H_SYNC_PULSE  = 'd108;
 localparam logic [9:0] H_FRONT_PORCH = 'd15;
-localparam logic [9:0] H_TOTAL       = (H_ACTIVE + H_BACK_PORCH + H_SYNC_PULSE + H_FRONT_PORCH);
+localparam logic [9:0] H_SYNC_PULSE  = 'd108;
+localparam logic [9:0] H_BACK_PORCH  = 'd51;
+localparam logic [9:0] H_TOTAL       = (H_ACTIVE + H_FRONT_PORCH + H_SYNC_PULSE + H_BACK_PORCH);
+
+localparam logic [9:0] V_ACTIVE      = 'd404;
+localparam logic [9:0] V_FRONT_PORCH = 'd11;
+localparam logic [9:0] V_SYNC_PULSE  = 'd2;
+localparam logic [9:0] V_BACK_PORCH  = 'd32;
+localparam logic [9:0] V_TOTAL       = (V_ACTIVE + V_FRONT_PORCH + V_SYNC_PULSE + V_BACK_PORCH);
 
 
 //
 // Computed Parameters
 //
 
+localparam logic [6:0] H_CHAR_MAX = 'd99; // { (H_TOTAL / {3'b0, CHAR_WIDTH}) - '1 }[6:0];
+
 localparam logic [9:0] H_MAX = H_TOTAL - 1;
 localparam logic [9:0] V_MAX = V_TOTAL - 1;
-localparam logic [6:0] H_CHAR_MAX = (H_TOTAL / CHAR_WIDTH) - 1;
 
-localparam logic [9:0] H_SYNC_START = H_ACTIVE + H_BACK_PORCH;
-localparam logic [9:0] H_SYNC_STOP = H_SYNC_START + H_SYNC_PULSE;
+localparam logic [9:0] H_SYNC_START = H_ACTIVE + H_FRONT_PORCH;
+localparam logic [9:0] H_SYNC_STOP  = H_SYNC_START + H_SYNC_PULSE;
 
-localparam logic [9:0] V_SYNC_START = V_ACTIVE + V_BACK_PORCH;
-localparam logic [9:0] V_SYNC_STOP = V_SYNC_START + V_SYNC_PULSE;
+localparam logic [9:0] V_SYNC_START = V_ACTIVE + V_FRONT_PORCH;
+localparam logic [9:0] V_SYNC_STOP  = V_SYNC_START + V_SYNC_PULSE;
 
 
 // frame counter
@@ -85,8 +86,8 @@ logic [9:0] x_r [1:0] = '{ default: '0 };
 logic [9:0] y_r [1:0] = '{ default: '0 };
 
 always_ff @(posedge clk_i) begin
-    x_r[0]      <= x_r[1];
-    y_r[0]      <= y_r[1];
+    x_r[0] <= x_r[1];
+    y_r[0] <= y_r[1];
 
     unique if (x_r[1] == H_MAX) begin
         x_r[1] <= 'd0;
@@ -224,6 +225,8 @@ always_ff @(posedge clk_i) begin
         vga_green_r <= 4'b0000;
         vga_blue_r  <= 4'b0000;
     end
+
+    // $strobe("VGA (%0d, %0d) H:%0d V:%0d", x_r[0], y_r[0], vga_hsync_r, vga_vsync_r);
 end
 
 assign vga_red_o   = vga_red_r;

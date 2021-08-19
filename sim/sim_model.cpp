@@ -26,6 +26,7 @@ struct sim_model {
     uint16_t*       vga_buffer;
     uint64_t        ncycles;
     sim_keyboard_t *keyboard;
+    sim_vga_t      *vga;
 };
 
 sim_model_t* sim_create(int argc, char **argv) {
@@ -33,7 +34,7 @@ sim_model_t* sim_create(int argc, char **argv) {
     Verilated::commandArgs(argc, argv);
 
     sim_model_t *model = new sim_model_t();
-    model->vga_buffer  = new uint16_t[720*400];
+    model->vga         = vga_create();
     model->keyboard    = key_create();
 
     // Create Chipset
@@ -41,9 +42,6 @@ sim_model_t* sim_create(int argc, char **argv) {
     model->chipset->switch_i = 0x0000;
     model->chipset->cpu_clk_i = 1;
     model->chipset->pxl_clk_i = 1;
-
-    // Create VGA Texture
-    model->vga_texture = vga_create(720, 400);
 
     // Create Tick Thread
     model->tick_thread = std::thread([](sim_model_t *model) {
@@ -94,7 +92,7 @@ void sim_tick(sim_model_t* model) {
 
     // update VGA every pixel clock cycle
     if (model->ncycles % 6 == 0)
-        vga_tick(model->vga_buffer, dut->vga_hsync_o, dut->vga_vsync_o, dut->vga_red_o, dut->vga_green_o, dut->vga_blue_o);
+        vga_tick(model->vga, dut->vga_hsync_o, dut->vga_vsync_o, dut->vga_red_o, dut->vga_green_o, dut->vga_blue_o);
 
     // update PS2 every 100 cycles (100x faster than a real PS/2 port....)
     if (model->ncycles % 100 == 0)
@@ -104,8 +102,7 @@ void sim_tick(sim_model_t* model) {
 void sim_draw(sim_model_t* model, float secondsElapsed) {
     static uint64_t last_ncycles = 0;
 
-    vga_write(model->vga_texture, model->vga_buffer);
-    vga_draw("vga", model->vga_texture);
+    vga_draw(model->vga);
 
     for (int i=7; i>=0; i--)
     {
