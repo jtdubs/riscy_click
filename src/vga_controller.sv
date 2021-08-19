@@ -165,15 +165,15 @@ logic [3:0] alpha_w;
 always_comb begin
     // character nibbles are 4-bit alpha blend values for each pixel
     unique case (x_offset_r[0])
-    0: alpha_w = crom_data_w[ 3: 0];
-    1: alpha_w = crom_data_w[35:32];
-    2: alpha_w = crom_data_w[31:28];
-    3: alpha_w = crom_data_w[27:24];
-    4: alpha_w = crom_data_w[23:20];
-    5: alpha_w = crom_data_w[19:16];
-    6: alpha_w = crom_data_w[15:12];
-    7: alpha_w = crom_data_w[11: 8];
-    8: alpha_w = crom_data_w[ 7: 4];
+    0: alpha_w = crom_data_w[35:32];
+    1: alpha_w = crom_data_w[31:28];
+    2: alpha_w = crom_data_w[27:24];
+    3: alpha_w = crom_data_w[23:20];
+    4: alpha_w = crom_data_w[19:16];
+    5: alpha_w = crom_data_w[15:12];
+    6: alpha_w = crom_data_w[11: 8];
+    7: alpha_w = crom_data_w[ 7: 4];
+    8: alpha_w = crom_data_w[ 3: 0];
     endcase
 
     // in underline mode, draw a solid line 14 pixels down
@@ -217,10 +217,10 @@ always_ff @(posedge clk_i) begin
     vga_red_r   <= red_w;
     vga_green_r <= green_w;
     vga_blue_r  <= blue_w;
-    vga_hsync_r <= !((x_r[0] >= (H_SYNC_START-1)) && (x_r[0] < (H_SYNC_STOP-1)));
-    vga_vsync_r <= !((y_r[0] >= (V_SYNC_START-1)) && (y_r[0] < (V_SYNC_STOP-1)));
+    vga_hsync_r <= !((x_r[0] >= H_SYNC_START) && (x_r[0] < H_SYNC_STOP));
+    vga_vsync_r <= !((y_r[0] >= V_SYNC_START) && (y_r[0] < V_SYNC_STOP));
 
-    if ((x_r[0] > H_ACTIVE) || (y_r[0] > V_ACTIVE)) begin
+    if ((x_r[0] >= H_ACTIVE) || (y_r[0] >= V_ACTIVE)) begin
         vga_red_r   <= 4'b0000;
         vga_green_r <= 4'b0000;
         vga_blue_r  <= 4'b0000;
