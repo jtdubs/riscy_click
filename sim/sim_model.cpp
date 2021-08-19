@@ -36,6 +36,8 @@ sim_model_t* sim_create(int argc, char **argv) {
     sim_model_t *model = new sim_model_t();
     model->vga         = vga_create();
     model->keyboard    = key_create();
+    for (int i=4; i<16; i++)
+        model->switches[i] = true;
 
     // Create Chipset
     model->chipset = new Vchipset;

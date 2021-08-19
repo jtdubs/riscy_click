@@ -44,8 +44,9 @@ int main() {
         default:
             {
                 uint16_t sw = sw_read();
-                fb_set_blink((sw >> 15) == 1);
-                fb_set_underline((sw >> 14) == 1);
+                fb_set_font(sw >> 14);
+                fb_set_blink((sw >> 13) == 1);
+                fb_set_underline((sw >> 12) == 1);
                 fb_set_fg_color((sw & 0xF00) >> 4, (sw & 0xF0), (sw & 0x0F) << 4);
                 fb_write(x, y, c);
                 if (++x == FrameBufferWidth) x = 0;

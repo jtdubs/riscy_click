@@ -1,8 +1,11 @@
 #include "framebuffer.h"
 
 #define FB_BASE 0x20000000
-
 #define FB_DATA ((volatile uint32_t * const)(FB_BASE))
+
+#define VGA_BASE 0xFFFF0500
+#define PORT_FONT ((volatile uint32_t * const)(VGA_BASE+0x00))
+
 
 //
 // Framebuffer Structure
@@ -70,6 +73,15 @@ static uint32_t DefaultMode = BUILD_CHAR(
 
 void fb_init(void) {
     fb_clear('\x00');
+}
+
+
+//
+// Font
+//
+
+void fb_set_font(uint8_t font) {
+    *PORT_FONT = (font & 0x03);
 }
 
 

@@ -80,6 +80,7 @@ typedef struct packed {
     logic switches;
     logic uart;
     logic irq;
+    logic vga;
 } chip_select_t;
 
 chip_select_t chip_select_w;
@@ -93,6 +94,7 @@ wire word_t dsp_read_data_w;
 wire word_t sw_read_data_w;
 wire word_t uart_read_data_w;
 wire word_t irq_read_data_w;
+wire word_t vga_read_data_w;
 
 always_ff @(posedge cpu_clk_i) begin
     chip_select_r <= chip_select_w;
@@ -123,6 +125,7 @@ always_comb begin
     32'hFFFF02??: chip_select_w.display  = '1;
     32'hFFFF03??: chip_select_w.switches = '1;
     32'hFFFF04??: chip_select_w.keyboard = '1;
+    32'hFFFF05??: chip_select_w.vga      = '1;
     default: ;
     endcase
 end
@@ -144,6 +147,8 @@ always_comb begin
         dmem_read_data_w = uart_read_data_w;
     else if (chip_select_r.irq)
         dmem_read_data_w = irq_read_data_w;
+    else if (chip_select_r.vga)
+        dmem_read_data_w = vga_read_data_w;
     else
         dmem_read_data_w = 32'b0;
 end
@@ -241,11 +246,6 @@ switches switches (
 // UART
 logic uart_interrupt_w;
 
-// TODO: Interrupts
-// - UART Break State Changed
-// - UART TX Overrun ??
-// - UART RX Overrun ??
-
 uart uart (
     .clk_i             (cpu_clk_i),
     .interrupt_o       (uart_interrupt_w),
@@ -281,7 +281,13 @@ vga_controller vga (
     .vga_green_o       (vga_green_o),
     .vga_blue_o        (vga_blue_o),
     .vga_hsync_o       (vga_hsync_o),
-    .vga_vsync_o       (vga_vsync_o)
+    .vga_vsync_o       (vga_vsync_o),
+    .chip_select_i     (chip_select_w.vga),
+    .addr_i            (dmem_addr_w[5:2]),
+    .read_enable_i     (dmem_read_enable_w),
+    .read_data_o       (vga_read_data_w),
+    .write_data_i      (dmem_write_data_w),
+    .write_mask_i      (dmem_write_mask_w)
 );
 
 

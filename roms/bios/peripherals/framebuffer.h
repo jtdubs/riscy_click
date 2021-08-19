@@ -9,6 +9,9 @@ static const uint8_t FrameBufferWidth  = 80;
 // Initialization
 void      fb_init          (void);
 
+// Font
+void      fb_set_font      (uint8_t font);
+
 // Character Control
 void      fb_set_blink     (bool enable);
 void      fb_set_underline (bool enable);

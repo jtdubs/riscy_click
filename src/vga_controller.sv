@@ -22,7 +22,15 @@ module vga_controller
         output wire logic [ 3:0] vga_green_o,
         output wire logic [ 3:0] vga_blue_o,
         output wire logic        vga_hsync_o,
-        output wire logic        vga_vsync_o
+        output wire logic        vga_vsync_o,
+
+        // Bus Interface
+        input  wire logic       chip_select_i,
+        input  wire logic [3:0] addr_i,
+        input  wire logic       read_enable_i,
+        output wire word_t      read_data_o,
+        input  wire word_t      write_data_i,
+        input  wire logic [3:0] write_mask_i
     );
 
 
@@ -32,6 +40,7 @@ module vga_controller
 
 localparam logic [6:0] CHAR_WIDTH    = 'd9;
 localparam logic [6:0] CHAR_HEIGHT   = 'd16;
+localparam logic [6:0] H_CHAR_MAX    = 'd99;
 
 localparam logic [9:0] H_ACTIVE      = 'd726;
 localparam logic [9:0] H_FRONT_PORCH = 'd15;
@@ -50,7 +59,6 @@ localparam logic [9:0] V_TOTAL       = (V_ACTIVE + V_FRONT_PORCH + V_SYNC_PULSE 
 // Computed Parameters
 //
 
-localparam logic [6:0] H_CHAR_MAX = 'd99; // { (H_TOTAL / {3'b0, CHAR_WIDTH}) - '1 }[6:0];
 
 localparam logic [9:0] H_MAX = H_TOTAL - 1;
 localparam logic [9:0] V_MAX = V_TOTAL - 1;
@@ -62,11 +70,53 @@ localparam logic [9:0] V_SYNC_START = V_ACTIVE + V_FRONT_PORCH;
 localparam logic [9:0] V_SYNC_STOP  = V_SYNC_START + V_SYNC_PULSE;
 
 
+//
+// Bus Access
+//
+
+// ports
+typedef enum logic [3:0] {
+    PORT_FONT = 4'b0000
+} port_t;
+
+// registers
+logic [1:0] font_r = '0;
+
+// read
+word_t read_data_w = '0;
+assign read_data_o = read_data_w;
+always_ff @(posedge clk_i) begin
+    if (chip_select_i && read_enable_i) begin
+        case (addr_i)
+        PORT_FONT: read_data_w <= { 30'b0, font_r };
+        default:   read_data_w <= 32'b0;
+        endcase
+    end
+end
+
+// write
+always_ff @(posedge clk_i) begin
+    if (chip_select_i) begin
+        case (addr_i)
+        PORT_FONT:
+            begin
+                if (write_mask_i[0]) font_r <= write_data_i[1:0];
+            end
+        default: ;
+        endcase
+    end
+end
+
+
+//
+// VGA Logic
+//
+
 // frame counter
 logic [4:0] frame_counter_r = '0;
 
 
-// character rom
+// character roms
 logic [11:0] crom_addr_w;
 logic [8:0] crom_data_w [3:0];
 
@@ -169,21 +219,25 @@ always_comb begin
 end
 
 
+// font selection
+logic [8:0] selected_crom_data_w;
+always_comb selected_crom_data_w = crom_data_w[font_r];
+
 // determine rgb values
 logic alpha_w;
 
 always_comb begin
     // character nibbles are 4-bit alpha blend values for each pixel
     unique case (x_offset_r[0])
-    0: alpha_w = crom_data_w[3][8];
-    1: alpha_w = crom_data_w[3][7];
-    2: alpha_w = crom_data_w[3][6];
-    3: alpha_w = crom_data_w[3][5];
-    4: alpha_w = crom_data_w[3][4];
-    5: alpha_w = crom_data_w[3][3];
-    6: alpha_w = crom_data_w[3][2];
-    7: alpha_w = crom_data_w[3][1];
-    8: alpha_w = crom_data_w[3][0];
+    0: alpha_w = selected_crom_data_w[8];
+    1: alpha_w = selected_crom_data_w[7];
+    2: alpha_w = selected_crom_data_w[6];
+    3: alpha_w = selected_crom_data_w[5];
+    4: alpha_w = selected_crom_data_w[4];
+    5: alpha_w = selected_crom_data_w[3];
+    6: alpha_w = selected_crom_data_w[2];
+    7: alpha_w = selected_crom_data_w[1];
+    8: alpha_w = selected_crom_data_w[0];
     endcase
 
     // in underline mode, draw a solid line 14 pixels down
