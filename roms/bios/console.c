@@ -81,17 +81,24 @@ char con_getch(void) {
                 CONTROL_STATE.meta   = kbd_is_make(e) ? 1 : 0;
                 break;
             case KEY_CAPSLOCK:
-                CONTROL_STATE.caps   = kbd_is_make(e) ? 1 : 0;
+                if (kbd_is_make(e))
+                    CONTROL_STATE.caps = !CONTROL_STATE.caps;
                 break;
             case KEY_NUMLOCK:
-                CONTROL_STATE.num    = kbd_is_make(e) ? 1 : 0;
+                if (kbd_is_make(e))
+                    CONTROL_STATE.num = !CONTROL_STATE.num;
                 break;
             case KEY_SCROLLLOCK:
-                CONTROL_STATE.scroll = kbd_is_make(e) ? 1 : 0;
+                if (kbd_is_make(e))
+                    CONTROL_STATE.scroll = !CONTROL_STATE.scroll;
                 break;
             default:
-                if (kbd_is_make(e))
-                    return TRANSLATION_TABLE[(CONTROL_STATE.shift << 7) | key];
+                if (kbd_is_make(e)) {
+                    char result = TRANSLATION_TABLE[(CONTROL_STATE.shift << 7) | key];
+                    if (result >= 'a' && result <= 'z' && CONTROL_STATE.caps)
+                        result -= 0x20;
+                    return result;
+                }
                 break;
         }
     }

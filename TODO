@@ -1,5 +1,12 @@
 TODO:
+- VGA
+    - Knock Character ROM down to 1bpp so it fits in one ROM
+    - Add TWO font ROMs
+    - Add memory mapped registers for VGA Controller to choose font
+    - Tie font selection to a switch on the board
 - BIOS
+    - Fix caps lock and shift handling
+    - Add ALT+### to type extended keycodes
     - UART
 - UART
     - How do I want to handle this in the simulator?  Feels like another window.
@@ -7,12 +14,14 @@ TODO:
 - PS/2
     - Full PS/2 driver including sending commands back to keyboard
     - PS/2 Mouse
+- Audio output??
 - Machine Level ISA
     - CSR
         - Decode should confirm address is read/executable, otherwise trap
         - Memory access should confirm address is read/write as appropriate
         - Expose chip select along with rwx.  Can use it externally to drive the dmem mux...
         - MTIME and MTIMECMP memory mapped registers??
+        - Implement timers
 - Memory
     - Allow for memory stalls
     - Add instruction & data cache
