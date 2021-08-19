@@ -1,7 +1,4 @@
 TODO:
-- VGA
-    - Add memory mapped registers for VGA Controller to choose font
-    - Tie font selection to a switch on the board
 - BIOS
     - Fix caps lock and shift handling
     - Add ALT+### to type extended keycodes

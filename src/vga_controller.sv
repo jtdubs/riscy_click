@@ -11,7 +11,7 @@ module vga_controller
     // Import Constants
     import common::*;
     (
-        input  wire logic        clk_i,     // 25.2MHz pixel clock
+        input  wire logic        clk_i,
 
         // video ram interface
         output      logic [11:0] vram_addr_o,
@@ -25,6 +25,7 @@ module vga_controller
         output wire logic        vga_vsync_o,
 
         // Bus Interface
+        input  wire logic       bus_clk_i,
         input  wire logic       chip_select_i,
         input  wire logic [3:0] addr_i,
         input  wire logic       read_enable_i,
@@ -80,31 +81,37 @@ typedef enum logic [3:0] {
 } port_t;
 
 // registers
-logic [1:0] font_r = '0;
+logic [1:0] bus_font_r = '0;
+logic [1:0] font_r [1:0];
 
 // read
 word_t read_data_w = '0;
 assign read_data_o = read_data_w;
-always_ff @(posedge clk_i) begin
+always_ff @(posedge bus_clk_i) begin
     if (chip_select_i && read_enable_i) begin
         case (addr_i)
-        PORT_FONT: read_data_w <= { 30'b0, font_r };
+        PORT_FONT: read_data_w <= { 30'b0, bus_font_r };
         default:   read_data_w <= 32'b0;
         endcase
     end
 end
 
 // write
-always_ff @(posedge clk_i) begin
+always_ff @(posedge bus_clk_i) begin
     if (chip_select_i) begin
         case (addr_i)
         PORT_FONT:
             begin
-                if (write_mask_i[0]) font_r <= write_data_i[1:0];
+                if (write_mask_i[0]) bus_font_r <= write_data_i[1:0];
             end
         default: ;
         endcase
     end
+end
+
+// clock domain transfer
+always_ff @(posedge clk_i) begin
+    font_r <= { bus_font_r, font_r[1] };
 end
 
 
@@ -221,7 +228,7 @@ end
 
 // font selection
 logic [8:0] selected_crom_data_w;
-always_comb selected_crom_data_w = crom_data_w[font_r];
+always_comb selected_crom_data_w = crom_data_w[font_r[0]];
 
 // determine rgb values
 logic alpha_w;

@@ -10,8 +10,8 @@ module chipset
     import common::*;
     (
         // Clocks
-        input  wire logic        cpu_clk_i,      // 50MHz CPU clock
-        input  wire logic        pxl_clk_i,      // 25.2MHz pixel clock
+        input  wire logic        cpu_clk_i,      // CPU clock
+        input  wire logic        pxl_clk_i,      // Pixel clock
 
         // Halt
         output wire logic        halt_o,         // halt output
@@ -282,6 +282,7 @@ vga_controller vga (
     .vga_blue_o        (vga_blue_o),
     .vga_hsync_o       (vga_hsync_o),
     .vga_vsync_o       (vga_vsync_o),
+    .bus_clk_i         (cpu_clk_i),
     .chip_select_i     (chip_select_w.vga),
     .addr_i            (dmem_addr_w[5:2]),
     .read_enable_i     (dmem_read_enable_w),

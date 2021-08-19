@@ -33,18 +33,11 @@ module board
 //
 
 wire logic cpu_clk_w;
-wire logic cpu_clk_ready_w;
-
-cpu_clk_gen cpu_clk_gen (
-    .sys_clk_i     (sys_clk_i),
-    .cpu_clk_o     (cpu_clk_w),
-    .ready_async_o (cpu_clk_ready_w)
-);
-
 wire logic pxl_clk_w;
 
-pixel_clk_gen pixel_clk_gen (
+clk_gen clk_gen (
     .sys_clk_i     (sys_clk_i),
+    .cpu_clk_o     (cpu_clk_w),
     .pxl_clk_o     (pxl_clk_w),
     .ready_async_o ()
 );

@@ -6,6 +6,10 @@ set_property CONFIG_VOLTAGE 3.3 [current_design]
 set_property -dict {PACKAGE_PIN E3 IOSTANDARD LVCMOS33} [get_ports sys_clk_i]
 create_clock -period 10.000 -name sys_clk_i -waveform {0.000 5.000} -add [get_ports sys_clk_i]
 
+## CDC between Bus an VGA
+set_max_delay -datapath_only -from [get_pins {chipset/vga/bus_font_r_reg[0]_replica/C}] -to [get_pins {chipset/vga/font_r_reg[1][0]/D}] 0.0
+set_max_delay -datapath_only -from [get_pins {chipset/vga/bus_font_r_reg[1]_replica/C}] -to [get_pins {chipset/vga/font_r_reg[1][1]/D}] 0.0
+
 ##Switches
 set_property -dict {PACKAGE_PIN J15 IOSTANDARD LVCMOS33} [get_ports {switch_i[0]}]
 set_property -dict {PACKAGE_PIN L16 IOSTANDARD LVCMOS33} [get_ports {switch_i[1]}]
@@ -24,7 +28,7 @@ set_property -dict {PACKAGE_PIN U12 IOSTANDARD LVCMOS33} [get_ports {switch_i[13
 set_property -dict {PACKAGE_PIN U11 IOSTANDARD LVCMOS33} [get_ports {switch_i[14]}]
 set_property -dict {PACKAGE_PIN V10 IOSTANDARD LVCMOS33} [get_ports {switch_i[15]}]
 
-set_input_delay -clock cpu_clk_w 0.000 [get_ports {switch_i[*]}]
+set_input_delay -clock [get_clocks -of_objects [get_pins clk_gen/clk_pll/CLKOUT0]] 0.000 [get_ports {switch_i[*]}]
 set_false_path -from [get_ports {switch_i[*]}]
 
 ## LEDs
@@ -45,7 +49,7 @@ set_property -dict {PACKAGE_PIN H17 IOSTANDARD LVCMOS33} [get_ports halt_o]
 #set_property -dict { PACKAGE_PIN V12   IOSTANDARD LVCMOS33 } [get_ports { LED[14] }]; #IO_L20N_T3_A07_D23_14 Sch=led[14]
 #set_property -dict { PACKAGE_PIN V11   IOSTANDARD LVCMOS33 } [get_ports { LED[15] }]; #IO_L21N_T3_DQS_A06_D22_14 Sch=led[15]
 
-set_output_delay -clock cpu_clk_w 0.000 [get_ports halt_o]
+set_output_delay -clock [get_clocks -of_objects [get_pins clk_gen/clk_pll/CLKOUT0]] 0.000 [get_ports halt_o]
 set_false_path -to [get_ports halt_o]
 
 ## RGB LEDs
@@ -74,10 +78,10 @@ set_property -dict {PACKAGE_PIN T14 IOSTANDARD LVCMOS33} [get_ports {dsp_anode_o
 set_property -dict {PACKAGE_PIN K2 IOSTANDARD LVCMOS33} [get_ports {dsp_anode_o[6]}]
 set_property -dict {PACKAGE_PIN U13 IOSTANDARD LVCMOS33} [get_ports {dsp_anode_o[7]}]
 
-set_output_delay -clock cpu_clk_w 0.000 [get_ports {dsp_anode_o[*]}]
+set_output_delay -clock [get_clocks -of_objects [get_pins clk_gen/clk_pll/CLKOUT0]] 0.000 [get_ports {dsp_anode_o[*]}]
 set_false_path -to [get_ports {dsp_anode_o[*]}]
 
-set_output_delay -clock cpu_clk_w 0.000 [get_ports {dsp_cathode_o[*]}]
+set_output_delay -clock [get_clocks -of_objects [get_pins clk_gen/clk_pll/CLKOUT0]] 0.000 [get_ports {dsp_cathode_o[*]}]
 set_false_path -to [get_ports {dsp_cathode_o[*]}]
 
 ##Buttons
@@ -88,7 +92,7 @@ set_false_path -to [get_ports {dsp_cathode_o[*]}]
 #set_property -dict { PACKAGE_PIN M17   IOSTANDARD LVCMOS33 } [get_ports { BTNR }]; #IO_L10N_T1_D15_14 Sch=btnr
 #set_property -dict { PACKAGE_PIN P18   IOSTANDARD LVCMOS33 } [get_ports { BTND }]; #IO_L9N_T1_DQS_D13_14 Sch=btnd
 
-# set_input_delay -clock cpu_clk_w 0.000 [get_ports reset_i]
+# set_input_delay -clock [get_clocks -of_objects [get_pins clk_gen/clk_pll/CLKOUT0]] 0.000 [get_ports reset_i]
 # set_false_path -from [get_ports reset_i]
 
 ##Pmod Headers
