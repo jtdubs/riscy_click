@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-static const uint8_t FrameBufferHeight = 30;
+static const uint8_t FrameBufferHeight = 25;
 static const uint8_t FrameBufferWidth  = 80;
 
 // Initialization
