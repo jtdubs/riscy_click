@@ -13,7 +13,7 @@ module character_rom
         // port
         input  wire logic [11:0] read_addr_i,
         input  wire logic        read_enable_i,
-        output wire logic [31:0] read_data_o
+        output wire logic [35:0] read_data_o
     );
 
 `ifdef ENABLE_XILINX_PRIMITIVES
@@ -31,7 +31,7 @@ xpm_memory_sprom #(
     .MEMORY_INIT_PARAM("0"),
     .MEMORY_OPTIMIZATION("false"),
     .MEMORY_PRIMITIVE("block"),
-    .MEMORY_SIZE(131072),
+    .MEMORY_SIZE(147456),
     .MESSAGE_CONTROL(0),
     .SIM_ASSERT_CHK(0),
     .USE_MEM_INIT(1),
@@ -40,7 +40,7 @@ xpm_memory_sprom #(
 
     // port parameters
     .ADDR_WIDTH_A(12),
-    .READ_DATA_WIDTH_A(32),
+    .READ_DATA_WIDTH_A(36),
     .READ_LATENCY_A(1),
     .READ_RESET_VALUE_A("0"),
     .RST_MODE_A("SYNC")
@@ -68,13 +68,13 @@ character_sprom_inst (
 // Simulator Implmentation
 //
 
-logic [31:0] mem_r [0:4095];
+logic [35:0] mem_r [0:4095];
 
 initial begin
     $readmemh(CONTENTS, mem_r);
 end
 
-logic [31:0] read_data_r = '0;
+logic [35:0] read_data_r = '0;
 
 always_ff @(posedge clk_i) begin
     if (read_enable_i)

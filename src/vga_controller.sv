@@ -32,7 +32,7 @@ logic [4:0] frame_counter_r = '0;
 
 // character rom
 logic [11:0] crom_addr_w;
-logic [31:0] crom_data_w;
+logic [35:0] crom_data_w;
 
 character_rom #(
     .CONTENTS("crom.mem")
@@ -50,13 +50,13 @@ logic [9:0] x_r [1:0] = '{ default: '0 };
 logic [9:0] y_r [1:0] = '{ default: '0 };
 
 always_ff @(posedge clk_i) begin
-    x_r[0] <= x_r[1];
-    y_r[0] <= y_r[1];
+    x_r[0]      <= x_r[1];
+    y_r[0]      <= y_r[1];
 
-    unique if (x_r[1] == 'd799) begin
+    unique if (x_r[1] == 'd935) begin
         x_r[1] <= 'd0;
 
-        unique if (y_r[1] == 'd524) begin
+        unique if (y_r[1] == 'd445) begin
             y_r[1] <= 'd0;
             frame_counter_r <= frame_counter_r + 1;
         end else begin
@@ -65,6 +65,25 @@ always_ff @(posedge clk_i) begin
 
     end else begin
         x_r[1] <= x_r[1] + 1;
+    end
+end
+
+// also keep track of the next two x char indexes and offsets
+logic [3:0] x_offset_r [1:0] = '{ default: '0 };
+logic [6:0] x_index_r  [1:0] = '{ default: '0 };
+
+always_ff @(posedge clk_i) begin
+    x_offset_r[0] <= x_offset_r[1];
+    x_index_r[0]  <= x_index_r[1];
+
+    unique if (x_offset_r[1] == 'd8) begin
+        x_offset_r[1] <= 4'd0;
+        if (x_index_r[1] == 7'd103)
+            x_index_r[1] <= 7'd0;
+        else
+            x_index_r[1] <= x_index_r[1] + 1;
+    end else begin
+        x_offset_r[1] <= x_offset_r[1] + 1;
     end
 end
 
@@ -98,7 +117,7 @@ end
 // drive memory access off of upcoming x,y
 always_comb begin
     // vram lookup is two pixels ahead
-    vram_addr_o = { y_r[1][8:4], x_r[1][9:3] };
+    vram_addr_o = { y_r[1][8:4], x_index_r[1] };
     // crom lookup is one pixel ahead
     crom_addr_w = { character_w, y_r[0][3:0] };
 end
@@ -109,15 +128,16 @@ logic [3:0] alpha_w;
 
 always_comb begin
     // character nibbles are 4-bit alpha blend values for each pixel
-    unique case (x_r[0][2:0])
-    1: alpha_w = crom_data_w[31:28];
-    2: alpha_w = crom_data_w[27:24];
-    3: alpha_w = crom_data_w[23:20];
-    4: alpha_w = crom_data_w[19:16];
-    5: alpha_w = crom_data_w[15:12];
-    6: alpha_w = crom_data_w[11: 8];
-    7: alpha_w = crom_data_w[ 7: 4];
+    unique case (x_offset_r[0])
     0: alpha_w = crom_data_w[ 3: 0];
+    1: alpha_w = crom_data_w[35:32];
+    2: alpha_w = crom_data_w[31:28];
+    3: alpha_w = crom_data_w[27:24];
+    4: alpha_w = crom_data_w[23:20];
+    5: alpha_w = crom_data_w[19:16];
+    6: alpha_w = crom_data_w[15:12];
+    7: alpha_w = crom_data_w[11: 8];
+    8: alpha_w = crom_data_w[ 7: 4];
     endcase
 
     // in underline mode, draw a solid line 14 pixels down
@@ -161,10 +181,10 @@ always_ff @(posedge clk_i) begin
     vga_red_r   <= red_w;
     vga_green_r <= green_w;
     vga_blue_r  <= blue_w;
-    vga_hsync_r <= !((x_r[0] >= 657) && (x_r[0] < 753));
-    vga_vsync_r <= !((y_r[0] >= 491) && (y_r[0] < 493));
+    vga_hsync_r <= !((x_r[0] >= 757) && (x_r[0] < 829));
+    vga_vsync_r <= !((y_r[0] >= 402) && (y_r[0] < 405));
 
-    if ((x_r[0] >= 639) || (y_r[0] >= 479)) begin
+    if ((x_r[0] >= 719) || (y_r[0] >= 399)) begin
         vga_red_r   <= 4'b0000;
         vga_green_r <= 4'b0000;
         vga_blue_r  <= 4'b0000;
