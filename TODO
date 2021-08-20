@@ -1,6 +1,5 @@
 TODO:
 - BIOS
-    - Fix caps lock and shift handling
     - Add ALT+### to type extended keycodes
     - UART
 - UART

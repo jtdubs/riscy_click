@@ -97,6 +97,8 @@ char con_getch(void) {
                     char result = TRANSLATION_TABLE[(CONTROL_STATE.shift << 7) | key];
                     if (result >= 'a' && result <= 'z' && CONTROL_STATE.caps)
                         result -= 0x20;
+                    else if (result >= 'A' && result <= 'Z' && CONTROL_STATE.caps)
+                        result += 0x20;
                     return result;
                 }
                 break;

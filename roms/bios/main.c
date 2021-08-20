@@ -34,7 +34,7 @@ int main() {
         switch (c) {
         case '\n':
             x = 0;
-            if (++y == (FrameBufferHeight-1)) y = 0;
+            if (++y == FrameBufferHeight) y = 0;
             break;
         case '\x1B':
             x = 0;
@@ -42,6 +42,15 @@ int main() {
             fb_set_blink(false);
             fb_set_underline(false);
             fb_clear(' ');
+            break;
+        case '\x08':
+            if (x == 0) {
+                x = (FrameBufferWidth-1);
+                if (y == 0)
+                    y = (FrameBufferHeight-1);
+                else y--;
+            } else x--;
+            fb_write(x, y, ' ');
             break;
         default:
             {
