@@ -32,6 +32,9 @@ module kbd_controller
 // Bus Interface
 //
 
+wire logic [8:0] fifo_data_w;
+wire logic       fifo_valid_w;
+
 // ports
 typedef enum logic [3:0] {
     PORT_DATA    = 4'b0000,
@@ -110,10 +113,6 @@ end
 
 
 // Buffer
-
-wire logic [8:0] fifo_data_w;
-wire logic       fifo_valid_w;
-
 fifo #(
     .DATA_WIDTH(9),
     .ADDR_WIDTH(5)

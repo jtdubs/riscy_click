@@ -6,9 +6,11 @@ set_property CONFIG_VOLTAGE 3.3 [current_design]
 set_property -dict {PACKAGE_PIN E3 IOSTANDARD LVCMOS33} [get_ports sys_clk_i]
 create_clock -period 10.000 -name sys_clk_i -waveform {0.000 5.000} -add [get_ports sys_clk_i]
 
+set_clock_groups -asynchronous -group {pxl_clk_w}
+
 ## CDC between Bus an VGA
-set_max_delay -datapath_only -from [get_pins {chipset/vga/bus_font_r_reg[0]_replica/C}] -to [get_pins {chipset/vga/font_r_reg[1][0]/D}] 0.0
-set_max_delay -datapath_only -from [get_pins {chipset/vga/bus_font_r_reg[1]_replica/C}] -to [get_pins {chipset/vga/font_r_reg[1][1]/D}] 0.0
+set_max_delay -datapath_only -from [get_pins {chipset/vga/bus_font_r_reg[1]_replica/C}] -to [get_pins {chipset/vga/font_r_reg[1][1]/D}] 0.000
+set_max_delay -datapath_only -from [get_pins {chipset/vga/bus_font_r_reg[0]_replica/C}] -to [get_pins {chipset/vga/font_r_reg[1][0]/D}] 0.000
 
 ##Switches
 set_property -dict {PACKAGE_PIN J15 IOSTANDARD LVCMOS33} [get_ports {switch_i[0]}]
@@ -162,19 +164,19 @@ set_property -dict {PACKAGE_PIN D8 IOSTANDARD LVCMOS33} [get_ports {vga_blue_o[3
 set_property -dict {PACKAGE_PIN B11 IOSTANDARD LVCMOS33} [get_ports vga_hsync_o]
 set_property -dict {PACKAGE_PIN B12 IOSTANDARD LVCMOS33} [get_ports vga_vsync_o]
 
-set_output_delay -clock pxl_clk_w 0.000 [get_ports {vga_red_o[*]}]
+set_output_delay -clock [get_clocks -of_objects [get_pins clk_gen/clk_pll/CLKOUT1]] 0.000 [get_ports {vga_red_o[*]}]
 set_false_path -to [get_ports {vga_red_o[*]}]
 
-set_output_delay -clock pxl_clk_w 0.000 [get_ports {vga_green_o[*]}]
+set_output_delay -clock [get_clocks -of_objects [get_pins clk_gen/clk_pll/CLKOUT1]] 0.000 [get_ports {vga_green_o[*]}]
 set_false_path -to [get_ports {vga_green_o[*]}]
 
-set_output_delay -clock pxl_clk_w 0.000 [get_ports {vga_blue_o[*]}]
+set_output_delay -clock [get_clocks -of_objects [get_pins clk_gen/clk_pll/CLKOUT1]] 0.000 [get_ports {vga_blue_o[*]}]
 set_false_path -to [get_ports {vga_blue_o[*]}]
 
-set_output_delay -clock pxl_clk_w 0.000 [get_ports vga_hsync_o]
+set_output_delay -clock [get_clocks -of_objects [get_pins clk_gen/clk_pll/CLKOUT1]] 0.000 [get_ports vga_hsync_o]
 set_false_path -to [get_ports vga_hsync_o]
 
-set_output_delay -clock pxl_clk_w 0.000 [get_ports vga_vsync_o]
+set_output_delay -clock [get_clocks -of_objects [get_pins clk_gen/clk_pll/CLKOUT1]] 0.000 [get_ports vga_vsync_o]
 set_false_path -to [get_ports vga_vsync_o]
 
 ##Micro SD Connector
@@ -211,14 +213,26 @@ set_false_path -to [get_ports vga_vsync_o]
 #set_property -dict { PACKAGE_PIN D12   IOSTANDARD LVCMOS33 } [get_ports { AUD_SD }]; #IO_L6P_T0_15 Sch=aud_sd
 
 ##USB-RS232 Interface
-set_property -dict { PACKAGE_PIN C4    IOSTANDARD LVCMOS33 } [get_ports { uart_txd_o }]; #IO_L7P_T1_AD6P_35 Sch=uart_txd_in
-set_property -dict { PACKAGE_PIN D4    IOSTANDARD LVCMOS33 } [get_ports { uart_rxd_i }]; #IO_L11N_T1_SRCC_35 Sch=uart_rxd_out
+set_property -dict {PACKAGE_PIN C4 IOSTANDARD LVCMOS33} [get_ports uart_txd_o]
+set_property -dict {PACKAGE_PIN D4 IOSTANDARD LVCMOS33} [get_ports uart_rxd_i]
 #set_property -dict { PACKAGE_PIN D3    IOSTANDARD LVCMOS33 } [get_ports { UART_CTS }]; #IO_L12N_T1_MRCC_35 Sch=uart_cts
 #set_property -dict { PACKAGE_PIN E5    IOSTANDARD LVCMOS33 } [get_ports { UART_RTS }]; #IO_L5N_T0_AD13N_35 Sch=uart_rts
+
+set_output_delay -clock [get_clocks -of_objects [get_pins clk_gen/clk_pll/CLKOUT1]] 0.000 [get_ports uart_txd_o]
+set_false_path -to [get_ports uart_txd_o]
+
+set_input_delay -clock [get_clocks -of_objects [get_pins clk_gen/clk_pll/CLKOUT0]] 0.000 [get_ports {uart_rxd_i}]
+set_false_path -from [get_ports {uart_rxd_i}]
 
 ##USB HID (PS/2)
 set_property -dict {PACKAGE_PIN F4 IOSTANDARD LVCMOS33} [get_ports ps2_clk_i]
 set_property -dict {PACKAGE_PIN B2 IOSTANDARD LVCMOS33} [get_ports ps2_data_i]
+
+set_input_delay -clock [get_clocks -of_objects [get_pins clk_gen/clk_pll/CLKOUT0]] 0.000 [get_ports {ps2_clk_i}]
+set_false_path -from [get_ports {ps2_clk_i}]
+
+set_input_delay -clock [get_clocks -of_objects [get_pins clk_gen/clk_pll/CLKOUT0]] 0.000 [get_ports {ps2_data_i}]
+set_false_path -from [get_ports {ps2_data_i}]
 
 ##SMSC Ethernet PHY
 #set_property -dict { PACKAGE_PIN C9    IOSTANDARD LVCMOS33 } [get_ports { ETH_MDC }]; #IO_L11P_T1_SRCC_16 Sch=eth_mdc
@@ -240,5 +254,3 @@ set_property -dict {PACKAGE_PIN B2 IOSTANDARD LVCMOS33} [get_ports ps2_data_i]
 #set_property -dict { PACKAGE_PIN L14   IOSTANDARD LVCMOS33 } [get_ports { QSPI_DQ[2] }]; #IO_L2P_T0_D02_14 Sch=qspi_dq[2]
 #set_property -dict { PACKAGE_PIN M14   IOSTANDARD LVCMOS33 } [get_ports { QSPI_DQ[3] }]; #IO_L2N_T0_D03_14 Sch=qspi_dq[3]
 #set_property -dict { PACKAGE_PIN L13   IOSTANDARD LVCMOS33 } [get_ports { QSPI_CSN }]; #IO_L6P_T0_FCS_B_14 Sch=qspi_csn
-
-

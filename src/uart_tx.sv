@@ -36,6 +36,7 @@ end
 // Shift Register
 //
 
+logic [11:0] packet_w;
 logic [11:0] packet_r = '0;
 logic        txd_w = '1;
 
@@ -87,8 +88,6 @@ end
 //
 // Packet Creation
 //
-
-logic [11:0] packet_w;
 
 always_comb begin
     packet_w[   0] = 1'b0;

@@ -35,6 +35,9 @@ uart_config_t config_r = '{ DATA_EIGHT, PARITY_NONE, STOP_ONE, FLOW_NONE, 1'b0, 
 // Bus Interface
 //
 
+logic [7:0] rx_fifo_data_w;
+logic       rx_fifo_valid_w;
+
 // ports
 typedef enum logic [3:0] {
     PORT_CONFIG = 4'b0000,
@@ -79,8 +82,6 @@ end
 
 logic [7:0] rx_data_w;
 logic       rx_valid_w;
-logic [7:0] rx_fifo_data_w;
-logic       rx_fifo_valid_w;
 logic       rx_fifo_empty_w;
 
 uart_rx rx (
