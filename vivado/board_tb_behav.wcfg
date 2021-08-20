@@ -7,181 +7,36 @@
          <top_modules>
             <top_module name="board_tb" />
             <top_module name="common" />
+            <top_module name="cpu_common" />
+            <top_module name="csr_common" />
             <top_module name="glbl" />
+            <top_module name="kbd_common" />
             <top_module name="logging" />
+            <top_module name="uart_common" />
          </top_modules>
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
-      <ZoomEndTime time="1,049.501 ns"></ZoomEndTime>
-      <Cursor1Time time="201,000.000 ns"></Cursor1Time>
+      <ZoomStartTime time="464.666 ns"></ZoomStartTime>
+      <ZoomEndTime time="599.067 ns"></ZoomEndTime>
+      <Cursor1Time time="576.666 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="307"></NameColumnWidth>
-      <ValueColumnWidth column_width="130"></ValueColumnWidth>
+      <NameColumnWidth column_width="542"></NameColumnWidth>
+      <ValueColumnWidth column_width="259"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="11" />
+   <WVObjectSize size="9" />
    <wave_markers>
       <marker time="30790000" label="" />
+      <marker time="973333" label="" />
    </wave_markers>
    <wvobject fp_name="/board_tb/board/chipset/cpu_clk_i" type="logic">
       <obj_property name="ElementShortName">cpu_clk_i</obj_property>
       <obj_property name="ObjectShortName">cpu_clk_i</obj_property>
    </wvobject>
-   <wvobject fp_name="/board_tb/board/chipset/pxl_clk_i" type="logic">
-      <obj_property name="ElementShortName">pxl_clk_i</obj_property>
-      <obj_property name="ObjectShortName">pxl_clk_i</obj_property>
-   </wvobject>
    <wvobject fp_name="/board_tb/board/chipset/halt_o" type="logic">
       <obj_property name="ElementShortName">halt_o</obj_property>
       <obj_property name="ObjectShortName">halt_o</obj_property>
-   </wvobject>
-   <wvobject fp_name="/board_tb/board/chipset/switch_r" type="array">
-      <obj_property name="ElementShortName">switch_r[31:0]</obj_property>
-      <obj_property name="ObjectShortName">switch_r[31:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="group83" type="group">
-      <obj_property name="label">Reset</obj_property>
-      <obj_property name="DisplayName">label</obj_property>
-   </wvobject>
-   <wvobject fp_name="group82" type="group">
-      <obj_property name="label">VGA</obj_property>
-      <obj_property name="DisplayName">label</obj_property>
-      <wvobject fp_name="/board_tb/board/chipset/dsp_anode_o" type="array">
-         <obj_property name="ElementShortName">dsp_anode_o[7:0]</obj_property>
-         <obj_property name="ObjectShortName">dsp_anode_o[7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/board_tb/board/chipset/dsp_cathode_o" type="array">
-         <obj_property name="ElementShortName">dsp_cathode_o[7:0]</obj_property>
-         <obj_property name="ObjectShortName">dsp_cathode_o[7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/board_tb/board/chipset/vga_red_o" type="array">
-         <obj_property name="ElementShortName">vga_red_o[3:0]</obj_property>
-         <obj_property name="ObjectShortName">vga_red_o[3:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/board_tb/board/chipset/vga_green_o" type="array">
-         <obj_property name="ElementShortName">vga_green_o[3:0]</obj_property>
-         <obj_property name="ObjectShortName">vga_green_o[3:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/board_tb/board/chipset/vga_blue_o" type="array">
-         <obj_property name="ElementShortName">vga_blue_o[3:0]</obj_property>
-         <obj_property name="ObjectShortName">vga_blue_o[3:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/board_tb/board/chipset/vga_hsync_o" type="logic">
-         <obj_property name="ElementShortName">vga_hsync_o</obj_property>
-         <obj_property name="ObjectShortName">vga_hsync_o</obj_property>
-      </wvobject>
-      <wvobject fp_name="/board_tb/board/chipset/vga_vsync_o" type="logic">
-         <obj_property name="ElementShortName">vga_vsync_o</obj_property>
-         <obj_property name="ObjectShortName">vga_vsync_o</obj_property>
-      </wvobject>
-      <wvobject fp_name="/board_tb/board/chipset/vga_vram_addr_w" type="array">
-         <obj_property name="ElementShortName">vga_vram_addr_w[11:0]</obj_property>
-         <obj_property name="ObjectShortName">vga_vram_addr_w[11:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/board_tb/board/chipset/vga_vram_data_w" type="array">
-         <obj_property name="ElementShortName">vga_vram_data_w[7:0]</obj_property>
-         <obj_property name="ObjectShortName">vga_vram_data_w[7:0]</obj_property>
-      </wvobject>
-   </wvobject>
-   <wvobject fp_name="group81" type="group">
-      <obj_property name="label">Instruction Bus</obj_property>
-      <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
-      <wvobject fp_name="/board_tb/board/chipset/imem_addr_w" type="array">
-         <obj_property name="ElementShortName">imem_addr_w[31:0]</obj_property>
-         <obj_property name="ObjectShortName">imem_addr_w[31:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/board_tb/board/chipset/imem_data_w" type="array">
-         <obj_property name="ElementShortName">imem_data_w[31:0]</obj_property>
-         <obj_property name="ObjectShortName">imem_data_w[31:0]</obj_property>
-      </wvobject>
-   </wvobject>
-   <wvobject fp_name="group80" type="group">
-      <obj_property name="label">Data Bus</obj_property>
-      <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
-      <wvobject fp_name="/board_tb/board/chipset/dmem_read_data_w" type="array">
-         <obj_property name="ElementShortName">dmem_read_data_w[31:0]</obj_property>
-         <obj_property name="ObjectShortName">dmem_read_data_w[31:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/board_tb/board/chipset/dmem_addr_w" type="array">
-         <obj_property name="ElementShortName">dmem_addr_w[31:0]</obj_property>
-         <obj_property name="ObjectShortName">dmem_addr_w[31:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/board_tb/board/chipset/dmem_write_data_w" type="array">
-         <obj_property name="ElementShortName">dmem_write_data_w[31:0]</obj_property>
-         <obj_property name="ObjectShortName">dmem_write_data_w[31:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/board_tb/board/chipset/dmem_write_mask_w" type="array">
-         <obj_property name="ElementShortName">dmem_write_mask_w[3:0]</obj_property>
-         <obj_property name="ObjectShortName">dmem_write_mask_w[3:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/board_tb/board/chipset/chip_select_w" type="array">
-         <obj_property name="ElementShortName">chip_select_w</obj_property>
-         <obj_property name="ObjectShortName">chip_select_w</obj_property>
-      </wvobject>
-      <wvobject fp_name="/board_tb/board/chipset/chip_select_r" type="array">
-         <obj_property name="ElementShortName">chip_select_r</obj_property>
-         <obj_property name="ObjectShortName">chip_select_r</obj_property>
-      </wvobject>
-      <wvobject fp_name="group84" type="group">
-         <obj_property name="label">Seg Display</obj_property>
-         <obj_property name="DisplayName">label</obj_property>
-         <wvobject fp_name="/board_tb/board/chipset/dsp_read_data_w" type="array">
-            <obj_property name="ElementShortName">dsp_read_data_w[31:0]</obj_property>
-            <obj_property name="ObjectShortName">dsp_read_data_w[31:0]</obj_property>
-         </wvobject>
-      </wvobject>
-      <wvobject fp_name="group85" type="group">
-         <obj_property name="label">System RAM</obj_property>
-         <obj_property name="DisplayName">label</obj_property>
-         <wvobject fp_name="/board_tb/board/chipset/ram_read_data_w" type="array">
-            <obj_property name="ElementShortName">ram_read_data_w[31:0]</obj_property>
-            <obj_property name="ObjectShortName">ram_read_data_w[31:0]</obj_property>
-         </wvobject>
-      </wvobject>
-      <wvobject fp_name="group86" type="group">
-         <obj_property name="label">Video RAM</obj_property>
-         <obj_property name="DisplayName">label</obj_property>
-         <wvobject fp_name="/board_tb/board/chipset/vram_read_data_w" type="array">
-            <obj_property name="ElementShortName">vram_read_data_w[31:0]</obj_property>
-            <obj_property name="ObjectShortName">vram_read_data_w[31:0]</obj_property>
-         </wvobject>
-      </wvobject>
-      <wvobject fp_name="group87" type="group">
-         <obj_property name="label">BIOS ROM</obj_property>
-         <obj_property name="DisplayName">label</obj_property>
-         <wvobject fp_name="/board_tb/board/chipset/bios_read_data_w" type="array">
-            <obj_property name="ElementShortName">bios_read_data_w[31:0]</obj_property>
-            <obj_property name="ObjectShortName">bios_read_data_w[31:0]</obj_property>
-         </wvobject>
-      </wvobject>
-   </wvobject>
-   <wvobject fp_name="group422" type="group">
-      <obj_property name="label">Keyboard</obj_property>
-      <obj_property name="DisplayName">label</obj_property>
-      <wvobject fp_name="/board_tb/board/chipset/kbd/read_enable_i" type="logic">
-         <obj_property name="ElementShortName">read_enable_i</obj_property>
-         <obj_property name="ObjectShortName">read_enable_i</obj_property>
-      </wvobject>
-      <wvobject fp_name="/board_tb/board/chipset/kbd/read_data_o" type="array">
-         <obj_property name="ElementShortName">read_data_o</obj_property>
-         <obj_property name="ObjectShortName">read_data_o</obj_property>
-      </wvobject>
-      <wvobject fp_name="/board_tb/board/chipset/kbd/read_valid_o" type="logic">
-         <obj_property name="ElementShortName">read_valid_o</obj_property>
-         <obj_property name="ObjectShortName">read_valid_o</obj_property>
-      </wvobject>
-      <wvobject fp_name="/board_tb/board/chipset/kbd/ps2_data_w" type="array">
-         <obj_property name="ElementShortName">ps2_data_w[7:0]</obj_property>
-         <obj_property name="ObjectShortName">ps2_data_w[7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/board_tb/board/chipset/kbd/ps2_valid_w" type="logic">
-         <obj_property name="ElementShortName">ps2_valid_w</obj_property>
-         <obj_property name="ObjectShortName">ps2_valid_w</obj_property>
-      </wvobject>
    </wvobject>
    <wvobject fp_name="group423" type="group">
       <obj_property name="label">CPU</obj_property>
@@ -190,14 +45,9 @@
       <wvobject fp_name="group424" type="group">
          <obj_property name="label">Pipeline</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/first_cycle_r" type="array">
             <obj_property name="ElementShortName">first_cycle_r[1:0]</obj_property>
             <obj_property name="ObjectShortName">first_cycle_r[1:0]</obj_property>
-         </wvobject>
-         <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/pc_i" type="array">
-            <obj_property name="ElementShortName">pc_i[31:0]</obj_property>
-            <obj_property name="ObjectShortName">pc_i[31:0]</obj_property>
          </wvobject>
          <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/imem_data_i" type="array">
             <obj_property name="ElementShortName">imem_data_i[31:0]</obj_property>
@@ -234,6 +84,140 @@
          <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_wb/ir_i" type="array">
             <obj_property name="ElementShortName">ir_i[31:0]</obj_property>
             <obj_property name="ObjectShortName">ir_i[31:0]</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group102" type="group">
+         <obj_property name="label">IF</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/clk_i" type="logic">
+            <obj_property name="ElementShortName">clk_i</obj_property>
+            <obj_property name="ObjectShortName">clk_i</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/halt_i" type="logic">
+            <obj_property name="ElementShortName">halt_i</obj_property>
+            <obj_property name="ObjectShortName">halt_i</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/jmp_addr_i" type="array">
+            <obj_property name="ElementShortName">jmp_addr_i[31:0]</obj_property>
+            <obj_property name="ObjectShortName">jmp_addr_i[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/jmp_valid_i" type="logic">
+            <obj_property name="ElementShortName">jmp_valid_i</obj_property>
+            <obj_property name="ObjectShortName">jmp_valid_i</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/ready_i" type="logic">
+            <obj_property name="ElementShortName">ready_i</obj_property>
+            <obj_property name="ObjectShortName">ready_i</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/first_cycle_r" type="array">
+            <obj_property name="ElementShortName">first_cycle_r[1:0]</obj_property>
+            <obj_property name="ObjectShortName">first_cycle_r[1:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/imem_addr_r" type="array">
+            <obj_property name="ElementShortName">imem_addr_r[31:0]</obj_property>
+            <obj_property name="ObjectShortName">imem_addr_r[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/imem_data_i" type="array">
+            <obj_property name="ElementShortName">imem_data_i[31:0]</obj_property>
+            <obj_property name="ObjectShortName">imem_data_i[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/compressed_ir_w" type="array">
+            <obj_property name="ElementShortName">compressed_ir_w[31:0]</obj_property>
+            <obj_property name="ObjectShortName">compressed_ir_w[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/decompressed_ir_w" type="array">
+            <obj_property name="ElementShortName">decompressed_ir_w[31:0]</obj_property>
+            <obj_property name="ObjectShortName">decompressed_ir_w[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/compressed_w" type="logic">
+            <obj_property name="ElementShortName">compressed_w</obj_property>
+            <obj_property name="ObjectShortName">compressed_w</obj_property>
+         </wvobject>
+         <wvobject fp_name="group309" type="group">
+            <obj_property name="label">Edge</obj_property>
+            <obj_property name="DisplayName">label</obj_property>
+            <obj_property name="isExpanded"></obj_property>
+            <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/wait_w" type="logic">
+               <obj_property name="ElementShortName">wait_w</obj_property>
+               <obj_property name="ObjectShortName">wait_w</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/start_aligned_w" type="logic">
+               <obj_property name="ElementShortName">start_aligned_w</obj_property>
+               <obj_property name="ObjectShortName">start_aligned_w</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/start_unaligned_w" type="logic">
+               <obj_property name="ElementShortName">start_unaligned_w</obj_property>
+               <obj_property name="ObjectShortName">start_unaligned_w</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/halt_w" type="logic">
+               <obj_property name="ElementShortName">halt_w</obj_property>
+               <obj_property name="ObjectShortName">halt_w</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/stall_w" type="logic">
+               <obj_property name="ElementShortName">stall_w</obj_property>
+               <obj_property name="ObjectShortName">stall_w</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/aligned_jump_w" type="logic">
+               <obj_property name="ElementShortName">aligned_jump_w</obj_property>
+               <obj_property name="ObjectShortName">aligned_jump_w</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/unaligned_jump_1_w" type="logic">
+               <obj_property name="ElementShortName">unaligned_jump_1_w</obj_property>
+               <obj_property name="ObjectShortName">unaligned_jump_1_w</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/unaligned_jump_2_w" type="logic">
+               <obj_property name="ElementShortName">unaligned_jump_2_w</obj_property>
+               <obj_property name="ObjectShortName">unaligned_jump_2_w</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/stay_aligned_w" type="logic">
+               <obj_property name="ElementShortName">stay_aligned_w</obj_property>
+               <obj_property name="ObjectShortName">stay_aligned_w</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/lose_alignment_w" type="logic">
+               <obj_property name="ElementShortName">lose_alignment_w</obj_property>
+               <obj_property name="ObjectShortName">lose_alignment_w</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/stay_unaligned_w" type="logic">
+               <obj_property name="ElementShortName">stay_unaligned_w</obj_property>
+               <obj_property name="ObjectShortName">stay_unaligned_w</obj_property>
+            </wvobject>
+            <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/gain_alignment_w" type="logic">
+               <obj_property name="ElementShortName">gain_alignment_w</obj_property>
+               <obj_property name="ObjectShortName">gain_alignment_w</obj_property>
+            </wvobject>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/state_w" type="array">
+            <obj_property name="ElementShortName">state_w[4:0]</obj_property>
+            <obj_property name="ObjectShortName">state_w[4:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/imem_addr_w" type="array">
+            <obj_property name="ElementShortName">imem_addr_w[31:0]</obj_property>
+            <obj_property name="ObjectShortName">imem_addr_w[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/pc_r" type="array">
+            <obj_property name="ElementShortName">pc_r[31:0]</obj_property>
+            <obj_property name="ObjectShortName">pc_r[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/ir_r" type="array">
+            <obj_property name="ElementShortName">ir_r[31:0]</obj_property>
+            <obj_property name="ObjectShortName">ir_r[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/next_pc_r" type="array">
+            <obj_property name="ElementShortName">next_pc_r[31:0]</obj_property>
+            <obj_property name="ObjectShortName">next_pc_r[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/jmp_addr_r" type="array">
+            <obj_property name="ElementShortName">jmp_addr_r[31:0]</obj_property>
+            <obj_property name="ObjectShortName">jmp_addr_r[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/saved_ir_r" type="array">
+            <obj_property name="ElementShortName">saved_ir_r[15:0]</obj_property>
+            <obj_property name="ObjectShortName">saved_ir_r[15:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/board_tb/board/chipset/cpu/cpu_if/state_r" type="array">
+            <obj_property name="ElementShortName">state_r[4:0]</obj_property>
+            <obj_property name="ObjectShortName">state_r[4:0]</obj_property>
          </wvobject>
       </wvobject>
       <wvobject fp_name="group435" type="group">
@@ -320,51 +304,147 @@
          <obj_property name="label">Pixel</obj_property>
          <obj_property name="DisplayName">label</obj_property>
          <obj_property name="isExpanded"></obj_property>
-         <wvobject fp_name="/board_tb/board/pixel_clk_gen/sys_clk_i" type="logic">
-            <obj_property name="ElementShortName">sys_clk_i</obj_property>
-            <obj_property name="ObjectShortName">sys_clk_i</obj_property>
-         </wvobject>
-         <wvobject fp_name="/board_tb/board/pixel_clk_gen/pxl_clk_o" type="logic">
-            <obj_property name="ElementShortName">pxl_clk_o</obj_property>
-            <obj_property name="ObjectShortName">pxl_clk_o</obj_property>
-         </wvobject>
-         <wvobject fp_name="/board_tb/board/pixel_clk_gen/ready_async_o" type="logic">
-            <obj_property name="ElementShortName">ready_async_o</obj_property>
-            <obj_property name="ObjectShortName">ready_async_o</obj_property>
-         </wvobject>
-         <wvobject fp_name="/board_tb/board/pixel_clk_gen/clk_feedback_w" type="logic">
-            <obj_property name="ElementShortName">clk_feedback_w</obj_property>
-            <obj_property name="ObjectShortName">clk_feedback_w</obj_property>
-         </wvobject>
-         <wvobject fp_name="/board_tb/board/pixel_clk_gen/pxl_clk_w" type="logic">
-            <obj_property name="ElementShortName">pxl_clk_w</obj_property>
-            <obj_property name="ObjectShortName">pxl_clk_w</obj_property>
-         </wvobject>
       </wvobject>
       <wvobject fp_name="group138" type="group">
          <obj_property name="label">CPU</obj_property>
          <obj_property name="DisplayName">label</obj_property>
          <obj_property name="isExpanded"></obj_property>
-         <wvobject fp_name="/board_tb/board/cpu_clk_gen/sys_clk_i" type="logic">
-            <obj_property name="ElementShortName">sys_clk_i</obj_property>
-            <obj_property name="ObjectShortName">sys_clk_i</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group83" type="group">
+      <obj_property name="label">Reset</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+   </wvobject>
+   <wvobject fp_name="group82" type="group">
+      <obj_property name="label">VGA</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/board_tb/board/chipset/dsp_anode_o" type="array">
+         <obj_property name="ElementShortName">dsp_anode_o[7:0]</obj_property>
+         <obj_property name="ObjectShortName">dsp_anode_o[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board_tb/board/chipset/dsp_cathode_o" type="array">
+         <obj_property name="ElementShortName">dsp_cathode_o[7:0]</obj_property>
+         <obj_property name="ObjectShortName">dsp_cathode_o[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board_tb/board/chipset/vga_red_o" type="array">
+         <obj_property name="ElementShortName">vga_red_o[3:0]</obj_property>
+         <obj_property name="ObjectShortName">vga_red_o[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board_tb/board/chipset/vga_green_o" type="array">
+         <obj_property name="ElementShortName">vga_green_o[3:0]</obj_property>
+         <obj_property name="ObjectShortName">vga_green_o[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board_tb/board/chipset/vga_blue_o" type="array">
+         <obj_property name="ElementShortName">vga_blue_o[3:0]</obj_property>
+         <obj_property name="ObjectShortName">vga_blue_o[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board_tb/board/chipset/vga_hsync_o" type="logic">
+         <obj_property name="ElementShortName">vga_hsync_o</obj_property>
+         <obj_property name="ObjectShortName">vga_hsync_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board_tb/board/chipset/vga_vsync_o" type="logic">
+         <obj_property name="ElementShortName">vga_vsync_o</obj_property>
+         <obj_property name="ObjectShortName">vga_vsync_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board_tb/board/chipset/vga_vram_addr_w" type="array">
+         <obj_property name="ElementShortName">vga_vram_addr_w[11:0]</obj_property>
+         <obj_property name="ObjectShortName">vga_vram_addr_w[11:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board_tb/board/chipset/vga_vram_data_w" type="array">
+         <obj_property name="ElementShortName">vga_vram_data_w[31:0]</obj_property>
+         <obj_property name="ObjectShortName">vga_vram_data_w[31:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group81" type="group">
+      <obj_property name="label">Instruction Bus</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/board_tb/board/chipset/imem_addr_w" type="array">
+         <obj_property name="ElementShortName">imem_addr_w[31:0]</obj_property>
+         <obj_property name="ObjectShortName">imem_addr_w[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board_tb/board/chipset/imem_data_w" type="array">
+         <obj_property name="ElementShortName">imem_data_w[31:0]</obj_property>
+         <obj_property name="ObjectShortName">imem_data_w[31:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group80" type="group">
+      <obj_property name="label">Data Bus</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/board_tb/board/chipset/dmem_read_data_w" type="array">
+         <obj_property name="ElementShortName">dmem_read_data_w[31:0]</obj_property>
+         <obj_property name="ObjectShortName">dmem_read_data_w[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board_tb/board/chipset/dmem_addr_w" type="array">
+         <obj_property name="ElementShortName">dmem_addr_w[31:0]</obj_property>
+         <obj_property name="ObjectShortName">dmem_addr_w[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board_tb/board/chipset/dmem_write_data_w" type="array">
+         <obj_property name="ElementShortName">dmem_write_data_w[31:0]</obj_property>
+         <obj_property name="ObjectShortName">dmem_write_data_w[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board_tb/board/chipset/dmem_write_mask_w" type="array">
+         <obj_property name="ElementShortName">dmem_write_mask_w[3:0]</obj_property>
+         <obj_property name="ObjectShortName">dmem_write_mask_w[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board_tb/board/chipset/chip_select_w" type="array">
+         <obj_property name="ElementShortName">chip_select_w</obj_property>
+         <obj_property name="ObjectShortName">chip_select_w</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board_tb/board/chipset/chip_select_r" type="array">
+         <obj_property name="ElementShortName">chip_select_r</obj_property>
+         <obj_property name="ObjectShortName">chip_select_r</obj_property>
+      </wvobject>
+      <wvobject fp_name="group84" type="group">
+         <obj_property name="label">Seg Display</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/board_tb/board/chipset/dsp_read_data_w" type="array">
+            <obj_property name="ElementShortName">dsp_read_data_w[31:0]</obj_property>
+            <obj_property name="ObjectShortName">dsp_read_data_w[31:0]</obj_property>
          </wvobject>
-         <wvobject fp_name="/board_tb/board/cpu_clk_gen/cpu_clk_o" type="logic">
-            <obj_property name="ElementShortName">cpu_clk_o</obj_property>
-            <obj_property name="ObjectShortName">cpu_clk_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="group85" type="group">
+         <obj_property name="label">System RAM</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/board_tb/board/chipset/ram_read_data_w" type="array">
+            <obj_property name="ElementShortName">ram_read_data_w[31:0]</obj_property>
+            <obj_property name="ObjectShortName">ram_read_data_w[31:0]</obj_property>
          </wvobject>
-         <wvobject fp_name="/board_tb/board/cpu_clk_gen/ready_async_o" type="logic">
-            <obj_property name="ElementShortName">ready_async_o</obj_property>
-            <obj_property name="ObjectShortName">ready_async_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="group86" type="group">
+         <obj_property name="label">Video RAM</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/board_tb/board/chipset/vram_read_data_w" type="array">
+            <obj_property name="ElementShortName">vram_read_data_w[31:0]</obj_property>
+            <obj_property name="ObjectShortName">vram_read_data_w[31:0]</obj_property>
          </wvobject>
-         <wvobject fp_name="/board_tb/board/cpu_clk_gen/clk_feedback_w" type="logic">
-            <obj_property name="ElementShortName">clk_feedback_w</obj_property>
-            <obj_property name="ObjectShortName">clk_feedback_w</obj_property>
+      </wvobject>
+      <wvobject fp_name="group87" type="group">
+         <obj_property name="label">BIOS ROM</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/board_tb/board/chipset/bios_read_data_w" type="array">
+            <obj_property name="ElementShortName">bios_read_data_w[31:0]</obj_property>
+            <obj_property name="ObjectShortName">bios_read_data_w[31:0]</obj_property>
          </wvobject>
-         <wvobject fp_name="/board_tb/board/cpu_clk_gen/cpu_clk_w" type="logic">
-            <obj_property name="ElementShortName">cpu_clk_w</obj_property>
-            <obj_property name="ObjectShortName">cpu_clk_w</obj_property>
-         </wvobject>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group422" type="group">
+      <obj_property name="label">Keyboard</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/board_tb/board/chipset/kbd/read_enable_i" type="logic">
+         <obj_property name="ElementShortName">read_enable_i</obj_property>
+         <obj_property name="ObjectShortName">read_enable_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board_tb/board/chipset/kbd/read_data_o" type="array">
+         <obj_property name="ElementShortName">read_data_o[31:0]</obj_property>
+         <obj_property name="ObjectShortName">read_data_o[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board_tb/board/chipset/kbd/ps2_data_w" type="array">
+         <obj_property name="ElementShortName">ps2_data_w[7:0]</obj_property>
+         <obj_property name="ObjectShortName">ps2_data_w[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/board_tb/board/chipset/kbd/ps2_valid_w" type="logic">
+         <obj_property name="ElementShortName">ps2_valid_w</obj_property>
+         <obj_property name="ObjectShortName">ps2_valid_w</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>

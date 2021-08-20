@@ -127,26 +127,41 @@ logic [4:0] frame_counter_r = '0;
 logic [11:0] crom_addr_w;
 logic [8:0] crom_data_w [3:0];
 
-localparam string ROM_FILES [3:0] = '{
-    "crom4.mem",
-    "crom3.mem",
-    "crom2.mem",
-    "crom1.mem"
-};
+character_rom #(
+    .CONTENTS("crom1.mem")
+) crom_inst_1 (
+    .clk_i(clk_i),
+    .read_enable_i(1'b1),
+    .read_addr_i(crom_addr_w),
+    .read_data_o(crom_data_w[0])
+);
 
-generate
-for (genvar i=0; i<4; i++) begin
-    character_rom #(
-        .CONTENTS(ROM_FILES[i])
-    ) crom_inst (
-        .clk_i(clk_i),
-        .read_enable_i(1'b1),
-        .read_addr_i(crom_addr_w),
-        .read_data_o(crom_data_w[i])
-    );
-end
-endgenerate
+character_rom #(
+    .CONTENTS("crom2.mem")
+) crom_inst_2 (
+    .clk_i(clk_i),
+    .read_enable_i(1'b1),
+    .read_addr_i(crom_addr_w),
+    .read_data_o(crom_data_w[1])
+);
 
+character_rom #(
+    .CONTENTS("crom3.mem")
+) crom_inst_3 (
+    .clk_i(clk_i),
+    .read_enable_i(1'b1),
+    .read_addr_i(crom_addr_w),
+    .read_data_o(crom_data_w[2])
+);
+
+character_rom #(
+    .CONTENTS("crom4.mem")
+) crom_inst_4 (
+    .clk_i(clk_i),
+    .read_enable_i(1'b1),
+    .read_addr_i(crom_addr_w),
+    .read_data_o(crom_data_w[3])
+);
 
 // keep track next two x,y coordinates
 logic [9:0] x_r [1:0] = '{ default: '0 };

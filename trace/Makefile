@@ -22,6 +22,7 @@ SV_SOURCES += ../src/fifo.sv
 SV_SOURCES += ../src/decoder.sv
 SV_SOURCES += ../src/alu.sv
 SV_SOURCES += ../src/cpu_csr.sv
+SV_SOURCES += ../src/cpu_decompress.sv
 SV_SOURCES += ../src/cpu_if.sv
 SV_SOURCES += ../src/cpu_wb.sv
 SV_SOURCES += ../src/cpu_ex.sv
@@ -32,8 +33,7 @@ SV_SOURCES += ../src/ps2_rx.sv
 SV_SOURCES += ../src/ps2_kbd.sv
 SV_SOURCES += ../src/kbd_controller.sv
 SV_SOURCES += ../src/board.sv
-SV_SOURCES += ../src/cpu_clk_gen.sv
-SV_SOURCES += ../src/pixel_clk_gen.sv
+SV_SOURCES += ../src/clk_gen.sv
 SV_SOURCES += ../src/chipset.sv
 SV_SOURCES += ../src/uart.sv
 SV_SOURCES += ../src/uart_tx.sv
@@ -63,7 +63,7 @@ VERILATOR_LIB = $(VERILATOR_DIR)/V$(VERILATOR_TOP)__ALL.a
 
 ROMS =
 ROMS += bios.mem
-ROMS += crom.mem
+ROMS += crom1.mem crom2.mem crom3.mem crom4.mem
 ROMS += krom.mem
 
 EXE = $(VERILATOR_TOP)
@@ -85,7 +85,16 @@ log.json: $(EXE)
 bios.mem: ../roms/bios/bios.mem
 	ln -sf $^ $@
 
-crom.mem: ../roms/character_rom/crom.mem
+crom1.mem: ../roms/character_rom/crom1.mem
+	ln -sf $^ $@
+
+crom2.mem: ../roms/character_rom/crom2.mem
+	ln -sf $^ $@
+
+crom3.mem: ../roms/character_rom/crom3.mem
+	ln -sf $^ $@
+
+crom4.mem: ../roms/character_rom/crom4.mem
 	ln -sf $^ $@
 
 krom.mem: ../roms/keycode/krom.mem

@@ -57,7 +57,8 @@ void irq_disable(interrupt_t i) {
 //
 
 void irq_wait(void) {
-    __asm__ volatile ("wfi");
+//    __asm__ volatile ("wfi");
+    __asm__ volatile ("nop");
 }
 
 

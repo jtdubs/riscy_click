@@ -18,7 +18,8 @@ OBJCOPY = riscv32-unknown-elf-objcopy
 
 CFLAGS =
 CFLAGS += -mabi=ilp32
-CFLAGS += -march=rv32i
+# CFLAGS += -march=rv32i
+CFLAGS += -march=rv32ic
 CFLAGS += -std=c18
 CFLAGS += -nostartfiles
 CFLAGS += -nodefaultlibs

@@ -88,7 +88,7 @@ video_tdpram_inst (
     .addrb(pxl_addr_i[11:0]),
     .doutb(pxl_data_o),
     .dinb(32'b0),
-    .web(1'b0),
+    .web(4'b0),
     .enb(pxl_chip_select_i),
     .regceb(1'b1),
     .rstb(1'b0),
