@@ -19,6 +19,7 @@ module cpu_id
         // pipeline input
         input  wire word_t     pc_i,                // program counter
         input  wire word_t     ir_i,                // instruction register
+        input  wire word_t     next_pc_i,           // next program counter
         input  wire regaddr_t  ex_wb_addr_i,        // ex stage write-back address
         input  wire word_t     ex_wb_data_i,        // ex stage write-back data
         input  wire logic      ex_wb_ready_i,       // ex stage write-back data ready
@@ -155,7 +156,7 @@ always_comb begin
             end
         F12_WFI:
             begin
-                csr_trap_pc_o = pc_i + 4;
+                csr_trap_pc_o = next_pc_i;
                 wfi_w         = !csr_jmp_request_i;
             end
         endcase
@@ -451,7 +452,7 @@ always_ff @(posedge clk_i) begin
         ma_size_r  <= cw_w.ma_size;
         ma_data_r  <= rb_bypassed_w;
         wb_src_r   <= cw_w.wb_src;
-        wb_data_r  <= pc_i + 4;
+        wb_data_r  <= next_pc_i;
         wb_valid_r <= cw_w.wb_valid;
         halt_r     <= cw_w.halt;
     end

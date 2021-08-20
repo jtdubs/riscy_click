@@ -34,6 +34,7 @@ module cpu
 
 wire word_t      if_pc_w;
 wire word_t      if_ir_w;
+wire word_t      if_next_pc_w;
 wire word_t      id_jmp_addr_w;
 wire logic       id_jmp_valid_w;
 wire logic       id_ready_w;
@@ -108,13 +109,15 @@ cpu_if cpu_if (
     .jmp_valid_i         (id_jmp_valid_w),
     .ready_i             (id_ready_w),
     .pc_o                (if_pc_w),
-    .ir_o                (if_ir_w)
+    .ir_o                (if_ir_w),
+    .next_pc_o           (if_next_pc_w)
 );
 
 // Instruction Decode
 cpu_id cpu_id (
     .clk_i               (clk_i),
     .pc_i                (if_pc_w),
+    .next_pc_i           (if_next_pc_w),
     .ir_i                (if_ir_w),
     .ex_wb_addr_i        (ex_wb_addr_async_w),
     .ex_wb_data_i        (ex_wb_data_async_w),

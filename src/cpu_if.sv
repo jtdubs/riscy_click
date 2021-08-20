@@ -26,7 +26,8 @@ module cpu_if
 
         // pipeline output
         output wire word_t pc_o,        // program counter
-        output wire word_t ir_o         // instruction register
+        output wire word_t ir_o,        // instruction register
+        output wire word_t next_pc_o    // next program counter
     );
 
 initial start_logging();
@@ -78,23 +79,29 @@ end
 //
 
 word_t pc_r = NOP_PC;
+assign pc_o = pc_r;
+
 word_t ir_r = NOP_IR;
+assign ir_o = ir_r;
+
+word_t next_pc_r = NOP_PC;
+assign next_pc_o = next_pc_r;
+
 
 always_ff @(posedge clk_i) begin
     `log_strobe(("{ \"stage\": \"IF\", \"pc\": \"%0d\", \"ir\": \"%0d\" }", pc_r, ir_r));
  
     if (jmp_valid_i | first_cycle_r[0]) begin
         // if jumping, output a NOP
-        pc_r <= NOP_PC;
-        ir_r <= NOP_IR;
+        pc_r      <= NOP_PC;
+        ir_r      <= NOP_IR;
+        next_pc_r <= NOP_PC;
     end else if (ready_i) begin
         // if next stage is ready, give them new values
-        pc_r <= pc_i;
-        ir_r <= imem_data_i;
+        pc_r      <= pc_i;
+        ir_r      <= imem_data_i;
+        next_pc_r <= pc_w;
     end
 end
-
-assign pc_o = pc_r;
-assign ir_o = ir_r;
 
 endmodule
