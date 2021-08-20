@@ -1,13 +1,19 @@
 TODO:
-- BIOS
-    - UART
 - UART
+    - BIOS support
     - How do I want to handle this in the simulator?  Feels like another window.
     - Flow Control
-- PS/2
-    - Full PS/2 driver including sending commands back to keyboard
-    - PS/2 Mouse
-- Audio output??
+- ISA Extensions
+    - C - Compressed
+- Memory
+    - Allow for memory stalls
+    - Add instruction & data cache
+    - Add memory controller and DDR
+- BIOS
+    - Provide UART interface for loading an ELF and jumping to it
+- ISA Extensions
+    - M - Multiplication & Division (multi-cycle)
+    - A - Atomics
 - Machine Level ISA
     - CSR
         - Decode should confirm address is read/executable, otherwise trap
@@ -15,16 +21,9 @@ TODO:
         - Expose chip select along with rwx.  Can use it externally to drive the dmem mux...
         - MTIME and MTIMECMP memory mapped registers??
         - Implement timers
-- Memory
-    - Allow for memory stalls
-    - Add instruction & data cache
-    - Add memory controller and DDR
-- ISA Extensions
-    - A - Atomics
-    - C - Compressed
-    - M - Multiplication & Division (multi-cycle)
-- BIOS
-    - Provide UART interface for loading an ELF and jumping to it
+- PS/2
+    - Full PS/2 driver including sending commands back to keyboard
+    - PS/2 Mouse
 - CPU
     - Change stage breakdown or increase stages to up clock speed
 
@@ -36,3 +35,8 @@ https://github.com/combinatorylogic/soc/blob/master/backends/c2/hw/rtl/core.v
 https://github.com/google/riscv-dv
 https://github.com/riscv/riscv-isa-sim
 https://github.com/rems-project/sail-riscv
+
+Implemented ISA:
+- RV32I
+- Zicsr
+- Zifencei
