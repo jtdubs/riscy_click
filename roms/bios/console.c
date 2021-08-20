@@ -99,6 +99,8 @@ char con_getch(void) {
                         result -= 0x20;
                     else if (result >= 'A' && result <= 'Z' && CONTROL_STATE.caps)
                         result += 0x20;
+                    if (CONTROL_STATE.alt)
+                        result |= 0x80;
                     return result;
                 }
                 break;

@@ -1,6 +1,5 @@
 TODO:
 - BIOS
-    - Add ALT+### to type extended keycodes
     - UART
 - UART
     - How do I want to handle this in the simulator?  Feels like another window.
