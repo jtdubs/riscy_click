@@ -9,8 +9,8 @@ create_clock -period 10.000 -name sys_clk_i -waveform {0.000 5.000} -add [get_po
 set_clock_groups -asynchronous -group {pxl_clk_w}
 
 ## CDC between Bus an VGA
-set_max_delay -datapath_only -from [get_pins {chipset/vga/bus_font_r_reg[1]_replica/C}] -to [get_pins {chipset/vga/font_r_reg[1][1]/D}] 0.000
-set_max_delay -datapath_only -from [get_pins {chipset/vga/bus_font_r_reg[0]_replica/C}] -to [get_pins {chipset/vga/font_r_reg[1][0]/D}] 0.000
+set_max_delay -datapath_only -from [get_pins {chipset/vga/bus_font_r_reg[1]/C}] -to [get_pins {chipset/vga/font_r_reg[1][1]/D}] 0.000
+set_max_delay -datapath_only -from [get_pins {chipset/vga/bus_font_r_reg[0]/C}] -to [get_pins {chipset/vga/font_r_reg[1][0]/D}] 0.000
 
 ##Switches
 set_property -dict {PACKAGE_PIN J15 IOSTANDARD LVCMOS33} [get_ports {switch_i[0]}]
