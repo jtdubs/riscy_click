@@ -16,7 +16,7 @@
 .text
 .align 4
 
-.globl _start
+.global _start
 _start:
 setup_traps:
     # point all traps at _trap_handler
@@ -70,19 +70,22 @@ call_main:
 exit_loop:
     j exit_loop
 
+.align 4
 .global _global_enable_interrupts
 _global_enable_interrupts:
     li t0, 0x8
     csrw mstatus, t0
     ret
 
+.align 4
 .global _global_disable_interrupts
 _global_disable_interrupts:
     li t0, 0x0
     csrw mstatus, t0
     ret
 
-.globl _trap_handler
+.align 4
+.global _trap_handler
 _trap_handler:
     addi sp, sp, -64
 
