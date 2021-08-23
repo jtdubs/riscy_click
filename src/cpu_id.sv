@@ -125,7 +125,7 @@ decoder decoder (
 
 // gating jump requests
 always_comb begin
-    csr_jmp_accept_o = csr_jmp_request_i && (pc_i != NOP_PC);
+    csr_jmp_accept_o = csr_jmp_request_i && (pc_i != NOP_PC) && ready_async_o;
 end
 
 // traps and returns
