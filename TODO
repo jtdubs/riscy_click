@@ -40,5 +40,6 @@ https://github.com/rems-project/sail-riscv
 
 Implemented ISA:
 - RV32I
+- C
 - Zicsr
 - Zifencei
