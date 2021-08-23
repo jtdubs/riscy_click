@@ -20,8 +20,8 @@ module alu
 
 
 // Shift Amount
-logic [4:0] shamt_w;
-always_comb shamt_w = alu_op2_i[4:0];
+logic [4:0] shamt;
+always_comb shamt = alu_op2_i[4:0];
 
 // Result Logic
 always_comb begin
@@ -31,9 +31,9 @@ always_comb begin
         ALU_AND:   alu_result_async_o = alu_op1_i & alu_op2_i;
         ALU_OR:    alu_result_async_o = alu_op1_i | alu_op2_i;
         ALU_XOR:   alu_result_async_o = alu_op1_i ^ alu_op2_i;
-        ALU_LSL:   alu_result_async_o = alu_op1_i <<  shamt_w;
-        ALU_LSR:   alu_result_async_o = alu_op1_i >>  shamt_w;
-        ALU_ASR:   alu_result_async_o = alu_op1_i >>> shamt_w;
+        ALU_LSL:   alu_result_async_o = alu_op1_i <<  shamt;
+        ALU_LSR:   alu_result_async_o = alu_op1_i >>  shamt;
+        ALU_ASR:   alu_result_async_o = alu_op1_i >>> shamt;
         ALU_SLT:   alu_result_async_o = (signed'(alu_op1_i) < signed'(alu_op2_i)) ? 32'b1 : 32'b0;
         ALU_ULT:   alu_result_async_o = (        alu_op1_i  <         alu_op2_i)  ? 32'b1 : 32'b0;
         ALU_COPY1: alu_result_async_o = alu_op1_i;

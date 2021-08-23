@@ -40,27 +40,27 @@ final stop_logging();
 // Async Outputs
 //
 
-word_t unaligned_w;
-word_t aligned_w;
+word_t unaligned;
+word_t aligned;
 
 always_comb begin
-    unaligned_w = load_i ? dmem_read_data_i : wb_data_i;
+    unaligned = load_i ? dmem_read_data_i : wb_data_i;
 
     // shift data right based on address lower bits
     unique case (ma_alignment_i)
-    2'b00: aligned_w = {        unaligned_w[31: 0] };
-    2'b01: aligned_w = {  8'b0, unaligned_w[31: 8] };
-    2'b10: aligned_w = { 16'b0, unaligned_w[31:16] };
-    2'b11: aligned_w = { 24'b0, unaligned_w[31:24] };
+    2'b00: aligned = {        unaligned[31: 0] };
+    2'b01: aligned = {  8'b0, unaligned[31: 8] };
+    2'b10: aligned = { 16'b0, unaligned[31:16] };
+    2'b11: aligned = { 24'b0, unaligned[31:24] };
     endcase
 
     // should probably be a separate WB_SIZE value???
     unique case (ma_size_i)
-    MA_SIZE_B:   wb_data_async_o = { {24{aligned_w[ 7]}},  aligned_w[ 7:0] };
-    MA_SIZE_H:   wb_data_async_o = { {16{aligned_w[15]}},  aligned_w[15:0] };
-    MA_SIZE_BU:  wb_data_async_o = { 24'b0,                aligned_w[ 7:0] };
-    MA_SIZE_HU:  wb_data_async_o = { 16'b0,                aligned_w[15:0] };
-    MA_SIZE_W:   wb_data_async_o = aligned_w;
+    MA_SIZE_B:   wb_data_async_o = { {24{aligned[ 7]}},  aligned[ 7:0] };
+    MA_SIZE_H:   wb_data_async_o = { {16{aligned[15]}},  aligned[15:0] };
+    MA_SIZE_BU:  wb_data_async_o = { 24'b0,              aligned[ 7:0] };
+    MA_SIZE_HU:  wb_data_async_o = { 16'b0,              aligned[15:0] };
+    MA_SIZE_W:   wb_data_async_o = aligned;
     endcase
 
     wb_addr_async_o  = ir_i[11:7];

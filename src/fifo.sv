@@ -49,26 +49,26 @@ addr_t read_ptr_r          = '0;
 addr_t write_ptr_r         = '0;
 
 // determine next state
-addr_t write_ptr_w;
-addr_t read_ptr_w;
+addr_t read_ptr_next;
+addr_t write_ptr_next;
 
 always_comb begin
     unique if (write_enable_i && !fifo_full_o) begin
-        write_ptr_w = write_ptr_r + 1;
+        write_ptr_next = write_ptr_r + 1;
     end else begin
-        write_ptr_w = write_ptr_r;
+        write_ptr_next = write_ptr_r;
     end
 
     unique if (read_enable_i && !fifo_empty_o) begin
-        read_ptr_w = read_ptr_r + 1;
+        read_ptr_next = read_ptr_r + 1;
     end else begin
-        read_ptr_w = read_ptr_r;
+        read_ptr_next = read_ptr_r;
     end
 end
 
 // pending fifo count
-addr_t count_w;
-always_comb count_w = write_ptr_w - read_ptr_w;
+addr_t count_next;
+always_comb count_next = write_ptr_next - read_ptr_next;
 
 // update registers
 logic [(DATA_WIDTH-1):0] read_data_r         = '0;
@@ -79,12 +79,12 @@ logic                    fifo_almost_full_r  = '0;
 logic                    fifo_full_r         = '0;
 
 always_ff @(posedge clk_i) begin
-    fifo_empty_r        <= (count_w == '0);
-    fifo_almost_empty_r <= (count_w <= ALMOST_EMPTY_COUNT);
-    fifo_almost_full_r  <= (count_w >= ALMOST_FULL_COUNT);
-    fifo_full_r         <= (count_w == CAPACITY);
-    read_ptr_r          <= read_ptr_w;
-    write_ptr_r         <= write_ptr_w;
+    fifo_empty_r        <= (count_next == '0);
+    fifo_almost_empty_r <= (count_next <= ALMOST_EMPTY_COUNT);
+    fifo_almost_full_r  <= (count_next >= ALMOST_FULL_COUNT);
+    fifo_full_r         <= (count_next == CAPACITY);
+    read_ptr_r          <= read_ptr_next;
+    write_ptr_r         <= write_ptr_next;
     read_valid_r        <= !fifo_empty_r;
     read_data_r         <= data_r[read_ptr_r];
 

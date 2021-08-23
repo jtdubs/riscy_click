@@ -63,4 +63,3 @@ Testbench SystemVerilog code.
 - `*_o` - Registered output port
 - `*_async_o` - Unregistered output port (varies during clock cycle based on input)
 - `*_r` - Registers
-- `*_w` - Wires / Combinational Logic

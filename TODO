@@ -1,5 +1,4 @@
 TODO:
-- Consider removing _w from wires, as we already have _r for registers...
 - PS2
     - Get working with real PS2 keyboard.
     - Apparently need to ACK the AA, therefore need PS2 Tx module and tri-state buffers
@@ -24,7 +23,6 @@ TODO:
         - MTIME and MTIMECMP memory mapped registers??
         - Implement timers
 - PS/2
-    - Full PS/2 driver including sending commands back to keyboard
     - PS/2 Mouse
 - CPU
     - Change stage breakdown or increase stages to up clock speed

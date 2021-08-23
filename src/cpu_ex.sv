@@ -53,13 +53,13 @@ final stop_logging();
 // ALU
 //
 
-wire word_t alu_result_w;
+wire word_t alu_result;
 
 alu alu (
     .alu_mode_i         (alu_mode_i),
     .alu_op1_i          (alu_op1_i),
     .alu_op2_i          (alu_op2_i),
-    .alu_result_async_o (alu_result_w)
+    .alu_result_async_o (alu_result)
 );
 
 
@@ -69,7 +69,7 @@ alu alu (
 
 always_comb begin
     wb_addr_async_o  = ir_i[11:7];
-    wb_data_async_o  = (wb_src_i == WB_SRC_ALU) ? alu_result_w : wb_data_i;
+    wb_data_async_o  = (wb_src_i == WB_SRC_ALU) ? alu_result : wb_data_i;
     wb_ready_async_o = (wb_src_i != WB_SRC_MEM);
     wb_valid_async_o = wb_valid_i;
     empty_async_o    = pc_i == NOP_PC;
@@ -90,12 +90,12 @@ ma_size_t ma_size_r  = NOP_MA_SIZE;
 word_t    ma_data_r  = 32'b0;
 wb_src_t  wb_src_r   = NOP_WB_SRC;
 word_t    wb_data_r  = 32'b0;
-logic     wb_valid_r = NOP_WB_VALID; 
+logic     wb_valid_r = NOP_WB_VALID;
 
 always_ff @(posedge clk_i) begin
     pc_r       <= pc_i;
     ir_r       <= ir_i;
-    ma_addr_r  <= (ma_mode_i == MA_X) ? 32'b0 : alu_result_w;
+    ma_addr_r  <= (ma_mode_i == MA_X) ? 32'b0 : alu_result;
     ma_mode_r  <= ma_mode_i;
     ma_size_r  <= ma_size_i;
     ma_data_r  <= ma_data_i;

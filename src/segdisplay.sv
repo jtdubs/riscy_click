@@ -41,14 +41,14 @@ typedef enum logic [3:0] {
 } port_t;
 
 
-word_t read_data_w = '0;
-assign read_data_o = read_data_w;
+word_t read_data_r = '0;
+assign read_data_o = read_data_r;
 always_ff @(posedge clk_i) begin
     if (chip_select_i && read_enable_i) begin
         case (addr_i)
-        PORT_CONTROL: read_data_w <= { 31'b0, enabled_r };
-        PORT_DATA:    read_data_w <= value_r;
-        default:      read_data_w <= '0;
+        PORT_CONTROL: read_data_r <= { 31'b0, enabled_r };
+        PORT_DATA:    read_data_r <= value_r;
+        default:      read_data_r <= '0;
         endcase
     end
 end
@@ -81,11 +81,11 @@ end
 localparam int unsigned COUNTER_WIDTH = $clog2(CLK_DIVISOR) + 4;
 
 logic [(COUNTER_WIDTH-1):0] counter_r = '0;
-logic                       enable_w;
-logic [2:0]                 digit_w;
+logic                       enable;
+logic [2:0]                 digit;
 
 always_comb begin
-    { digit_w, enable_w } = counter_r[(COUNTER_WIDTH-1):(COUNTER_WIDTH-4)];
+    { digit, enable } = counter_r[(COUNTER_WIDTH-1):(COUNTER_WIDTH-4)];
 end
 
 always_ff @(posedge clk_i) begin
@@ -97,18 +97,18 @@ end
 
 
 // Nibble
-logic [3:0] nibble_w;
+logic [3:0] nibble;
 
 always_comb begin
-    unique case (digit_w)
-    0: nibble_w = value_r[ 3: 0];
-    1: nibble_w = value_r[ 7: 4];
-    2: nibble_w = value_r[11: 8];
-    3: nibble_w = value_r[15:12];
-    4: nibble_w = value_r[19:16];
-    5: nibble_w = value_r[23:20];
-    6: nibble_w = value_r[27:24];
-    7: nibble_w = value_r[31:28];
+    unique case (digit)
+    0: nibble = value_r[ 3: 0];
+    1: nibble = value_r[ 7: 4];
+    2: nibble = value_r[11: 8];
+    3: nibble = value_r[15:12];
+    4: nibble = value_r[19:16];
+    5: nibble = value_r[23:20];
+    6: nibble = value_r[27:24];
+    7: nibble = value_r[31:28];
     endcase
 end
 
@@ -120,8 +120,8 @@ assign      dsp_anode_o = dsp_anode_r;
 always_ff @(posedge clk_i) begin
     dsp_anode_r <= 8'hFF;
 
-    if (enable_w)
-        dsp_anode_r[digit_w] <= 1'b0;
+    if (enable)
+        dsp_anode_r[digit] <= 1'b0;
 end
 
 
@@ -132,8 +132,8 @@ assign      dsp_cathode_o = dsp_cathode_r;
 always_ff @(posedge clk_i) begin
     dsp_cathode_r <= 8'hFF;
 
-    if (enable_w) begin
-        unique case (nibble_w)
+    if (enable) begin
+        unique case (nibble)
         0:  dsp_cathode_r <= 8'b11000000;
         1:  dsp_cathode_r <= 8'b11111001;
         2:  dsp_cathode_r <= 8'b10100100;

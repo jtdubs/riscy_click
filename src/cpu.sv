@@ -32,67 +32,67 @@ module cpu
 // Signals
 //
 
-wire word_t      if_pc_w;
-wire word_t      if_ir_w;
-wire word_t      if_next_pc_w;
-wire word_t      id_jmp_addr_w;
-wire logic       id_jmp_valid_w;
-wire logic       id_ready_w;
-wire word_t      id_pc_w;
-wire word_t      id_ir_w;
-wire word_t      id_alu_op1_w;
-wire word_t      id_alu_op2_w;
-wire alu_mode_t  id_alu_mode_w;
-wire ma_mode_t   id_ma_mode_w;
-wire ma_size_t   id_ma_size_w;
-wire word_t      id_ma_data_w;
-wire wb_src_t    id_wb_src_w;
-wire word_t      id_wb_data_w;
-wire logic       id_wb_valid_w;
-wire word_t      ex_pc_w;
-wire word_t      ex_ir_w;
-wire word_t      ex_ma_addr_w;
-wire ma_mode_t   ex_ma_mode_w;
-wire ma_size_t   ex_ma_size_w;
-wire word_t      ex_ma_data_w;
-wire wb_src_t    ex_wb_src_w;
-wire word_t      ex_wb_data_w;
-wire logic       ex_wb_valid_w;
-wire regaddr_t   ex_wb_addr_async_w;
-wire word_t      ex_wb_data_async_w;
-wire logic       ex_wb_ready_async_w;
-wire logic       ex_wb_valid_async_w;
-wire logic       ex_empty_w;
-wire regaddr_t   ma_wb_addr_async_w;
-wire word_t      ma_wb_data_async_w;
-wire logic       ma_wb_ready_async_w;
-wire logic       ma_wb_valid_async_w;
-wire logic       ma_empty_w;
-wire word_t      ma_pc_w;
-wire word_t      ma_ir_w;
-wire logic       ma_load_w;
-wire logic [1:0] ma_alignment_w;
-wire word_t      ma_wb_data_w;
-wire logic       ma_wb_valid_w;
-wire ma_size_t   ma_size_w;
-wire regaddr_t   wb_addr_w;
-wire word_t      wb_data_w;
-wire logic       wb_valid_w;
-wire logic       wb_empty_w;
-wire logic       csr_retired_w;
-wire word_t      csr_trap_pc_w;
-wire mcause_t    csr_mcause_w;
-wire logic       csr_mtrap_w;
-wire logic       csr_mret_w;
-wire word_t      csr_jmp_addr_w;
-wire logic       csr_jmp_request_w;
-wire logic       csr_jmp_accept_w;
-wire csr_t       csr_read_addr_w;
-wire logic       csr_read_enable_w;
-wire word_t      csr_read_data_w;
-wire csr_t       csr_write_addr_w;
-wire word_t      csr_write_data_w;
-wire logic       csr_write_enable_w;
+wire word_t      if_pc;
+wire word_t      if_ir;
+wire word_t      if_pc_next;
+wire word_t      id_jmp_addr;
+wire logic       id_jmp_valid;
+wire logic       id_ready;
+wire word_t      id_pc;
+wire word_t      id_ir;
+wire word_t      id_alu_op1;
+wire word_t      id_alu_op2;
+wire alu_mode_t  id_alu_mode;
+wire ma_mode_t   id_ma_mode;
+wire ma_size_t   id_ma_size;
+wire word_t      id_ma_data;
+wire wb_src_t    id_wb_src;
+wire word_t      id_wb_data;
+wire logic       id_wb_valid;
+wire word_t      ex_pc;
+wire word_t      ex_ir;
+wire word_t      ex_ma_addr;
+wire ma_mode_t   ex_ma_mode;
+wire ma_size_t   ex_ma_size;
+wire word_t      ex_ma_data;
+wire wb_src_t    ex_wb_src;
+wire word_t      ex_wb_data;
+wire logic       ex_wb_valid;
+wire regaddr_t   ex_wb_addr_async;
+wire word_t      ex_wb_data_async;
+wire logic       ex_wb_ready_async;
+wire logic       ex_wb_valid_async;
+wire logic       ex_empty;
+wire regaddr_t   ma_wb_addr_async;
+wire word_t      ma_wb_data_async;
+wire logic       ma_wb_ready_async;
+wire logic       ma_wb_valid_async;
+wire logic       ma_empty;
+wire word_t      ma_pc;
+wire word_t      ma_ir;
+wire logic       ma_load;
+wire logic [1:0] ma_alignment;
+wire word_t      ma_wb_data;
+wire logic       ma_wb_valid;
+wire ma_size_t   ma_size;
+wire regaddr_t   wb_addr;
+wire word_t      wb_data;
+wire logic       wb_valid;
+wire logic       wb_empty;
+wire logic       csr_retired;
+wire word_t      csr_trap_pc;
+wire mcause_t    csr_mcause;
+wire logic       csr_mtrap;
+wire logic       csr_mret;
+wire word_t      csr_jmp_addr;
+wire logic       csr_jmp_request;
+wire logic       csr_jmp_accept;
+wire csr_t       csr_read_addr;
+wire logic       csr_read_enable;
+wire word_t      csr_read_data;
+wire csr_t       csr_write_addr;
+wire word_t      csr_write_data;
+wire logic       csr_write_enable;
 
 
 //
@@ -105,93 +105,93 @@ cpu_if cpu_if (
     .halt_i              (halt_o),
     .imem_addr_o         (imem_addr_o),
     .imem_data_i         (imem_data_i),
-    .jmp_addr_i          (id_jmp_addr_w),
-    .jmp_valid_i         (id_jmp_valid_w),
-    .ready_i             (id_ready_w),
-    .pc_o                (if_pc_w),
-    .ir_o                (if_ir_w),
-    .next_pc_o           (if_next_pc_w)
+    .jmp_addr_i          (id_jmp_addr),
+    .jmp_valid_i         (id_jmp_valid),
+    .ready_i             (id_ready),
+    .pc_o                (if_pc),
+    .ir_o                (if_ir),
+    .pc_next_o           (if_pc_next)
 );
 
 // Instruction Decode
 cpu_id cpu_id (
     .clk_i               (clk_i),
-    .pc_i                (if_pc_w),
-    .next_pc_i           (if_next_pc_w),
-    .ir_i                (if_ir_w),
-    .ex_wb_addr_i        (ex_wb_addr_async_w),
-    .ex_wb_data_i        (ex_wb_data_async_w),
-    .ex_wb_ready_i       (ex_wb_ready_async_w),
-    .ex_wb_valid_i       (ex_wb_valid_async_w),
-    .ex_empty_i          (ex_empty_w),
-    .ma_wb_addr_i        (ma_wb_addr_async_w),
-    .ma_wb_data_i        (ma_wb_data_async_w),
-    .ma_wb_ready_i       (ma_wb_ready_async_w),
-    .ma_wb_valid_i       (ma_wb_valid_async_w),
-    .ma_empty_i          (ma_empty_w),
-    .wb_addr_i           (wb_addr_w),
-    .wb_data_i           (wb_data_w),
-    .wb_valid_i          (wb_valid_w),
-    .wb_empty_i          (wb_empty_w),
-    .ready_async_o       (id_ready_w),
-    .jmp_addr_async_o    (id_jmp_addr_w),
-    .jmp_valid_async_o   (id_jmp_valid_w),
-    .csr_retired_o       (csr_retired_w),
-    .csr_trap_pc_o       (csr_trap_pc_w),
-    .csr_mtrap_o         (csr_mtrap_w),
-    .csr_mret_o          (csr_mret_w),
-    .csr_mcause_o        (csr_mcause_w),
-    .csr_jmp_addr_i      (csr_jmp_addr_w),
-    .csr_jmp_request_i   (csr_jmp_request_w),
-    .csr_jmp_accept_o    (csr_jmp_accept_w),
-    .csr_read_addr_o     (csr_read_addr_w),
-    .csr_read_enable_o   (csr_read_enable_w),
-    .csr_read_data_i     (csr_read_data_w),
-    .csr_write_addr_o    (csr_write_addr_w),
-    .csr_write_data_o    (csr_write_data_w),
-    .csr_write_enable_o  (csr_write_enable_w),
+    .pc_i                (if_pc),
+    .pc_next_i           (if_pc_next),
+    .ir_i                (if_ir),
+    .ex_wb_addr_i        (ex_wb_addr_async),
+    .ex_wb_data_i        (ex_wb_data_async),
+    .ex_wb_ready_i       (ex_wb_ready_async),
+    .ex_wb_valid_i       (ex_wb_valid_async),
+    .ex_empty_i          (ex_empty),
+    .ma_wb_addr_i        (ma_wb_addr_async),
+    .ma_wb_data_i        (ma_wb_data_async),
+    .ma_wb_ready_i       (ma_wb_ready_async),
+    .ma_wb_valid_i       (ma_wb_valid_async),
+    .ma_empty_i          (ma_empty),
+    .wb_addr_i           (wb_addr),
+    .wb_data_i           (wb_data),
+    .wb_valid_i          (wb_valid),
+    .wb_empty_i          (wb_empty),
+    .ready_async_o       (id_ready),
+    .jmp_addr_async_o    (id_jmp_addr),
+    .jmp_valid_async_o   (id_jmp_valid),
+    .csr_retired_o       (csr_retired),
+    .csr_trap_pc_o       (csr_trap_pc),
+    .csr_mtrap_o         (csr_mtrap),
+    .csr_mret_o          (csr_mret),
+    .csr_mcause_o        (csr_mcause),
+    .csr_jmp_addr_i      (csr_jmp_addr),
+    .csr_jmp_request_i   (csr_jmp_request),
+    .csr_jmp_accept_o    (csr_jmp_accept),
+    .csr_read_addr_o     (csr_read_addr),
+    .csr_read_enable_o   (csr_read_enable),
+    .csr_read_data_i     (csr_read_data),
+    .csr_write_addr_o    (csr_write_addr),
+    .csr_write_data_o    (csr_write_data),
+    .csr_write_enable_o  (csr_write_enable),
     .halt_o              (halt_o),
-    .pc_o                (id_pc_w),
-    .ir_o                (id_ir_w),
-    .alu_op1_o           (id_alu_op1_w),
-    .alu_op2_o           (id_alu_op2_w),
-    .alu_mode_o          (id_alu_mode_w),
-    .ma_mode_o           (id_ma_mode_w),
-    .ma_size_o           (id_ma_size_w),
-    .ma_data_o           (id_ma_data_w),
-    .wb_src_o            (id_wb_src_w),
-    .wb_data_o           (id_wb_data_w),
-    .wb_valid_o          (id_wb_valid_w)
+    .pc_o                (id_pc),
+    .ir_o                (id_ir),
+    .alu_op1_o           (id_alu_op1),
+    .alu_op2_o           (id_alu_op2),
+    .alu_mode_o          (id_alu_mode),
+    .ma_mode_o           (id_ma_mode),
+    .ma_size_o           (id_ma_size),
+    .ma_data_o           (id_ma_data),
+    .wb_src_o            (id_wb_src),
+    .wb_data_o           (id_wb_data),
+    .wb_valid_o          (id_wb_valid)
 );
 
 // Execute
 cpu_ex cpu_ex (
     .clk_i               (clk_i),
-    .pc_i                (id_pc_w),
-    .ir_i                (id_ir_w),
-    .alu_op1_i           (id_alu_op1_w),
-    .alu_op2_i           (id_alu_op2_w),
-    .alu_mode_i          (id_alu_mode_w),
-    .ma_mode_i           (id_ma_mode_w),
-    .ma_size_i           (id_ma_size_w),
-    .ma_data_i           (id_ma_data_w),
-    .wb_src_i            (id_wb_src_w),
-    .wb_data_i           (id_wb_data_w),
-    .wb_valid_i          (id_wb_valid_w),
-    .wb_addr_async_o     (ex_wb_addr_async_w),
-    .wb_data_async_o     (ex_wb_data_async_w),
-    .wb_ready_async_o    (ex_wb_ready_async_w),
-    .wb_valid_async_o    (ex_wb_valid_async_w),
-    .empty_async_o       (ex_empty_w),
-    .pc_o                (ex_pc_w),
-    .ir_o                (ex_ir_w),
-    .ma_addr_o           (ex_ma_addr_w),
-    .ma_mode_o           (ex_ma_mode_w),
-    .ma_size_o           (ex_ma_size_w),
-    .ma_data_o           (ex_ma_data_w),
-    .wb_src_o            (ex_wb_src_w),
-    .wb_data_o           (ex_wb_data_w),
-    .wb_valid_o          (ex_wb_valid_w)
+    .pc_i                (id_pc),
+    .ir_i                (id_ir),
+    .alu_op1_i           (id_alu_op1),
+    .alu_op2_i           (id_alu_op2),
+    .alu_mode_i          (id_alu_mode),
+    .ma_mode_i           (id_ma_mode),
+    .ma_size_i           (id_ma_size),
+    .ma_data_i           (id_ma_data),
+    .wb_src_i            (id_wb_src),
+    .wb_data_i           (id_wb_data),
+    .wb_valid_i          (id_wb_valid),
+    .wb_addr_async_o     (ex_wb_addr_async),
+    .wb_data_async_o     (ex_wb_data_async),
+    .wb_ready_async_o    (ex_wb_ready_async),
+    .wb_valid_async_o    (ex_wb_valid_async),
+    .empty_async_o       (ex_empty),
+    .pc_o                (ex_pc),
+    .ir_o                (ex_ir),
+    .ma_addr_o           (ex_ma_addr),
+    .ma_mode_o           (ex_ma_mode),
+    .ma_size_o           (ex_ma_size),
+    .ma_data_o           (ex_ma_data),
+    .wb_src_o            (ex_wb_src),
+    .wb_data_o           (ex_wb_data),
+    .wb_valid_o          (ex_wb_valid)
 );
 
 // Memory Access
@@ -201,44 +201,44 @@ cpu_ma cpu_ma (
     .dmem_read_enable_o  (dmem_read_enable_o),
     .dmem_write_data_o   (dmem_write_data_o),
     .dmem_write_mask_o   (dmem_write_mask_o),
-    .pc_i                (ex_pc_w),
-    .ir_i                (ex_ir_w),
-    .ma_addr_i           (ex_ma_addr_w),
-    .ma_mode_i           (ex_ma_mode_w),
-    .ma_size_i           (ex_ma_size_w),
-    .ma_data_i           (ex_ma_data_w),
-    .wb_src_i            (ex_wb_src_w),
-    .wb_data_i           (ex_wb_data_w),
-    .wb_valid_i          (ex_wb_valid_w),
-    .wb_addr_async_o     (ma_wb_addr_async_w),
-    .wb_data_async_o     (ma_wb_data_async_w),
-    .wb_ready_async_o    (ma_wb_ready_async_w),
-    .wb_valid_async_o    (ma_wb_valid_async_w),
-    .empty_async_o       (ma_empty_w),
-    .pc_o                (ma_pc_w),
-    .ir_o                (ma_ir_w),
-    .load_o              (ma_load_w),
-    .ma_size_o           (ma_size_w),
-    .ma_alignment_o      (ma_alignment_w),
-    .wb_data_o           (ma_wb_data_w),
-    .wb_valid_o          (ma_wb_valid_w)
+    .pc_i                (ex_pc),
+    .ir_i                (ex_ir),
+    .ma_addr_i           (ex_ma_addr),
+    .ma_mode_i           (ex_ma_mode),
+    .ma_size_i           (ex_ma_size),
+    .ma_data_i           (ex_ma_data),
+    .wb_src_i            (ex_wb_src),
+    .wb_data_i           (ex_wb_data),
+    .wb_valid_i          (ex_wb_valid),
+    .wb_addr_async_o     (ma_wb_addr_async),
+    .wb_data_async_o     (ma_wb_data_async),
+    .wb_ready_async_o    (ma_wb_ready_async),
+    .wb_valid_async_o    (ma_wb_valid_async),
+    .empty_async_o       (ma_empty),
+    .pc_o                (ma_pc),
+    .ir_o                (ma_ir),
+    .load_o              (ma_load),
+    .ma_size_o           (ma_size),
+    .ma_alignment_o      (ma_alignment),
+    .wb_data_o           (ma_wb_data),
+    .wb_valid_o          (ma_wb_valid)
 );
 
 // Write Back
 cpu_wb cpu_wb (
     .clk_i               (clk_i),
     .dmem_read_data_i    (dmem_read_data_i),
-    .pc_i                (ma_pc_w),
-    .ir_i                (ma_ir_w),
-    .load_i              (ma_load_w),
-    .ma_size_i           (ma_size_w),
-    .ma_alignment_i      (ma_alignment_w),
-    .wb_data_i           (ma_wb_data_w),
-    .wb_valid_i          (ma_wb_valid_w),
-    .wb_addr_async_o     (wb_addr_w),
-    .wb_data_async_o     (wb_data_w),
-    .wb_valid_async_o    (wb_valid_w),
-    .empty_async_o       (wb_empty_w)
+    .pc_i                (ma_pc),
+    .ir_i                (ma_ir),
+    .load_i              (ma_load),
+    .ma_size_i           (ma_size),
+    .ma_alignment_i      (ma_alignment),
+    .wb_data_i           (ma_wb_data),
+    .wb_valid_i          (ma_wb_valid),
+    .wb_addr_async_o     (wb_addr),
+    .wb_data_async_o     (wb_data),
+    .wb_valid_async_o    (wb_valid),
+    .empty_async_o       (wb_empty)
 );
 
 
@@ -248,21 +248,21 @@ cpu_wb cpu_wb (
 
 cpu_csr csr (
     .clk_i               (clk_i),
-    .retired_i           (csr_retired_w),
+    .retired_i           (csr_retired),
     .interrupt_i         (interrupt_i),
-    .trap_pc_i           (csr_trap_pc_w),
-    .mcause_i            (csr_mcause_w),
-    .mtrap_i             (csr_mtrap_w),
-    .mret_i              (csr_mret_w),
-    .jmp_addr_async_o    (csr_jmp_addr_w),
-    .jmp_request_async_o (csr_jmp_request_w),
-    .jmp_accept_i        (csr_jmp_accept_w),
-    .read_addr_i         (csr_read_addr_w),
-    .read_enable_i       (csr_read_enable_w),
-    .read_data_o         (csr_read_data_w),
-    .write_addr_i        (csr_write_addr_w),
-    .write_data_i        (csr_write_data_w),
-    .write_enable_i      (csr_write_enable_w),
+    .trap_pc_i           (csr_trap_pc),
+    .mcause_i            (csr_mcause),
+    .mtrap_i             (csr_mtrap),
+    .mret_i              (csr_mret),
+    .jmp_addr_async_o    (csr_jmp_addr),
+    .jmp_request_async_o (csr_jmp_request),
+    .jmp_accept_i        (csr_jmp_accept),
+    .read_addr_i         (csr_read_addr),
+    .read_enable_i       (csr_read_enable),
+    .read_data_o         (csr_read_data),
+    .write_addr_i        (csr_write_addr),
+    .write_data_i        (csr_write_data),
+    .write_enable_i      (csr_write_enable),
     .lookup1_addr_i      (32'b0),
     .lookup1_rwx_async_o (),
     .lookup2_addr_i      (32'b0),

@@ -59,7 +59,7 @@ always_comb begin
     dmem_addr_o        = { ma_addr_i[31:2], 2'b0 };
     dmem_read_enable_o = (ma_mode_i == MA_LOAD);
     dmem_write_mask_o  = 4'b0000;
-    
+
     // shift data left based on address lower bits
     unique case (ma_addr_i[1:0])
     2'b00: dmem_write_data_o = { ma_data_i[31:0]        };

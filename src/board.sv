@@ -32,13 +32,13 @@ module board
 // Clocks
 //
 
-wire logic cpu_clk_w;
-wire logic pxl_clk_w;
+wire logic cpu_clk;
+wire logic pxl_clk;
 
 clk_gen clk_gen (
     .sys_clk_i     (sys_clk_i),
-    .cpu_clk_o     (cpu_clk_w),
-    .pxl_clk_o     (pxl_clk_w),
+    .cpu_clk_o     (cpu_clk),
+    .pxl_clk_o     (pxl_clk),
     .ready_async_o ()
 );
 
@@ -48,8 +48,8 @@ clk_gen clk_gen (
 //
 
 chipset chipset (
-    .cpu_clk_i     (cpu_clk_w),
-    .pxl_clk_i     (pxl_clk_w),
+    .cpu_clk_i     (cpu_clk),
+    .pxl_clk_i     (pxl_clk),
     .uart_rxd_i    (uart_rxd_i),
     .ps2_clk_i     (ps2_clk_i),
     .ps2_data_i    (ps2_data_i),

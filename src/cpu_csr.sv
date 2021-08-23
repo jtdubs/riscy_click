@@ -157,9 +157,9 @@ localparam mcause_t MCAUSE_DEFAULT = '{
 //
 
 // Counters
-dword_t  mcycle_r,   mcycle_w;            // cycle counter
-dword_t  minstret_r, minstret_w;          // retired instruction counter
-dword_t  time_r,     time_w;              // time counter
+dword_t  mcycle_r,   mcycle_next;            // cycle counter
+dword_t  minstret_r, minstret_next;          // retired instruction counter
+dword_t  time_r,     time_next;              // time counter
 
 // Non-Counters
 mtvec_t  mtvec_r         = MTVEC_DEFAULT;         // trap vector
@@ -171,10 +171,10 @@ word_t   mtval_r         = MTVAL_DEFAULT;         // exception val
 word_t   mtval2_r        = MTVAL2_DEFAULT;        // exception val2
 word_t   mtinst_r        = MTINST_DEFAULT;        // exception instruction
 logic    mstatus_mie_r   = 1'b0;                  // global interrupt enabled
-logic    mstatus_mie_w;                           // global interrupt enabled
+logic    mstatus_mie;                             // global interrupt enabled
 logic    mstatus_mpie_r  = 1'b0;                  // global interrupt enabled (prior)
-logic    mstatus_mpie_w;                          // global interrupt enabled (prior)
-logic    meip_w;                                  // machine external interrupt pending
+logic    mstatus_mpie;                            // global interrupt enabled (prior)
+logic    meip;                                    // machine external interrupt pending
 logic    mtip_r          = 1'b0;                  // machine timer    interrupt pending
 logic    msip_r          = 1'b0;                  // machine software interrupt pending
 logic    meie_r          = 1'b0;                  // machine external interrupt enabled
@@ -187,12 +187,12 @@ logic    msie_r          = 1'b0;                  // machine software interrupt 
 //
 
 always_comb begin
-    mcycle_w   = mcycle_r + 1;
-    time_w     = time_r + 1;
-    minstret_w = retired_i ? (minstret_r + 1) : minstret_r;
+    mcycle_next   = mcycle_r + 1;
+    time_next     = time_r + 1;
+    minstret_next = retired_i ? (minstret_r + 1) : minstret_r;
 
-    if (mcountinhibit_r[0]) mcycle_w   = mcycle_r;
-    if (mcountinhibit_r[2]) minstret_w = minstret_r;
+    if (mcountinhibit_r[0]) mcycle_next   = mcycle_r;
+    if (mcountinhibit_r[2]) minstret_next = minstret_r;
 end
 
 
@@ -202,25 +202,25 @@ end
 
 // interrupt pending
 always_comb begin
-    meip_w = interrupt_i;
+    meip = interrupt_i;
 end
 
 // interrupt enablement
-logic interrupt_w;
+logic interrupt;
 always_comb begin
     // interrupt if interrupt is pending, enabled, and globally enabled
-    interrupt_w = meip_w && meie_r && mstatus_mie_r;
+    interrupt = meip && meie_r && mstatus_mie_r;
 end
 
 // jump requests
 always_comb begin
     // request jump on interrupt, mtrap or mret
-    jmp_request_async_o = interrupt_w || mtrap_i || mret_i;
+    jmp_request_async_o = interrupt || mtrap_i || mret_i;
 
     priority if (mret_i) begin
         // mret jumps to mepc
         jmp_addr_async_o = mepc_r;
-    end else if (mtrap_i || interrupt_w) begin
+    end else if (mtrap_i || interrupt) begin
         // mtrap and interrtupt jump to mtvec
         unique case (mtvec_r.mode)
         MTVEC_MODE_DIRECT:
@@ -247,10 +247,10 @@ always_ff @(posedge clk_i) begin
         // respect CSR write
         { mstatus_mie_r, mstatus_mpie_r } <= { mstatus_i.mie, mstatus_i.mpie };
         // $strobe("[CSR] MSTATUS=%x, %x", mstatus_mie_r, mstatus_mpie_r);
-    end else if (jmp_accept_i && (interrupt_w || mtrap_i)) begin
+    end else if (jmp_accept_i && (interrupt || mtrap_i)) begin
         // on accepted mtrap or interrupt, disable interrupts and save previous value
         { mstatus_mie_r, mstatus_mpie_r } <= { 1'b0,           mstatus_mie_r  };
-        // if (interrupt_w)
+        // if (interrupt)
         //     $strobe("[CSR] INTERRUPT");
         // else
         //     $strobe("[CSR] TRAP");
@@ -267,7 +267,7 @@ always_ff @(posedge clk_i) begin
     if (jmp_accept_i && mtrap_i)
         // trap causes are provided
         mcause_r <= mcause_i;
-    else if (jmp_accept_i && interrupt_w)
+    else if (jmp_accept_i && interrupt)
         // interrupt cause is always the same
         mcause_r <= { 1'b1, INT_M_EXTERNAL };
     else if (jmp_accept_i && mret_i)
@@ -280,7 +280,7 @@ always_ff @(posedge clk_i) begin
     if (write_enable_i && write_addr_i == CSR_MEPC)
         // respect CSR writes
         mepc_r <= write_data_i;
-    else if (jmp_accept_i && (interrupt_w || mtrap_i))
+    else if (jmp_accept_i && (interrupt || mtrap_i))
         // on accepted mtrap or interrupt, disable interrupts and save previous value
         mepc_r <= trap_pc_i;
     else if (jmp_accept_i && mret_i)
@@ -310,7 +310,7 @@ always_comb mie_o = '{
 
 mi_t mip_o;
 always_comb mip_o = '{
-    mei:     meip_w,
+    mei:     meip,
     mti:     mtip_r,
     msi:     msip_r,
     default: '0
@@ -386,12 +386,12 @@ always_ff @(posedge clk_i) begin
         CSR_MTVEC:          mtvec_r         <= write_data_i;
         CSR_MCOUNTINHIBIT:  mcountinhibit_r <= write_data_i;
         CSR_MSCRATCH:       mscratch_r      <= write_data_i;
-        CSR_CYCLE:          mcycle_r        <= { mcycle_w  [63:32], write_data_i };
-        CSR_TIME:           time_r          <= { time_w    [63:32], write_data_i };
-        CSR_INSTRET:        minstret_r      <= { minstret_w[63:32], write_data_i };
-        CSR_CYCLEH:         mcycle_r        <= { write_data_i, mcycle_w   [31:0] };
-        CSR_TIMEH:          time_r          <= { write_data_i, time_w     [31:0] };
-        CSR_INSTRETH:       minstret_r      <= { write_data_i, minstret_w [31:0] };
+        CSR_CYCLE:          mcycle_r        <= { mcycle_next  [63:32], write_data_i };
+        CSR_TIME:           time_r          <= { time_next    [63:32], write_data_i };
+        CSR_INSTRET:        minstret_r      <= { minstret_next[63:32], write_data_i };
+        CSR_CYCLEH:         mcycle_r        <= { write_data_i, mcycle_next   [31:0] };
+        CSR_TIMEH:          time_r          <= { write_data_i, time_next     [31:0] };
+        CSR_INSTRETH:       minstret_r      <= { write_data_i, minstret_next [31:0] };
         CSR_MIE:
             begin
                 meie_r <= mie_i.mei;
@@ -400,9 +400,9 @@ always_ff @(posedge clk_i) begin
             end
         endcase
     end else begin
-        mcycle_r       <= mcycle_w;
-        time_r         <= time_w;
-        minstret_r     <= minstret_w;
+        mcycle_r   <= mcycle_next;
+        time_r     <= time_next;
+        minstret_r <= minstret_next;
     end
 end
 

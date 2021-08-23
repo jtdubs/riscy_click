@@ -20,9 +20,9 @@ module clk_gen
 //
 
 // internal signals
-wire logic clk_feedback_w;
-wire logic cpu_clk_w;
-wire logic pxl_clk_w;
+wire logic clk_feedback;
+wire logic cpu_clk;
+wire logic pxl_clk;
 
 // PLL Module
 PLLE2_BASE #(
@@ -53,18 +53,18 @@ PLLE2_BASE #(
   .STARTUP_WAIT("TRUE")
 )
 clk_pll (
-  .CLKOUT0(cpu_clk_w),
-  .CLKOUT1(pxl_clk_w),
+  .CLKOUT0(cpu_clk),
+  .CLKOUT1(pxl_clk),
   .CLKOUT2(),
   .CLKOUT3(),
   .CLKOUT4(),
   .CLKOUT5(),
-  .CLKFBOUT(clk_feedback_w),
+  .CLKFBOUT(clk_feedback),
   .LOCKED(ready_async_o),
   .CLKIN1(sys_clk_i),
   .PWRDWN(1'b0),
   .RST(1'b0),
-  .CLKFBIN(clk_feedback_w)
+  .CLKFBIN(clk_feedback)
 );
 
 // Global Clock Buffer
@@ -78,7 +78,7 @@ cpu_clk_buffer (
   .O(cpu_clk_o),       // 1-bit output: Clock output
   .CE0(ready_async_o), // 1-bit input: Clock enable input for I0
   .CE1(1'b0),          // 1-bit input: Clock enable input for I1
-  .I0(cpu_clk_w),      // 1-bit input: Primary clock
+  .I0(cpu_clk),      // 1-bit input: Primary clock
   .I1(1'b0),           // 1-bit input: Secondary clock
   .IGNORE0(1'b0),      // 1-bit input: Clock ignore input for I0
   .IGNORE1(1'b0),      // 1-bit input: Clock ignore input for I1
@@ -97,7 +97,7 @@ pxl_clk_buffer (
   .O(pxl_clk_o),       // 1-bit output: Clock output
   .CE0(ready_async_o), // 1-bit input: Clock enable input for I0
   .CE1(1'b0),          // 1-bit input: Clock enable input for I1
-  .I0(pxl_clk_w),      // 1-bit input: Primary clock
+  .I0(pxl_clk),      // 1-bit input: Primary clock
   .I1(1'b0),           // 1-bit input: Secondary clock
   .IGNORE0(1'b0),      // 1-bit input: Clock ignore input for I0
   .IGNORE1(1'b0),      // 1-bit input: Clock ignore input for I1

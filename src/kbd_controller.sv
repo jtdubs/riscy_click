@@ -32,8 +32,8 @@ module kbd_controller
 // Bus Interface
 //
 
-wire logic [8:0] fifo_data_w;
-wire logic       fifo_valid_w;
+wire logic [8:0] fifo_data;
+wire logic       fifo_valid;
 
 // ports
 typedef enum logic [3:0] {
@@ -42,14 +42,14 @@ typedef enum logic [3:0] {
 } port_t;
 
 // read
-word_t read_data_w = '0;
-assign read_data_o = read_data_w;
+word_t read_data_r = '0;
+assign read_data_o = read_data_r;
 always_ff @(posedge clk_i) begin
     if (chip_select_i && read_enable_i) begin
         case (addr_i)
-        PORT_DATA:    read_data_w <= { 15'b0, fifo_valid_w, 7'b0, fifo_data_w };
-        PORT_CONTROL: read_data_w <= 32'b0;
-        default:      read_data_w <= 32'b0;
+        PORT_DATA:    read_data_r <= { 15'b0, fifo_valid, 7'b0, fifo_data };
+        PORT_CONTROL: read_data_r <= 32'b0;
+        default:      read_data_r <= 32'b0;
         endcase
     end
 end
@@ -69,46 +69,46 @@ end
 
 
 // PS2 RX
-byte_t      ps2_data_w;
-logic       ps2_valid_w;
+byte_t      ps2_data;
+logic       ps2_valid;
 
 ps2_rx ps2_rx (
     .clk_i      (clk_i),
     .ps2_clk_i  (ps2_clk_i),
     .ps2_data_i (ps2_data_i),
-    .data_o     (ps2_data_w),
-    .valid_o    (ps2_valid_w)
+    .data_o     (ps2_data),
+    .valid_o    (ps2_valid)
 );
 
 
 // Keyboard
-ps2_kbd_event_t ps2_kbd_event_w;
-logic           ps2_kbd_valid_w;
+ps2_kbd_event_t ps2_kbd_event;
+logic           ps2_kbd_valid;
 
 ps2_kbd ps2_kbd (
     .clk_i      (clk_i),
-    .data_i     (ps2_data_w),
-    .valid_i    (ps2_valid_w),
-    .event_o    (ps2_kbd_event_w),
-    .valid_o    (ps2_kbd_valid_w)
+    .data_i     (ps2_data),
+    .valid_i    (ps2_valid),
+    .event_o    (ps2_kbd_event),
+    .valid_o    (ps2_kbd_valid)
 );
 
 
 // Keycode Translation ROM
 logic           is_break_r = '0;
-byte_t          vk_w;
 logic           vk_valid_r = '0;
+byte_t          vk;
 
 keycode_rom #(.CONTENTS("krom.mem")) krom (
     .clk_i         (clk_i),
-    .read_enable_i (ps2_kbd_valid_w), // 1'b1),
-    .read_addr_i   (ps2_kbd_event_w[8:0]),
-    .read_data_o   (vk_w)
+    .read_enable_i (ps2_kbd_valid), // 1'b1),
+    .read_addr_i   (ps2_kbd_event[8:0]),
+    .read_data_o   (vk)
 );
 
 always_ff @(posedge clk_i) begin
-    is_break_r  <= ps2_kbd_event_w.is_break;
-    vk_valid_r  <= ps2_kbd_valid_w;
+    is_break_r  <= ps2_kbd_event.is_break;
+    vk_valid_r  <= ps2_kbd_valid;
 end
 
 
@@ -118,11 +118,11 @@ fifo #(
     .ADDR_WIDTH(5)
 ) fifo (
     .clk_i               (clk_i),
-    .write_data_i        ({ is_break_r, vk_w }),
+    .write_data_i        ({ is_break_r, vk }),
     .write_enable_i      (vk_valid_r),
     .read_enable_i       (chip_select_i && read_enable_i),
-    .read_data_o         (fifo_data_w),
-    .read_valid_o        (fifo_valid_w),
+    .read_data_o         (fifo_data),
+    .read_valid_o        (fifo_valid),
     .fifo_empty_o        (),
     .fifo_almost_empty_o (),
     .fifo_almost_full_o  (),
@@ -130,6 +130,6 @@ fifo #(
 );
 
 // interrupt
-assign interrupt_o = fifo_valid_w;
+assign interrupt_o = fifo_valid;
 
 endmodule

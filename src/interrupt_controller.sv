@@ -33,10 +33,10 @@ typedef enum logic [3:0] {
 
 word_t pending_r = '0;
 word_t enabled_r = '0;
-word_t active_w;
+word_t active;
 
 always_comb begin
-    active_w = pending_r & enabled_r;
+    active = pending_r & enabled_r;
 end
 
 always_ff @(posedge clk_i) begin
@@ -46,19 +46,19 @@ end
 logic  interrupt_r = '0;
 assign interrupt_o = interrupt_r;
 always_ff @(posedge clk_i) begin
-    interrupt_r <= active_w != '0;
+    interrupt_r <= active != '0;
     // $strobe("[IRQ] %x", interrupt_r);
 end
 
-word_t read_data_w = '0;
-assign read_data_o = read_data_w;
+word_t read_data_r = '0;
+assign read_data_o = read_data_r;
 always_ff @(posedge clk_i) begin
     if (chip_select_i && read_enable_i) begin
         case (addr_i)
-        PORT_PENDING: read_data_w <= pending_r;
-        PORT_ENABLED: read_data_w <= enabled_r;
-        PORT_ACTIVE:  read_data_w <= active_w;
-        default:      read_data_w <= 32'b0;
+        PORT_PENDING: read_data_r <= pending_r;
+        PORT_ENABLED: read_data_r <= enabled_r;
+        PORT_ACTIVE:  read_data_r <= active;
+        default:      read_data_r <= 32'b0;
         endcase
     end
 end

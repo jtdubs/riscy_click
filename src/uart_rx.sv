@@ -52,14 +52,14 @@ end
 // Shift Register
 //
 
-logic [11:0] packet_r      = 12'hFFF;
-logic        packet_good_w = 1'b0;
+logic [11:0] packet_r    = 12'hFFF;
+logic        packet_good = 1'b0;
 
 always_ff @(posedge clk_i) begin
     if (cycles_to_center == 24'b0)
         packet_r <= { bits_r[0], packet_r[11:1] };
 
-    if (packet_good_w)
+    if (packet_good)
         packet_r <= 12'hFFF;
 end
 
@@ -68,22 +68,22 @@ end
 // Start Bit
 //
 
-logic start_good_w;
-always_comb start_good_w = !packet_r[0];
+logic start_good;
+always_comb start_good = !packet_r[0];
 
 
 //
 // Parity
 //
 
-logic packet_parity_w;
-logic odd_parity_w;
-logic parity_good_w;
+logic packet_parity;
+logic odd_parity;
+logic parity_good;
 
 always_comb begin
-    packet_parity_w = (config_i.data_bits == DATA_SEVEN) ? packet_r[7] : packet_r[8];
+    packet_parity = (config_i.data_bits == DATA_SEVEN) ? packet_r[7] : packet_r[8];
 
-    odd_parity_w =
+    odd_parity =
         packet_r[1] ^
         packet_r[2] ^
         packet_r[3] ^
@@ -93,14 +93,14 @@ always_comb begin
         packet_r[7];
 
     if (config_i.data_bits == DATA_EIGHT)
-        odd_parity_w = odd_parity_w ^ packet_r[8];
+        odd_parity = odd_parity ^ packet_r[8];
 
     unique case (config_i.parity)
-    PARITY_NONE:  parity_good_w = 1'b1;
-    PARITY_EVEN:  parity_good_w = (packet_parity_w != odd_parity_w);
-    PARITY_ODD:   parity_good_w = (packet_parity_w == odd_parity_w);
-    PARITY_MARK:  parity_good_w = (packet_parity_w == 1'b1);
-    PARITY_SPACE: parity_good_w = (packet_parity_w == 1'b0);
+    PARITY_NONE:  parity_good = 1'b1;
+    PARITY_EVEN:  parity_good = (packet_parity != odd_parity);
+    PARITY_ODD:   parity_good = (packet_parity == odd_parity);
+    PARITY_MARK:  parity_good = (packet_parity == 1'b1);
+    PARITY_SPACE: parity_good = (packet_parity == 1'b0);
     endcase
 end
 
@@ -109,16 +109,16 @@ end
 // Stop Bits
 //
 
-logic [1:0] stop_bits_w;
-logic       stop_bits_good_w;
+logic [1:0] stop_bits;
+logic       stop_bits_good;
 
 always_comb begin
     unique case (config_i.data_bits)
-        DATA_SEVEN: stop_bits_w = (config_i.parity == PARITY_NONE) ? packet_r[ 9:8] : packet_r[10: 9];
-        DATA_EIGHT: stop_bits_w = (config_i.parity == PARITY_NONE) ? packet_r[10:9] : packet_r[11:10];
+        DATA_SEVEN: stop_bits = (config_i.parity == PARITY_NONE) ? packet_r[ 9:8] : packet_r[10: 9];
+        DATA_EIGHT: stop_bits = (config_i.parity == PARITY_NONE) ? packet_r[10:9] : packet_r[11:10];
     endcase
 
-    stop_bits_good_w = (config_i.stop_bits == STOP_ONE) ? stop_bits_w[0] : (stop_bits_w[0] && stop_bits_w[1]);
+    stop_bits_good = (config_i.stop_bits == STOP_ONE) ? stop_bits[0] : (stop_bits[0] && stop_bits[1]);
 end
 
 
@@ -126,7 +126,7 @@ end
 // Packet Good
 //
 
-always_comb packet_good_w = start_good_w && parity_good_w && stop_bits_good_w;
+always_comb packet_good = start_good && parity_good && stop_bits_good;
 
 
 //
@@ -134,17 +134,17 @@ always_comb packet_good_w = start_good_w && parity_good_w && stop_bits_good_w;
 //
 
 logic [7:0] data_r = '0;
+assign      data_o = data_r;
+
 logic       data_valid_r = '0;
+assign      data_valid_o = data_valid_r;
 
 always_ff @(posedge clk_i) begin
-    data_valid_r <= packet_good_w;
+    data_valid_r <= packet_good;
 
-    if (packet_good_w) begin
+    if (packet_good) begin
         data_r <= packet_r[8:1];
     end
 end
-
-assign data_o       = data_r;
-assign data_valid_o = data_valid_r;
 
 endmodule

@@ -36,32 +36,32 @@ end
 // Shift Register
 //
 
-logic [11:0] packet_w;
+logic [11:0] packet_next;
 logic [11:0] packet_r = '0;
-logic        txd_w = '1;
+logic        txd_r = '1;
+assign       txd_o = txd_r;
 
 always_ff @(posedge clk_i) begin
     if (read_valid_i) begin
-        packet_r <= packet_w;
+        packet_r <= packet_next;
     end else if (cycles_r == 24'b0) begin
         packet_r <= { 1'b0, packet_r[11:1] };
-        txd_w    <= (packet_r == '0) ? 1'b1 : packet_r[0];
+        txd_r    <= (packet_r == '0) ? 1'b1 : packet_r[0];
     end
 end
 
 always_comb read_enable_o = (packet_r == 12'h000);
-assign txd_o = txd_w;
 
 
 //
 // Parity Calculation
 //
 
-logic odd_parity_w;
-logic parity_w;
+logic odd_parity;
+logic parity;
 
 always_comb begin
-    odd_parity_w =
+    odd_parity =
         read_data_i[0] ^
         read_data_i[1] ^
         read_data_i[2] ^
@@ -71,16 +71,16 @@ always_comb begin
         read_data_i[6];
 
     if (config_i.data_bits == DATA_EIGHT)
-        odd_parity_w = odd_parity_w ^ read_data_i[7];
+        odd_parity = odd_parity ^ read_data_i[7];
 end
 
 always_comb begin
     unique case (config_i.parity)
-    PARITY_NONE:  parity_w = 1'b0;
-    PARITY_EVEN:  parity_w = !odd_parity_w;
-    PARITY_ODD:   parity_w =  odd_parity_w;
-    PARITY_MARK:  parity_w = 1'b1;
-    PARITY_SPACE: parity_w = 1'b0;
+    PARITY_NONE:  parity = 1'b0;
+    PARITY_EVEN:  parity = !odd_parity;
+    PARITY_ODD:   parity =  odd_parity;
+    PARITY_MARK:  parity = 1'b1;
+    PARITY_SPACE: parity = 1'b0;
     endcase
 end
 
@@ -90,17 +90,17 @@ end
 //
 
 always_comb begin
-    packet_w[   0] = 1'b0;
-    packet_w[ 7:1] = read_data_i[6:0];
-    packet_w[11:8] = 4'hF;
+    packet_next[   0] = 1'b0;
+    packet_next[ 7:1] = read_data_i[6:0];
+    packet_next[11:8] = 4'hF;
 
     if (config_i.data_bits == DATA_EIGHT)
-        packet_w[8] = read_data_i[7];
+        packet_next[8] = read_data_i[7];
 
     if (config_i.parity != PARITY_NONE) begin
         unique case (config_i.data_bits)
-        DATA_SEVEN: packet_w[8] = parity_w;
-        DATA_EIGHT: packet_w[9] = parity_w;
+        DATA_SEVEN: packet_next[8] = parity;
+        DATA_EIGHT: packet_next[9] = parity;
         endcase
     end
 end
