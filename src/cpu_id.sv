@@ -457,6 +457,7 @@ always_ff @(posedge clk_i) begin
         halt_r     <= cw_w.halt;
     end
 
+    // $display("[ID (%x)] PC=%x, IR=%x | JMP=%x, %x | CSR JMP=%x, %x, %x | PC=%x, IR=%x", ready_async_o, pc_i, ir_i, jmp_addr_async_o, jmp_valid_async_o, csr_jmp_request_i, csr_jmp_addr_i, csr_jmp_accept_o, pc_o, ir_o);
     `log_strobe(("{ \"stage\": \"ID\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"alu_op1\": \"%0d\", \"alu_op2\": \"%0d\", \"alu_mode\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_dst\": \"%0d\", \"halt\": \"%0d\" }", pc_r, ir_r, alu_op1_r, alu_op2_r, alu_mode_r, ma_mode_r, ma_size_r, ma_data_r, wb_src_r, wb_data_r, wb_valid_r, halt_r));
 end
 

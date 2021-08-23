@@ -243,15 +243,23 @@ end
 
 // manage intererupt enablement stack
 always_ff @(posedge clk_i) begin
-    if (write_enable_i && write_addr_i == CSR_MSTATUS)
+    if (write_enable_i && write_addr_i == CSR_MSTATUS) begin
         // respect CSR write
         { mstatus_mie_r, mstatus_mpie_r } <= { mstatus_i.mie, mstatus_i.mpie };
-    else if (jmp_accept_i && (interrupt_w || mtrap_i))
+        // $strobe("[CSR] MSTATUS=%x, %x", mstatus_mie_r, mstatus_mpie_r);
+    end else if (jmp_accept_i && (interrupt_w || mtrap_i)) begin
         // on accepted mtrap or interrupt, disable interrupts and save previous value
         { mstatus_mie_r, mstatus_mpie_r } <= { 1'b0,           mstatus_mie_r  };
-    else if (jmp_accept_i && mret_i)
+        // if (interrupt_w)
+        //     $strobe("[CSR] INTERRUPT");
+        // else
+        //     $strobe("[CSR] TRAP");
+    end else if (jmp_accept_i && mret_i) begin
         // on accepted mret, restore previous value
         { mstatus_mie_r, mstatus_mpie_r } <= { mstatus_mpie_r, 1'b1           };
+        // $strobe("[CSR] MRET");
+
+    end
 end
 
 // update trap metadata

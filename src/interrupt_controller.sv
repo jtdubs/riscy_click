@@ -47,6 +47,7 @@ logic  interrupt_r = '0;
 assign interrupt_o = interrupt_r;
 always_ff @(posedge clk_i) begin
     interrupt_r <= active_w != '0;
+    // $strobe("[IRQ] %x", interrupt_r);
 end
 
 word_t read_data_w = '0;
