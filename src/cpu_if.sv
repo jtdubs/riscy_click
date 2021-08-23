@@ -143,7 +143,7 @@ word_t imem_addr_w;
 assign imem_addr_o = imem_addr_w;
 
 always_comb begin
-    if (wait_w || halt_w)
+    unique if (wait_w || halt_w)
         imem_addr_w = 32'd0;
     else if (stall_w || gain_alignment_w)
         imem_addr_w = imem_addr_r;
