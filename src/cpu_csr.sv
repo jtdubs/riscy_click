@@ -322,7 +322,7 @@ always_ff @(posedge clk_i) begin
     if (read_enable_i) begin
         unique case (read_addr_i)
         //                                  MXLEN=32           ZYXWVUTSRQPONMLKJIHGFEDCBA
-        CSR_MISA:          read_data_r <= { 2'b01,   4'b0, 26'b00000000000000000100000000 };
+        CSR_MISA:          read_data_r <= { 2'b01,   4'b0, 26'b00000000000000000100000100 };
         CSR_MVENDORID:     read_data_r <= 32'b0;
         CSR_MARCHID:       read_data_r <= 32'b0;
         CSR_MIMPID:        read_data_r <= 32'h0001;

@@ -1,7 +1,5 @@
 TODO:
 - Consider removing _w from wires, as we already have _r for registers...
-- ISA Extensions
-    - C - Compressed
 - PS2
     - Get working with real PS2 keyboard.
     - Apparently need to ACK the AA, therefore need PS2 Tx module and tri-state buffers
