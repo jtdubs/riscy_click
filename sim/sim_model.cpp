@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <thread>
 
-#include "verilator/Vchipset.h"
+#include "verilator/Vtop.h"
 #include "sim_vga.h"
 #include "sim_segdisplay.h"
 #include "sim_switch.h"
@@ -17,7 +17,7 @@
 #include "sim_model.h"
 
 struct sim_model {
-    Vchipset*       chipset;
+    Vtop*           top;
     std::thread     tick_thread;
     bool            thread_exit;
     bool            switches[16];
@@ -39,11 +39,11 @@ sim_model_t* sim_create(int argc, char **argv) {
     for (int i=4; i<16; i++)
         model->switches[i] = true;
 
-    // Create Chipset
-    model->chipset = new Vchipset;
-    model->chipset->switch_i = 0x0000;
-    model->chipset->cpu_clk_i = 1;
-    model->chipset->pxl_clk_i = 1;
+    // Create Top
+    model->top = new Vtop;
+    model->top->switch_i = 0x0000;
+    model->top->cpu_clk_i = 1;
+    model->top->pxl_clk_i = 1;
 
     // Create Tick Thread
     model->tick_thread = std::thread([](sim_model_t *model) {
@@ -64,16 +64,16 @@ void sim_destroy(sim_model_t* model) {
     key_destroy(model->keyboard);
 
     // Cleanup DUT
-    model->chipset->final();
-    delete model->chipset;
+    model->top->final();
+    delete model->top;
 
     delete model;
 }
 
 void sim_tick(sim_model_t* model) {
-    Vchipset *dut = model->chipset;
+    Vtop *dut = model->top;
 
-    // update chipset
+    // update top
     dut->eval();
 
     // next cycle

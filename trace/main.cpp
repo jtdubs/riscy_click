@@ -1,6 +1,6 @@
 #include <verilated.h>
 #include <GLFW/glfw3.h>
-#include "verilator/Vchipset.h"
+#include "verilator/Vtop.h"
 #include "sim_keyboard.h"
 
 int main(int argc, char** argv)
@@ -21,7 +21,7 @@ int main(int argc, char** argv)
     key_make (kbd, GLFW_KEY_O);
     key_break(kbd, GLFW_KEY_O);
 
-    Vchipset *dut = new Vchipset;
+    Vtop *dut = new Vtop;
     dut->switch_i = 0x1234;
 
     uint64_t ncycles = 0;

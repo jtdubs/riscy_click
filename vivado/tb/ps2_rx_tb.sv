@@ -3,6 +3,7 @@
 
 module ps2_rx_tb
     import common::*;
+    import keyboard_common::*;
     ();
 
      logic  clk_i;

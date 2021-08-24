@@ -1,5 +1,5 @@
 verilator/
-chipset
+top
 *.json
 *.log
 *.txt

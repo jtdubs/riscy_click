@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="keyboard_controller_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="common" />
+            <top_module name="glbl" />
+            <top_module name="keyboard_controller_tb" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="342.234 ns"></ZoomEndTime>
+      <Cursor1Time time="0.000 ns"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="307"></NameColumnWidth>
+      <ValueColumnWidth column_width="118"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="6" />
+   <wvobject fp_name="/keyboard_controller_tb/keyboard/clk_i" type="logic">
+      <obj_property name="ElementShortName">clk_i</obj_property>
+      <obj_property name="ObjectShortName">clk_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/keyboard_controller_tb/keyboard/reset_i" type="logic">
+      <obj_property name="ElementShortName">reset_i</obj_property>
+      <obj_property name="ObjectShortName">reset_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="group275" type="group">
+      <obj_property name="label">Controller</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/read_enable_i" type="logic">
+         <obj_property name="ElementShortName">read_enable_i</obj_property>
+         <obj_property name="ObjectShortName">read_enable_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/read_data_o" type="array">
+         <obj_property name="ElementShortName">read_data_o</obj_property>
+         <obj_property name="ObjectShortName">read_data_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/read_valid_o" type="logic">
+         <obj_property name="ElementShortName">read_valid_o</obj_property>
+         <obj_property name="ObjectShortName">read_valid_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/ps2_data_w" type="array">
+         <obj_property name="ElementShortName">ps2_data_w[7:0]</obj_property>
+         <obj_property name="ObjectShortName">ps2_data_w[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/ps2_valid_w" type="logic">
+         <obj_property name="ElementShortName">ps2_valid_w</obj_property>
+         <obj_property name="ObjectShortName">ps2_valid_w</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/interrupt_o" type="logic">
+         <obj_property name="ElementShortName">interrupt_o</obj_property>
+         <obj_property name="ObjectShortName">interrupt_o</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group224" type="group">
+      <obj_property name="label">RX</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/ps2_rx/ps2_clk_async_i" type="logic">
+         <obj_property name="ElementShortName">ps2_clk_async_i</obj_property>
+         <obj_property name="ObjectShortName">ps2_clk_async_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/ps2_rx/ps2_data_async_i" type="logic">
+         <obj_property name="ElementShortName">ps2_data_async_i</obj_property>
+         <obj_property name="ObjectShortName">ps2_data_async_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/ps2_rx/ps2_clk_r" type="array">
+         <obj_property name="ElementShortName">ps2_clk_r[1:0]</obj_property>
+         <obj_property name="ObjectShortName">ps2_clk_r[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/ps2_rx/ps2_data_r" type="logic">
+         <obj_property name="ElementShortName">ps2_data_r</obj_property>
+         <obj_property name="ObjectShortName">ps2_data_r</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/ps2_rx/packet_r" type="array">
+         <obj_property name="ElementShortName">packet_r[10:0]</obj_property>
+         <obj_property name="ObjectShortName">packet_r[10:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/ps2_rx/falling_edge_w" type="logic">
+         <obj_property name="ElementShortName">falling_edge_w</obj_property>
+         <obj_property name="ObjectShortName">falling_edge_w</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/ps2_rx/parity_good_w" type="logic">
+         <obj_property name="ElementShortName">parity_good_w</obj_property>
+         <obj_property name="ObjectShortName">parity_good_w</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/ps2_rx/start_good_w" type="logic">
+         <obj_property name="ElementShortName">start_good_w</obj_property>
+         <obj_property name="ObjectShortName">start_good_w</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/ps2_rx/stop_good_w" type="logic">
+         <obj_property name="ElementShortName">stop_good_w</obj_property>
+         <obj_property name="ObjectShortName">stop_good_w</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/ps2_rx/packet_good_w" type="logic">
+         <obj_property name="ElementShortName">packet_good_w</obj_property>
+         <obj_property name="ObjectShortName">packet_good_w</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/ps2_rx/data_o" type="array">
+         <obj_property name="ElementShortName">data_o[7:0]</obj_property>
+         <obj_property name="ObjectShortName">data_o[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/ps2_rx/valid_o" type="logic">
+         <obj_property name="ElementShortName">valid_o</obj_property>
+         <obj_property name="ObjectShortName">valid_o</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group233" type="group">
+      <obj_property name="label">Keyboard</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/ps2_keyboard/data_i" type="array">
+         <obj_property name="ElementShortName">data_i[7:0]</obj_property>
+         <obj_property name="ObjectShortName">data_i[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/ps2_keyboard/valid_i" type="logic">
+         <obj_property name="ElementShortName">valid_i</obj_property>
+         <obj_property name="ObjectShortName">valid_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/ps2_keyboard/event_o" type="array">
+         <obj_property name="ElementShortName">event_o</obj_property>
+         <obj_property name="ObjectShortName">event_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/ps2_keyboard/valid_o" type="logic">
+         <obj_property name="ElementShortName">valid_o</obj_property>
+         <obj_property name="ObjectShortName">valid_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/ps2_keyboard/extended_r" type="logic">
+         <obj_property name="ElementShortName">extended_r</obj_property>
+         <obj_property name="ObjectShortName">extended_r</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/ps2_keyboard/is_break_r" type="logic">
+         <obj_property name="ElementShortName">is_break_r</obj_property>
+         <obj_property name="ObjectShortName">is_break_r</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group263" type="group">
+      <obj_property name="label">FIFO</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/fifo/write_data_i" type="array">
+         <obj_property name="ElementShortName">write_data_i[8:0]</obj_property>
+         <obj_property name="ObjectShortName">write_data_i[8:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/fifo/write_enable_i" type="logic">
+         <obj_property name="ElementShortName">write_enable_i</obj_property>
+         <obj_property name="ObjectShortName">write_enable_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/fifo/read_enable_i" type="logic">
+         <obj_property name="ElementShortName">read_enable_i</obj_property>
+         <obj_property name="ObjectShortName">read_enable_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/fifo/read_data_o" type="array">
+         <obj_property name="ElementShortName">read_data_o[8:0]</obj_property>
+         <obj_property name="ObjectShortName">read_data_o[8:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/fifo/read_valid_o" type="logic">
+         <obj_property name="ElementShortName">read_valid_o</obj_property>
+         <obj_property name="ObjectShortName">read_valid_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/fifo/fifo_empty_o" type="logic">
+         <obj_property name="ElementShortName">fifo_empty_o</obj_property>
+         <obj_property name="ObjectShortName">fifo_empty_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/fifo/fifo_almost_empty_o" type="logic">
+         <obj_property name="ElementShortName">fifo_almost_empty_o</obj_property>
+         <obj_property name="ObjectShortName">fifo_almost_empty_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/fifo/fifo_almost_full_o" type="logic">
+         <obj_property name="ElementShortName">fifo_almost_full_o</obj_property>
+         <obj_property name="ObjectShortName">fifo_almost_full_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/fifo/fifo_full_o" type="logic">
+         <obj_property name="ElementShortName">fifo_full_o</obj_property>
+         <obj_property name="ObjectShortName">fifo_full_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/fifo/data_r" type="array">
+         <obj_property name="ElementShortName">data_r[31:0][8:0]</obj_property>
+         <obj_property name="ObjectShortName">data_r[31:0][8:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/fifo/read_ptr_r" type="array">
+         <obj_property name="ElementShortName">read_ptr_r[4:0]</obj_property>
+         <obj_property name="ObjectShortName">read_ptr_r[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/fifo/read_ptr_w" type="array">
+         <obj_property name="ElementShortName">read_ptr_w[4:0]</obj_property>
+         <obj_property name="ObjectShortName">read_ptr_w[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/fifo/write_ptr_r" type="array">
+         <obj_property name="ElementShortName">write_ptr_r[4:0]</obj_property>
+         <obj_property name="ObjectShortName">write_ptr_r[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/fifo/write_ptr_w" type="array">
+         <obj_property name="ElementShortName">write_ptr_w[4:0]</obj_property>
+         <obj_property name="ObjectShortName">write_ptr_w[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/fifo/count_w" type="array">
+         <obj_property name="ElementShortName">count_w[4:0]</obj_property>
+         <obj_property name="ObjectShortName">count_w[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/fifo/ALMOST_EMPTY_COUNT" type="array">
+         <obj_property name="ElementShortName">ALMOST_EMPTY_COUNT[4:0]</obj_property>
+         <obj_property name="ObjectShortName">ALMOST_EMPTY_COUNT[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/keyboard_controller_tb/keyboard/fifo/ALMOST_FULL_COUNT" type="array">
+         <obj_property name="ElementShortName">ALMOST_FULL_COUNT[4:0]</obj_property>
+         <obj_property name="ObjectShortName">ALMOST_FULL_COUNT[4:0]</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>
