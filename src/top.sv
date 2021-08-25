@@ -21,10 +21,14 @@ module top
         // Halt
         output wire logic        halt_o,         // halt output
 
+        // USB PS/2
+        input  wire logic        usb_ps2_clk_i,      // USB PS2 HID clock (async)
+        input  wire logic        usb_ps2_data_i,     // USB PS2 HID data (async)
+        
         // PS/2
-        input  wire logic        ps2_clk_i,      // PS2 HID clock (async)
-        input  wire logic        ps2_data_i,     // PS2 HID data (async)
-
+        inout  tri  logic        ps2_clk_io,      // USB PS2 HID clock (async)
+        inout  tri  logic        ps2_data_io,     // USB PS2 HID data (async)
+        
         // UART
         input  wire logic        uart_rxd_i,
         output wire logic        uart_txd_o,
@@ -180,14 +184,23 @@ video_ram vram (
     .pxl_data_o        (vga_vram_data)
 );
 
+// PS2 Controller
+ps2_controller ps2_controller (
+    .clk_i(cpu_clk_i),
+    .ps2_clk_io(ps2_clk_io),
+    .ps2_data_io(ps2_data_io),
+    .enable_clk_pull_down(switch_i[15]),
+    .enable_data_pull_down(switch_i[14])
+);
+
 // Keyboard Controller
 wire logic kbd_interrupt;
 
 keyboard_controller keyboard (
     .clk_i             (cpu_clk_i),
     .interrupt_o       (kbd_interrupt),
-    .ps2_clk_i         (ps2_clk_i),
-    .ps2_data_i        (ps2_data_i),
+    .ps2_clk_i         (usb_ps2_clk_i),
+    .ps2_data_i        (usb_ps2_data_i),
     .chip_select_i     (chip_select.keyboard),
     .addr_i            (bus_addr[5:2]),
     .read_enable_i     (bus_read_enable),

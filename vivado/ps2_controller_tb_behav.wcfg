@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="ps2_controller_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="common" />
+            <top_module name="glbl" />
+            <top_module name="ps2_controller_tb" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="15.160940 us"></ZoomStartTime>
+      <ZoomEndTime time="58.180941 us"></ZoomEndTime>
+      <Cursor1Time time="61.000000 us"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="542"></NameColumnWidth>
+      <ValueColumnWidth column_width="259"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="13" />
+   <wvobject fp_name="/ps2_controller_tb/dut/clk_i" type="logic">
+      <obj_property name="ElementShortName">clk_i</obj_property>
+      <obj_property name="ObjectShortName">clk_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ps2_controller_tb/dut/ps2_clk_io" type="logic">
+      <obj_property name="ElementShortName">ps2_clk_io</obj_property>
+      <obj_property name="ObjectShortName">ps2_clk_io</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ps2_controller_tb/dut/ps2_data_io" type="logic">
+      <obj_property name="ElementShortName">ps2_data_io</obj_property>
+      <obj_property name="ObjectShortName">ps2_data_io</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ps2_controller_tb/dut/clk_dir_r" type="other">
+      <obj_property name="ElementShortName">clk_dir_r</obj_property>
+      <obj_property name="ObjectShortName">clk_dir_r</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ps2_controller_tb/dut/data_dir_r" type="other">
+      <obj_property name="ElementShortName">data_dir_r</obj_property>
+      <obj_property name="ObjectShortName">data_dir_r</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ps2_controller_tb/dut/clk_r" type="array">
+      <obj_property name="ElementShortName">clk_r[7:0]</obj_property>
+      <obj_property name="ObjectShortName">clk_r[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ps2_controller_tb/dut/clk_debounced_r" type="array">
+      <obj_property name="ElementShortName">clk_debounced_r[1:0]</obj_property>
+      <obj_property name="ObjectShortName">clk_debounced_r[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ps2_controller_tb/dut/falling_edge" type="logic">
+      <obj_property name="ElementShortName">falling_edge</obj_property>
+      <obj_property name="ObjectShortName">falling_edge</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ps2_controller_tb/dut/watchdog_r" type="array">
+      <obj_property name="ElementShortName">watchdog_r[15:0]</obj_property>
+      <obj_property name="ObjectShortName">watchdog_r[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="group42" type="group">
+      <obj_property name="label">RX</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/ps2_controller_tb/dut/ps2_clk_i" type="logic">
+         <obj_property name="ElementShortName">ps2_clk_i</obj_property>
+         <obj_property name="ObjectShortName">ps2_clk_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ps2_controller_tb/dut/ps2_data_i" type="logic">
+         <obj_property name="ElementShortName">ps2_data_i</obj_property>
+         <obj_property name="ObjectShortName">ps2_data_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ps2_controller_tb/dut/rx_data_r" type="array">
+         <obj_property name="ElementShortName">rx_data_r[10:0]</obj_property>
+         <obj_property name="ObjectShortName">rx_data_r[10:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ps2_controller_tb/dut/start_good" type="logic">
+         <obj_property name="ElementShortName">start_good</obj_property>
+         <obj_property name="ObjectShortName">start_good</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ps2_controller_tb/dut/stop_good" type="logic">
+         <obj_property name="ElementShortName">stop_good</obj_property>
+         <obj_property name="ObjectShortName">stop_good</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ps2_controller_tb/dut/even_parity" type="logic">
+         <obj_property name="ElementShortName">even_parity</obj_property>
+         <obj_property name="ObjectShortName">even_parity</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ps2_controller_tb/dut/parity_good" type="logic">
+         <obj_property name="ElementShortName">parity_good</obj_property>
+         <obj_property name="ObjectShortName">parity_good</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ps2_controller_tb/dut/packet_good" type="logic">
+         <obj_property name="ElementShortName">packet_good</obj_property>
+         <obj_property name="ObjectShortName">packet_good</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group43" type="group">
+      <obj_property name="label">TX</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/ps2_controller_tb/dut/tx_buffer_r" type="array">
+         <obj_property name="ElementShortName">tx_buffer_r[11:0]</obj_property>
+         <obj_property name="ObjectShortName">tx_buffer_r[11:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ps2_controller_tb/dut/tx_buffer_empty" type="logic">
+         <obj_property name="ElementShortName">tx_buffer_empty</obj_property>
+         <obj_property name="ObjectShortName">tx_buffer_empty</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ps2_controller_tb/dut/state_r" type="array">
+         <obj_property name="ElementShortName">state_r[2:0]</obj_property>
+         <obj_property name="ObjectShortName">state_r[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ps2_controller_tb/dut/rx_idle" type="logic">
+         <obj_property name="ElementShortName">rx_idle</obj_property>
+         <obj_property name="ObjectShortName">rx_idle</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ps2_controller_tb/dut/tx_hold_start" type="logic">
+         <obj_property name="ElementShortName">tx_hold_start</obj_property>
+         <obj_property name="ObjectShortName">tx_hold_start</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ps2_controller_tb/dut/tx_hold" type="logic">
+         <obj_property name="ElementShortName">tx_hold</obj_property>
+         <obj_property name="ObjectShortName">tx_hold</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ps2_controller_tb/dut/tx_start" type="logic">
+         <obj_property name="ElementShortName">tx_start</obj_property>
+         <obj_property name="ObjectShortName">tx_start</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ps2_controller_tb/dut/tx_bit" type="logic">
+         <obj_property name="ElementShortName">tx_bit</obj_property>
+         <obj_property name="ObjectShortName">tx_bit</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ps2_controller_tb/dut/tx_complete" type="logic">
+         <obj_property name="ElementShortName">tx_complete</obj_property>
+         <obj_property name="ObjectShortName">tx_complete</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ps2_controller_tb/dut/state_next" type="array">
+         <obj_property name="ElementShortName">state_next[2:0]</obj_property>
+         <obj_property name="ObjectShortName">state_next[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ps2_controller_tb/dut/tx_clk_r" type="logic">
+         <obj_property name="ElementShortName">tx_clk_r</obj_property>
+         <obj_property name="ObjectShortName">tx_clk_r</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ps2_controller_tb/dut/tx_data_r" type="logic">
+         <obj_property name="ElementShortName">tx_data_r</obj_property>
+         <obj_property name="ObjectShortName">tx_data_r</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ps2_controller_tb/dut/ps2_clk_o" type="logic">
+         <obj_property name="ElementShortName">ps2_clk_o</obj_property>
+         <obj_property name="ObjectShortName">ps2_clk_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/ps2_controller_tb/dut/ps2_data_o" type="logic">
+         <obj_property name="ElementShortName">ps2_data_o</obj_property>
+         <obj_property name="ObjectShortName">ps2_data_o</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="/ps2_controller_tb/dut/debug_r" type="array">
+      <obj_property name="ElementShortName">debug_r[15:0]</obj_property>
+      <obj_property name="ObjectShortName">debug_r[15:0]</obj_property>
+      <obj_property name="Radix">BINARYRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/ps2_controller_tb/dut/debug_o" type="array">
+      <obj_property name="ElementShortName">debug_o[15:0]</obj_property>
+      <obj_property name="ObjectShortName">debug_o[15:0]</obj_property>
+      <obj_property name="Radix">BINARYRADIX</obj_property>
+   </wvobject>
+</wave_config>
