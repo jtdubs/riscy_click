@@ -23,7 +23,7 @@ module chipset
         // Data Bus
         output      chip_select_t bus_chip_select_o, // chip select
         output wire word_t        bus_addr_o,        // r/w address
-        input       word_t        bus_read_data_i,   // read data
+        input  wire word_t        bus_read_data_i,   // read data
         output wire logic         bus_read_enable_o, // read enable
         output wire word_t        bus_write_data_o,  // write data
         output wire logic [3:0]   bus_write_mask_o   // write mask
