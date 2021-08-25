@@ -31,11 +31,7 @@ module stage_memory
         input  wire word_t      wb_data_i,          // write-back data
         input  wire logic       wb_valid_i,         // write-back valid
 
-        // async output
-        output      regaddr_t   wb_addr_async_o,    // write-back address
-        output      word_t      wb_data_async_o,    // write-back data
-        output      logic       wb_ready_async_o,   // write-back ready
-        output      logic       wb_valid_async_o,   // write-back valid
+        // status output
         output      logic       empty_async_o,      // stage empty
 
         // pipeline output
@@ -44,8 +40,10 @@ module stage_memory
         output wire logic       load_o,             // is this a load instruction?
         output wire ma_size_t   ma_size_o,          // memory access size
         output wire logic [1:0] ma_alignment_o,     // memory access alignment
-        output wire word_t      wb_data_o,          // write-back data
-        output wire logic       wb_valid_o          // write-back valid
+        output      regaddr_t   wb_addr_o,          // write-back address
+        output      word_t      wb_data_o,          // write-back data
+        output      logic       wb_ready_o,         // write-back ready
+        output      logic       wb_valid_o          // write-back valid
     );
 
 initial start_logging();
@@ -86,17 +84,11 @@ end
 
 
 //
-// Async Outputs
+// Status Outputs
 //
 
 always_comb begin
-    wb_addr_async_o  = ir_i[11:7];
-    wb_data_async_o  = wb_data_i;
-    wb_ready_async_o = (wb_src_i != WB_SRC_MEM);
-    wb_valid_async_o = wb_valid_i;
-    empty_async_o    = pc_i == NOP_PC;
-
-    `log_display(("{ \"stage\": \"MA\", \"pc\": \"%0d\", \"ma_wb_addr\": \"%0d\", \"ma_wb_data\": \"%0d\", \"ma_wb_valid\": \"%0d\" }", pc_i, wb_addr_async_o, wb_data_async_o, wb_valid_async_o));
+    empty_async_o = pc_i == NOP_PC;
 end
 
 
@@ -105,12 +97,31 @@ end
 //
 
 word_t      pc_r           = NOP_PC;
+assign      pc_o           = pc_r;
+
 word_t      ir_r           = NOP_IR;
+assign      ir_o           = ir_r;
+
 logic       load_r         = 1'b0;
+assign      load_o         = load_r;
+
 ma_size_t   ma_size_r      = NOP_MA_SIZE;
+assign      ma_size_o      = ma_size_r;
+
 logic [1:0] ma_alignment_r = 2'b00;
+assign      ma_alignment_o = ma_alignment_r;
+
+regaddr_t   wb_addr_r      = 5'b0;
+assign      wb_addr_o      = wb_addr_r;
+
 word_t      wb_data_r      = 32'b0;
+assign      wb_data_o      = wb_data_r;
+
+logic       wb_ready_r     = 1'b0;
+assign      wb_ready_o     = wb_ready_r;
+
 logic       wb_valid_r     = NOP_WB_VALID;
+assign      wb_valid_o     = wb_valid_r;
 
 always_ff @(posedge clk_i) begin
     pc_r           <= pc_i;
@@ -118,18 +129,13 @@ always_ff @(posedge clk_i) begin
     load_r         <= dmem_read_enable_o;
     ma_size_r      <= (ma_mode_i == MA_X) ? MA_SIZE_W : ma_size_i;
     ma_alignment_r <= ma_addr_i[1:0];
+    wb_addr_r      <= ir_i[11:7];
     wb_data_r      <= wb_data_i;
+    wb_ready_r     <= (wb_src_i != WB_SRC_MEM);
     wb_valid_r     <= wb_valid_i;
 
+    `log_strobe(("{ \"stage\": \"MA\", \"pc\": \"%0d\", \"ma_wb_addr\": \"%0d\", \"ma_wb_data\": \"%0d\", \"ma_wb_valid\": \"%0d\" }", pc_i, wb_addr_o, wb_data_o, wb_valid_o));
     `log_strobe(("{ \"stage\": \"MA\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"load\": \"%0d\", \"ma_size\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\" }", pc_r, ir_r, load_r, ma_size_r, wb_data_r, wb_valid_r));
 end
-
-assign pc_o           = pc_r;
-assign ir_o           = ir_r;
-assign load_o         = load_r;
-assign ma_size_o      = ma_size_r;
-assign ma_alignment_o = ma_alignment_r;
-assign wb_data_o      = wb_data_r;
-assign wb_valid_o     = wb_valid_r;
 
 endmodule

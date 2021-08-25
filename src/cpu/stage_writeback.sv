@@ -26,15 +26,18 @@ module stage_writeback
         input  wire word_t      wb_data_i,        // write-back data
         input  wire logic       wb_valid_i,       // write-back valid
 
-        // async outputs
-        output      regaddr_t   wb_addr_async_o,  // write-back address
-        output      word_t      wb_data_async_o,  // write-back data
-        output      logic       wb_valid_async_o, // write-back valid
-        output      logic       empty_async_o     // stage empty
+        // status outputs
+        output      logic       empty_async_o,    // stage empty
+
+        // pipline outputs
+        output      regaddr_t   wb_addr_o,        // write-back address
+        output      word_t      wb_data_o,        // write-back data
+        output      logic       wb_valid_o        // write-back valid
     );
 
 initial start_logging();
 final stop_logging();
+
 
 //
 // Async Outputs
@@ -54,18 +57,6 @@ always_comb begin
     2'b11: aligned = { 24'b0, unaligned[31:24] };
     endcase
 
-    // should probably be a separate WB_SIZE value???
-    unique case (ma_size_i)
-    MA_SIZE_B:   wb_data_async_o = { {24{aligned[ 7]}},  aligned[ 7:0] };
-    MA_SIZE_H:   wb_data_async_o = { {16{aligned[15]}},  aligned[15:0] };
-    MA_SIZE_BU:  wb_data_async_o = { 24'b0,              aligned[ 7:0] };
-    MA_SIZE_HU:  wb_data_async_o = { 16'b0,              aligned[15:0] };
-    MA_SIZE_W:   wb_data_async_o = aligned;
-    endcase
-
-    wb_addr_async_o  = ir_i[11:7];
-    wb_valid_async_o = wb_valid_i;
-
     empty_async_o = (pc_i == NOP_PC);
 end
 
@@ -73,8 +64,30 @@ end
 //
 // Debug Logging
 //
+
+regaddr_t   wb_addr_r  = 5'b0;
+assign      wb_addr_o  = wb_addr_r;
+
+word_t      wb_data_r  = 32'b0;
+assign      wb_data_o  = wb_data_r;
+
+logic       wb_valid_r = 1'b0;
+assign      wb_valid_o = wb_valid_r;
+
 always_ff @(posedge clk_i) begin
-    `log_display(("{ \"stage\": \"WB\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"wb_addr\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\" }", pc_i, ir_i, wb_addr_async_o, wb_data_async_o, wb_valid_async_o));
+    // should probably be a separate WB_SIZE value???
+    unique case (ma_size_i)
+    MA_SIZE_B:   wb_data_r <= { {24{aligned[ 7]}},  aligned[ 7:0] };
+    MA_SIZE_H:   wb_data_r <= { {16{aligned[15]}},  aligned[15:0] };
+    MA_SIZE_BU:  wb_data_r <= { 24'b0,              aligned[ 7:0] };
+    MA_SIZE_HU:  wb_data_r <= { 16'b0,              aligned[15:0] };
+    MA_SIZE_W:   wb_data_r <= aligned;
+    endcase
+
+    wb_addr_r  <= ir_i[11:7];
+    wb_valid_r <= wb_valid_i;
+
+    `log_strobe(("{ \"stage\": \"WB\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"wb_addr\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\" }", pc_i, ir_i, wb_addr_o, wb_data_o, wb_valid_o));
 end
 
 endmodule
