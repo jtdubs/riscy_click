@@ -6,7 +6,7 @@ set_property CONFIG_VOLTAGE 3.3 [current_design]
 set_property -dict {PACKAGE_PIN E3 IOSTANDARD LVCMOS33} [get_ports sys_clk_i]
 create_clock -period 10.000 -name sys_clk_i -waveform {0.000 5.000} -add [get_ports sys_clk_i]
 
-set_clock_groups -asynchronous -group {pxl_clk_w}
+set_clock_groups -asynchronous -group {pxl_clk}
 
 ## CDC between Bus an VGA
 set_max_delay -datapath_only -from [get_pins {chipset/vga/bus_font_r_reg[1]/C}] -to [get_pins {chipset/vga/font_r_reg[1][1]/D}] 0.000

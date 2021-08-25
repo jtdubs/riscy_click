@@ -15,24 +15,24 @@ module stage_writeback
         input  wire logic       clk_i,            // clock
 
         // data memory
-        input  wire word_t      dmem_read_data_i, // memory data
+        (* MARK_DEBUG="true" *) input  wire word_t      dmem_read_data_i, // memory data
 
         // pipeline inputs
-        input  wire word_t      pc_i,             // program counter
-        input  wire word_t      ir_i,             // instruction register
-        input  wire logic       load_i,           // is this a load instruction?
-        input  wire ma_size_t   ma_size_i,        // memory access size
-        input  wire logic [1:0] ma_alignment_i,   // memory access alignment
-        input  wire word_t      wb_data_i,        // write-back data
-        input  wire logic       wb_valid_i,       // write-back valid
+        (* MARK_DEBUG="true" *) input  wire word_t      pc_i,             // program counter
+        (* MARK_DEBUG="true" *) input  wire word_t      ir_i,             // instruction register
+        (* MARK_DEBUG="true" *) input  wire logic       load_i,           // is this a load instruction?
+        (* MARK_DEBUG="true" *) input  wire ma_size_t   ma_size_i,        // memory access size
+        (* MARK_DEBUG="true" *) input  wire logic [1:0] ma_alignment_i,   // memory access alignment
+        (* MARK_DEBUG="true" *) input  wire word_t      wb_data_i,        // write-back data
+        (* MARK_DEBUG="true" *) input  wire logic       wb_valid_i,       // write-back valid
 
         // status outputs
         output      logic       empty_async_o,    // stage empty
 
         // pipline outputs
-        output      regaddr_t   wb_addr_o,        // write-back address
-        output      word_t      wb_data_o,        // write-back data
-        output      logic       wb_valid_o        // write-back valid
+        (* MARK_DEBUG="true" *) output      regaddr_t   wb_addr_o,        // write-back address
+        (* MARK_DEBUG="true" *) output      word_t      wb_data_o,        // write-back data
+        (* MARK_DEBUG="true" *) output      logic       wb_valid_o        // write-back valid
     );
 
 initial start_logging();
