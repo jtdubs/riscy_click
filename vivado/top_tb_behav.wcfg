@@ -17,15 +17,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="1,219.939 ns"></ZoomStartTime>
-      <ZoomEndTime time="1,400.013 ns"></ZoomEndTime>
-      <Cursor1Time time="1,270.000 ns"></Cursor1Time>
+      <ZoomStartTime time="118,612.916 ns"></ZoomStartTime>
+      <ZoomEndTime time="118,704.517 ns"></ZoomEndTime>
+      <Cursor1Time time="118,634.916 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="289"></NameColumnWidth>
-      <ValueColumnWidth column_width="253"></ValueColumnWidth>
+      <NameColumnWidth column_width="361"></NameColumnWidth>
+      <ValueColumnWidth column_width="175"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="9" />
+   <WVObjectSize size="5" />
    <wave_markers>
       <marker time="30790000" label="" />
       <marker time="973333" label="" />
@@ -45,7 +45,6 @@
       <wvobject fp_name="group424" type="group">
          <obj_property name="label">Pipeline</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/top_tb/top/chipset/cpu/fetch/first_cycle_r" type="array">
             <obj_property name="ElementShortName">first_cycle_r[1:0]</obj_property>
             <obj_property name="ObjectShortName">first_cycle_r[1:0]</obj_property>
@@ -211,15 +210,47 @@
          <obj_property name="label">MA</obj_property>
          <obj_property name="DisplayName">label</obj_property>
          <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/top_tb/top/chipset/cpu/memory_access/ma_addr_i" type="array">
+            <obj_property name="ElementShortName">ma_addr_i[31:0]</obj_property>
+            <obj_property name="ObjectShortName">ma_addr_i[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/top_tb/top/chipset/cpu/memory_access/ma_mode_i" type="array">
+            <obj_property name="ElementShortName">ma_mode_i[1:0]</obj_property>
+            <obj_property name="ObjectShortName">ma_mode_i[1:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/top_tb/top/chipset/cpu/memory_access/ma_size_i" type="array">
+            <obj_property name="ElementShortName">ma_size_i[2:0]</obj_property>
+            <obj_property name="ObjectShortName">ma_size_i[2:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/top_tb/top/chipset/cpu/memory_access/ma_data_i" type="array">
+            <obj_property name="ElementShortName">ma_data_i[31:0]</obj_property>
+            <obj_property name="ObjectShortName">ma_data_i[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/top_tb/top/chipset/cpu/memory_access/dmem_addr_o" type="array">
+            <obj_property name="ElementShortName">dmem_addr_o[31:0]</obj_property>
+            <obj_property name="ObjectShortName">dmem_addr_o[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/top_tb/top/chipset/cpu/memory_access/dmem_read_enable_o" type="logic">
+            <obj_property name="ElementShortName">dmem_read_enable_o</obj_property>
+            <obj_property name="ObjectShortName">dmem_read_enable_o</obj_property>
+         </wvobject>
+         <wvobject fp_name="/top_tb/top/chipset/cpu/memory_access/dmem_write_data_o" type="array">
+            <obj_property name="ElementShortName">dmem_write_data_o[31:0]</obj_property>
+            <obj_property name="ObjectShortName">dmem_write_data_o[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/top_tb/top/chipset/cpu/memory_access/dmem_write_mask_o" type="array">
+            <obj_property name="ElementShortName">dmem_write_mask_o[3:0]</obj_property>
+            <obj_property name="ObjectShortName">dmem_write_mask_o[3:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/top_tb/top/chipset/cpu/memory_access/load_o" type="logic">
+            <obj_property name="ElementShortName">load_o</obj_property>
+            <obj_property name="ObjectShortName">load_o</obj_property>
+         </wvobject>
       </wvobject>
       <wvobject fp_name="group445" type="group">
          <obj_property name="label">WB</obj_property>
          <obj_property name="DisplayName">label</obj_property>
          <obj_property name="isExpanded"></obj_property>
-         <wvobject fp_name="/top_tb/top/chipset/cpu/writeback/dmem_read_data_i" type="array">
-            <obj_property name="ElementShortName">dmem_read_data_i[31:0]</obj_property>
-            <obj_property name="ObjectShortName">dmem_read_data_i[31:0]</obj_property>
-         </wvobject>
          <wvobject fp_name="/top_tb/top/chipset/cpu/writeback/load_i" type="logic">
             <obj_property name="ElementShortName">load_i</obj_property>
             <obj_property name="ObjectShortName">load_i</obj_property>
@@ -228,67 +259,88 @@
             <obj_property name="ElementShortName">wb_data_i[31:0]</obj_property>
             <obj_property name="ObjectShortName">wb_data_i[31:0]</obj_property>
          </wvobject>
-         <wvobject fp_name="/top_tb/top/chipset/cpu/writeback/wb_valid_i" type="logic">
-            <obj_property name="ElementShortName">wb_valid_i</obj_property>
-            <obj_property name="ObjectShortName">wb_valid_i</obj_property>
+         <wvobject fp_name="/top_tb/top/chipset/cpu/writeback/dmem_read_data_i" type="array">
+            <obj_property name="ElementShortName">dmem_read_data_i[31:0]</obj_property>
+            <obj_property name="ObjectShortName">dmem_read_data_i[31:0]</obj_property>
          </wvobject>
-         <wvobject fp_name="/top_tb/top/chipset/cpu/writeback/empty_async_o" type="logic">
-            <obj_property name="ElementShortName">empty_async_o</obj_property>
-            <obj_property name="ObjectShortName">empty_async_o</obj_property>
+         <wvobject fp_name="/top_tb/top/chipset/cpu/writeback/load_i" type="logic">
+            <obj_property name="ElementShortName">load_i</obj_property>
+            <obj_property name="ObjectShortName">load_i</obj_property>
          </wvobject>
-      </wvobject>
-   </wvobject>
-   <wvobject fp_name="group132" type="group">
-      <obj_property name="label">Clocks</obj_property>
-      <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
-      <wvobject fp_name="group139" type="group">
-         <obj_property name="label">Pixel</obj_property>
-         <obj_property name="DisplayName">label</obj_property>
-      </wvobject>
-      <wvobject fp_name="group138" type="group">
-         <obj_property name="label">CPU</obj_property>
-         <obj_property name="DisplayName">label</obj_property>
-      </wvobject>
-   </wvobject>
-   <wvobject fp_name="group83" type="group">
-      <obj_property name="label">Reset</obj_property>
-      <obj_property name="DisplayName">label</obj_property>
-   </wvobject>
-   <wvobject fp_name="group82" type="group">
-      <obj_property name="label">VGA</obj_property>
-      <obj_property name="DisplayName">label</obj_property>
-      <wvobject fp_name="/top_tb/top/pxl_clk_i" type="logic">
-         <obj_property name="ElementShortName">pxl_clk_i</obj_property>
-         <obj_property name="ObjectShortName">pxl_clk_i</obj_property>
+         <wvobject fp_name="/top_tb/top/chipset/cpu/writeback/unaligned" type="array">
+            <obj_property name="ElementShortName">unaligned[31:0]</obj_property>
+            <obj_property name="ObjectShortName">unaligned[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/top_tb/top/chipset/cpu/writeback/aligned" type="array">
+            <obj_property name="ElementShortName">aligned[31:0]</obj_property>
+            <obj_property name="ObjectShortName">aligned[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/top_tb/top/chipset/cpu/writeback/ma_size_i" type="array">
+            <obj_property name="ElementShortName">ma_size_i[2:0]</obj_property>
+            <obj_property name="ObjectShortName">ma_size_i[2:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/top_tb/top/chipset/cpu/writeback/ma_alignment_i" type="array">
+            <obj_property name="ElementShortName">ma_alignment_i[1:0]</obj_property>
+            <obj_property name="ObjectShortName">ma_alignment_i[1:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/top_tb/top/chipset/cpu/writeback/wb_addr_o" type="array">
+            <obj_property name="ElementShortName">wb_addr_o[4:0]</obj_property>
+            <obj_property name="ObjectShortName">wb_addr_o[4:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/top_tb/top/chipset/cpu/writeback/wb_data_o" type="array">
+            <obj_property name="ElementShortName">wb_data_o[31:0]</obj_property>
+            <obj_property name="ObjectShortName">wb_data_o[31:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/top_tb/top/chipset/cpu/writeback/wb_valid_o" type="logic">
+            <obj_property name="ElementShortName">wb_valid_o</obj_property>
+            <obj_property name="ObjectShortName">wb_valid_o</obj_property>
+         </wvobject>
       </wvobject>
    </wvobject>
    <wvobject fp_name="group81" type="group">
       <obj_property name="label">Instruction Bus</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/top_tb/top/chipset/imem_addr_o" type="array">
+         <obj_property name="ElementShortName">imem_addr_o[31:0]</obj_property>
+         <obj_property name="ObjectShortName">imem_addr_o[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/top_tb/top/chipset/imem_data_i" type="array">
+         <obj_property name="ElementShortName">imem_data_i[31:0]</obj_property>
+         <obj_property name="ObjectShortName">imem_data_i[31:0]</obj_property>
+      </wvobject>
    </wvobject>
    <wvobject fp_name="group80" type="group">
       <obj_property name="label">Data Bus</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <wvobject fp_name="group84" type="group">
-         <obj_property name="label">Seg Display</obj_property>
-         <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/top_tb/top/chipset/bus_chip_select_o" type="array">
+         <obj_property name="ElementShortName">bus_chip_select_o</obj_property>
+         <obj_property name="ObjectShortName">bus_chip_select_o</obj_property>
       </wvobject>
-      <wvobject fp_name="group85" type="group">
-         <obj_property name="label">System RAM</obj_property>
-         <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/top_tb/top/chipset/bus_addr_o" type="array">
+         <obj_property name="ElementShortName">bus_addr_o[31:0]</obj_property>
+         <obj_property name="ObjectShortName">bus_addr_o[31:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="group86" type="group">
-         <obj_property name="label">Video RAM</obj_property>
-         <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/top_tb/top/chipset/bus_read_data_i" type="array">
+         <obj_property name="ElementShortName">bus_read_data_i[31:0]</obj_property>
+         <obj_property name="ObjectShortName">bus_read_data_i[31:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="group87" type="group">
-         <obj_property name="label">BIOS ROM</obj_property>
-         <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/top_tb/top/chipset/bus_read_enable_o" type="logic">
+         <obj_property name="ElementShortName">bus_read_enable_o</obj_property>
+         <obj_property name="ObjectShortName">bus_read_enable_o</obj_property>
       </wvobject>
-   </wvobject>
-   <wvobject fp_name="group422" type="group">
-      <obj_property name="label">Keytop</obj_property>
-      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/top_tb/top/chipset/bus_write_data_o" type="array">
+         <obj_property name="ElementShortName">bus_write_data_o[31:0]</obj_property>
+         <obj_property name="ObjectShortName">bus_write_data_o[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/top_tb/top/chipset/bus_write_mask_o" type="array">
+         <obj_property name="ElementShortName">bus_write_mask_o[3:0]</obj_property>
+         <obj_property name="ObjectShortName">bus_write_mask_o[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/top_tb/top/chipset/bus_addr" type="array">
+         <obj_property name="ElementShortName">bus_addr[31:0]</obj_property>
+         <obj_property name="ObjectShortName">bus_addr[31:0]</obj_property>
+      </wvobject>
    </wvobject>
 </wave_config>

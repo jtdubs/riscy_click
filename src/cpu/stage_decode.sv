@@ -414,13 +414,13 @@ always_ff @(posedge clk_i) begin
             begin
                 jmp_valid_o <= !data_hazard;
                 jmp_addr_o  <= ra_bypassed + imm_i;
-                squash_r    <= 1'b1;
+                squash_r    <= !data_hazard;
             end
         PC_BRANCH:
             begin
                 jmp_valid_o <= branch_condition && !data_hazard;
                 jmp_addr_o  <= pc + imm_b;
-                squash_r    <= 1'b1;
+                squash_r    <= branch_condition && !data_hazard;
             end
         endcase
     end
