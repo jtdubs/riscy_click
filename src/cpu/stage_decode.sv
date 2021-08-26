@@ -66,7 +66,9 @@ module stage_decode
         output wire ma_size_t  ma_size_o,           // memory access size
         output wire word_t     ma_data_o,           // memory access data (for store operations)
         output wire wb_src_t   wb_src_o,            // write-back source
+        output wire regaddr_t  wb_addr_o,
         output wire word_t     wb_data_o,           // write-back data
+        output wire logic      wb_ready_o,          // write-back destination
         output wire logic      wb_valid_o           // write-back destination
     );
 
@@ -184,8 +186,8 @@ end
 logic data_hazard, ra_collision, rb_collision;
 
 always_comb begin
-    ra_collision = cw.ra_used && ((ex_wb_valid_i && ex_wb_addr_i == rs1 && !ex_wb_ready_i) || (ma_wb_valid_i && ma_wb_addr_i == rs1 && !ma_wb_ready_i));
-    rb_collision = cw.rb_used && ((ex_wb_valid_i && ex_wb_addr_i == rs2 && !ex_wb_ready_i) || (ma_wb_valid_i && ma_wb_addr_i == rs2 && !ma_wb_ready_i));
+    ra_collision = cw.ra_used && ((wb_valid_r && wb_addr_r == rs1 && !wb_ready_r) || (ex_wb_valid_i && ex_wb_addr_i == rs1 && !ex_wb_ready_i) || (ma_wb_valid_i && ma_wb_addr_i == rs1 && !ma_wb_ready_i));
+    rb_collision = cw.rb_used && ((wb_valid_r && wb_addr_r == rs2 && !wb_ready_r) || (ex_wb_valid_i && ex_wb_addr_i == rs2 && !ex_wb_ready_i) || (ma_wb_valid_i && ma_wb_addr_i == rs2 && !ma_wb_ready_i));
     data_hazard  = ra_collision || rb_collision;
 end
 
@@ -223,7 +225,9 @@ word_t rb_bypassed;
 
 // determine bypassed value for first register access
 always_comb begin
-    priority if (ex_wb_valid_i && rs1 == ex_wb_addr_i)
+    priority if (wb_valid_r && rs1 == wb_addr_r)
+        ra_bypassed = wb_data_r;
+    else if (ex_wb_valid_i && rs1 == ex_wb_addr_i)
         ra_bypassed = ex_wb_data_i;
     else if (ma_wb_valid_i && rs1 == ma_wb_addr_i)
         ra_bypassed = ma_wb_data_i;
@@ -235,7 +239,9 @@ end
 
 // Determine bypassed value for second register access
 always_comb begin
-    priority if (ex_wb_valid_i && rs2 == ex_wb_addr_i)
+    priority if (wb_valid_r && rs2 == wb_addr_r)
+        rb_bypassed = wb_data_r;
+    else if (ex_wb_valid_i && rs2 == ex_wb_addr_i)
         rb_bypassed = ex_wb_data_i;
     else if (ma_wb_valid_i && rs2 == ma_wb_addr_i)
         rb_bypassed = ma_wb_data_i;
@@ -459,8 +465,14 @@ assign     ma_data_o  = ma_data_r;
 wb_src_t   wb_src_r   = NOP_WB_SRC;
 assign     wb_src_o   = wb_src_r;
 
+regaddr_t  wb_addr_r  = NOP_WB_ADDR;
+assign     wb_addr_o  = wb_addr_r;
+
 word_t     wb_data_r  = 32'b0;
 assign     wb_data_o  = wb_data_r;
+
+logic      wb_ready_r = 1'b0;
+assign     wb_ready_o = wb_ready_r;
 
 logic      wb_valid_r = NOP_WB_VALID;
 assign     wb_valid_o = wb_valid_r;
@@ -481,7 +493,9 @@ always_ff @(posedge clk_i) begin
         ma_size_r  <= NOP_MA_SIZE;
         ma_data_r  <= 32'b0;
         wb_src_r   <= NOP_WB_SRC;
+        wb_addr_r  <= NOP_WB_ADDR;
         wb_data_r  <= 32'b0;
+        wb_ready_r <= 1'b0;
         wb_valid_r <= NOP_WB_VALID;
         halt_r     <= 1'b0;
     end else begin
@@ -495,7 +509,9 @@ always_ff @(posedge clk_i) begin
         ma_size_r  <= cw.ma_size;
         ma_data_r  <= rb_bypassed;
         wb_src_r   <= cw.wb_src;
+        wb_addr_r  <= rd;
         wb_data_r  <= pc_next_i;
+        wb_ready_r <= (cw.wb_src == WB_SRC_PC4);
         wb_valid_r <= cw.wb_valid;
         halt_r     <= cw.halt;
     end

@@ -47,7 +47,9 @@ wire ma_mode_t   id_ma_mode;
 wire ma_size_t   id_ma_size;
 wire word_t      id_ma_data;
 wire wb_src_t    id_wb_src;
+wire regaddr_t   id_wb_addr;
 wire word_t      id_wb_data;
+wire logic       id_wb_ready;
 wire logic       id_wb_valid;
 wire word_t      ex_pc;
 wire word_t      ex_ir;
@@ -156,7 +158,9 @@ stage_decode decode (
     .ma_size_o           (id_ma_size),
     .ma_data_o           (id_ma_data),
     .wb_src_o            (id_wb_src),
+    .wb_addr_o           (id_wb_addr),
     .wb_data_o           (id_wb_data),
+    .wb_ready_o          (id_wb_ready),
     .wb_valid_o          (id_wb_valid)
 );
 
@@ -172,7 +176,9 @@ stage_execute execute (
     .ma_size_i           (id_ma_size),
     .ma_data_i           (id_ma_data),
     .wb_src_i            (id_wb_src),
+    .wb_addr_i           (id_wb_addr),
     .wb_data_i           (id_wb_data),
+    .wb_ready_i          (id_wb_ready),
     .wb_valid_i          (id_wb_valid),
     .empty_async_o       (ex_empty),
     .pc_o                (ex_pc),
@@ -202,7 +208,9 @@ stage_memory memory_access (
     .ma_size_i           (ex_ma_size),
     .ma_data_i           (ex_ma_data),
     .wb_src_i            (ex_wb_src),
+    .wb_addr_i           (ex_wb_addr),
     .wb_data_i           (ex_wb_data),
+    .wb_ready_i          (ex_wb_ready),
     .wb_valid_i          (ex_wb_valid),
     .empty_async_o       (ma_empty),
     .pc_o                (ma_pc),
@@ -225,7 +233,9 @@ stage_writeback writeback (
     .load_i              (ma_load),
     .ma_size_i           (ma_size),
     .ma_alignment_i      (ma_alignment),
+    .wb_addr_i           (ma_wb_addr),
     .wb_data_i           (ma_wb_data),
+    .wb_ready_i          (ma_wb_ready),
     .wb_valid_i          (ma_wb_valid),
     .wb_addr_o           (wb_addr),
     .wb_data_o           (wb_data),

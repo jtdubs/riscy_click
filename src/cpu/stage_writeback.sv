@@ -23,7 +23,9 @@ module stage_writeback
         input  wire logic       load_i,           // is this a load instruction?
         input  wire ma_size_t   ma_size_i,        // memory access size
         input  wire logic [1:0] ma_alignment_i,   // memory access alignment
+        input  wire regaddr_t   wb_addr_i,        // write-back address
         input  wire word_t      wb_data_i,        // write-back data
+        input  wire logic       wb_ready_i,       // write-back valid
         input  wire logic       wb_valid_i,       // write-back valid
 
         // status outputs
@@ -84,7 +86,7 @@ always_ff @(posedge clk_i) begin
     MA_SIZE_W:   wb_data_r <= aligned;
     endcase
 
-    wb_addr_r  <= ir_i[11:7];
+    wb_addr_r  <= wb_addr_i;
     wb_valid_r <= wb_valid_i;
 
     `log_strobe(("{ \"stage\": \"WB\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"wb_addr\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\" }", pc_i, ir_i, wb_addr_o, wb_data_o, wb_valid_o));

@@ -28,7 +28,9 @@ module stage_memory
         input  wire ma_size_t   ma_size_i,          // memory access size
         input  wire word_t      ma_data_i,          // memory access data
         input  wire wb_src_t    wb_src_i,           // write-back source
+        input  wire regaddr_t   wb_addr_i,          // write-back address
         input  wire word_t      wb_data_i,          // write-back data
+        input  wire logic       wb_ready_i,         // write-back ready
         input  wire logic       wb_valid_i,         // write-back valid
 
         // status output
@@ -129,9 +131,9 @@ always_ff @(posedge clk_i) begin
     load_r         <= dmem_read_enable_o;
     ma_size_r      <= (ma_mode_i == MA_X) ? MA_SIZE_W : ma_size_i;
     ma_alignment_r <= ma_addr_i[1:0];
-    wb_addr_r      <= ir_i[11:7];
+    wb_addr_r      <= wb_addr_i;
     wb_data_r      <= wb_data_i;
-    wb_ready_r     <= (wb_src_i != WB_SRC_MEM);
+    wb_ready_r     <= wb_ready_i;
     wb_valid_r     <= wb_valid_i;
 
     `log_strobe(("{ \"stage\": \"MA\", \"pc\": \"%0d\", \"ma_wb_addr\": \"%0d\", \"ma_wb_data\": \"%0d\", \"ma_wb_valid\": \"%0d\" }", pc_i, wb_addr_o, wb_data_o, wb_valid_o));
