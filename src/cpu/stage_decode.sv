@@ -35,10 +35,10 @@ module stage_decode
         (* MARK_DEBUG="true" *) input  wire logic      wb_valid_i,          // write-back valid
         (* MARK_DEBUG="true" *) input  wire logic      wb_empty_i,          // wb stage empty
 
-        // async output
+        // jump output
         (* MARK_DEBUG="true" *) output      logic      ready_async_o,       // stage ready for new inputs
-        (* MARK_DEBUG="true" *) output      word_t     jmp_addr_async_o,    // jump address
-        (* MARK_DEBUG="true" *) output      logic      jmp_valid_async_o,   // jump address valid
+        (* MARK_DEBUG="true" *) output      word_t     jmp_addr_o,    // jump address
+        (* MARK_DEBUG="true" *) output      logic      jmp_valid_o,   // jump address valid
 
         // csr interface
         output      logic      csr_retired_o,       // instruction retirement indicator
@@ -75,6 +75,19 @@ final stop_logging();
 
 
 //
+// Squash
+//
+
+logic squash_r = 1'b0;
+
+word_t pc;
+always_comb pc = squash_r ? NOP_PC : pc_i;
+
+word_t ir;
+always_comb ir = squash_r ? NOP_IR : ir_i;
+
+
+//
 // Instruction Unpacking
 //
 
@@ -93,17 +106,17 @@ word_t       uimm;
 logic [11:0] f12_bits;
 
 always_comb begin
-    { f12_bits, rs1, f3, rd } = ir_i[31:7];
+    { f12_bits, rs1, f3, rd } = ir[31:7];
     rs2 = f12_bits[4:0];
     csr = f12_bits;
     f12 = f12_bits;
 
-    imm_i = { {21{ir_i[31]}}, ir_i[30:25], ir_i[24:21], ir_i[20] };
-    imm_s = { {21{ir_i[31]}}, ir_i[30:25], ir_i[11:8], ir_i[7] };
-    imm_b = { {20{ir_i[31]}}, ir_i[7], ir_i[30:25], ir_i[11:8], 1'b0 };
-    imm_u = { ir_i[31], ir_i[30:20], ir_i[19:12], 12'b0 };
-    imm_j = { {12{ir_i[31]}}, ir_i[19:12], ir_i[20], ir_i[30:25], ir_i[24:21], 1'b0 };
-    uimm  = { 27'b0, ir_i[19:15] };
+    imm_i = { {21{ir[31]}}, ir[30:25], ir[24:21], ir[20] };
+    imm_s = { {21{ir[31]}}, ir[30:25], ir[11:8], ir[7] };
+    imm_b = { {20{ir[31]}}, ir[7], ir[30:25], ir[11:8], 1'b0 };
+    imm_u = { ir[31], ir[30:20], ir[19:12], 12'b0 };
+    imm_j = { {12{ir[31]}}, ir[19:12], ir[20], ir[30:25], ir[24:21], 1'b0 };
+    uimm  = { 27'b0, ir[19:15] };
 end
 
 
@@ -114,7 +127,7 @@ end
 wire control_word_t cw;
 
 decoder decoder (
-    .ir_i       (ir_i),
+    .ir_i       (ir),
     .cw_async_o (cw)
 );
 
@@ -125,13 +138,13 @@ decoder decoder (
 
 // gating jump requests
 always_comb begin
-    csr_jmp_accept_o = csr_jmp_request_i && (pc_i != NOP_PC) && ready_async_o;
+    csr_jmp_accept_o = csr_jmp_request_i && (pc != NOP_PC) && ready_async_o;
 end
 
 // traps and returns
 logic wfi;
 always_comb begin
-    csr_trap_pc_o = pc_i;
+    csr_trap_pc_o = pc;
     csr_mtrap_o   = 1'b0;
     csr_mret_o    = 1'b0;
     csr_mcause_o  = '{ 1'b0, 31'b0 };
@@ -254,7 +267,7 @@ always_comb begin
     ALU_OP2_RS2:  alu_op2_next = rb_bypassed;
     ALU_OP2_IMMI: alu_op2_next = imm_i;
     ALU_OP2_IMMS: alu_op2_next = imm_s;
-    ALU_OP2_PC:   alu_op2_next = pc_i;
+    ALU_OP2_PC:   alu_op2_next = pc;
     endcase
 end
 
@@ -350,7 +363,7 @@ end
 
 // advance to next state
 always_ff @(posedge clk_i) begin
-    `log_strobe(("{ \"stage\": \"ID\", \"pc\": \"%0d\", \"csr_addr\": \"%0d\", \"csr_state\": \"%0d\", \"csr_read_data\": \"%0d\", \"csr_write_data\": \"%0d\", \"csr_wb_addr\": \"%0d\", \"csr_wb_enable\": \"%0d\", \"csr_write_enable\": \"%0d\" }", pc_i, csr, csr_state_r, csr_read_data_i, csr_write_data_o, wb_addr, wb_enable, csr_write_enable_o));
+    `log_strobe(("{ \"stage\": \"ID\", \"pc\": \"%0d\", \"csr_addr\": \"%0d\", \"csr_state\": \"%0d\", \"csr_read_data\": \"%0d\", \"csr_write_data\": \"%0d\", \"csr_wb_addr\": \"%0d\", \"csr_wb_enable\": \"%0d\", \"csr_write_enable\": \"%0d\" }", pc, csr, csr_state_r, csr_read_data_i, csr_write_data_o, wb_addr, wb_enable, csr_write_enable_o));
 
     csr_state_r <= csr_state_next;
 end
@@ -371,32 +384,37 @@ always_comb begin
     branch_condition = f3[0] ? !branch_condition : branch_condition;
 end
 
-always_comb begin
+always_ff @(posedge clk_i) begin
     // jump signals
     unique if (csr_jmp_request_i && csr_jmp_accept_o) begin
-        jmp_valid_async_o = 1'b1;
-        jmp_addr_async_o  = csr_jmp_addr_i;
+        jmp_valid_o <= 1'b1;
+        jmp_addr_o  <= csr_jmp_addr_i;
+        squash_r    <= 1'b1;
     end else begin
         unique case (cw.pc_mode)
         PC_NEXT:
             begin
-                jmp_valid_async_o = 1'b0;
-                jmp_addr_async_o  = 32'h00000000;
+                jmp_valid_o <= 1'b0;
+                jmp_addr_o  <= 32'h00000000;
+                squash_r    <= 1'b0;
             end
         PC_JUMP_REL:
             begin
-                jmp_valid_async_o = 1'b1;
-                jmp_addr_async_o  = pc_i + imm_j;
+                jmp_valid_o <= 1'b1;
+                jmp_addr_o  <= pc + imm_j;
+                squash_r    <= 1'b1;
             end
         PC_JUMP_ABS:
             begin
-                jmp_valid_async_o = !data_hazard;
-                jmp_addr_async_o  = ra_bypassed + imm_i;
+                jmp_valid_o <= !data_hazard;
+                jmp_addr_o  <= ra_bypassed + imm_i;
+                squash_r    <= 1'b1;
             end
         PC_BRANCH:
             begin
-                jmp_valid_async_o = branch_condition && !data_hazard;
-                jmp_addr_async_o  = pc_i + imm_b;
+                jmp_valid_o <= branch_condition && !data_hazard;
+                jmp_addr_o  <= pc + imm_b;
+                squash_r    <= 1'b1;
             end
         endcase
     end
@@ -406,7 +424,7 @@ always_comb begin
     // we only want a new instruction if we aren't dealing with a data hazard, and we aren't going to be dealing with a CSR instruction
     ready_async_o = !data_hazard && (csr_state_next == CSR_STATE_IDLE) && !wfi;
 
-    `log_display(("{ \"stage\": \"ID\", \"pc\": \"%0d\", \"jmp_valid\": \"%0d\", \"jmp_addr\": \"%0d\", \"ready\": \"%0d\" }", pc_i, jmp_valid_async_o, jmp_addr_async_o, ready_async_o));
+    `log_display(("{ \"stage\": \"ID\", \"pc\": \"%0d\", \"jmp_valid\": \"%0d\", \"jmp_addr\": \"%0d\", \"ready\": \"%0d\" }", pc, jmp_valid_o, jmp_addr_o, ready_async_o));
 end
 
 
@@ -468,8 +486,8 @@ always_ff @(posedge clk_i) begin
         halt_r     <= 1'b0;
     end else begin
         // otherwise, output decoded control signals
-        pc_r       <= pc_i;
-        ir_r       <= ir_i;
+        pc_r       <= pc;
+        ir_r       <= ir;
         alu_op1_r  <= alu_op1_next;
         alu_op2_r  <= alu_op2_next;
         alu_mode_r <= cw.alu_mode;
@@ -482,7 +500,7 @@ always_ff @(posedge clk_i) begin
         halt_r     <= cw.halt;
     end
 
-    // $display("[ID (%x)] PC=%x, IR=%x | JMP=%x, %x | CSR JMP=%x, %x, %x | PC=%x, IR=%x", ready_async_o, pc_i, ir_i, jmp_addr_async_o, jmp_valid_async_o, csr_jmp_request_i, csr_jmp_addr_i, csr_jmp_accept_o, pc_o, ir_o);
+    // $display("[ID (%x)] PC=%x, IR=%x | JMP=%x, %x | CSR JMP=%x, %x, %x | PC=%x, IR=%x", ready_async_o, pc, ir, jmp_addr_o, jmp_valid_o, csr_jmp_request_i, csr_jmp_addr_i, csr_jmp_accept_o, pc_o, ir_o);
     `log_strobe(("{ \"stage\": \"ID\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"alu_op1\": \"%0d\", \"alu_op2\": \"%0d\", \"alu_mode\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_dst\": \"%0d\", \"halt\": \"%0d\" }", pc_r, ir_r, alu_op1_r, alu_op2_r, alu_mode_r, ma_mode_r, ma_size_r, ma_data_r, wb_src_r, wb_data_r, wb_valid_r, halt_r));
 end
 
