@@ -1,8 +1,9 @@
 TODO:
 - Performance
-    - Builds @ 100MHz now, but doesn't run.  Need to debug.
-    - Next botttleneck is the ready_async_o signal from ID back to IF.
+    - Botttleneck: ready_async_o signal from ID back to IF.
     - Introduce a skid between stages to fix this
+    - Bottleneck: bypassing -> branch calculations -> jmps
+    - Split Decode stage and handle branches/jumps in the second one
 - PS2
     - Get working with real PS2 keyboard.
     - Apparently need to ACK the AA, therefore need PS2 Tx module and tri-state buffers
