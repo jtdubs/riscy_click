@@ -1,4 +1,8 @@
 TODO:
+- Performance
+    - Builds @ 100MHz now, but doesn't run.  Need to debug.
+    - Next botttleneck is the ready_async_o signal from ID back to IF.
+    - Introduce a skid between stages to fix this
 - PS2
     - Get working with real PS2 keyboard.
     - Apparently need to ACK the AA, therefore need PS2 Tx module and tri-state buffers
@@ -24,8 +28,6 @@ TODO:
         - Implement timers
 - PS/2
     - PS/2 Mouse
-- CPU
-    - Change stage breakdown or increase stages to up clock speed
 
 Reference:
 http://fpgacpu.ca/fpga/index.html

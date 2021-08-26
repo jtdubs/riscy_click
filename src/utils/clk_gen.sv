@@ -21,45 +21,56 @@ module clk_gen
 
 // internal signals
 wire logic clk_feedback;
+wire logic clk_feedback_b;
 wire logic cpu_clk;
 wire logic pxl_clk;
 
-// PLL Module
-PLLE2_BASE #(
+// mixed mode clock module
+MMCME2_BASE #(
   .BANDWIDTH("OPTIMIZED"),
-  .CLKFBOUT_MULT(8.5),
+  .CLKFBOUT_MULT_F(8.5),
   .CLKFBOUT_PHASE(0.0),
   .CLKIN1_PERIOD(10.0),
-  .CLKOUT0_DIVIDE(9),
+  .CLKOUT0_DIVIDE_F(8.5),
   .CLKOUT1_DIVIDE(30),
   .CLKOUT2_DIVIDE(1),
   .CLKOUT3_DIVIDE(1),
   .CLKOUT4_DIVIDE(1),
   .CLKOUT5_DIVIDE(1),
+  .CLKOUT6_DIVIDE(1),
   .CLKOUT0_DUTY_CYCLE(0.5),
   .CLKOUT1_DUTY_CYCLE(0.5),
   .CLKOUT2_DUTY_CYCLE(0.5),
   .CLKOUT3_DUTY_CYCLE(0.5),
   .CLKOUT4_DUTY_CYCLE(0.5),
   .CLKOUT5_DUTY_CYCLE(0.5),
+  .CLKOUT6_DUTY_CYCLE(0.5),
   .CLKOUT0_PHASE(0.0),
   .CLKOUT1_PHASE(0.0),
   .CLKOUT2_PHASE(0.0),
   .CLKOUT3_PHASE(0.0),
   .CLKOUT4_PHASE(0.0),
   .CLKOUT5_PHASE(0.0),
+  .CLKOUT6_PHASE(0.0),
+  .CLKOUT4_CASCADE("FALSE"),
   .DIVCLK_DIVIDE(1),
   .REF_JITTER1(0.0),
   .STARTUP_WAIT("TRUE")
 )
-clk_pll (
+clk_mmcm (
   .CLKOUT0(cpu_clk),
+  .CLKOUT0B(),
   .CLKOUT1(pxl_clk),
+  .CLKOUT1B(),
   .CLKOUT2(),
+  .CLKOUT2B(),
   .CLKOUT3(),
+  .CLKOUT3B(),
   .CLKOUT4(),
   .CLKOUT5(),
+  .CLKOUT6(),
   .CLKFBOUT(clk_feedback),
+  .CLKFBOUTB(),
   .LOCKED(ready_async_o),
   .CLKIN1(sys_clk_i),
   .PWRDWN(1'b0),
