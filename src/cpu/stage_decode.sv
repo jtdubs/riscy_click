@@ -17,28 +17,28 @@ module stage_decode
         output      logic      halt_o,              // halt
 
         // pipeline input
-        (* MARK_DEBUG="true" *) input  wire word_t     pc_i,                // program counter
-        (* MARK_DEBUG="true" *) input  wire word_t     ir_i,                // instruction register
-        (* MARK_DEBUG="true" *) input  wire word_t     pc_next_i,           // next program counter
-        (* MARK_DEBUG="true" *) input  wire regaddr_t  ex_wb_addr_i,        // ex stage write-back address
-        (* MARK_DEBUG="true" *) input  wire word_t     ex_wb_data_i,        // ex stage write-back data
-        (* MARK_DEBUG="true" *) input  wire logic      ex_wb_ready_i,       // ex stage write-back data ready
-        (* MARK_DEBUG="true" *) input  wire logic      ex_wb_valid_i,       // ex stage write-back valid
-        (* MARK_DEBUG="true" *) input  wire logic      ex_empty_i,          // ex stage empty
-        (* MARK_DEBUG="true" *) input  wire regaddr_t  ma_wb_addr_i,        // ma stage write-back address
-        (* MARK_DEBUG="true" *) input  wire word_t     ma_wb_data_i,        // ma stage write-back data
-        (* MARK_DEBUG="true" *) input  wire logic      ma_wb_ready_i,       // ma stage write-back data ready
-        (* MARK_DEBUG="true" *) input  wire logic      ma_wb_valid_i,       // ma stage write-back valid
-        (* MARK_DEBUG="true" *) input  wire logic      ma_empty_i,          // ma stage empty
-        (* MARK_DEBUG="true" *) input  wire regaddr_t  wb_addr_i,           // write-back address
-        (* MARK_DEBUG="true" *) input  wire word_t     wb_data_i,           // write-back data
-        (* MARK_DEBUG="true" *) input  wire logic      wb_valid_i,          // write-back valid
-        (* MARK_DEBUG="true" *) input  wire logic      wb_empty_i,          // wb stage empty
+        input  wire word_t     pc_i,                // program counter
+        input  wire word_t     ir_i,                // instruction register
+        input  wire word_t     pc_next_i,           // next program counter
+        input  wire regaddr_t  ex_wb_addr_i,        // ex stage write-back address
+        input  wire word_t     ex_wb_data_i,        // ex stage write-back data
+        input  wire logic      ex_wb_ready_i,       // ex stage write-back data ready
+        input  wire logic      ex_wb_valid_i,       // ex stage write-back valid
+        input  wire logic      ex_empty_i,          // ex stage empty
+        input  wire regaddr_t  ma_wb_addr_i,        // ma stage write-back address
+        input  wire word_t     ma_wb_data_i,        // ma stage write-back data
+        input  wire logic      ma_wb_ready_i,       // ma stage write-back data ready
+        input  wire logic      ma_wb_valid_i,       // ma stage write-back valid
+        input  wire logic      ma_empty_i,          // ma stage empty
+        input  wire regaddr_t  wb_addr_i,           // write-back address
+        input  wire word_t     wb_data_i,           // write-back data
+        input  wire logic      wb_valid_i,          // write-back valid
+        input  wire logic      wb_empty_i,          // wb stage empty
 
         // jump output
-        (* MARK_DEBUG="true" *) output      logic      ready_async_o,       // stage ready for new inputs
-        (* MARK_DEBUG="true" *) output      word_t     jmp_addr_o,    // jump address
-        (* MARK_DEBUG="true" *) output      logic      jmp_valid_o,   // jump address valid
+        output      logic      ready_async_o,       // stage ready for new inputs
+        output      word_t     jmp_addr_o,    // jump address
+        output      logic      jmp_valid_o,   // jump address valid
 
         // csr interface
         output      logic      csr_retired_o,       // instruction retirement indicator
@@ -57,17 +57,17 @@ module stage_decode
         output      logic      csr_write_enable_o,  // csr write enable
 
         // pipeline output
-        (* MARK_DEBUG="true" *) output wire word_t     pc_o,                // program counter
-        (* MARK_DEBUG="true" *) output wire word_t     ir_o,                // instruction register
-        (* MARK_DEBUG="true" *) output wire word_t     alu_op1_o,           // ALU operand 1
-        (* MARK_DEBUG="true" *) output wire word_t     alu_op2_o,           // ALU operand 2
-        (* MARK_DEBUG="true" *) output wire alu_mode_t alu_mode_o,          // ALU mode
-        (* MARK_DEBUG="true" *) output wire ma_mode_t  ma_mode_o,           // memory access mode
-        (* MARK_DEBUG="true" *) output wire ma_size_t  ma_size_o,           // memory access size
-        (* MARK_DEBUG="true" *) output wire word_t     ma_data_o,           // memory access data (for store operations)
-        (* MARK_DEBUG="true" *) output wire wb_src_t   wb_src_o,            // write-back source
-        (* MARK_DEBUG="true" *) output wire word_t     wb_data_o,           // write-back data
-        (* MARK_DEBUG="true" *) output wire logic      wb_valid_o           // write-back destination
+        output wire word_t     pc_o,                // program counter
+        output wire word_t     ir_o,                // instruction register
+        output wire word_t     alu_op1_o,           // ALU operand 1
+        output wire word_t     alu_op2_o,           // ALU operand 2
+        output wire alu_mode_t alu_mode_o,          // ALU mode
+        output wire ma_mode_t  ma_mode_o,           // memory access mode
+        output wire ma_size_t  ma_size_o,           // memory access size
+        output wire word_t     ma_data_o,           // memory access data (for store operations)
+        output wire wb_src_t   wb_src_o,            // write-back source
+        output wire word_t     wb_data_o,           // write-back data
+        output wire logic      wb_valid_o           // write-back destination
     );
 
 initial start_logging();

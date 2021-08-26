@@ -16,18 +16,18 @@ module stage_fetch
         input  wire logic  halt_i,      // halt
 
         // instruction memory
-        (* MARK_DEBUG="true" *) output wire word_t imem_addr_o, // memory address
-        (* MARK_DEBUG="true" *) input  wire word_t imem_data_i, // data
+        output wire word_t imem_addr_o, // memory address
+        input  wire word_t imem_data_i, // data
 
         // async input
-        (* MARK_DEBUG="true" *) input  wire word_t jmp_addr_i,  // jump address
-        (* MARK_DEBUG="true" *) input  wire logic  jmp_valid_i, // whether or not jump address is valid
-        (* MARK_DEBUG="true" *) input  wire logic  ready_i,     // is the ID stage ready to accept input
+        input  wire word_t jmp_addr_i,  // jump address
+        input  wire logic  jmp_valid_i, // whether or not jump address is valid
+        input  wire logic  ready_i,     // is the ID stage ready to accept input
 
         // pipeline output
-        (* MARK_DEBUG="true" *) output wire word_t pc_o,        // program counter
-        (* MARK_DEBUG="true" *) output wire word_t ir_o,        // instruction register
-        (* MARK_DEBUG="true" *) output wire word_t pc_next_o    // next program counter
+        output wire word_t pc_o,        // program counter
+        output wire word_t ir_o,        // instruction register
+        output wire word_t pc_next_o    // next program counter
     );
 
 initial start_logging();
