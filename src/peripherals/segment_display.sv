@@ -9,7 +9,10 @@ module segment_display
     // Import Constants
     import common::*;
     #(
-        parameter shortint unsigned CLK_DIVISOR = 32768 // Clock ratio
+        parameter shortint unsigned CLK_DIVISOR = 32768, // Clock ratio
+        parameter bit      INIT_ENABLED = 0,
+        parameter shortint INIT_VALUE = 0
+        
     )
     (
         // Clock
@@ -32,8 +35,8 @@ module segment_display
 // Bus Interface
 //
 
-logic  enabled_r = '0;
-word_t value_r   = '0;
+logic  enabled_r = INIT_ENABLED;
+word_t value_r   = INIT_VALUE;
 
 typedef enum logic [3:0] {
     PORT_CONTROL = 4'b0000,

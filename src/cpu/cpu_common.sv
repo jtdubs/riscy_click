@@ -9,6 +9,9 @@ import common::*;
 // CPU Architecture
 //
 
+// Memory Address
+typedef logic [29:0] memaddr_t;
+
 // Register Address
 typedef logic [4:0]  regaddr_t;
 

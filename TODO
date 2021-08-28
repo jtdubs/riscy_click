@@ -15,6 +15,7 @@ TODO:
     - Allow for memory stalls
     - Add instruction & data cache
     - Add memory controller and DDR
+- AXI
 - BIOS
     - Provide UART interface for loading an ELF and jumping to it
 - ISA Extensions

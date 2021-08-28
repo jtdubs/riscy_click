@@ -7,93 +7,118 @@ module stage_fetch_tb
     import cpu_common::*;
     ();
 
-// cpu signals
-logic       clk_i;            // clock
-logic       reset_i;          // reset_i
-logic       halt;           // halt
+typedef struct packed {
+    logic [1:0] display_selector;
+    logic       reserved_1;
+    logic       jmp_valid;
+    logic [7:0] jmp_addr;
+    logic       reserved_2;
+    logic       halt;
+    logic       imem_valid;
+    logic       ready;
+} switch_input_t;
 
-// IF memory access
-word_t      imem_addr;      // address
-word_t      imem_data;      // data
+logic          sys_clk_i  = '1;
+logic          halt_o     = '0;
+logic          ps2_clk_i;
+logic          ps2_data_i;
+logic          uart_rxd_i;
+logic          uart_txd_o;
+logic [4:0]    buttons_i  = '0;
+switch_input_t switch_i   = '{ default: '0 };
+logic [ 7:0]   dsp_anode_o;
+logic [ 7:0]   dsp_cathode_o;
+logic [ 3:0]   vga_red_o;
+logic [ 3:0]   vga_green_o;
+logic [ 3:0]   vga_blue_o;
+logic          vga_hsync_o;
+logic          vga_vsync_o;
 
-
-// ID stage inputs
-word_t      if_pc;          // program counter
-word_t      if_ir;          // instruction register
-logic       if_valid;       // fetch stage data is valid
-
-// ID stage outputs (to IF)
-logic       id_ready;       // stage ready for new inputs
-word_t      id_jmp_addr;    // jump address
-logic       id_jmp_valid;   // jump address valid
-
-// Instruction Memory
-block_rom #(.CONTENTS("d:/dev/riscy_click/bios/tb_bios.coe")) rom (
-    .clk_i(clk_i),
-    .reset_i(reset_i),
-    .addr_a(imem_addr),
-    .data_a(imem_data),
-    .addr_b(32'h00000000),
-    .data_b()
-);
-
-// Fetch Stage
-stage_fetch stage_fetch (.*);
-
+fetch_top fetch_top (.*);
 
 // clock generator
 initial begin
-    clk_i = 1;
+    sys_clk_i <= 1;
     forever begin
-        #50 clk_i <= ~clk_i;
+        #5 sys_clk_i <= ~sys_clk_i;
     end
 end
 
-// reset_i pulse
+// ps2
+assign ps2_clk_i  = 1'b1;
+assign ps2_data_i = 1'b1;
+
+// uart
+assign uart_rxd_i = 1'b1;
+
+// step button
 initial begin
-    reset_i = 1;
-    #250 reset_i = 0;
+    buttons_i <= 5'b0;
+    forever begin
+        #1000 buttons_i[0] <= 1'b1;
+        #1000 buttons_i[0] <= 1'b0;
+    end
 end
 
 // halt eventually
 initial begin
-    halt = 0;
-    #3050 halt = 1;
+    switch_i.halt <= 0;
+    #10000
+    @(posedge sys_clk_i) switch_i.halt <= 1;
 end
 
 // test backpressure
 initial begin
-    id_ready = 1'b1;
+    switch_i.ready <= 1'b1;
 
-    #2400
-    @(posedge clk_i) id_ready = 1'b0;
-    @(posedge clk_i);
-    @(posedge clk_i) id_ready = 1'b1;
+    forever begin
+        #1000
+        @(posedge sys_clk_i) switch_i.ready <= 1'b0;
+        @(posedge sys_clk_i) switch_i.ready <= 1'b1;
+        #1000
+        @(posedge sys_clk_i) switch_i.ready <= 1'b0;
+        #40
+        @(posedge sys_clk_i) switch_i.ready <= 1'b1;
+    end
 end
 
 // do some jumps
 initial begin
-    id_jmp_addr = 32'hXXXX;
-    id_jmp_valid = 1'b0;
+    switch_i.jmp_addr  <= 8'h00;
+    switch_i.jmp_valid <= 1'b0;
+    #500
+    forever begin
+        #1000
+        @(posedge sys_clk_i) begin
+            switch_i.jmp_addr  <= 8'h80;
+            switch_i.jmp_valid <= 1'b1;
+        end
+        @(posedge sys_clk_i) begin
+            switch_i.jmp_addr  <= 8'h00;
+            switch_i.jmp_valid <= 1'b0;
+        end
+    end
+end
 
+// try making memory output valid
+initial begin
+    switch_i.imem_valid <= 1'b1;
     #700
-    @(posedge clk_i) begin
-        id_jmp_addr = 32'h0100;
-        id_jmp_valid = 1'b1;
+    forever begin
+        #2000
+        @(posedge sys_clk_i) switch_i.imem_valid <= 1'b0;
+        @(posedge sys_clk_i) switch_i.imem_valid <= 1'b1;
     end
-    @(posedge clk_i) begin
-        id_jmp_addr = 32'hXXXX;
-        id_jmp_valid = 1'b0;
-    end
-    
-    #600
-    @(posedge clk_i) begin
-        id_jmp_addr = 32'h0080;
-        id_jmp_valid = 1'b1;
-    end
-    @(posedge clk_i) begin
-        id_jmp_addr = 32'hXXXX;
-        id_jmp_valid = 1'b0;
+end
+
+// change display selector
+initial begin
+    switch_i.display_selector <= 2'b00;
+    forever begin
+        #2000
+        @(posedge sys_clk_i) begin
+            switch_i.display_selector <= switch_i.display_selector + 1;
+        end     
     end
 end
 

@@ -49,14 +49,14 @@ xpm_memory_dprom #(
     // port A
     .ADDR_WIDTH_A(10),
     .READ_DATA_WIDTH_A(32),
-    .READ_LATENCY_A(1),
+    .READ_LATENCY_A(2),
     .READ_RESET_VALUE_A("0"),
     .RST_MODE_A("SYNC"),
 
     // port B
     .ADDR_WIDTH_B(10),
     .READ_DATA_WIDTH_B(32),
-    .READ_LATENCY_B(1),
+    .READ_LATENCY_B(2),
     .READ_RESET_VALUE_B("0"),
     .RST_MODE_B("SYNC")
 )
@@ -102,19 +102,19 @@ initial begin
     $readmemh(CONTENTS, mem_r);
 end
 
-word_t read1_data_r = '0;
-word_t read2_data_r = '0;
+word_t read1_data_r [1:0] = '{ default: '0 };
+word_t read2_data_r [1:0] = '{ default: '0 };
 
 always_ff @(posedge clk_i) begin
     if (read1_enable_i)
-        read1_data_r <= mem_r[read1_addr_i[11:2]];
+        read1_data_r <= { mem_r[read1_addr_i[11:2]], read1_data_r[1] };
 
     if (read2_enable_i)
-        read2_data_r <= mem_r[read2_addr_i[11:2]];
+        read2_data_r <= { mem_r[read2_addr_i[11:2]], read2_data_r[1] };
 end
 
-assign read1_data_o = read1_data_r;
-assign read2_data_o = read2_data_r;
+assign read1_data_o = read1_data_r[0];
+assign read2_data_o = read2_data_r[0];
 
 `endif
 
