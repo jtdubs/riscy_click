@@ -1,4 +1,8 @@
 TODO:
+- Bug
+    - when ready_i drops, we've already commited to receiving a word from the instruction cache, but if there is data in the buffer then we have nowhere to put it.
+    - basically need a skid buffer here
+    - this will likely be a common need w/ the new fully registered pipeline...
 - Performance
     - Botttleneck: ready_async_o signal from ID back to IF.
     - Introduce a skid between stages to fix this

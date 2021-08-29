@@ -101,7 +101,6 @@ fifo #(
 
 // Address Queue
 memaddr_t addr;
-logic     addr_valid;
 logic     addr_write_ready;
 
 fifo #(
@@ -111,7 +110,6 @@ fifo #(
     .clk_i          (clk_i),
     .read_enable_i  (load_resp),
     .read_data_o    (addr),
-    .read_valid_o   (addr_valid),
     .write_data_i   (req_addr_i),
     .write_enable_i (req_occurs),
     .write_ready_o  (addr_write_ready)
@@ -147,11 +145,20 @@ end
 //
 
 always_comb begin
-    req_occurs       = req_valid_i && addr_write_ready;
-    resp_occurs      = resp_valid_r && resp_ready_i;
-    load_resp        = (resp_occurs || !resp_valid_r) && (data_valid || bios_read_valid);
-    queue_data       = bios_read_valid && (!load_resp || data_valid);
-    unqueue_data     = load_resp && data_valid; 
+    // a request occurs when the request inputs are valid and the address fifo can accept writes
+    req_occurs   = req_valid_i && addr_write_ready;
+    
+    // a response occurs when the response data is valid and the receiver is ready
+    resp_occurs  = resp_valid_r && resp_ready_i;
+    
+    // load a new response if there will be room and there is data to load
+    load_resp    = (resp_occurs || !resp_valid_r) && (data_valid || bios_read_valid);
+    
+    // queue data when received and we are either not loading a response, or there is valid data in the queue to output first
+    queue_data   = bios_read_valid && (!load_resp || data_valid);
+    
+    // unqueue data when loading a response and queue has valid data
+    unqueue_data = load_resp && data_valid; 
 end
 
 endmodule

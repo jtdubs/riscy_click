@@ -50,9 +50,6 @@ addr_t read_ptr_r          = '0;
 addr_t write_ptr_r         = '0;
 
 // output registers
-data_t read_data_r         = '0;
-assign read_data_o         = read_data_r;
-
 logic  read_valid_r        = '0;
 assign read_valid_o        = read_valid_r;
 
@@ -93,6 +90,8 @@ end
 addr_t count_next;
 always_comb count_next = write_ptr_next - read_ptr_next;
 
+assign read_data_o = data_r[read_ptr_r];
+  
 // update registers
 always_ff @(posedge clk_i) begin
     fifo_empty_r        <= (count_next == '0);
@@ -102,7 +101,6 @@ always_ff @(posedge clk_i) begin
     read_ptr_r          <= read_ptr_next;
     write_ptr_r         <= write_ptr_next;
     read_valid_r        <= (count_next != '0);
-    read_data_r         <= data_r[read_ptr_next];
     write_ready_r       <= (count_next != CAPACITY);
 
     if (write_enable_i && write_ready_r)
