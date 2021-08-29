@@ -14,9 +14,9 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="151.520 ns"></ZoomStartTime>
-      <ZoomEndTime time="367.116 ns"></ZoomEndTime>
-      <Cursor1Time time="239.856 ns"></Cursor1Time>
+      <ZoomStartTime time="614.120 ns"></ZoomStartTime>
+      <ZoomEndTime time="890.421 ns"></ZoomEndTime>
+      <Cursor1Time time="819.420 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="418"></NameColumnWidth>
@@ -133,22 +133,6 @@
          <obj_property name="ElementShortName">addr_count_r[1:0]</obj_property>
          <obj_property name="ObjectShortName">addr_count_r[1:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/instruction_cache_tb/cache/addr_queue_empty_r" type="logic">
-         <obj_property name="ElementShortName">addr_queue_empty_r</obj_property>
-         <obj_property name="ObjectShortName">addr_queue_empty_r</obj_property>
-      </wvobject>
-      <wvobject fp_name="/instruction_cache_tb/cache/addr_queue_full_r" type="logic">
-         <obj_property name="ElementShortName">addr_queue_full_r</obj_property>
-         <obj_property name="ObjectShortName">addr_queue_full_r</obj_property>
-      </wvobject>
-      <wvobject fp_name="/instruction_cache_tb/cache/addr_read_ptr_next" type="array">
-         <obj_property name="ElementShortName">addr_read_ptr_next[1:0]</obj_property>
-         <obj_property name="ObjectShortName">addr_read_ptr_next[1:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/instruction_cache_tb/cache/addr_write_ptr_next" type="array">
-         <obj_property name="ElementShortName">addr_write_ptr_next[1:0]</obj_property>
-         <obj_property name="ObjectShortName">addr_write_ptr_next[1:0]</obj_property>
-      </wvobject>
       <wvobject fp_name="/instruction_cache_tb/cache/addr_count_next" type="array">
          <obj_property name="ElementShortName">addr_count_next[1:0]</obj_property>
          <obj_property name="ObjectShortName">addr_count_next[1:0]</obj_property>
@@ -166,49 +150,85 @@
       <obj_property name="label">Data Queue</obj_property>
       <obj_property name="DisplayName">label</obj_property>
       <obj_property name="isExpanded"></obj_property>
-      <wvobject fp_name="/instruction_cache_tb/cache/data_queue_r" type="array">
-         <obj_property name="ElementShortName">data_queue_r[3:0][31:0]</obj_property>
-         <obj_property name="ObjectShortName">data_queue_r[3:0][31:0]</obj_property>
+      <wvobject fp_name="/instruction_cache_tb/cache/data_fifo/write_enable_i" type="logic">
+         <obj_property name="ElementShortName">write_enable_i</obj_property>
+         <obj_property name="ObjectShortName">write_enable_i</obj_property>
       </wvobject>
-      <wvobject fp_name="/instruction_cache_tb/cache/data_read_ptr_r" type="array">
-         <obj_property name="ElementShortName">data_read_ptr_r[1:0]</obj_property>
-         <obj_property name="ObjectShortName">data_read_ptr_r[1:0]</obj_property>
+      <wvobject fp_name="/instruction_cache_tb/cache/data_fifo/read_enable_i" type="logic">
+         <obj_property name="ElementShortName">read_enable_i</obj_property>
+         <obj_property name="ObjectShortName">read_enable_i</obj_property>
       </wvobject>
-      <wvobject fp_name="/instruction_cache_tb/cache/data_write_ptr_r" type="array">
-         <obj_property name="ElementShortName">data_write_ptr_r[1:0]</obj_property>
-         <obj_property name="ObjectShortName">data_write_ptr_r[1:0]</obj_property>
+      <wvobject fp_name="/instruction_cache_tb/cache/data_fifo/read_data_o" type="array">
+         <obj_property name="ElementShortName">read_data_o[31:0]</obj_property>
+         <obj_property name="ObjectShortName">read_data_o[31:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/instruction_cache_tb/cache/data_count_r" type="array">
-         <obj_property name="ElementShortName">data_count_r[1:0]</obj_property>
-         <obj_property name="ObjectShortName">data_count_r[1:0]</obj_property>
+      <wvobject fp_name="/instruction_cache_tb/cache/data_fifo/read_valid_o" type="logic">
+         <obj_property name="ElementShortName">read_valid_o</obj_property>
+         <obj_property name="ObjectShortName">read_valid_o</obj_property>
       </wvobject>
-      <wvobject fp_name="/instruction_cache_tb/cache/data_queue_empty_r" type="logic">
-         <obj_property name="ElementShortName">data_queue_empty_r</obj_property>
-         <obj_property name="ObjectShortName">data_queue_empty_r</obj_property>
+      <wvobject fp_name="/instruction_cache_tb/cache/data_fifo/fifo_empty_o" type="logic">
+         <obj_property name="ElementShortName">fifo_empty_o</obj_property>
+         <obj_property name="ObjectShortName">fifo_empty_o</obj_property>
       </wvobject>
-      <wvobject fp_name="/instruction_cache_tb/cache/data_queue_full_r" type="logic">
-         <obj_property name="ElementShortName">data_queue_full_r</obj_property>
-         <obj_property name="ObjectShortName">data_queue_full_r</obj_property>
+      <wvobject fp_name="/instruction_cache_tb/cache/data_fifo/fifo_almost_empty_o" type="logic">
+         <obj_property name="ElementShortName">fifo_almost_empty_o</obj_property>
+         <obj_property name="ObjectShortName">fifo_almost_empty_o</obj_property>
       </wvobject>
-      <wvobject fp_name="/instruction_cache_tb/cache/data_read_ptr_next" type="array">
-         <obj_property name="ElementShortName">data_read_ptr_next[1:0]</obj_property>
-         <obj_property name="ObjectShortName">data_read_ptr_next[1:0]</obj_property>
+      <wvobject fp_name="/instruction_cache_tb/cache/data_fifo/fifo_almost_full_o" type="logic">
+         <obj_property name="ElementShortName">fifo_almost_full_o</obj_property>
+         <obj_property name="ObjectShortName">fifo_almost_full_o</obj_property>
       </wvobject>
-      <wvobject fp_name="/instruction_cache_tb/cache/data_write_ptr_next" type="array">
-         <obj_property name="ElementShortName">data_write_ptr_next[1:0]</obj_property>
-         <obj_property name="ObjectShortName">data_write_ptr_next[1:0]</obj_property>
+      <wvobject fp_name="/instruction_cache_tb/cache/data_fifo/fifo_full_o" type="logic">
+         <obj_property name="ElementShortName">fifo_full_o</obj_property>
+         <obj_property name="ObjectShortName">fifo_full_o</obj_property>
       </wvobject>
-      <wvobject fp_name="/instruction_cache_tb/cache/data_count_next" type="array">
-         <obj_property name="ElementShortName">data_count_next[1:0]</obj_property>
-         <obj_property name="ObjectShortName">data_count_next[1:0]</obj_property>
+      <wvobject fp_name="/instruction_cache_tb/cache/data_fifo/data_r" type="array">
+         <obj_property name="ElementShortName">data_r[3:0][31:0]</obj_property>
+         <obj_property name="ObjectShortName">data_r[3:0][31:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/instruction_cache_tb/cache/data_queue_empty_next" type="logic">
-         <obj_property name="ElementShortName">data_queue_empty_next</obj_property>
-         <obj_property name="ObjectShortName">data_queue_empty_next</obj_property>
+      <wvobject fp_name="/instruction_cache_tb/cache/data_fifo/read_ptr_r" type="array">
+         <obj_property name="ElementShortName">read_ptr_r[1:0]</obj_property>
+         <obj_property name="ObjectShortName">read_ptr_r[1:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/instruction_cache_tb/cache/data_queue_full_next" type="logic">
-         <obj_property name="ElementShortName">data_queue_full_next</obj_property>
-         <obj_property name="ObjectShortName">data_queue_full_next</obj_property>
+      <wvobject fp_name="/instruction_cache_tb/cache/data_fifo/write_ptr_r" type="array">
+         <obj_property name="ElementShortName">write_ptr_r[1:0]</obj_property>
+         <obj_property name="ObjectShortName">write_ptr_r[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/instruction_cache_tb/cache/data_fifo/read_ptr_next" type="array">
+         <obj_property name="ElementShortName">read_ptr_next[1:0]</obj_property>
+         <obj_property name="ObjectShortName">read_ptr_next[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/instruction_cache_tb/cache/data_fifo/write_ptr_next" type="array">
+         <obj_property name="ElementShortName">write_ptr_next[1:0]</obj_property>
+         <obj_property name="ObjectShortName">write_ptr_next[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/instruction_cache_tb/cache/data_fifo/count_next" type="array">
+         <obj_property name="ElementShortName">count_next[1:0]</obj_property>
+         <obj_property name="ObjectShortName">count_next[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/instruction_cache_tb/cache/data_fifo/read_data_r" type="array">
+         <obj_property name="ElementShortName">read_data_r[31:0]</obj_property>
+         <obj_property name="ObjectShortName">read_data_r[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/instruction_cache_tb/cache/data_fifo/read_valid_r" type="logic">
+         <obj_property name="ElementShortName">read_valid_r</obj_property>
+         <obj_property name="ObjectShortName">read_valid_r</obj_property>
+      </wvobject>
+      <wvobject fp_name="/instruction_cache_tb/cache/data_fifo/fifo_empty_r" type="logic">
+         <obj_property name="ElementShortName">fifo_empty_r</obj_property>
+         <obj_property name="ObjectShortName">fifo_empty_r</obj_property>
+      </wvobject>
+      <wvobject fp_name="/instruction_cache_tb/cache/data_fifo/fifo_almost_empty_r" type="logic">
+         <obj_property name="ElementShortName">fifo_almost_empty_r</obj_property>
+         <obj_property name="ObjectShortName">fifo_almost_empty_r</obj_property>
+      </wvobject>
+      <wvobject fp_name="/instruction_cache_tb/cache/data_fifo/fifo_almost_full_r" type="logic">
+         <obj_property name="ElementShortName">fifo_almost_full_r</obj_property>
+         <obj_property name="ObjectShortName">fifo_almost_full_r</obj_property>
+      </wvobject>
+      <wvobject fp_name="/instruction_cache_tb/cache/data_fifo/fifo_full_r" type="logic">
+         <obj_property name="ElementShortName">fifo_full_r</obj_property>
+         <obj_property name="ObjectShortName">fifo_full_r</obj_property>
       </wvobject>
    </wvobject>
    <wvobject fp_name="group169" type="group">

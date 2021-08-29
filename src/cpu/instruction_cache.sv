@@ -40,8 +40,6 @@ typedef logic [COUNTER_DEPTH:0] counter_t;
 //
 
 // Interface
-     memaddr_t bios_read_addr;
-     logic     bios_read_enable;
 wire word_t    bios_read_data;
 wire logic     bios_read_valid;
 
@@ -50,8 +48,8 @@ bios_rom #(
     .CONTENTS("bios.mem")
 ) bios (
     .clk_i          (clk_i),
-    .read1_addr_i   ({ bios_read_addr, 2'b0 }),
-    .read1_enable_i (bios_read_enable),
+    .read1_addr_i   ({ req_addr_i, 2'b0 }),
+    .read1_enable_i (req_occurs),
     .read1_data_o   (bios_read_data),
     .read2_addr_i   (32'b0),
     .read2_enable_i (1'b0),
@@ -61,7 +59,7 @@ bios_rom #(
 // Generate bios_read_valid signal on a ROM_LATENCY cycle delay
 logic bios_read_valid_r [ROM_LATENCY-1:0] = '{ default: '0 };
 always_ff @(posedge clk_i) begin
-    bios_read_valid_r <= { bios_read_enable, bios_read_valid_r[ROM_LATENCY-1:1] };
+    bios_read_valid_r <= { req_occurs, bios_read_valid_r[ROM_LATENCY-1:1] };
 end
 assign bios_read_valid = bios_read_valid_r[0];
 
@@ -70,8 +68,7 @@ assign bios_read_valid = bios_read_valid_r[0];
 // Output Registers
 //
 
-logic     req_ready_r  = 1'b1;
-assign    req_ready_o  = req_ready_r;
+assign    req_ready_o  = addr_write_ready;
 
 memaddr_t resp_addr_r  = 28'b0;
 assign    resp_addr_o  = resp_addr_r;
@@ -87,21 +84,38 @@ assign    resp_valid_o = resp_valid_r;
 // Request Queues
 //
 
-// Address Queue
-memaddr_t addr_queue_r[3:0]  = '{ default: '0 };
-counter_t addr_read_ptr_r    = '0;
-counter_t addr_write_ptr_r   = '0;
-counter_t addr_count_r       = '0;
-logic     addr_queue_empty_r = '1;
-logic     addr_queue_full_r  = '0;
+word_t data;
+logic  data_valid;
 
-// Data Queue
-word_t    data_queue_r[3:0]  = '{ default: '0 };
-counter_t data_read_ptr_r    = '0;
-counter_t data_write_ptr_r   = '0;
-counter_t data_count_r       = '0;
-logic     data_queue_empty_r = '1;
-logic     data_queue_full_r  = '0;
+fifo #(
+    .DATA_WIDTH     (32),
+    .ADDR_WIDTH     (2)
+) data_fifo (
+    .clk_i          (clk_i),
+    .read_enable_i  (unqueue_data),
+    .read_data_o    (data),
+    .read_valid_o   (data_valid),
+    .write_data_i   (bios_read_data),
+    .write_enable_i (queue_data)
+);
+
+// Address Queue
+memaddr_t addr;
+logic     addr_valid;
+logic     addr_write_ready;
+
+fifo #(
+    .DATA_WIDTH     (30),
+    .ADDR_WIDTH     (2)
+) addr_fifo (
+    .clk_i          (clk_i),
+    .read_enable_i  (load_resp),
+    .read_data_o    (addr),
+    .read_valid_o   (addr_valid),
+    .write_data_i   (req_addr_i),
+    .write_enable_i (req_occurs),
+    .write_ready_o  (addr_write_ready)
+);
 
 // Operations
 logic req_occurs;
@@ -109,83 +123,11 @@ logic resp_occurs;
 logic load_resp;
 logic queue_data;
 logic unqueue_data;
-logic queue_addr;
-logic unqueue_addr;
-
-// Pointers
-always_ff @(posedge clk_i) begin
-    if (unqueue_addr)
-        addr_read_ptr_r <= addr_read_ptr_r + 1;
-
-    if (queue_addr) begin
-        addr_write_ptr_r <= addr_write_ptr_r + 1;
-        addr_queue_r[addr_write_ptr_r] <= req_addr_i;
-    end
-
-    if (unqueue_data)
-        data_read_ptr_r <= data_read_ptr_r + 1;
-    
-    if (queue_data) begin
-        data_write_ptr_r <= data_write_ptr_r + 1;
-        data_queue_r[data_write_ptr_r] <= bios_read_data;
-    end
-end
-
-
-// Queue Size
-counter_t addr_count_next;
-counter_t data_count_next;
-
-always_comb begin
-    if (queue_addr && !unqueue_addr)
-        addr_count_next = addr_count_r + 1;
-    else if (!queue_addr && unqueue_addr)
-        addr_count_next = addr_count_r - 1;
-    else
-        addr_count_next = addr_count_r;
-    
-    if (queue_data && !unqueue_data)
-        data_count_next = data_count_r + 1;
-    else if (!queue_data && unqueue_data)
-        data_count_next = data_count_r - 1;
-    else
-        data_count_next = data_count_r;
-end
-
-always_ff @(posedge clk_i) begin
-    addr_count_r <= addr_count_next;
-    data_count_r <= data_count_next;
-end
-
-// Queue Status
-logic addr_queue_empty_next;
-logic addr_queue_full_next;
-logic data_queue_empty_next;
-logic data_queue_full_next;
-
-always_comb begin
-    addr_queue_empty_next = (addr_count_next == 0);
-    addr_queue_full_next  = (addr_count_next == 3);
-    data_queue_empty_next = (data_count_next == 0);
-    data_queue_full_next  = (data_count_next == 3);
-end
-
-always_ff @(posedge clk_i) begin
-    addr_queue_empty_r <= addr_queue_empty_next;
-    addr_queue_full_r  <= addr_queue_full_next;
-    data_queue_empty_r <= data_queue_empty_next;
-    data_queue_full_r  <= data_queue_full_next;
-end
 
 
 //
 // Output Registers
 //
-
-// Request
-always_ff @(posedge clk_i) begin
-    req_ready_r <= !data_queue_full_next && !addr_queue_full_next;
-end
 
 // Response
 always_ff @(posedge clk_i) begin
@@ -193,8 +135,8 @@ always_ff @(posedge clk_i) begin
         resp_valid_r <= 1'b0;
 
     if (load_resp) begin
-        resp_addr_r  <= addr_queue_r[addr_read_ptr_r];
-        resp_data_r  <= unqueue_data ? data_queue_r[data_read_ptr_r] : bios_read_data;
+        resp_addr_r  <= addr;
+        resp_data_r  <= unqueue_data ? data : bios_read_data;
         resp_valid_r <= 1'b1;
     end
 end
@@ -205,15 +147,11 @@ end
 //
 
 always_comb begin
-    req_occurs       = req_valid_i && req_ready_r;
+    req_occurs       = req_valid_i && addr_write_ready;
     resp_occurs      = resp_valid_r && resp_ready_i;
-    load_resp        = (resp_occurs || !resp_valid_r) && (!data_queue_empty_r || bios_read_valid);
-    queue_addr       = req_occurs;
-    unqueue_addr     = load_resp;
-    queue_data       = bios_read_valid && !(data_queue_empty_r && load_resp);
-    unqueue_data     = load_resp && !data_queue_empty_r; 
-    bios_read_addr   = req_addr_i;
-    bios_read_enable = req_occurs;
+    load_resp        = (resp_occurs || !resp_valid_r) && (data_valid || bios_read_valid);
+    queue_data       = bios_read_valid && (!load_resp || data_valid);
+    unqueue_data     = load_resp && data_valid; 
 end
 
 endmodule

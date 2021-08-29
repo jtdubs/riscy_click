@@ -23,6 +23,7 @@ module fifo
         // write port
         input  wire logic [(DATA_WIDTH-1):0] write_data_i,
         input  wire logic                    write_enable_i,
+        output wire logic                    write_ready_o,
 
         // read port
         input  wire logic                    read_enable_i,
@@ -48,18 +49,40 @@ data_t data_r [CAPACITY:0] = '{ default: '0 };
 addr_t read_ptr_r          = '0;
 addr_t write_ptr_r         = '0;
 
+// output registers
+data_t read_data_r         = '0;
+assign read_data_o         = read_data_r;
+
+logic  read_valid_r        = '0;
+assign read_valid_o        = read_valid_r;
+
+logic  write_ready_r       = '1;
+assign write_ready_o       = write_ready_r;
+
+logic  fifo_empty_r        = '1;
+assign fifo_empty_o        = fifo_empty_r;
+
+logic  fifo_almost_empty_r = '1;
+assign fifo_almost_empty_o = fifo_almost_empty_r;
+
+logic  fifo_almost_full_r  = '0;
+assign fifo_almost_full_o  = fifo_almost_full_r;
+
+logic  fifo_full_r         = '0;
+assign fifo_full_o         = fifo_full_r;
+
 // determine next state
 addr_t read_ptr_next;
 addr_t write_ptr_next;
 
 always_comb begin
-    unique if (write_enable_i && !fifo_full_o) begin
+    unique if (write_enable_i && write_ready_r) begin
         write_ptr_next = write_ptr_r + 1;
     end else begin
         write_ptr_next = write_ptr_r;
     end
 
-    unique if (read_enable_i && !fifo_empty_o) begin
+    unique if (read_enable_i && read_valid_r) begin
         read_ptr_next = read_ptr_r + 1;
     end else begin
         read_ptr_next = read_ptr_r;
@@ -71,13 +94,6 @@ addr_t count_next;
 always_comb count_next = write_ptr_next - read_ptr_next;
 
 // update registers
-logic [(DATA_WIDTH-1):0] read_data_r         = '0;
-logic                    read_valid_r        = '0;
-logic                    fifo_empty_r        = '1;
-logic                    fifo_almost_empty_r = '1;
-logic                    fifo_almost_full_r  = '0;
-logic                    fifo_full_r         = '0;
-
 always_ff @(posedge clk_i) begin
     fifo_empty_r        <= (count_next == '0);
     fifo_almost_empty_r <= (count_next <= ALMOST_EMPTY_COUNT);
@@ -85,18 +101,12 @@ always_ff @(posedge clk_i) begin
     fifo_full_r         <= (count_next == CAPACITY);
     read_ptr_r          <= read_ptr_next;
     write_ptr_r         <= write_ptr_next;
-    read_valid_r        <= !fifo_empty_r;
-    read_data_r         <= data_r[read_ptr_r];
+    read_valid_r        <= (count_next != '0);
+    read_data_r         <= data_r[read_ptr_next];
+    write_ready_r       <= (count_next != CAPACITY);
 
-    if (write_enable_i && !fifo_full_r)
+    if (write_enable_i && write_ready_r)
         data_r[write_ptr_r] <= write_data_i;
 end
-
-assign read_data_o         = read_data_r;
-assign read_valid_o        = read_valid_r;
-assign fifo_empty_o        = fifo_empty_r;
-assign fifo_almost_empty_o = fifo_almost_empty_r;
-assign fifo_almost_full_o  = fifo_almost_full_r;
-assign fifo_full_o         = fifo_full_r;
 
 endmodule
