@@ -19,11 +19,11 @@ logic     resp_ready;
 logic     halt;
 word_t    jmp_addr;
 logic     jmp_valid;
-word_t    pc;
-word_t    ir;
-word_t    pc_next;
-logic     valid;
-logic     ready;
+word_t    fetch_pc;
+word_t    fetch_ir;
+word_t    fetch_pc_next;
+logic     fetch_valid;
+logic     fetch_ready;
 
 instruction_cache cache (
     .clk_i        (clk),
@@ -48,11 +48,11 @@ stage_fetch stage_fetch (
     .icache_resp_ready_o (resp_ready),
     .jmp_addr_i          (jmp_addr),
     .jmp_valid_i         (jmp_valid),
-    .pc_o                (pc),
-    .ir_o                (ir),
-    .pc_next_o           (pc_next),
-    .valid_o             (valid),
-    .ready_i             (ready)
+    .fetch_pc_o          (fetch_pc),
+    .fetch_ir_o          (fetch_ir),
+    .fetch_pc_next_o     (fetch_pc_next),
+    .fetch_valid_o       (fetch_valid),
+    .fetch_ready_i       (fetch_ready)
 );
 
 // clock generator
@@ -72,16 +72,16 @@ end
 
 // test backpressure
 initial begin
-    ready <= 1'b1;
+    fetch_ready <= 1'b1;
 
     forever begin
         #1000
-        @(posedge clk) ready <= 1'b0;
-        @(posedge clk) ready <= 1'b1;
+        @(posedge clk) fetch_ready <= 1'b0;
+        @(posedge clk) fetch_ready <= 1'b1;
         #1000
-        @(posedge clk) ready <= 1'b0;
+        @(posedge clk) fetch_ready <= 1'b0;
         #40
-        @(posedge clk) ready <= 1'b1;
+        @(posedge clk) fetch_ready <= 1'b1;
     end
 end
 
