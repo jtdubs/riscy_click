@@ -1,13 +1,4 @@
 TODO:
-- Bug
-    - when ready_i drops, we've already commited to receiving a word from the instruction cache, but if there is data in the buffer then we have nowhere to put it.
-    - basically need a skid buffer here
-    - this will likely be a common need w/ the new fully registered pipeline...
-- Performance
-    - Botttleneck: ready_async_o signal from ID back to IF.
-    - Introduce a skid between stages to fix this
-    - Bottleneck: bypassing -> branch calculations -> jmps
-    - Split Decode stage and handle branches/jumps in the second one
 - PS2
     - Get working with real PS2 keyboard.
     - Apparently need to ACK the AA, therefore need PS2 Tx module and tri-state buffers

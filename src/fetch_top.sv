@@ -116,29 +116,56 @@ endgenerate
 
 
 //
+// Instruction Cache
+//
+
+(* MARK_DEBUG = "true" *) wire memaddr_t req_addr;
+(* MARK_DEBUG = "true" *) wire logic     req_valid;
+(* MARK_DEBUG = "true" *) wire logic     req_ready;
+(* MARK_DEBUG = "true" *) wire memaddr_t resp_addr;
+(* MARK_DEBUG = "true" *) wire word_t    resp_data;
+(* MARK_DEBUG = "true" *) wire logic     resp_valid;
+(* MARK_DEBUG = "true" *) wire logic     resp_ready;
+
+instruction_cache cache (
+    .clk_i        (cpu_clk_i),
+    .req_addr_i   (req_addr),
+    .req_valid_i  (req_valid),
+    .req_ready_o  (req_ready),
+    .resp_addr_o  (resp_addr),
+    .resp_data_o  (resp_data),
+    .resp_valid_o (resp_valid),
+    .resp_ready_i (resp_ready)
+);
+
+
+//
 // CPU Fetch Stage
 //
 
-(* MARK_DEBUG = "true" *)wire memaddr_t imem_addr;
-(* MARK_DEBUG = "true" *)wire word_t imem_data;
-(* MARK_DEBUG = "true" *)wire word_t pc;
-(* MARK_DEBUG = "true" *)wire word_t ir;
-(* MARK_DEBUG = "true" *)wire word_t pc_next;
-(* MARK_DEBUG = "true" *)wire logic  valid;
+(* MARK_DEBUG = "true" *) wire word_t pc;
+(* MARK_DEBUG = "true" *) wire word_t ir;
+(* MARK_DEBUG = "true" *) wire word_t pc_next;
+(* MARK_DEBUG = "true" *) wire logic  valid;
 
 stage_fetch stage_fetch (
-    .clk_i              (cpu_clk_i),
-    .halt_i             (switch_r.halt),
-    .imem_addr_o        (imem_addr),
-    .imem_data_i        (imem_data),
-    .imem_valid_i       (switch_r.imem_valid),
-    .ready_i            (switch_r.ready && button_pressed_r[0]),
-    .jmp_addr_i         ({ 22'b0, switch_r.jmp_addr, 2'b0 }),
-    .jmp_valid_i        (switch_r.jmp_valid),
-    .pc_o               (pc),
-    .ir_o               (ir),
-    .pc_next_o          (pc_next),
-    .valid_o            (valid)
+    .clk_i               (cpu_clk_i),
+    .halt_i              (switch_r.halt),
+    .icache_req_addr_o   (req_addr),
+    .icache_req_valid_o  (req_valid),
+    .icache_req_ready_i  (req_ready),
+    .icache_resp_addr_i  (resp_addr),
+    .icache_resp_data_i  (resp_data),
+    .icache_resp_valid_i (resp_valid),
+    .icache_resp_ready_o (resp_ready),
+    .jmp_addr_i          ({ 22'b0, switch_r.jmp_addr, 2'b0 }),
+    .jmp_valid_i         (switch_r.jmp_valid),
+    .jmp_ready_o         (),
+    .fetch_pc_o          (pc),
+    .fetch_ir_o          (ir),
+    .fetch_pc_next_o     (pc_next),
+    .fetch_valid_o       (valid),
+    .fetch_ready_i       (switch_r.ready && button_pressed_r[0])
 );
 
 word_t pc_r = '0;
@@ -154,17 +181,6 @@ always_ff @(posedge cpu_clk_i) begin
         valid_r <= valid;
     end
 end
-
-// BIOS
-bios_rom #(.CONTENTS("bios.mem")) bios (
-    .clk_i             (cpu_clk_i),
-    .read1_enable_i    (1'b1),
-    .read1_addr_i      ({ imem_addr, 2'b0 }),
-    .read1_data_o      (imem_data),
-    .read2_enable_i    (1'b0),
-    .read2_addr_i      (32'b0),
-    .read2_data_o      ()
-);
 
 // Segment Display
 (* MARK_DEBUG = "true" *) word_t display_data;

@@ -46,6 +46,8 @@ final stop_logging();
 // Common Actions
 //
 
+// TODO: doesn't handle unaligned jumps yet!!!
+
 logic flush;
 
 
@@ -70,7 +72,7 @@ word_t fetch_pc_next_next;
 // Updates
 always_ff @(posedge clk_i) begin
     if (flush || fetch_receive)
-        fetch_valid_r <= '0;
+        fetch_valid_r   <= '0;
     
     if (fetch_provide) begin
         fetch_ir_r      <= fetch_ir_next;
@@ -135,13 +137,16 @@ end
 // Actions
 logic icache_resp_ready;
 logic icache_resp_received;
+logic icache_unaligned_jump;
 
 // Registers
-logic     icache_resp_ready_r = '1;
+logic     icache_resp_ready_r         = '1;
 memaddr_t icache_resp_expected_addr_r = '0;
+logic     icache_resp_discard_half_r  = '0;
 
 // Variables
 memaddr_t icache_resp_expected_addr_next;
+logic     icache_resp_half_full;
 
 // Updates
 always_ff @(posedge clk_i) begin
@@ -154,6 +159,12 @@ end
 
 always_ff @(posedge clk_i) begin
     icache_resp_expected_addr_r <= icache_resp_expected_addr_next;
+    
+    if (icache_resp_received)
+        icache_resp_discard_half_r <= '0;
+    
+    if (icache_unaligned_jump)
+        icache_resp_discard_half_r <= '1;
 end
 
 // Output
@@ -161,7 +172,8 @@ assign icache_resp_ready_o = icache_resp_ready_r;
 
 // Triggers
 always_comb begin
-    icache_resp_received = icache_resp_ready_r && icache_resp_valid_i && icache_resp_addr_i == icache_resp_expected_addr_r;
+    icache_resp_received  = icache_resp_ready_r && icache_resp_valid_i && icache_resp_addr_i == icache_resp_expected_addr_r;
+    icache_resp_half_full = icache_resp_received && icache_resp_discard_half_r;
 end
 
 
@@ -247,139 +259,244 @@ end
 // Action Determination Logic
 //
 
+//`define USE_CASE_STATEMENT
+
+logic  fetch_full;
+logic  compressed;
+    
 always_comb begin
-    // Based on buffer states
+    //
+    // Calculate Helper Values
+    //
+    
+    unique case (front_state_r)
+    EMPTY: fetch_ir_next = icache_resp_half_full ? { 16'b0, icache_resp_data_i[31:16] } : icache_resp_data_i;
+    HALF:  fetch_ir_next = { (back_valid_r ? back_r[15:0] : icache_resp_data_i[15:0]), front_r[31:16] };
+    FULL:  fetch_ir_next = front_r;
+    endcase
+    
+    compressed = fetch_ir_next[1:0] != 2'b11;
+    if (compressed)
+        fetch_ir_next[31:16] = 16'b0;
+        
+    fetch_full = fetch_valid_r && !fetch_ready_i;
+
+`ifdef USE_CASE_STATEMENT
     fetch_provide     = '0;
-    fetch_ir_next     = '0;
     icache_resp_ready = '1;
     front_load        = '0;
     front_state_next  = front_state_r;
     back_load         = '0;
     back_transfer     = '0;
 
-    casez ({ (fetch_valid_r && !fetch_ready_i), front_state_r, back_valid_r, icache_resp_received })
-    { 1'b0, EMPTY, 1'b0, 1'b1 }:
+    unique casez ({ fetch_full, front_state_r, back_valid_r, icache_resp_received, icache_resp_half_full, compressed })
+    { 1'b0, EMPTY, 1'b0, 1'b1, 1'b0, 1'b0 }:
         begin
-            fetch_provide = '1;
-            if (icache_resp_data_i[1:0] == 2'b11) begin
-                fetch_ir_next     = icache_resp_data_i;
-            end else begin
-                fetch_ir_next     = { 16'b0, icache_resp_data_i[15:0] };
-                front_load        = '1;
-                front_state_next  = HALF;
-            end
+            fetch_provide     = '1;
         end
-    { 1'b1, EMPTY, 1'b0, 1'b1 }:
+    { 1'b0, EMPTY, 1'b0, 1'b1, 1'b0, 1'b1 }:
         begin
-            front_load       = '1;
-            front_state_next = FULL;            
+            fetch_provide     = '1;
+            front_load        = '1;
+            front_state_next  = HALF;
         end
-    { 1'b0,  HALF, 1'b0, 1'b0 }:
+    { 1'b0, EMPTY, 1'b0, 1'b1, 1'b1, 1'b0 }:
         begin
-            if (front_r[17:16] != 3'b11) begin
-                fetch_provide    = '1;
-                fetch_ir_next    = { 16'b0, front_r[31:16] };
-                front_state_next = EMPTY;
-            end
+            front_load        = '1;
+            front_state_next  = HALF;
         end
-    { 1'b0,  HALF, 1'b0, 1'b1 }:
+    { 1'b0, EMPTY, 1'b0, 1'b1, 1'b1, 1'b1 }:         
         begin
-            fetch_provide = '1;
-            front_load    = '1;
-            if (front_r[17:16] == 3'b11) begin
-                fetch_ir_next    = { icache_resp_data_i[15:0], front_r[31:16] };
-            end else begin
-                fetch_ir_next    = { 16'b0,                    front_r[31:16] };
-                front_state_next = FULL;
-            end
+            fetch_provide     = '1;
         end
-    { 1'b1,  HALF, 1'b0, 1'b1 }:
+    { 1'b1, EMPTY, 1'b0, 1'b1, 1'b0, 1'b? }:
+        begin
+            front_load        = '1;
+            front_state_next  = FULL;
+        end
+    { 1'b1, EMPTY, 1'b0, 1'b1, 1'b1, 1'b? }:
+        begin
+            front_load        = '1;
+            front_state_next  = HALF;
+        end
+    { 1'b0,  HALF, 1'b0, 1'b0, 1'b0, 1'b1 }:
+        begin
+            fetch_provide     = '1;
+            front_state_next  = EMPTY;
+        end
+    { 1'b0,  HALF, 1'b0, 1'b1, 1'b0, 1'b0 }:
+        begin
+            fetch_provide     = '1;
+            front_load        = '1;
+        end
+    { 1'b0,  HALF, 1'b0, 1'b1, 1'b0, 1'b1 }:
+        begin
+            fetch_provide     = '1;
+            front_load        = '1;
+            front_state_next  = FULL;
+        end
+    { 1'b1,  HALF, 1'b0, 1'b1, 1'b0, 1'b? }:
         begin
             back_load         = '1;
             icache_resp_ready = '0;
         end
-    { 1'b0,  HALF, 1'b1, 1'b0 }:
+    { 1'b0,  HALF, 1'b1, 1'b0, 1'b0, 1'b0 }:
         begin
-            fetch_provide   = '1;
-            back_transfer   = '1;
-            if (front_r[17:16] == 3'b11) begin
-                fetch_ir_next    = { back_r[15:0], front_r[31:16] };
-            end else begin
-                fetch_ir_next    = { 16'b0,        front_r[31:16] };
-                front_state_next = FULL;
-            end
+            fetch_provide     = '1;
+            back_transfer     = '1;
         end
-    { 1'b1,  HALF, 1'b1, 1'b0 }:
+    { 1'b0,  HALF, 1'b1, 1'b0, 1'b0, 1'b1 }:   
+        begin
+            fetch_provide     = '1;
+            back_transfer     = '1;
+            front_state_next  = FULL;
+        end
+    { 1'b1,  HALF, 1'b1, 1'b0, 1'b0, 1'b? }:
         begin
             icache_resp_ready = '0;
         end
-    { 1'b0, HALF, 1'b1, 1'b1 }:
+    { 1'b0, HALF, 1'b1, 1'b1, 1'b0, 1'b0 }:
         begin
             fetch_provide     = '1;
             icache_resp_ready = '0;
             back_transfer     = '1;
             back_load         = '1;
-            if (front_r[1:0] == 2'b11) begin
-                fetch_ir_next    = { front_r[31:16], back_r[15:0] };
-            end else begin
-                fetch_ir_next    = { 16'b0,          front_r[31:16] };
-                front_state_next = FULL;
-            end
         end
-    { 1'b0, FULL, 1'b0, 1'b0 }:
+    { 1'b0, HALF, 1'b1, 1'b1, 1'b0, 1'b1 }:
         begin
-            fetch_provide = '1;
-            if (front_r[1:0] == 2'b11) begin
-                fetch_ir_next    = front_r;
-                front_state_next = EMPTY;
-            end else begin
-                fetch_ir_next    = { 16'b0, front_r[15:0] };
-                front_state_next = HALF;
-            end
+            fetch_provide     = '1;
+            icache_resp_ready = '0;
+            back_transfer     = '1;
+            back_load         = '1;
+            front_state_next  = FULL;
         end
-    { 1'b0, FULL, 1'b0, 1'b1 }:
+    { 1'b0, FULL, 1'b0, 1'b0, 1'b0, 1'b0 }:
         begin
-            fetch_provide = '1;
-            if (front_r[1:0] == 2'b11) begin
-                fetch_ir_next     = front_r;
-                front_load        = '1;
-            end else begin
-                fetch_ir_next     = { 16'b0, front_r[15:0] };
-                front_state_next  = HALF;
-                back_load         = '1;
-                icache_resp_ready = '0;
-            end
+            fetch_provide     = '1;
+            front_state_next  = EMPTY;
         end
-    { 1'b1, FULL, 1'b0, 1'b1 }:
+    { 1'b0, FULL, 1'b0, 1'b0, 1'b0, 1'b1 }:
+        begin
+            fetch_provide     = '1;
+            front_state_next  = HALF;
+        end
+    { 1'b0, FULL, 1'b0, 1'b1, 1'b0, 1'b0 }:
+        begin
+            fetch_provide     = '1;
+            front_load        = '1;
+        end
+    { 1'b0, FULL, 1'b0, 1'b1, 1'b0, 1'b1 }:
+        begin
+            fetch_provide     = '1;
+            front_state_next  = HALF;
+            back_load         = '1;
+            icache_resp_ready = '0;
+        end
+    { 1'b1, FULL, 1'b0, 1'b1, 1'b0, 1'b? }:
         begin
             back_load         = '1;
             icache_resp_ready = '0;
         end
-    { 1'b0, FULL, 1'b1, 1'b0 }:
+    { 1'b0, FULL, 1'b1, 1'b0, 1'b0, 1'b0 }:
         begin
-            fetch_provide = '1;
-            if (front_r[1:0] == 2'b11) begin
-                fetch_ir_next    = front_r;
-                back_transfer    = '1;
-            end else begin
-                fetch_ir_next     = { 16'b0, front_r[15:0] };
-                front_state_next  = HALF;
-                icache_resp_ready = '0;
-            end
+            fetch_provide     = '1;
+            back_transfer     = '1;
         end
-    { 1'b1, FULL, 1'b1, 1'b0 }:
+    { 1'b0, FULL, 1'b1, 1'b0, 1'b0, 1'b1 }:
+        begin
+            fetch_provide     = '1;
+            front_state_next  = HALF;
+            icache_resp_ready = '0;
+        end
+    { 1'b1, FULL, 1'b1, 1'b0, 1'b0, 1'b? }:
         begin
             icache_resp_ready = '0;
         end
     default: ;
     endcase
- end
+`else
+    fetch_provide = '0;
+    if (!fetch_full) begin
+        unique0 casez ({ front_state_r, back_valid_r, icache_resp_received, icache_resp_half_full, compressed })
+        { EMPTY, 1'b0, 1'b1, 1'b0, 1'b? },
+        { EMPTY, 1'b0, 1'b1, 1'b1, 1'b1 },
+        {  HALF, 1'b0, 1'b0, 1'b0, 1'b1 },
+        {  HALF, 1'b?, 1'b1, 1'b0, 1'b? },
+        {  HALF, 1'b1, 1'b0, 1'b?, 1'b? },
+        {  FULL, 1'b1, 1'b0, 1'b?, 1'b? },
+        {  FULL, 1'b0, 1'b?, 1'b0, 1'b? }: fetch_provide = '1;
+        endcase
+    end
+        
+    front_load = '0;
+    if (!back_valid_r && icache_resp_received) begin
+        unique0 casez ({ fetch_full, front_state_r, icache_resp_half_full, compressed })
+        { 1'b0, EMPTY, 1'b0, 1'b1 }, 
+        { 1'b0, EMPTY, 1'b1, 1'b0 },
+        { 1'b1, EMPTY, 1'b?, 1'b? },
+        { 1'b0,  HALF, 1'b0, 1'b? },
+        { 1'b0,  FULL, 1'b0, 1'b0 }: front_load = '1;
+        endcase
+    end
+    
+    back_load = '0;
+    if (icache_resp_received && !icache_resp_half_full) begin
+        unique0 casez ({ fetch_full, front_state_r, back_valid_r, compressed })
+        { 1'b1,  HALF, 1'b0, 1'b? },
+        { 1'b0,  HALF, 1'b1, 1'b? },
+        { 1'b0,  FULL, 1'b0, 1'b1 },
+        { 1'b1,  FULL, 1'b0, 1'b? }: back_load = '1;
+        endcase
+    end
+    
+    back_transfer = '0;
+    if (!fetch_full && back_valid_r) begin
+        unique0 casez ({ front_state_r, icache_resp_received, icache_resp_half_full, compressed })
+        {  HALF, 1'b0, 1'b?, 1'b? },
+        {  HALF, 1'b1, 1'b0, 1'b? },
+        {  FULL, 1'b0, 1'b?, 1'b0 }: back_transfer = '1;
+        endcase
+    end
+    
+    icache_resp_ready = '1;
+    unique0 casez ({ fetch_full, front_state_r, back_valid_r, icache_resp_received, icache_resp_half_full, compressed })
+    { 1'b1,  HALF, 1'b0, 1'b1, 1'b0, 1'b? },
+    { 1'b1,  HALF, 1'b1, 1'b0, 1'b?, 1'b? },
+    { 1'b0,  HALF, 1'b1, 1'b1, 1'b0, 1'b? },
+    { 1'b0,  FULL, 1'b0, 1'b1, 1'b0, 1'b1 },
+    { 1'b1,  FULL, 1'b0, 1'b1, 1'b0, 1'b? },
+    { 1'b0,  FULL, 1'b1, 1'b0, 1'b?, 1'b1 },
+    { 1'b1,  FULL, 1'b1, 1'b0, 1'b?, 1'b? }: icache_resp_ready = '0; 
+    endcase
+    
+    front_state_next = front_state_r;
+    unique0 casez ({ fetch_full, front_state_r, back_valid_r, icache_resp_received, icache_resp_half_full, compressed })
+    { 1'b0, EMPTY, 1'b0, 1'b1, 1'b0, 1'b0 },
+    { 1'b0, EMPTY, 1'b0, 1'b1, 1'b1, 1'b1 },
+    { 1'b0,  HALF, 1'b0, 1'b0, 1'b?, 1'b1 },
+    { 1'b0,  FULL, 1'b0, 1'b0, 1'b?, 1'b0 }: front_state_next = EMPTY;
+    { 1'b0, EMPTY, 1'b0, 1'b1, 1'b0, 1'b1 },
+    { 1'b0, EMPTY, 1'b0, 1'b1, 1'b1, 1'b0 },
+    { 1'b1, EMPTY, 1'b0, 1'b1, 1'b1, 1'b? },
+    { 1'b0,  HALF, 1'b?, 1'b?, 1'b0, 1'b0 },
+    { 1'b1,  HALF, 1'b0, 1'b1, 1'b0, 1'b? },
+    { 1'b1,  HALF, 1'b1, 1'b0, 1'b?, 1'b? },
+    { 1'b0,  FULL, 1'b?, 1'b0, 1'b?, 1'b1 },
+    { 1'b0,  FULL, 1'b0, 1'b1, 1'b0, 1'b1 }: front_state_next = HALF;
+    { 1'b1, EMPTY, 1'b0, 1'b1, 1'b0, 1'b? },
+    { 1'b0,  HALF, 1'b0, 1'b1, 1'b0, 1'b1 },
+    { 1'b0,  HALF, 1'b1, 1'b?, 1'b0, 1'b1 },
+    { 1'b0,  FULL, 1'b0, 1'b1, 1'b0, 1'b0 },
+    { 1'b0,  FULL, 1'b1, 1'b0, 1'b?, 1'b0 },
+    { 1'b1,  FULL, 1'b0, 1'b1, 1'b0, 1'b? },
+    { 1'b1,  FULL, 1'b1, 1'b0, 1'b?, 1'b? }: front_state_next = FULL;
+    endcase
+`endif
+
+    //
+    // Flow Control
+    //
  
- //
- // Flow Control
- //
- 
- always_comb begin
     jmp_ready        = '1;
     flush            = '0;
     icache_req_start = '0;
@@ -397,7 +514,10 @@ always_comb begin
     end
     
     // Next PC advanced based on compression of instruction
-    fetch_pc_next_next = fetch_pc_next_r + (fetch_ir_next[1:0] == 3'b11 ? 4 : 2);
+    if (compressed)
+        fetch_pc_next_next = fetch_pc_next_r + 2;
+    else
+        fetch_pc_next_next = fetch_pc_next_r + 4;
         
     // If jumping 
     if (jmp_received) begin
