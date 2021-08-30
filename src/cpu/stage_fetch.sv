@@ -29,6 +29,7 @@ module stage_fetch
         // jump channel
         input  wire word_t       jmp_addr_i,
         input  wire logic        jmp_valid_i,
+        output wire logic        jmp_ready_o,
 
         // fetch channel
         output wire word_t       fetch_pc_o,
@@ -40,6 +41,13 @@ module stage_fetch
 
 initial start_logging();
 final stop_logging();
+
+//
+// Common Actions
+//
+
+logic flush;
+
 
 //
 // Fetch Channel
@@ -61,7 +69,7 @@ word_t fetch_pc_next_next;
 
 // Updates
 always_ff @(posedge clk_i) begin
-    if (fetch_receive)
+    if (flush || fetch_receive)
         fetch_valid_r <= '0;
     
     if (fetch_provide) begin
@@ -85,7 +93,7 @@ end
 
 
 //
-// Cache Request Management
+// Cache Request Channel
 //
 
 // Actions
@@ -101,7 +109,7 @@ memaddr_t icache_req_addr_next;
 
 // Updates
 always_ff @(posedge clk_i) begin
-    if (icache_req_complete)
+    if (flush || icache_req_complete)
         icache_req_valid_r <= '0;
     
     if (icache_req_start) begin
@@ -121,7 +129,7 @@ end
 
 
 //
-// Cache Response Management
+// Cache Response Channel
 //
 
 // Actions
@@ -129,7 +137,11 @@ logic icache_resp_ready;
 logic icache_resp_received;
 
 // Registers
-logic icache_resp_ready_r = '1;
+logic     icache_resp_ready_r = '1;
+memaddr_t icache_resp_expected_addr_r = '0;
+
+// Variables
+memaddr_t icache_resp_expected_addr_next;
 
 // Updates
 always_ff @(posedge clk_i) begin
@@ -140,17 +152,50 @@ always_ff @(posedge clk_i) begin
         icache_resp_ready_r <= '1;
 end
 
+always_ff @(posedge clk_i) begin
+    icache_resp_expected_addr_r <= icache_resp_expected_addr_next;
+end
+
 // Output
 assign icache_resp_ready_o = icache_resp_ready_r;
 
 // Triggers
 always_comb begin
-    icache_resp_received = icache_resp_ready_r && icache_resp_valid_i;
+    icache_resp_received = icache_resp_ready_r && icache_resp_valid_i && icache_resp_addr_i == icache_resp_expected_addr_r;
 end
 
 
 //
-// Buffer Management
+// Jump Channel
+//
+
+// Actions
+logic jmp_received;
+logic jmp_ready;
+
+// Registers
+logic jmp_ready_r = '1;
+
+// Updates
+always_ff @(posedge clk_i) begin
+    if (jmp_received)
+        jmp_ready_r <= '0;
+    
+    if (jmp_ready)
+        jmp_ready_r <= '1;
+end
+
+// Output
+assign jmp_ready_o = jmp_ready_r;
+
+// Triggers
+always_comb begin
+    jmp_received = jmp_ready_r && jmp_valid_i;
+end
+
+
+//
+// Buffers
 //
 
 // Actions
@@ -188,22 +233,21 @@ always_ff @(posedge clk_i) begin
         back_r       <= icache_resp_data_i;
         back_valid_r <= '1;
     end
+    
+    if (flush)
+        back_valid_r <= '0;
 end
 
 always_ff @(posedge clk_i) begin
-    front_state_r <= front_state_next;
+    front_state_r <= flush ? EMPTY : front_state_next;
 end
 
 
 //
-// Variable Logic
+// Action Determination Logic
 //
 
 always_comb begin
-    // Should another cache request be made, and for what address?
-    icache_req_start     = icache_req_ready_i;
-    icache_req_addr_next = icache_req_addr_r + 1;
-
     // Based on buffer states
     fetch_provide     = '0;
     fetch_ir_next     = '0;
@@ -323,11 +367,50 @@ always_comb begin
                 icache_resp_ready = '0;
             end
         end
+    { 1'b1, FULL, 1'b1, 1'b0 }:
+        begin
+            icache_resp_ready = '0;
+        end
     default: ;
     endcase
+ end
+ 
+ //
+ // Flow Control
+ //
+ 
+ always_comb begin
+    jmp_ready        = '1;
+    flush            = '0;
+    icache_req_start = '0;
     
-    // What will the next PC address be?
+    // If icache request completed, start one for the next memory address
+    icache_req_addr_next = icache_req_addr_r + 1;
+    if (icache_req_complete) begin
+        icache_req_start = '1;
+    end
+    
+    // If icache response received, get ready for the next memory address
+    icache_resp_expected_addr_next = icache_resp_expected_addr_r;
+    if (icache_resp_received) begin
+        icache_resp_expected_addr_next = icache_resp_expected_addr_r + 1;
+    end
+    
+    // Next PC advanced based on compression of instruction
     fetch_pc_next_next = fetch_pc_next_r + (fetch_ir_next[1:0] == 3'b11 ? 4 : 2);
+        
+    // If jumping 
+    if (jmp_received) begin
+        // Request jump address 
+        icache_req_addr_next           = jmp_addr_i[31:2];
+        icache_req_start               = '1;
+        // Expect jump address
+        icache_resp_expected_addr_next = jmp_addr_i[31:2];
+        // Next PC is jump address
+        fetch_pc_next_next             = jmp_addr_i;
+        // Flush all buffers
+        flush                          = '1;
+    end
 end
 
 endmodule
