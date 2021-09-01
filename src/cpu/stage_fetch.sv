@@ -266,6 +266,18 @@ always_ff @(posedge clk_i) begin
     front_state_r <= flush ? EMPTY : front_state_next;
 end
 
+//
+// Decompression
+//
+
+logic compressed;
+
+decompressor decompressor (
+    .ir_i (compressed_ir),
+    .ir_o (fetch_ir_next),
+    .compressed_o (compressed)
+);
+
 
 //
 // Action Determination Logic
@@ -274,7 +286,7 @@ end
 //`define USE_CASE_STATEMENT
 
 logic  fetch_full;
-logic  compressed;
+word_t compressed_ir;
     
 always_comb begin
     //
@@ -282,15 +294,11 @@ always_comb begin
     //
     
     unique case (front_state_r)
-    EMPTY: fetch_ir_next = icache_resp_half_full ? { 16'b0, icache_resp_data_i[31:16] } : icache_resp_data_i;
-    HALF:  fetch_ir_next = { (back_valid_r ? back_r[15:0] : icache_resp_data_i[15:0]), front_r[31:16] };
-    FULL:  fetch_ir_next = front_r;
+    EMPTY: compressed_ir = icache_resp_half_full ? { 16'b0, icache_resp_data_i[31:16] } : icache_resp_data_i;
+    HALF:  compressed_ir = { (back_valid_r ? back_r[15:0] : icache_resp_data_i[15:0]), front_r[31:16] };
+    FULL:  compressed_ir = front_r;
     endcase
-    
-    compressed = fetch_ir_next[1:0] != 2'b11;
-    if (compressed)
-        fetch_ir_next[31:16] = 16'b0;
-        
+            
     fetch_full = fetch_valid_r && !fetch_ready_i;
 
 `ifdef USE_CASE_STATEMENT
