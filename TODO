@@ -1,6 +1,6 @@
 TODO:
-- Add the new decompress stage, and a top and testbench for it.  Test out timing
-- If there's room after decompress, also try to decode... or atleast partially decode?
+- Stages
+    - Register lookups and issue stage
 - PS2
     - Get working with real PS2 keyboard.
     - Apparently need to ACK the AA, therefore need PS2 Tx module and tri-state buffers
@@ -9,10 +9,8 @@ TODO:
     - How do I want to handle this in the simulator?  Feels like another window.
     - Flow Control
 - Memory
-    - Allow for memory stalls
     - Add instruction & data cache
     - Add memory controller and DDR
-- AXI
 - BIOS
     - Provide UART interface for loading an ELF and jumping to it
 - ISA Extensions

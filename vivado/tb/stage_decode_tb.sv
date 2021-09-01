@@ -4,90 +4,125 @@
 module stage_decode_tb
     // Import Constants
     import common::*;
+    import cpu_common::*;
     ();
 
-// cpu signals
-logic       clk_i;            // clock
-logic       reset_i;          // reset_i
-logic       halt;           // halt
 
-// IF memory access
-word_t      imem_addr;      // address
-word_t      imem_data;      // data
+logic          clk;
+logic          icache_flush;
+memaddr_t      icache_req_addr;
+logic          icache_req_valid;
+logic          icache_req_ready;
+memaddr_t      icache_resp_addr;
+word_t         icache_resp_data;
+logic          icache_resp_valid;
+logic          icache_resp_ready;
+logic          halt;
+word_t         jmp_addr;
+logic          jmp_valid;
+word_t         fetch_pc;
+word_t         fetch_ir;
+word_t         fetch_pc_next;
+logic          fetch_valid;
+logic          fetch_ready;
+word_t         decode_pc;
+word_t         decode_ir;
+control_word_t decode_cw;
+logic          decode_valid;
+logic          decode_ready;
 
-// ID stage inputs
-word_t      if_pc;          // program counter
-word_t      if_ir;          // instruction register
-logic       if_valid;       // fetch stage data is valid
-
-// ID stage inputs (data hazards)
-regaddr_t     hz_ex_wb_addr;     // write-back register address
-word_t      hz_ex_wb_data;     // write-back register value
-logic       hz_ex_wb_valid;    // write-back data valid
-regaddr_t     hz_ma_wb_addr;     // write-back register address
-word_t      hz_ma_wb_data;     // write-back register value
-logic       hz_ma_wb_valid;    // write-back data valid
-regaddr_t     hz_wb_addr;        // write-back register address
-word_t      hz_wb_data;        // write-back register value
-
-// ID stage outputs (to IF)
-logic       id_ready;       // stage ready for new inputs
-word_t      id_jmp_addr;    // jump address
-logic       id_jmp_valid;   // jump address valid
-
-// ID stage outputs (to EX)
-word_t      id_ir;          // instruction register
-word_t      id_alu_op1;     // ALU operand 1
-word_t      id_alu_op2;     // ALU operand 2
-alu_mode_t  id_alu_mode;    // ALU mode
-ma_mode_t   id_ma_mode;     // memory access mode
-ma_size_t   id_ma_size;     // memory access size
-word_t      id_ma_data;     // memory access data
-wb_src_t    id_wb_src;      // write-back register address
-
-
-// Instruction Memory
-block_rom #(.CONTENTS("d:/dev/riscy_click/bios/bios.coe")) rom (
-    .clk_i(clk_i),
-    .reset_i(reset_i),
-    .addr_a(imem_addr),
-    .data_a(imem_data),
-    .addr_b(32'h00000000),
-    .data_b()
+instruction_cache cache (
+    .clk_i        (clk),
+    .flush_i      (icache_flush),
+    .req_addr_i   (icache_req_addr),
+    .req_valid_i  (icache_req_valid),
+    .req_ready_o  (icache_req_ready),
+    .resp_addr_o  (icache_resp_addr),
+    .resp_data_o  (icache_resp_data),
+    .resp_valid_o (icache_resp_valid),
+    .resp_ready_i (icache_resp_ready)
 );
 
-// Fetch Stage
-stage_fetch stage_fetch (.*);
+stage_fetch stage_fetch (
+    .clk_i               (clk),
+    .halt_i              (halt),
+    .icache_flush_o      (icache_flush),
+    .icache_req_addr_o   (icache_req_addr),
+    .icache_req_valid_o  (icache_req_valid),
+    .icache_req_ready_i  (icache_req_ready),
+    .icache_resp_addr_i  (icache_resp_addr),
+    .icache_resp_data_i  (icache_resp_data),
+    .icache_resp_valid_i (icache_resp_valid),
+    .icache_resp_ready_o (icache_resp_ready),
+    .jmp_addr_i          (jmp_addr),
+    .jmp_valid_i         (jmp_valid),
+    .fetch_pc_o          (fetch_pc),
+    .fetch_ir_o          (fetch_ir),
+    .fetch_pc_next_o     (fetch_pc_next),
+    .fetch_valid_o       (fetch_valid),
+    .fetch_ready_i       (fetch_ready)
+);
 
-// Decode Stage
-stage_decode stage_decode (.id_halt(halt), .*);
+stage_decode stage_decode (
+    .clk_i               (clk),
+    .fetch_pc_i          (fetch_pc),
+    .fetch_ir_i          (fetch_ir),
+    .fetch_pc_next_i     (fetch_pc_next),
+    .fetch_valid_i       (fetch_valid),
+    .fetch_ready_o       (fetch_ready),
+    .decode_pc_o         (decode_pc),
+    .decode_ir_o         (decode_ir),
+    .decode_cw_o         (decode_cw),
+    .decode_valid_o      (decode_valid),
+    .decode_ready_i      (decode_ready)
+);
 
 // clock generator
 initial begin
-    clk_i = 1;
+    clk <= 0;
     forever begin
-        #50 clk_i <= ~clk_i;
+        #5 clk <= ~clk;
     end
 end
 
-// reset_i pulse
+// halt eventually
 initial begin
-    reset_i = 1;
-    #250 reset_i = 0;
+    halt <= 0;
+    #10000
+    @(posedge clk) halt <= 1;
 end
 
-// write-back logic
+// test backpressure
 initial begin
-    hz_ex_wb_addr = 5'b00000;
-    hz_ex_wb_data = 32'h00000000;
-    hz_ex_wb_valid = 1'b1;
+    decode_ready <= 1'b1;
 
-    hz_ma_wb_addr = 5'b00000;
-    hz_ma_wb_data = 32'h00000000;
-    hz_ma_wb_valid = 1'b1;
+    forever begin
+        #1000
+        @(posedge clk) decode_ready <= 1'b0;
+        @(posedge clk) decode_ready <= 1'b1;
+        #1000
+        @(posedge clk) decode_ready <= 1'b0;
+        #40
+        @(posedge clk) decode_ready <= 1'b1;
+    end
+end
 
-    hz_wb_addr = 5'b00000;
-    hz_wb_data = 32'h00000000;
+// do some jumps
+initial begin
+    jmp_addr  <= 8'h00;
+    jmp_valid <= 1'b0;
+    #500
+    forever begin
+        #1000
+        @(posedge clk) begin
+            jmp_addr  <= 8'h80;
+            jmp_valid <= 1'b1;
+        end
+        @(posedge clk) begin
+            jmp_addr  <= 8'h00;
+            jmp_valid <= 1'b0;
+        end
+    end
 end
 
 endmodule
