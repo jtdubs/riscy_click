@@ -9,6 +9,7 @@ module stage_fetch_tb
     
     
 logic     clk;
+logic     flush;
 memaddr_t req_addr;
 logic     req_valid;
 logic     req_ready;
@@ -27,6 +28,7 @@ logic     fetch_ready;
 
 instruction_cache cache (
     .clk_i        (clk),
+    .flush_i      (flush),
     .req_addr_i   (req_addr),
     .req_valid_i  (req_valid),
     .req_ready_o  (req_ready),
@@ -39,6 +41,7 @@ instruction_cache cache (
 stage_fetch stage_fetch (
     .clk_i               (clk),
     .halt_i              (halt),
+    .icache_flush_o      (flush),
     .icache_req_addr_o   (req_addr),
     .icache_req_valid_o  (req_valid),
     .icache_req_ready_i  (req_ready),

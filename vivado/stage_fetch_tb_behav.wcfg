@@ -14,13 +14,13 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="13,437.166 ns"></ZoomStartTime>
-      <ZoomEndTime time="13,674.567 ns"></ZoomEndTime>
-      <Cursor1Time time="13,635.000 ns"></Cursor1Time>
+      <ZoomStartTime time="1,411.583 ns"></ZoomStartTime>
+      <ZoomEndTime time="1,607.684 ns"></ZoomEndTime>
+      <Cursor1Time time="1,519.983 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="316"></NameColumnWidth>
-      <ValueColumnWidth column_width="157"></ValueColumnWidth>
+      <ValueColumnWidth column_width="151"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="10" />
    <wave_markers>
@@ -54,6 +54,10 @@
       <obj_property name="label">Instruction Cache</obj_property>
       <obj_property name="DisplayName">label</obj_property>
       <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/stage_fetch_tb/stage_fetch/icache_flush_o" type="logic">
+         <obj_property name="ElementShortName">icache_flush_o</obj_property>
+         <obj_property name="ObjectShortName">icache_flush_o</obj_property>
+      </wvobject>
       <wvobject fp_name="/stage_fetch_tb/stage_fetch/icache_req_addr_o" type="array">
          <obj_property name="ElementShortName">icache_req_addr_o[29:0]</obj_property>
          <obj_property name="ObjectShortName">icache_req_addr_o[29:0]</obj_property>
@@ -120,6 +124,10 @@
       <obj_property name="label">Actions</obj_property>
       <obj_property name="DisplayName">label</obj_property>
       <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/stage_fetch_tb/stage_fetch/flush" type="logic">
+         <obj_property name="ElementShortName">flush</obj_property>
+         <obj_property name="ObjectShortName">flush</obj_property>
+      </wvobject>
       <wvobject fp_name="/stage_fetch_tb/stage_fetch/jmp_received" type="logic">
          <obj_property name="ElementShortName">jmp_received</obj_property>
          <obj_property name="ObjectShortName">jmp_received</obj_property>

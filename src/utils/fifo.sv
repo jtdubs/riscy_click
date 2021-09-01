@@ -20,6 +20,9 @@ module fifo
     (
         input  wire logic                    clk_i,
 
+        // flush port
+        input  wire logic                    flush_i,
+        
         // write port
         input  wire logic [(DATA_WIDTH-1):0] write_data_i,
         input  wire logic                    write_enable_i,
@@ -71,26 +74,26 @@ assign fifo_full_o         = fifo_full_r;
 // determine next state
 addr_t read_ptr_next;
 addr_t write_ptr_next;
+addr_t count_next;
 
 always_comb begin
-    unique if (write_enable_i && write_ready_r) begin
+    write_ptr_next = write_ptr_r;
+    if (flush_i)
+        write_ptr_next = '0;
+    if (write_enable_i && write_ready_r)
         write_ptr_next = write_ptr_r + 1;
-    end else begin
-        write_ptr_next = write_ptr_r;
-    end
-
-    unique if (read_enable_i && read_valid_r) begin
-        read_ptr_next = read_ptr_r + 1;
-    end else begin
-        read_ptr_next = read_ptr_r;
-    end
+    
+    read_ptr_next = read_ptr_r;
+    if (flush_i)
+        read_ptr_next = '0;
+    if (read_enable_i && read_valid_r)
+        read_ptr_next = read_ptr_next + 1;
+        
+    count_next = write_ptr_next - read_ptr_next;
 end
 
-// pending fifo count
-addr_t count_next;
-always_comb count_next = write_ptr_next - read_ptr_next;
-
-assign read_data_o = data_r[read_ptr_r];
+// reads all through
+assign read_data_o = data_r[flush_i ? '0 : read_ptr_r];
   
 // update registers
 always_ff @(posedge clk_i) begin
@@ -104,7 +107,7 @@ always_ff @(posedge clk_i) begin
     write_ready_r       <= (count_next != CAPACITY);
 
     if (write_enable_i && write_ready_r)
-        data_r[write_ptr_r] <= write_data_i;
+        data_r[flush_i ? '0 : write_ptr_r] <= write_data_i;
 end
 
 endmodule

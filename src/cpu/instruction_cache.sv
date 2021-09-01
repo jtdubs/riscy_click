@@ -16,6 +16,9 @@ module instruction_cache
     (
         // cpu signals
         input  wire logic     clk_i,
+        
+        // flush channel
+        input  wire logic     flush_i,
 
         // request channel
         input  wire memaddr_t req_addr_i,
@@ -59,7 +62,10 @@ bios_rom #(
 // Generate bios_read_valid signal on a ROM_LATENCY cycle delay
 logic bios_read_valid_r [ROM_LATENCY-1:0] = '{ default: '0 };
 always_ff @(posedge clk_i) begin
-    bios_read_valid_r <= { req_occurs, bios_read_valid_r[ROM_LATENCY-1:1] };
+    if (flush_i)
+        bios_read_valid_r <= { req_occurs, '0 };
+    else
+        bios_read_valid_r <= { req_occurs, bios_read_valid_r[ROM_LATENCY-1:1] };
 end
 assign bios_read_valid = bios_read_valid_r[0];
 
@@ -92,6 +98,7 @@ fifo #(
     .ADDR_WIDTH     (2)
 ) data_fifo (
     .clk_i          (clk_i),
+    .flush_i        (flush_i),
     .read_enable_i  (unqueue_data),
     .read_data_o    (data),
     .read_valid_o   (data_valid),
@@ -108,6 +115,7 @@ fifo #(
     .ADDR_WIDTH     (2)
 ) addr_fifo (
     .clk_i          (clk_i),
+    .flush_i        (flush_i),
     .read_enable_i  (load_resp),
     .read_data_o    (addr),
     .write_data_i   (req_addr_i),
@@ -148,14 +156,14 @@ always_comb begin
     // a request occurs when the request inputs are valid and the address fifo can accept writes
     req_occurs   = req_valid_i && addr_write_ready;
     
-    // a response occurs when the response data is valid and the receiver is ready
-    resp_occurs  = resp_valid_r && resp_ready_i;
+    // a response occurs when the response data is valid and the receiver is ready, or if asked to flush
+    resp_occurs  = (resp_valid_r && resp_ready_i) || flush_i;
     
     // load a new response if there will be room and there is data to load
-    load_resp    = (resp_occurs || !resp_valid_r) && (data_valid || bios_read_valid);
+    load_resp    = (resp_occurs || !resp_valid_r) && (data_valid || bios_read_valid) && !flush_i;
     
     // queue data when received and we are either not loading a response, or there is valid data in the queue to output first
-    queue_data   = bios_read_valid && (!load_resp || data_valid);
+    queue_data   = bios_read_valid && (!load_resp || data_valid) && !flush_i;
     
     // unqueue data when loading a response and queue has valid data
     unqueue_data = load_resp && data_valid; 

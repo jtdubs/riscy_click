@@ -15,11 +15,14 @@ module stage_fetch
         input  wire logic        clk_i,
         input  wire logic        halt_i,
 
+        // icache flush channel
+        output wire logic        icache_flush_o,
+        
         // icache request channel
         output wire memaddr_t    icache_req_addr_o,
         output wire logic        icache_req_valid_o,
         input  wire logic        icache_req_ready_i,
-
+        
         // icache response channel
         input  wire memaddr_t    icache_resp_addr_i,
         input  wire word_t       icache_resp_data_i,
@@ -43,12 +46,25 @@ initial start_logging();
 final stop_logging();
 
 //
-// Common Actions
+// Flush Channel
 //
 
-// TODO: doesn't handle unaligned jumps yet!!!
-
+// Actions
 logic flush;
+
+// Registers
+logic icache_flush_r = '0;
+
+// Updates
+always_ff @(posedge clk_i) begin
+    icache_flush_r <= '0;
+    
+    if (flush)
+        icache_flush_r <= '1;
+end
+
+// Output
+assign icache_flush_o = icache_flush_r;
 
 
 //
@@ -71,14 +87,14 @@ word_t fetch_pc_next_next;
 
 // Updates
 always_ff @(posedge clk_i) begin
-    if (flush || fetch_receive)
+    if (fetch_receive || flush)
         fetch_valid_r   <= '0;
     
     if (fetch_provide) begin
         fetch_ir_r      <= fetch_ir_next;
         fetch_pc_r      <= fetch_pc_next_r;
+        fetch_valid_r   <= !flush;
         fetch_pc_next_r <= fetch_pc_next_next;
-        fetch_valid_r   <= '1;
     end
 end
 
@@ -111,7 +127,7 @@ memaddr_t icache_req_addr_next;
 
 // Updates
 always_ff @(posedge clk_i) begin
-    if (flush || icache_req_complete)
+    if (icache_req_complete || flush)
         icache_req_valid_r <= '0;
     
     if (icache_req_start) begin
@@ -141,11 +157,9 @@ logic icache_unaligned_jump;
 
 // Registers
 logic     icache_resp_ready_r         = '1;
-memaddr_t icache_resp_expected_addr_r = '0;
 logic     icache_resp_discard_half_r  = '0;
 
 // Variables
-memaddr_t icache_resp_expected_addr_next;
 logic     icache_resp_half_full;
 
 // Updates
@@ -153,13 +167,11 @@ always_ff @(posedge clk_i) begin
     if (icache_resp_received)
         icache_resp_ready_r <= '0;
     
-    if (icache_resp_ready)
+    if (icache_resp_ready && !flush)
         icache_resp_ready_r <= '1;
 end
 
 always_ff @(posedge clk_i) begin
-    icache_resp_expected_addr_r <= icache_resp_expected_addr_next;
-    
     if (icache_resp_received)
         icache_resp_discard_half_r <= '0;
     
@@ -172,7 +184,7 @@ assign icache_resp_ready_o = icache_resp_ready_r;
 
 // Triggers
 always_comb begin
-    icache_resp_received  = icache_resp_ready_r && icache_resp_valid_i && icache_resp_addr_i == icache_resp_expected_addr_r;
+    icache_resp_received  = icache_resp_ready_r && icache_resp_valid_i;
     icache_resp_half_full = icache_resp_received && icache_resp_discard_half_r;
 end
 
@@ -507,12 +519,6 @@ always_comb begin
         icache_req_start = '1;
     end
     
-    // If icache response received, get ready for the next memory address
-    icache_resp_expected_addr_next = icache_resp_expected_addr_r;
-    if (icache_resp_received) begin
-        icache_resp_expected_addr_next = icache_resp_expected_addr_r + 1;
-    end
-    
     // Next PC advanced based on compression of instruction
     if (compressed)
         fetch_pc_next_next = fetch_pc_next_r + 2;
@@ -524,8 +530,6 @@ always_comb begin
         // Request jump address 
         icache_req_addr_next           = jmp_addr_i[31:2];
         icache_req_start               = '1;
-        // Expect jump address
-        icache_resp_expected_addr_next = jmp_addr_i[31:2];
         // Next PC is jump address
         fetch_pc_next_next             = jmp_addr_i;
         // Flush all buffers

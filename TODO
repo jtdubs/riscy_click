@@ -1,4 +1,6 @@
 TODO:
+- Add the new decompress stage, and a top and testbench for it.  Test out timing
+- If there's room after decompress, also try to decode... or atleast partially decode?
 - PS2
     - Get working with real PS2 keyboard.
     - Apparently need to ACK the AA, therefore need PS2 Tx module and tri-state buffers
