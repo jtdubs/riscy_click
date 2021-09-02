@@ -116,18 +116,16 @@ word_t alu_op1;
 word_t alu_op2;
 
 always_comb begin
-    case (cw.alu_op1)
+    unique case (cw.alu_op1)
     ALU_OP1_IMMU: alu_op1 = imm_u;
-    ALU_OP1_RS1:  alu_op1 = ra;
-    default:      alu_op1 = '0; 
+    default:      alu_op1 = ra;
     endcase
     
-    case (cw.alu_op2)
+    unique case (cw.alu_op2)
     ALU_OP2_IMMI: alu_op2 = imm_i;
     ALU_OP2_IMMS: alu_op2 = imm_s;
     ALU_OP2_PC:   alu_op2 = pc;
-    ALU_OP2_RS2:  alu_op2 = rb;
-    default:      alu_op2 = '0;
+    default:      alu_op2 = rb;
     endcase
 end
 
