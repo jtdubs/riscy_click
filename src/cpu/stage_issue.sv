@@ -32,14 +32,33 @@ module stage_issue
 
         // pipeline output
         output wire control_word_t  issue_cw_o,
-        output wire word_t          issue_ra_o,
-        output wire word_t          issue_rb_o,
+        output wire word_t          issue_alu_op1_o,
+        output wire word_t          issue_alu_op2_o,
         output wire logic           issue_valid_o,
         input  wire logic           issue_ready_i
     );
 
 initial start_logging();
 final stop_logging();
+
+
+//
+// Unpacking
+//
+
+word_t imm_i;
+word_t imm_s;
+word_t imm_b;
+word_t imm_u;
+word_t imm_j;
+
+always_comb begin
+    imm_i = { {21{ir[31]}}, ir[30:25], ir[24:21], ir[20] };
+    imm_s = { {21{ir[31]}}, ir[30:25], ir[11:8], ir[7] };
+    imm_b = { {20{ir[31]}}, ir[7], ir[30:25], ir[11:8], 1'b0 };
+    imm_u = { ir[31], ir[30:20], ir[19:12], 12'b0 };
+    imm_j = { {12{ir[31]}}, ir[19:12], ir[20], ir[30:25], ir[24:21], 1'b0 };
+end
 
 
 //
@@ -90,6 +109,30 @@ end
 
 
 //
+// ALU Operand Selection
+//
+
+word_t alu_op1;
+word_t alu_op2;
+
+always_comb begin
+    case (cw.alu_op1)
+    ALU_OP1_IMMU: alu_op1 = imm_u;
+    ALU_OP1_RS1:  alu_op1 = ra;
+    default:      alu_op1 = '0; 
+    endcase
+    
+    case (cw.alu_op2)
+    ALU_OP2_IMMI: alu_op2 = imm_i;
+    ALU_OP2_IMMS: alu_op2 = imm_s;
+    ALU_OP2_PC:   alu_op2 = pc;
+    ALU_OP2_RS2:  alu_op2 = rb;
+    default:      alu_op2 = '0;
+    endcase
+end
+
+
+//
 // Decode Input
 //
 
@@ -127,19 +170,19 @@ word_t         ra;
 word_t         rb;
 
 control_word_t issue_cw_r;
-word_t         issue_ra_r       = '0;
-word_t         issue_rb_r       = '0;
-logic          issue_valid_r    = '0;
+word_t         issue_alu_op1_r = '0;
+word_t         issue_alu_op2_r = '0;
+logic          issue_valid_r   = '0;
 
 always_ff @(posedge clk_i) begin
     if (issue_unload)
         issue_valid_r <= '0;
 
     if (issue_load) begin
-        issue_cw_r       <= cw;
-        issue_ra_r       <= bypass_ra;
-        issue_rb_r       <= bypass_rb;
-        issue_valid_r    <= '1;
+        issue_cw_r      <= cw;
+        issue_alu_op1_r <= alu_op1;
+        issue_alu_op2_r <= alu_op2;
+        issue_valid_r   <= '1;
     end
 end
 
@@ -147,10 +190,10 @@ always_comb begin
     issue_unload = issue_valid_o && issue_ready_i;
 end
 
-assign issue_cw_o       = issue_cw_r;
-assign issue_ra_o       = issue_ra_r;
-assign issue_rb_o       = issue_rb_r;
-assign issue_valid_o    = issue_valid_r;
+assign issue_cw_o      = issue_cw_r;
+assign issue_alu_op1_o = issue_alu_op1_r;
+assign issue_alu_op2_o = issue_alu_op2_r;
+assign issue_valid_o   = issue_valid_r;
 
 
 //

@@ -203,8 +203,8 @@ stage_decode stage_decode (
 //
 
 (* MARK_DEBUG = "true" *) wire control_word_t issue_cw;
-(* MARK_DEBUG = "true" *) wire word_t         issue_ra;
-(* MARK_DEBUG = "true" *) wire word_t         issue_rb;
+(* MARK_DEBUG = "true" *) wire word_t         issue_alu_op1;
+(* MARK_DEBUG = "true" *) wire word_t         issue_alu_op2;
 (* MARK_DEBUG = "true" *) wire logic          issue_valid;
 (* MARK_DEBUG = "true" *) wire logic          issue_ready;
 
@@ -222,8 +222,8 @@ stage_issue stage_issue (
     .wb_valid_i          ({ decode_ir[23:20] }),
     .wb_ready_i          ({ decode_ir[27:24] }),
     .issue_cw_o          (issue_cw),
-    .issue_ra_o          (issue_ra),
-    .issue_rb_o          (issue_rb),
+    .issue_alu_op1_o     (issue_alu_op1),
+    .issue_alu_op2_o     (issue_alu_op2),
     .issue_valid_o       (issue_valid),
     .issue_ready_i       (switch_r.ready && button_pressed_r[0])
 );
@@ -233,20 +233,20 @@ stage_issue stage_issue (
 // Latch Outputs
 //
 
-word_t         pc_r    = '0;
-word_t         ir_r    = '0;
+word_t         pc_r      = '0;
+word_t         ir_r      = '0;
 control_word_t cw_r;
-word_t         ra_r    = '0;
-word_t         rb_r    = '0;
-logic          valid_r = '0;
+word_t         alu_op1_r = '0;
+word_t         alu_op2_r = '0;
+logic          valid_r   = '0;
 
 always_ff @(posedge cpu_clk_i) begin
     if (button_pressed_r[0]) begin
         pc_r      <= decode_pc;
         ir_r      <= decode_ir;
         cw_r      <= issue_cw;
-        ra_r      <= issue_ra;
-        rb_r      <= issue_rb;
+        alu_op1_r <= issue_alu_op1;
+        alu_op2_r <= issue_alu_op2;
         valid_r   <= issue_valid;
     end
 end
@@ -259,8 +259,8 @@ always_comb begin
     3'b001:  display_data = ir_r;
     3'b010:  display_data = { 8'b0, cw_r };
     3'b011:  display_data = { 31'b0, valid_r };
-    3'b100:  display_data = ra_r;
-    3'b101:  display_data = rb_r;
+    3'b100:  display_data = alu_op1_r;
+    3'b101:  display_data = alu_op2_r;
     default: display_data = '0;
     endcase
 end

@@ -1,6 +1,6 @@
 TODO:
 - Stages
-    - Register lookups and issue stage
+    - Execute stage
     - Eventually consider extracting a bypass_queue type for use between stages...
     - Ideally a stage becomes:
         - Instantiate a combinational logic object for the stage

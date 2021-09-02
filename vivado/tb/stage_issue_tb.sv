@@ -33,8 +33,8 @@ word_t         decode_rb;
 logic          decode_valid;
 logic          decode_ready;
 control_word_t issue_cw;
-word_t         issue_ra;
-word_t         issue_rb;
+word_t         issue_alu_op1;
+word_t         issue_alu_op2;
 logic          issue_valid;
 logic          issue_ready;
 
@@ -100,8 +100,8 @@ stage_issue stage_issue (
     .wb_valid_i          ({ decode_ir[23:20] }),
     .wb_ready_i          ({ decode_ir[27:24] }),
     .issue_cw_o          (issue_cw),
-    .issue_ra_o          (issue_ra),
-    .issue_rb_o          (issue_rb),
+    .issue_alu_op1_o     (issue_alu_op1),
+    .issue_alu_op2_o     (issue_alu_op2),
     .issue_valid_o       (issue_valid),
     .issue_ready_i       (issue_ready)
 );
