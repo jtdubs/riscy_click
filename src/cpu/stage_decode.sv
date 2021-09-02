@@ -26,6 +26,8 @@ module stage_decode
         output wire word_t         decode_pc_o,
         output wire word_t         decode_ir_o,
         output wire control_word_t decode_cw_o,
+        output wire word_t         decode_ra_o,
+        output wire word_t         decode_rb_o,
         output wire logic          decode_valid_o,
         input  wire logic          decode_ready_i
     );
@@ -44,6 +46,32 @@ control_word_t cw;
 decoder decoder (
     .ir_i       (ir),
     .cw_async_o (cw)
+);
+
+
+//
+// Register File
+//
+
+regaddr_t rs1;
+regaddr_t rs2;
+word_t    ra;
+word_t    rb;
+
+always_comb begin
+    rs1 = ir[19:15];
+    rs2 = ir[24:20];
+end
+
+(* DONT_TOUCH = "true" *) regfile regfile (
+    .clk_i           (clk_i),
+    .ra_addr_i       (rs1),
+    .ra_data_async_o (ra),
+    .rb_addr_i       (rs2),
+    .rb_data_async_o (rb),
+    .wr_enable_i     (ir[0]),
+    .wr_addr_i       (regaddr_t'(ir[5:1])),
+    .wr_data_i       (ir)
 );
 
 
@@ -83,6 +111,8 @@ word_t pc;
 word_t         decode_pc_r    = '0;
 word_t         decode_ir_r    = '0;
 control_word_t decode_cw_r;
+word_t         decode_ra_r    = '0;
+word_t         decode_rb_r    = '0;
 logic          decode_valid_r = '0;
 
 always_ff @(posedge clk_i) begin
@@ -93,6 +123,8 @@ always_ff @(posedge clk_i) begin
         decode_pc_r      <= pc;
         decode_ir_r      <= ir;
         decode_cw_r      <= cw;
+        decode_ra_r      <= ra;
+        decode_rb_r      <= rb;
         decode_valid_r   <= '1;
     end
 end
@@ -104,6 +136,8 @@ end
 assign decode_pc_o    = decode_pc_r;
 assign decode_ir_o    = decode_ir_r;
 assign decode_cw_o    = decode_cw_r;
+assign decode_ra_o    = decode_ra_r;
+assign decode_rb_o    = decode_rb_r;
 assign decode_valid_o = decode_valid_r;
 
 

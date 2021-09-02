@@ -81,8 +81,7 @@ assign halt_o       = '0;
 
 // Switches
 typedef struct packed {
-    logic [1:0] display_selector;
-    logic       reserved_1;
+    logic [2:0] display_selector;
     logic       jmp_valid;
     logic [7:0] jmp_addr;
     logic       reserved_2;
@@ -177,6 +176,8 @@ stage_fetch stage_fetch (
 (* MARK_DEBUG = "true" *) wire word_t           decode_pc;
 (* MARK_DEBUG = "true" *) wire word_t           decode_ir;
 (* MARK_DEBUG = "true" *) wire control_word_t   decode_cw;
+(* MARK_DEBUG = "true" *) wire word_t           decode_ra;
+(* MARK_DEBUG = "true" *) wire word_t           decode_rb;
 (* MARK_DEBUG = "true" *) wire logic            decode_valid;
 (* MARK_DEBUG = "true" *) wire logic            decode_ready;
 
@@ -190,6 +191,8 @@ stage_decode stage_decode (
     .decode_pc_o         (decode_pc),
     .decode_ir_o         (decode_ir),
     .decode_cw_o         (decode_cw),
+    .decode_ra_o         (decode_ra),
+    .decode_rb_o         (decode_rb),
     .decode_valid_o      (decode_valid),
     .decode_ready_i      (switch_r.ready && button_pressed_r[0])
 );
@@ -198,6 +201,8 @@ stage_decode stage_decode (
 word_t         pc_r      = '0;
 word_t         ir_r      = '0;
 control_word_t cw_r      = '{ default: '0 };
+word_t         ra_r      = '0;
+word_t         rb_r      = '0;
 logic          valid_r   = '0;
 
 always_ff @(posedge cpu_clk_i) begin
@@ -205,6 +210,8 @@ always_ff @(posedge cpu_clk_i) begin
         pc_r      <= decode_pc;
         ir_r      <= decode_ir;
         cw_r      <= decode_cw;
+        ra_r      <= decode_ra;
+        rb_r      <= decode_rb;
         valid_r   <= decode_valid;
     end
 end
@@ -213,10 +220,13 @@ end
 (* MARK_DEBUG = "true" *) word_t display_data;
 always_comb begin
     case (switch_r.display_selector)
-    2'b00: display_data = pc_r;
-    2'b01: display_data = ir_r;
-    2'b10: display_data = { 8'b0, cw_r };
-    2'b11: display_data = { 31'b0, valid_r };
+    3'b000:  display_data = pc_r;
+    3'b001:  display_data = ir_r;
+    3'b010:  display_data = { 8'b0, cw_r };
+    3'b011:  display_data = { 31'b0, valid_r };
+    3'b100:  display_data = ra_r;
+    3'b101:  display_data = rb_r;
+    default: display_data = '0;
     endcase
 end
 
