@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-module stage_decode_tb
+module stage_issue_tb
     // Import Constants
     import common::*;
     import cpu_common::*;
@@ -32,6 +32,11 @@ word_t         decode_ra;
 word_t         decode_rb;
 logic          decode_valid;
 logic          decode_ready;
+control_word_t issue_cw;
+word_t         issue_ra;
+word_t         issue_rb;
+logic          issue_valid;
+logic          issue_ready;
 
 instruction_cache cache (
     .clk_i        (clk),
@@ -81,6 +86,26 @@ stage_decode stage_decode (
     .decode_ready_i      (decode_ready)
 );
 
+stage_issue stage_issue (
+    .clk_i               (clk),
+    .decode_pc_i         (decode_pc),
+    .decode_ir_i         (decode_ir),
+    .decode_cw_i         (decode_cw),
+    .decode_ra_i         (decode_ra),
+    .decode_rb_i         (decode_rb),
+    .decode_valid_i      (decode_valid),
+    .decode_ready_o      (decode_ready),
+    .wb_addr_i           (decode_ir[19:0]),
+    .wb_data_i           ({ decode_pc, decode_ir, decode_ra, decode_rb }),
+    .wb_valid_i          ({ decode_ir[23:20] }),
+    .wb_ready_i          ({ decode_ir[27:24] }),
+    .issue_cw_o          (issue_cw),
+    .issue_ra_o          (issue_ra),
+    .issue_rb_o          (issue_rb),
+    .issue_valid_o       (issue_valid),
+    .issue_ready_i       (issue_ready)
+);
+
 // clock generator
 initial begin
     clk <= 0;
@@ -98,16 +123,16 @@ end
 
 // test backpressure
 initial begin
-    decode_ready <= 1'b1;
+    issue_ready <= 1'b1;
 
     forever begin
         #1000
-        @(posedge clk) decode_ready <= 1'b0;
-        @(posedge clk) decode_ready <= 1'b1;
+        @(posedge clk) issue_ready <= 1'b0;
+        @(posedge clk) issue_ready <= 1'b1;
         #1000
-        @(posedge clk) decode_ready <= 1'b0;
+        @(posedge clk) issue_ready <= 1'b0;
         #40
-        @(posedge clk) decode_ready <= 1'b1;
+        @(posedge clk) issue_ready <= 1'b1;
     end
 end
 

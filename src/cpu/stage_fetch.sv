@@ -12,34 +12,34 @@ module stage_fetch
     import logging::*;
     (
         // cpu signals
-        input  wire logic        clk_i,
-        input  wire logic        halt_i,
+        input  wire logic     clk_i,
+        input  wire logic     halt_i,
 
         // icache flush channel
-        output wire logic        icache_flush_o,
+        output wire logic     icache_flush_o,
         
         // icache request channel
-        output wire memaddr_t    icache_req_addr_o,
-        output wire logic        icache_req_valid_o,
-        input  wire logic        icache_req_ready_i,
+        output wire memaddr_t icache_req_addr_o,
+        output wire logic     icache_req_valid_o,
+        input  wire logic     icache_req_ready_i,
         
         // icache response channel
-        input  wire memaddr_t    icache_resp_addr_i,
-        input  wire word_t       icache_resp_data_i,
-        input  wire logic        icache_resp_valid_i,
-        output wire logic        icache_resp_ready_o,
+        input  wire memaddr_t icache_resp_addr_i,
+        input  wire word_t    icache_resp_data_i,
+        input  wire logic     icache_resp_valid_i,
+        output wire logic     icache_resp_ready_o,
 
         // jump channel
-        input  wire word_t       jmp_addr_i,
-        input  wire logic        jmp_valid_i,
-        output wire logic        jmp_ready_o,
+        input  wire word_t    jmp_addr_i,
+        input  wire logic     jmp_valid_i,
+        output wire logic     jmp_ready_o,
 
         // fetch channel
-        output wire word_t       fetch_pc_o,
-        output wire word_t       fetch_ir_o,
-        output wire word_t       fetch_pc_next_o,
-        output wire logic        fetch_valid_o,
-        input  wire logic        fetch_ready_i
+        output wire word_t    fetch_pc_o,
+        output wire word_t    fetch_ir_o,
+        output wire word_t    fetch_pc_next_o,
+        output wire logic     fetch_valid_o,
+        input  wire logic     fetch_ready_i
     );
 
 initial start_logging();

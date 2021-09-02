@@ -1,6 +1,13 @@
 TODO:
 - Stages
     - Register lookups and issue stage
+    - Eventually consider extracting a bypass_queue type for use between stages...
+    - Ideally a stage becomes:
+        - Instantiate a combinational logic object for the stage
+        - Instantiate a bypass queue for the outputs (inputs?  i think outputs.)
+        - Stage inputs go to combinational logic from preceeding stages bypass queue
+        - Combinational logic goes to bypass queue inputs
+        - Bypass queue outputs are stage outputs
 - PS2
     - Get working with real PS2 keyboard.
     - Apparently need to ACK the AA, therefore need PS2 Tx module and tri-state buffers

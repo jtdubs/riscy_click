@@ -63,13 +63,13 @@ always_comb begin
     rs2 = ir[24:20];
 end
 
-(* DONT_TOUCH = "true" *) regfile regfile (
+register_file register_file (
     .clk_i           (clk_i),
     .ra_addr_i       (rs1),
     .ra_data_async_o (ra),
     .rb_addr_i       (rs2),
     .rb_data_async_o (rb),
-    .wr_enable_i     (ir[0]),
+    .wr_enable_i     (1'b1),
     .wr_addr_i       (regaddr_t'(ir[5:1])),
     .wr_data_i       (ir)
 );
@@ -103,42 +103,42 @@ assign fetch_ready_o = fetch_ready_r;
 // Decode Output
 //
 
-logic decode_occurs;
-logic decode_provide;
+logic decode_unload;
+logic decode_load;
 
 word_t pc;
 
-word_t         decode_pc_r    = '0;
-word_t         decode_ir_r    = '0;
+word_t         decode_pc_r       = '0;
+word_t         decode_ir_r       = '0;
 control_word_t decode_cw_r;
-word_t         decode_ra_r    = '0;
-word_t         decode_rb_r    = '0;
-logic          decode_valid_r = '0;
+word_t         decode_ra_r       = '0;
+word_t         decode_rb_r       = '0;
+logic          decode_valid_r    = '0;
 
 always_ff @(posedge clk_i) begin
-    if (decode_occurs)
+    if (decode_unload)
         decode_valid_r <= '0;
 
-    if (decode_provide) begin
-        decode_pc_r      <= pc;
-        decode_ir_r      <= ir;
-        decode_cw_r      <= cw;
-        decode_ra_r      <= ra;
-        decode_rb_r      <= rb;
-        decode_valid_r   <= '1;
+    if (decode_load) begin
+        decode_pc_r       <= pc;
+        decode_ir_r       <= ir;
+        decode_cw_r       <= cw;
+        decode_ra_r       <= ra;
+        decode_rb_r       <= rb;
+        decode_valid_r    <= '1;
     end
 end
 
 always_comb begin
-    decode_occurs = decode_valid_o && decode_ready_i;
+    decode_unload = decode_valid_o && decode_ready_i;
 end
 
-assign decode_pc_o    = decode_pc_r;
-assign decode_ir_o    = decode_ir_r;
-assign decode_cw_o    = decode_cw_r;
-assign decode_ra_o    = decode_ra_r;
-assign decode_rb_o    = decode_rb_r;
-assign decode_valid_o = decode_valid_r;
+assign decode_pc_o       = decode_pc_r;
+assign decode_ir_o       = decode_ir_r;
+assign decode_cw_o       = decode_cw_r;
+assign decode_ra_o       = decode_ra_r;
+assign decode_rb_o       = decode_rb_r;
+assign decode_valid_o    = decode_valid_r;
 
 
 //
@@ -184,13 +184,10 @@ always_comb begin
     end
 
     // choose actions
-    decode_provide = (skid_valid_r || fetch_occurs) && !decode_full;
-    skid_load      = fetch_occurs && (skid_valid_r || decode_full);
-    skid_unload    = skid_valid_r && !decode_full;
-    fetch_ready    =
-           (!decode_full  && !skid_valid_r)
-        || (!decode_full  && !fetch_occurs)
-        || (!skid_valid_r && !fetch_occurs);
+    decode_load = !decode_full && (skid_valid_r || fetch_occurs);
+    skid_load   = fetch_occurs && (decode_full || skid_valid_r);
+    skid_unload = !decode_full && skid_valid_r;
+    fetch_ready = !skid_load && (!skid_valid_r || skid_unload);
 end
 
 endmodule
