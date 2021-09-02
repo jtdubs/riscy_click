@@ -2,48 +2,30 @@
 `default_nettype none
 
 ///
-/// Risc-V CPU Execution Stage
+/// Risc-V CPU Execute Stage
 ///
 
 module stage_execute
     // Import Constants
     import common::*;
     import cpu_common::*;
+    import csr_common::*;
     import logging::*;
     (
         // cpu signals
-        input  wire logic      clk_i,            // clock
+        input  wire logic           clk_i,
 
-        // pipeline input
-        input  wire word_t     pc_i,             // program counter
-        input  wire word_t     ir_i,             // instruction register
-        input  wire word_t     alu_op1_i,        // ALU operand 1
-        input  wire word_t     alu_op2_i,        // ALU operand 2
-        input  wire alu_mode_t alu_mode_i,       // ALU mode
-        input  wire ma_mode_t  ma_mode_i,        // memory access mode
-        input  wire ma_size_t  ma_size_i,        // memory access size
-        input  wire word_t     ma_data_i,        // memory access data
-        input  wire wb_src_t   wb_src_i,         // write-back source
-        input  wire regaddr_t  wb_addr_i,        // write-back address
-        input  wire word_t     wb_data_i,        // write-back data
-        input  wire logic      wb_ready_i,       // write-back ready
-        input  wire logic      wb_valid_i,       // write-back valid
-
-        // status output
-        output      logic      empty_async_o,    // stage empty
+        // decode channel
+        input  wire control_word_t  issue_cw_i,
+        input  wire word_t          issue_alu_op1_i,
+        input  wire word_t          issue_alu_op2_i,
+        input  wire logic           issue_valid_i,
+        output wire logic           issue_ready_o,
 
         // pipeline output
-        output wire word_t     pc_o,             // program counter
-        output wire word_t     ir_o,             // instruction register
-        output wire word_t     ma_addr_o,        // memory access address
-        output wire ma_mode_t  ma_mode_o,        // memory access mode
-        output wire ma_size_t  ma_size_o,        // memory access size
-        output wire word_t     ma_data_o,        // memory access data
-        output wire wb_src_t   wb_src_o,         // write-back source
-        output wire regaddr_t  wb_addr_o,        // write-back address
-        output wire word_t     wb_data_o,        // write-back data
-        output wire logic      wb_ready_o,       // write-back data ready
-        output wire logic      wb_valid_o        // write-back valid
+        output wire word_t          execute_result_o,
+        output wire logic           execute_valid_o,
+        input  wire logic           execute_ready_i
     );
 
 initial start_logging();
@@ -53,77 +35,125 @@ final stop_logging();
 // ALU
 //
 
-wire word_t alu_result;
+word_t result;
 
 alu alu (
-    .alu_mode_i         (alu_mode_i),
-    .alu_op1_i          (alu_op1_i),
-    .alu_op2_i          (alu_op2_i),
-    .alu_result_async_o (alu_result)
+    .alu_mode_i         (cw.alu_mode),
+    .alu_op1_i          (alu_op1),
+    .alu_op2_i          (alu_op2),
+    .alu_result_async_o (result)
 );
 
 
 //
-// Status Outputs
+// Issue Input
 //
 
+logic issue_occurs;
+logic issue_ready;
+
+logic issue_ready_r = '1;
+
+always_ff @(posedge clk_i) begin
+    if (issue_occurs)
+        issue_ready_r <= '0;
+
+    if (issue_ready)
+        issue_ready_r <= '1;
+end
+
 always_comb begin
-    empty_async_o = pc_i == NOP_PC;
+    issue_occurs = issue_valid_i && issue_ready_o;
+end
+
+assign issue_ready_o = issue_ready_r;
+
+
+//
+// Execute Output
+//
+
+logic execute_unload;
+logic execute_load;
+
+control_word_t cw;
+word_t         alu_op1;
+word_t         alu_op2;
+
+word_t         execute_result_r = '0;
+logic          execute_valid_r  = '0;
+
+always_ff @(posedge clk_i) begin
+    if (execute_unload)
+        execute_valid_r <= '0;
+
+    if (execute_load) begin
+        execute_result_r <= result;
+        execute_valid_r  <= '1;
+    end
+end
+
+always_comb begin
+    execute_unload = execute_valid_o && execute_ready_i;
+end
+
+assign execute_result_o = execute_result_r;
+assign execute_valid_o  = execute_valid_r;
+
+
+//
+// Skid Buffer
+//
+
+logic skid_load;
+logic skid_unload;
+
+control_word_t skid_cw_r      = '0;
+word_t         skid_alu_op1_r = '0;
+word_t         skid_alu_op2_r = '0;
+logic          skid_valid_r   = '0;
+
+always_ff @(posedge clk_i) begin
+    if (skid_unload)
+        skid_valid_r <= '0;
+
+    if (skid_load) begin
+        skid_cw_r      <= issue_cw_i;
+        skid_alu_op1_r <= issue_alu_op1_i;
+        skid_alu_op2_r <= issue_alu_op2_i;
+        skid_valid_r   <= '1;
+    end
 end
 
 
 //
-// Pipeline Output
+// Logic
 //
 
-word_t    pc_r       = NOP_PC;
-assign    pc_o       = pc_r;
+logic execute_full;
 
-word_t    ir_r       = NOP_IR;
-assign    ir_o       = ir_r;
+always_comb begin
+    // calculations
+    execute_full = execute_valid_r && !execute_ready_i;
 
-word_t    ma_addr_r  = 32'b0;
-assign    ma_addr_o  = ma_addr_r;
+    // prefer skid
+    if (skid_valid_r) begin
+        cw      = skid_cw_r;
+        alu_op1 = skid_alu_op1_r;
+        alu_op2 = skid_alu_op2_r;
+    end else begin
+        cw      = issue_cw_i;
+        alu_op1 = issue_alu_op1_i;
+        alu_op2 = issue_alu_op2_i;
+    end
 
-ma_mode_t ma_mode_r  = NOP_MA_MODE;
-assign    ma_mode_o  = ma_mode_r;
-
-ma_size_t ma_size_r  = NOP_MA_SIZE;
-assign    ma_size_o  = ma_size_r;
-
-word_t    ma_data_r  = 32'b0;
-assign    ma_data_o  = ma_data_r;
-
-wb_src_t  wb_src_r   = NOP_WB_SRC;
-assign    wb_src_o   = wb_src_r;
-
-regaddr_t wb_addr_r  = 5'b0;
-assign    wb_addr_o  = wb_addr_r;
-
-word_t    wb_data_r  = 32'b0;
-assign    wb_data_o  = wb_data_r;
-
-logic     wb_ready_r = 1'b0;
-assign    wb_ready_o = wb_ready_r;
-
-logic     wb_valid_r = NOP_WB_VALID;
-assign    wb_valid_o = wb_valid_r;
-
-always_ff @(posedge clk_i) begin
-    pc_r       <= pc_i;
-    ir_r       <= ir_i;
-    ma_addr_r  <= (ma_mode_i == MA_X) ? 32'b0 : alu_result;
-    ma_mode_r  <= ma_mode_i;
-    ma_size_r  <= ma_size_i;
-    ma_data_r  <= ma_data_i;
-    wb_src_r   <= wb_src_i;
-    wb_addr_r  <= wb_addr_i;
-    wb_data_r  <= (wb_src_i == WB_SRC_ALU) ? alu_result : wb_data_i;
-    wb_ready_r <= (wb_src_i == WB_SRC_ALU) ? 1'b1       : wb_ready_i;
-    wb_valid_r <= wb_valid_i;
-
-    `log_strobe(("{ \"stage\": \"EX\", \"pc\": \"%0d\", \"ex_wb_addr\": \"%0d\", \"ex_wb_data\": \"%0d\", \"ex_wb_valid\": \"%0d\" }", pc_i, wb_addr_o, wb_data_o, wb_valid_o));
-    `log_strobe(("{ \"stage\": \"EX\", \"pc\": \"%0d\", \"ir\": \"%0d\", \"ma_addr\": \"%0d\", \"ma_mode\": \"%0d\", \"ma_size\": \"%0d\", \"ma_data\": \"%0d\", \"wb_src\": \"%0d\", \"wb_data\": \"%0d\", \"wb_valid\": \"%0d\" }", pc_r, ir_r, ma_addr_r, ma_mode_r, ma_size_r, ma_data_r, wb_src_r, wb_data_r, wb_valid_r));
+    // choose actions
+    execute_load = !execute_full && (issue_occurs || skid_valid_r);
+    skid_load    = issue_occurs && execute_full;
+    skid_unload  = !execute_full && skid_valid_r;
+    issue_ready  =
+          (!skid_valid_r && !skid_load)
+       || (skid_valid_r && skid_unload && !skid_load);
 end
 
 endmodule
