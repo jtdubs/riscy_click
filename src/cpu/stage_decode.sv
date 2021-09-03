@@ -37,38 +37,11 @@ final stop_logging();
 
 
 //
-// Bypass Buffer
-//
-
-word_t         pc;
-word_t         ir;
-control_word_t cw;
-word_t         ra;
-word_t         rb;
-
-bypass_buffer #(
-    .WR_WIDTH(64),
-    .RD_WIDTH(152)
-) bypass_buffer (
-    .clk_i       (clk_i),
-    .wr_data_i   ({ fetch_pc_i, fetch_ir_i }),
-    .wr_valid_i  (fetch_valid_i),
-    .wr_ready_o  (fetch_ready_o),
-    .rd_data_o   ({ decode_pc_o, decode_ir_o, decode_cw_o, decode_ra_o, decode_rb_o }),
-    .rd_valid_o  (decode_valid_o),
-    .rd_ready_i  (decode_ready_i),
-    .tfr_data_o  ({ pc, ir }),
-    .tfr_data_i  ({ pc, ir, cw, ra, rb }),
-    .tfr_valid_i (1'b1)
-);
-
-
-//
 // Decoding
 //
 
 decoder decoder (
-    .ir_i       (ir),
+    .ir_i       (fetch_ir_i),
     .cw_async_o (cw)
 );
 
@@ -81,8 +54,8 @@ regaddr_t rs1;
 regaddr_t rs2;
 
 always_comb begin
-    rs1 = ir[19:15];
-    rs2 = ir[24:20];
+    rs1 = fetch_ir_i[19:15];
+    rs2 = fetch_ir_i[24:20];
 end
 
 register_file register_file (
@@ -92,8 +65,31 @@ register_file register_file (
     .rb_addr_i       (rs2),
     .rb_data_async_o (rb),
     .wr_enable_i     (1'b1),
-    .wr_addr_i       (regaddr_t'(ir[5:1])),
-    .wr_data_i       (ir)
+    .wr_addr_i       (regaddr_t'(fetch_ir_i[5:1])),
+    .wr_data_i       (fetch_ir_i)
+);
+
+
+//
+// Bypass Buffer
+//
+
+word_t         pc;
+word_t         ir;
+control_word_t cw;
+word_t         ra;
+word_t         rb;
+
+bypass_buffer #(
+    .WIDTH       (152)
+) bypass_buffer (
+    .clk_i       (clk_i),
+    .wr_data_i   ({ fetch_pc_i, fetch_ir_i, cw, ra, rb }),
+    .wr_valid_i  (fetch_valid_i),
+    .wr_ready_o  (fetch_ready_o),
+    .rd_data_o   ({ decode_pc_o, decode_ir_o, decode_cw_o, decode_ra_o, decode_rb_o }),
+    .rd_valid_o  (decode_valid_o),
+    .rd_ready_i  (decode_ready_i)
 );
 
 endmodule

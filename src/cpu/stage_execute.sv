@@ -31,42 +31,34 @@ module stage_execute
 initial start_logging();
 final stop_logging();
 
+//
+// ALU
+//
+
+word_t result;
+
+alu alu (
+    .alu_mode_i         (issue_cw_i.alu_mode),
+    .alu_op1_i          (issue_alu_op1_i),
+    .alu_op2_i          (issue_alu_op2_i),
+    .alu_result_async_o (result)
+);
+
 
 //
 // Bypass Buffer
 //
 
-alu_mode_t     alu_mode;
-word_t         alu_op1;
-word_t         alu_op2;
-word_t         result;
-
 bypass_buffer #(
-    .WR_WIDTH(68),
-    .RD_WIDTH(32)
+    .WIDTH       (32)
 ) bypass_buffer (
     .clk_i       (clk_i),
-    .wr_data_i   ({ issue_cw_i.alu_mode, issue_alu_op1_i, issue_alu_op2_i }),
+    .wr_data_i   ({ result }),
     .wr_valid_i  (issue_valid_i),
     .wr_ready_o  (issue_ready_o),
     .rd_data_o   ({ execute_result_o }),
     .rd_valid_o  (execute_valid_o),
-    .rd_ready_i  (execute_ready_i),
-    .tfr_data_o  ({ alu_mode, alu_op1, alu_op2 }),
-    .tfr_data_i  ({ result }),
-    .tfr_valid_i (1'b1)
-);
-
-
-//
-// ALU
-//
-
-alu alu (
-    .alu_mode_i         (alu_mode),
-    .alu_op1_i          (alu_op1),
-    .alu_op2_i          (alu_op2),
-    .alu_result_async_o (result)
+    .rd_ready_i  (execute_ready_i)
 );
 
 endmodule
