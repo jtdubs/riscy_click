@@ -90,7 +90,7 @@ typedef struct packed {
     logic       ready;
 } switch_input_t;
 
-(* MARK_DEBUG = "true" *) switch_input_t switch_r;
+switch_input_t switch_r;
 always_ff @(posedge cpu_clk_i) begin
     switch_r <= switch_i;
 end
@@ -98,8 +98,8 @@ end
 
 // Buttons
 logic [7:0] buttons_r [4:0] = '{ default: '0 };
-(* MARK_DEBUG = "true" *) logic [1:0] buttons_debounced_r [4:0] = '{ default: '0 };
-(* MARK_DEBUG = "true" *) logic       button_pressed_r    [4:0] = '{ default: '0 };
+logic [1:0] buttons_debounced_r [4:0] = '{ default: '0 };
+logic       button_pressed_r    [4:0] = '{ default: '0 };
 genvar i;
 generate for (i=0; i<5; i++) begin
     always_ff @(posedge cpu_clk_i) begin
@@ -118,13 +118,13 @@ endgenerate
 // Instruction Cache
 //
 
-(* MARK_DEBUG = "true" *) wire memaddr_t icache_req_addr;
-(* MARK_DEBUG = "true" *) wire logic     icache_req_valid;
-(* MARK_DEBUG = "true" *) wire logic     icache_req_ready;
-(* MARK_DEBUG = "true" *) wire memaddr_t icache_resp_addr;
-(* MARK_DEBUG = "true" *) wire word_t    icache_resp_data;
-(* MARK_DEBUG = "true" *) wire logic     icache_resp_valid;
-(* MARK_DEBUG = "true" *) wire logic     icache_resp_ready;
+wire memaddr_t icache_req_addr;
+wire logic     icache_req_valid;
+wire logic     icache_req_ready;
+wire memaddr_t icache_resp_addr;
+wire word_t    icache_resp_data;
+wire logic     icache_resp_valid;
+wire logic     icache_resp_ready;
 
 instruction_cache cache (
     .clk_i        (cpu_clk_i),
@@ -142,11 +142,11 @@ instruction_cache cache (
 // CPU Fetch Stage
 //
 
-(* MARK_DEBUG = "true" *) wire word_t fetch_pc;
-(* MARK_DEBUG = "true" *) wire word_t fetch_ir;
-(* MARK_DEBUG = "true" *) wire word_t fetch_pc_next;
-(* MARK_DEBUG = "true" *) wire logic  fetch_valid;
-(* MARK_DEBUG = "true" *) wire logic  fetch_ready;
+wire word_t fetch_pc;
+wire word_t fetch_ir;
+wire word_t fetch_pc_next;
+wire logic  fetch_valid;
+wire logic  fetch_ready;
 
 stage_fetch stage_fetch (
     .clk_i               (cpu_clk_i),
@@ -173,13 +173,13 @@ stage_fetch stage_fetch (
 // CPU Decode Stage
 //
 
-(* MARK_DEBUG = "true" *) wire word_t         decode_pc;
-(* MARK_DEBUG = "true" *) wire word_t         decode_ir;
-(* MARK_DEBUG = "true" *) wire control_word_t decode_cw;
-(* MARK_DEBUG = "true" *) wire word_t         decode_ra;
-(* MARK_DEBUG = "true" *) wire word_t         decode_rb;
-(* MARK_DEBUG = "true" *) wire logic          decode_valid;
-(* MARK_DEBUG = "true" *) wire logic          decode_ready;
+wire word_t         decode_pc;
+wire word_t         decode_ir;
+wire control_word_t decode_cw;
+wire word_t         decode_ra;
+wire word_t         decode_rb;
+wire logic          decode_valid;
+wire logic          decode_ready;
 
 stage_decode stage_decode (
     .clk_i               (cpu_clk_i),
@@ -202,11 +202,11 @@ stage_decode stage_decode (
 // CPU Issue Stage
 //
 
-(* MARK_DEBUG = "true" *) wire control_word_t issue_cw;
-(* MARK_DEBUG = "true" *) wire word_t         issue_alu_op1;
-(* MARK_DEBUG = "true" *) wire word_t         issue_alu_op2;
-(* MARK_DEBUG = "true" *) wire logic          issue_valid;
-(* MARK_DEBUG = "true" *) wire logic          issue_ready;
+wire control_word_t issue_cw;
+wire word_t         issue_alu_op1;
+wire word_t         issue_alu_op2;
+wire logic          issue_valid;
+wire logic          issue_ready;
 
 stage_issue stage_issue (
     .clk_i               (cpu_clk_i),
@@ -233,9 +233,9 @@ stage_issue stage_issue (
 // CPU Execute Stage
 //
 
-(* MARK_DEBUG = "true" *) wire word_t execute_result;
-(* MARK_DEBUG = "true" *) wire logic  execute_valid;
-(* MARK_DEBUG = "true" *) wire logic  execute_ready;
+wire word_t execute_result;
+wire logic  execute_valid;
+wire logic  execute_ready;
 
 stage_execute stage_execute (
     .clk_i               (cpu_clk_i),
@@ -276,7 +276,7 @@ always_ff @(posedge cpu_clk_i) begin
 end
 
 // Segment Display
-(* MARK_DEBUG = "true" *) word_t display_data;
+word_t display_data;
 always_comb begin
     case (switch_r.display_selector)
     3'b000:  display_data = pc_r;

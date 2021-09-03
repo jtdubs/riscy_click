@@ -91,7 +91,7 @@ typedef struct packed {
     logic       ready;
 } switch_input_t;
 
-(* MARK_DEBUG = "true" *) switch_input_t switch_r;
+switch_input_t switch_r;
 always_ff @(posedge cpu_clk_i) begin
     switch_r <= switch_i;
 end
@@ -99,8 +99,8 @@ end
 
 // Buttons
 logic [7:0] buttons_r [4:0] = '{ default: '0 };
-(* MARK_DEBUG = "true" *) logic [1:0] buttons_debounced_r [4:0] = '{ default: '0 };
-(* MARK_DEBUG = "true" *) logic button_pressed_r [4:0]  = '{ default: '0 };
+logic [1:0] buttons_debounced_r [4:0] = '{ default: '0 };
+logic button_pressed_r [4:0]  = '{ default: '0 };
 genvar i;
 generate for (i=0; i<5; i++) begin
     always_ff @(posedge cpu_clk_i) begin
@@ -119,13 +119,13 @@ endgenerate
 // Instruction Cache
 //
 
-(* MARK_DEBUG = "true" *) wire memaddr_t req_addr;
-(* MARK_DEBUG = "true" *) wire logic     req_valid;
-(* MARK_DEBUG = "true" *) wire logic     req_ready;
-(* MARK_DEBUG = "true" *) wire memaddr_t resp_addr;
-(* MARK_DEBUG = "true" *) wire word_t    resp_data;
-(* MARK_DEBUG = "true" *) wire logic     resp_valid;
-(* MARK_DEBUG = "true" *) wire logic     resp_ready;
+wire memaddr_t req_addr;
+wire logic     req_valid;
+wire logic     req_ready;
+wire memaddr_t resp_addr;
+wire word_t    resp_data;
+wire logic     resp_valid;
+wire logic     resp_ready;
 
 instruction_cache cache (
     .clk_i        (cpu_clk_i),
@@ -143,10 +143,10 @@ instruction_cache cache (
 // CPU Fetch Stage
 //
 
-(* MARK_DEBUG = "true" *) wire word_t pc;
-(* MARK_DEBUG = "true" *) wire word_t ir;
-(* MARK_DEBUG = "true" *) wire word_t pc_next;
-(* MARK_DEBUG = "true" *) wire logic  valid;
+wire word_t pc;
+wire word_t ir;
+wire word_t pc_next;
+wire logic  valid;
 
 stage_fetch stage_fetch (
     .clk_i               (cpu_clk_i),
@@ -183,7 +183,7 @@ always_ff @(posedge cpu_clk_i) begin
 end
 
 // Segment Display
-(* MARK_DEBUG = "true" *) word_t display_data;
+word_t display_data;
 always_comb begin
     case (switch_r.display_selector)
     2'b00: display_data = pc_r;
